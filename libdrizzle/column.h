@@ -143,13 +143,6 @@ DRIZZLE_API
 drizzle_column_type_t drizzle_column_type(drizzle_column_st *column);
 
 /**
- * Get the Drizzle type of a column.
- */
-DRIZZLE_API
-drizzle_column_type_drizzle_t
-drizzle_column_type_drizzle(drizzle_column_st *column);
-
-/**
  * Get flags for a column.
  */
 DRIZZLE_API

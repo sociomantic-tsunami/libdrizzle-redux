@@ -42,8 +42,6 @@
 #pragma once
 
 #include <libdrizzle/drizzle.h>
-#include <libdrizzle/conn_server.h>
-#include <libdrizzle/handshake_server.h>
 #include <libdrizzle/command_server.h>
 #include <libdrizzle/result_server.h>
 #include <libdrizzle/column_server.h>

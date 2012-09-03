@@ -56,11 +56,6 @@ const char *drizzle_con_uds(const drizzle_con_st *con)
       return con->socket.uds.path_buffer;
     }
 
-    if (con->options & DRIZZLE_CON_MYSQL)
-    {
-      return DRIZZLE_DEFAULT_UDS_MYSQL;
-    }
-
     return DRIZZLE_DEFAULT_UDS;
   }
 

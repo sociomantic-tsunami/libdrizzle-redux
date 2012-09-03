@@ -75,32 +75,6 @@ drizzle_return_t drizzle_handshake_client_write(drizzle_con_st *con)
 }
 
 /*
- * Server Definitions
- */
-
-drizzle_return_t drizzle_handshake_server_write(drizzle_con_st *con)
-{
-  if (drizzle_state_none(con))
-  {
-    drizzle_state_push(con, drizzle_state_write);
-    drizzle_state_push(con, drizzle_state_handshake_server_write);
-  }
-
-  return drizzle_state_loop(con);
-}
-
-drizzle_return_t drizzle_handshake_client_read(drizzle_con_st *con)
-{
-  if (drizzle_state_none(con))
-  {
-    drizzle_state_push(con, drizzle_state_handshake_client_read);
-    drizzle_state_push(con, drizzle_state_packet_read);
-  }
-
-  return drizzle_state_loop(con);
-}
-
-/*
  * State Definitions
  */
 
@@ -188,8 +162,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_con_st *con)
   con->capabilities= (drizzle_capabilities_t)drizzle_get_byte2(con->buffer_ptr);
   con->buffer_ptr+= 2;
 
-  if (con->options & DRIZZLE_CON_MYSQL &&
-      !(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
+  if (!(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
   {
     drizzle_set_error(con->drizzle, "drizzle_state_handshake_server_read",
                       "protocol version not supported, must be MySQL 4.1+");
@@ -306,8 +279,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_con_st *con)
   ptr[0]= 0;
   ptr++;
 
-  if (con->options & DRIZZLE_CON_MYSQL)
-    con->capabilities|= DRIZZLE_CAPABILITIES_PROTOCOL_41;
+  con->capabilities|= DRIZZLE_CAPABILITIES_PROTOCOL_41;
 
   /* We can only send two bytes worth, this is a protocol limitation. */
   drizzle_set_byte2(ptr, con->capabilities);
@@ -381,8 +353,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_con_st *con)
   con->capabilities= drizzle_get_byte4(con->buffer_ptr);
   con->buffer_ptr+= 4;
 
-  if (con->options & DRIZZLE_CON_MYSQL &&
-      !(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
+  if (!(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
   {
     drizzle_set_error(con->drizzle, "drizzle_state_handshake_client_read",
                       "protocol version not supported, must be MySQL 4.1+");
@@ -506,8 +477,7 @@ int drizzle_compile_capabilities(drizzle_con_st *con)
 {
   int capabilities;
 
-  if (con->options & DRIZZLE_CON_MYSQL)
-    con->capabilities|= DRIZZLE_CAPABILITIES_PROTOCOL_41;
+  con->capabilities|= DRIZZLE_CAPABILITIES_PROTOCOL_41;
 
   capabilities= con->capabilities & DRIZZLE_CAPABILITIES_CLIENT;
   if (!(con->options & DRIZZLE_CON_FOUND_ROWS))

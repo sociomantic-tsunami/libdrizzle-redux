@@ -336,12 +336,6 @@ void drizzle_con_add_options(drizzle_con_st *con,
   }
 
   con->options|= options;
-
-  /* If asking for the experimental Drizzle protocol, clean the MySQL flag. */
-  if (con->options & DRIZZLE_CON_EXPERIMENTAL)
-  {
-    con->options&= ~DRIZZLE_CON_MYSQL;
-  }
 }
 
 void drizzle_con_remove_options(drizzle_con_st *con,
@@ -380,11 +374,6 @@ in_port_t drizzle_con_port(const drizzle_con_st *con)
     if (con->socket.tcp.port != 0)
     {
       return con->socket.tcp.port;
-    }
-
-    if (con->options & DRIZZLE_CON_MYSQL)
-    {
-      return DRIZZLE_DEFAULT_TCP_PORT_MYSQL;
     }
 
     return DRIZZLE_DEFAULT_TCP_PORT;
@@ -699,14 +688,8 @@ drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
     ret_ptr= &unused;
   }
 
-  if (con && con->options & DRIZZLE_CON_MYSQL)
-  {
-    return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_SHUTDOWN,
-                                     "0", 1, 1, ret_ptr);
-  }
-
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_SHUTDOWN, NULL,
-                                   0, 0, ret_ptr);
+  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_SHUTDOWN,
+                                   "0", 1, 1, ret_ptr);
 }
 
 drizzle_result_st *drizzle_shutdown(drizzle_con_st *con,
@@ -842,291 +825,6 @@ drizzle_result_st *drizzle_con_command_write(drizzle_con_st *con,
 }
 
 /*
- * Server Definitions
- */
-
-drizzle_return_t drizzle_con_listen(drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  if (con->options & DRIZZLE_CON_READY)
-  {
-    return DRIZZLE_RETURN_OK;
-  }
-
-  if (drizzle_state_none(con))
-  {
-    drizzle_state_push(con, drizzle_state_listen);
-    drizzle_state_push(con, drizzle_state_addrinfo);
-  }
-
-  return drizzle_state_loop(con);
-}
-
-int drizzle_con_backlog(const drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return 0;
-  }
-
-  return con->backlog;
-}
-
-void drizzle_con_set_backlog(drizzle_con_st *con, int backlog)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->backlog= backlog;
-}
-
-void drizzle_con_set_protocol_version(drizzle_con_st *con,
-                                      uint8_t protocol_version)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->protocol_version= protocol_version;
-}
-
-void drizzle_con_set_server_version(drizzle_con_st *con,
-                                    const char *server_version)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  if (server_version == NULL)
-  {
-    con->server_version[0]= 0;
-  }
-  else
-  {
-    strncpy(con->server_version, server_version,
-            DRIZZLE_MAX_SERVER_VERSION_SIZE);
-    con->server_version[DRIZZLE_MAX_SERVER_VERSION_SIZE - 1]= 0;
-  }
-}
-
-void drizzle_con_set_thread_id(drizzle_con_st *con, uint32_t thread_id)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->thread_id= thread_id;
-}
-
-void drizzle_con_set_scramble(drizzle_con_st *con, const uint8_t *scramble)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  if (scramble == NULL)
-  {
-    con->scramble= NULL;
-  }
-  else
-  {
-    con->scramble= con->scramble_buffer;
-    memcpy(con->scramble, scramble, DRIZZLE_MAX_SCRAMBLE_SIZE);
-  }
-}
-
-void drizzle_con_set_capabilities(drizzle_con_st *con,
-                                  drizzle_capabilities_t capabilities)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->capabilities= capabilities;
-}
-
-void drizzle_con_set_charset(drizzle_con_st *con, drizzle_charset_t charset)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->charset= charset;
-}
-
-void drizzle_con_set_status(drizzle_con_st *con, drizzle_con_status_t status)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->status= status;
-}
-
-void drizzle_con_set_max_packet_size(drizzle_con_st *con,
-                                     uint32_t max_packet_size)
-{
-  if (con == NULL)
-  {
-    return;
-  }
-
-  con->max_packet_size= max_packet_size;
-}
-
-void drizzle_con_copy_handshake(drizzle_con_st *con, drizzle_con_st *from)
-{
-  drizzle_con_set_auth(con, from->user, NULL);
-  drizzle_con_set_scramble(con, from->scramble);
-  drizzle_con_set_db(con, from->db);
-  drizzle_con_set_protocol_version(con, from->protocol_version);
-  drizzle_con_set_server_version(con, from->server_version);
-  drizzle_con_set_thread_id(con, from->thread_id);
-  drizzle_con_set_scramble(con, from->scramble);
-  drizzle_con_set_capabilities(con, from->capabilities);
-  drizzle_con_set_charset(con, from->charset);
-  drizzle_con_set_status(con, from->status);
-  drizzle_con_set_max_packet_size(con, from->max_packet_size);
-}
-
-void *drizzle_con_command_read(drizzle_con_st *con,
-                               drizzle_command_t *command, size_t *offset,
-                               size_t *size, size_t *total,
-                               drizzle_return_t *ret_ptr)
-{
-  drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
-  {
-    ret_ptr= &unused_ret;
-  }
-
-  if (con == NULL)
-  {
-    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
-    return NULL;
-  }
-
-  if (drizzle_state_none(con))
-  {
-    con->packet_number= 0;
-    con->command_offset= 0;
-    con->command_total= 0;
-
-    drizzle_state_push(con, drizzle_state_command_read);
-    drizzle_state_push(con, drizzle_state_packet_read);
-  }
-
-  if (offset)
-  {
-    *offset= con->command_offset;
-  }
-
-  *ret_ptr= drizzle_state_loop(con);
-  if (*ret_ptr == DRIZZLE_RETURN_PAUSE)
-  {
-    *ret_ptr= DRIZZLE_RETURN_OK;
-  }
-
-  if (command)
-  {
-    *command= con->command;
-  }
-
-  if (size)
-  {
-    *size= con->command_size;
-  }
-
-  if (total)
-  {
-    *total= con->command_total;
-  }
-
-  return con->command_data;
-}
-
-void *drizzle_con_command_buffer(drizzle_con_st *con,
-                                 drizzle_command_t *command, size_t *total,
-                                 drizzle_return_t *ret_ptr)
-{
-  size_t offset= 0;
-  size_t size= 0;
-
-  drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
-  {
-    ret_ptr= &unused_ret;
-  }
-
-  size_t unused_total;
-  if (total == NULL)
-  {
-    total= &unused_total;
-  }
-
-  if (con == NULL)
-  {
-    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
-    return NULL;
-  }
-
-  char *command_data= (char *)drizzle_con_command_read(con, command, &offset, &size, total, ret_ptr);
-  if (*ret_ptr != DRIZZLE_RETURN_OK)
-  {
-    return NULL;
-  }
-
-  if (command_data == NULL)
-  {
-    *total= 0;
-    return NULL;
-  }
-
-  if (con->command_buffer == NULL)
-  {
-    con->command_buffer= (uint8_t*)realloc(NULL, (*total) +1);
-    if (con->command_buffer == NULL)
-    {
-      drizzle_set_error(con->drizzle, __func__, "Failed to allocate.");
-      *ret_ptr= DRIZZLE_RETURN_MEMORY;
-      return NULL;
-    }
-  }
-
-  memcpy(con->command_buffer + offset, command_data, size);
-
-  while ((offset + size) != (*total))
-  {
-    command_data= (char *)drizzle_con_command_read(con, command, &offset, &size, total, ret_ptr);
-    if (*ret_ptr != DRIZZLE_RETURN_OK)
-    {
-      return NULL;
-    }
-
-    memcpy(con->command_buffer + offset, command_data, size);
-  }
-
-  command_data= (char *)con->command_buffer;
-  con->command_buffer= NULL;
-  command_data[*total]= 0;
-
-  return command_data;
-}
-
-/*
  * Local Definitions
  */
 
@@ -1191,10 +889,6 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_con_st *con)
     if (tcp->port != 0)
     {
       snprintf(port, NI_MAXSERV, "%u", tcp->port);
-    }
-    else if (con->options & DRIZZLE_CON_MYSQL)
-    {
-      snprintf(port, NI_MAXSERV, "%u", DRIZZLE_DEFAULT_TCP_PORT_MYSQL);
     }
     else
     {

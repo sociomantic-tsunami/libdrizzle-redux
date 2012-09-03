@@ -65,10 +65,8 @@ extern "C" {
 
 /* Defines. */
 #define DRIZZLE_DEFAULT_TCP_HOST         "localhost"
-#define DRIZZLE_DEFAULT_TCP_PORT         4427
-#define DRIZZLE_DEFAULT_TCP_PORT_MYSQL   4427
-#define DRIZZLE_DEFAULT_UDS              "/tmp/drizzle.sock"
-#define DRIZZLE_DEFAULT_UDS_MYSQL        "/tmp/mysql.sock"
+#define DRIZZLE_DEFAULT_TCP_PORT         3306
+#define DRIZZLE_DEFAULT_UDS              "/tmp/mysql.sock"
 #define DRIZZLE_DEFAULT_BACKLOG          64
 #define DRIZZLE_MAX_ERROR_SIZE           2048
 #define DRIZZLE_MAX_USER_SIZE            64
@@ -120,14 +118,12 @@ enum drizzle_con_options_t
 {
   DRIZZLE_CON_NONE=             0,
   DRIZZLE_CON_ALLOCATED=        (1 << 0),
-  DRIZZLE_CON_MYSQL=            (1 << 1),
   DRIZZLE_CON_RAW_PACKET=       (1 << 2),
   DRIZZLE_CON_RAW_SCRAMBLE=     (1 << 3),
   DRIZZLE_CON_READY=            (1 << 4),
   DRIZZLE_CON_NO_RESULT_READ=   (1 << 5),
   DRIZZLE_CON_IO_READY=         (1 << 6),
   DRIZZLE_CON_LISTEN=           (1 << 7),
-  DRIZZLE_CON_EXPERIMENTAL=     (1 << 8),
   DRIZZLE_CON_FOUND_ROWS=       (1 << 9),
   DRIZZLE_CON_INTERACTIVE=      (1 << 11),
   DRIZZLE_CON_MULTI_STATEMENTS= (1 << 12),
@@ -262,27 +258,6 @@ typedef enum drizzle_command_t drizzle_command_t;
 #endif
 
 /**
- * @ingroup drizzle_command 
- * Commands for the Drizzle protocol functions.
- */
-enum drizzle_command_drizzle_t
-{
-  DRIZZLE_COMMAND_DRIZZLE_SLEEP,
-  DRIZZLE_COMMAND_DRIZZLE_QUIT,
-  DRIZZLE_COMMAND_DRIZZLE_INIT_DB,
-  DRIZZLE_COMMAND_DRIZZLE_QUERY,
-  DRIZZLE_COMMAND_DRIZZLE_SHUTDOWN,
-  DRIZZLE_COMMAND_DRIZZLE_CONNECT,
-  DRIZZLE_COMMAND_DRIZZLE_PING,
-  DRIZZLE_COMMAND_DRIZZLE_KILL,
-  DRIZZLE_COMMAND_DRIZZLE_END
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_command_drizzle_t drizzle_command_drizzle_t;
-#endif
-
-/**
  * @ingroup drizzle_query
  * Options for drizzle_query_st.
  */
@@ -381,35 +356,6 @@ enum drizzle_column_type_t
 
 #ifndef __cplusplus
 typedef enum drizzle_column_type_t drizzle_column_type_t;
-#endif
-
-/**
- * @ingroup drizzle_column
- * Types for drizzle_column_st for Drizzle.
- */
-enum drizzle_column_type_drizzle_t
-{
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_TINY,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_LONG,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_DOUBLE,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_NULL,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_TIMESTAMP,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_LONGLONG,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_DATETIME,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_DATE,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_VARCHAR,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_NEWDECIMAL,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_ENUM,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_BLOB,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_TIME,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_BOOLEAN,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_UUID,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_MICROTIME,
-  DRIZZLE_COLUMN_TYPE_DRIZZLE_MAX=DRIZZLE_COLUMN_TYPE_DRIZZLE_MICROTIME
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_column_type_drizzle_t drizzle_column_type_drizzle_t;
 #endif
 
 /**

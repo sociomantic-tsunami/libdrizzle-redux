@@ -427,7 +427,6 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle, drizzle_con_st *con)
   con->capabilities= DRIZZLE_CAPABILITIES_NONE;
   con->charset= 0;
   con->command= 0;
-  con->options|= DRIZZLE_CON_MYSQL;
   con->socket_type= DRIZZLE_CON_SOCKET_TCP;
   con->status= DRIZZLE_CON_STATUS_NONE;
   con->max_packet_size= DRIZZLE_MAX_PACKET_SIZE;
@@ -766,119 +765,6 @@ drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle, drizzle_con_st *con,
   drizzle_con_add_options(con, options);
 
   return con;
-}
-
-/*
- * Server Definitions
- */
-
-drizzle_con_st *drizzle_con_add_tcp_listen(drizzle_st *drizzle,
-                                           drizzle_con_st *con,
-                                           const char *host, in_port_t port,
-                                           int backlog,
-                                           drizzle_con_options_t options)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  con= drizzle_con_create(drizzle, con);
-  if (con == NULL)
-  {
-    return NULL;
-  }
-
-  drizzle_con_set_tcp(con, host, port);
-  drizzle_con_set_backlog(con, backlog);
-  drizzle_con_add_options(con, DRIZZLE_CON_LISTEN | options);
-
-  return con;
-}
-
-drizzle_con_st *drizzle_con_add_uds_listen(drizzle_st *drizzle,
-                                           drizzle_con_st *con,
-                                           const char *uds, int backlog,
-                                           drizzle_con_options_t options)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  con= drizzle_con_create(drizzle, con);
-  if (con == NULL)
-  {
-    return NULL;
-  }
-
-  drizzle_con_set_uds(con, uds);
-  drizzle_con_set_backlog(con, backlog);
-  drizzle_con_add_options(con, DRIZZLE_CON_LISTEN | options);
-
-  return con;
-}
-
-drizzle_con_st *drizzle_con_accept(drizzle_st *drizzle, drizzle_con_st *con,
-                                   drizzle_return_t *ret_ptr)
-{
-  drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
-  {
-    ret_ptr= &unused_ret;
-  }
-
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  while (1)
-  {
-    drizzle_con_st *ready;
-
-    if ((ready= drizzle_con_ready_listen(drizzle)) != NULL)
-    {
-      int fd= accept(ready->fd, NULL, NULL);
-
-      con= drizzle_con_create(drizzle, con);
-      if (con == NULL)
-      {
-        (void)closesocket(fd);
-        *ret_ptr= DRIZZLE_RETURN_MEMORY;
-        return NULL;
-      }
-
-      *ret_ptr= drizzle_con_set_fd(con, fd);
-      if (*ret_ptr != DRIZZLE_RETURN_OK)
-      {
-        (void)closesocket(fd);
-        return NULL;
-      }
-
-      if (ready->options & DRIZZLE_CON_MYSQL)
-        drizzle_con_add_options(con, DRIZZLE_CON_MYSQL);
-
-      *ret_ptr= DRIZZLE_RETURN_OK;
-      return con;
-    }
-
-    if (drizzle->options & DRIZZLE_NON_BLOCKING)
-    {
-      *ret_ptr= DRIZZLE_RETURN_IO_WAIT;
-      return NULL;
-    }
-
-    for (ready= drizzle->con_list; ready != NULL; ready= ready->next)
-    {
-      if (ready->options & DRIZZLE_CON_LISTEN)
-        drizzle_con_set_events(ready, POLLIN);
-    }
-
-    *ret_ptr= drizzle_con_wait(drizzle);
-    if (*ret_ptr != DRIZZLE_RETURN_OK)
-      return NULL;
-  }
 }
 
 /*
