@@ -62,14 +62,6 @@ drizzle_result_st *drizzle_result_create(drizzle_con_st *con,
                                          drizzle_result_st *result);
 
 /**
- * Clone a connection structure.
- */
-DRIZZLE_API
-drizzle_result_st *drizzle_result_clone(drizzle_con_st *con,
-                                        drizzle_result_st *result,
-                                        drizzle_result_st *from);
-
-/**
  * Free a result structure.
  */
 DRIZZLE_API

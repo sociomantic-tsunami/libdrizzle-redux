@@ -238,25 +238,6 @@ uint64_t drizzle_row_current(drizzle_result_st *result)
 }
 
 /*
- * Server definitions
- */
-
-drizzle_return_t drizzle_row_write(drizzle_result_st *result)
-{
-  if (result == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  if (drizzle_state_none(result->con))
-  {
-    drizzle_state_push(result->con, drizzle_state_row_write);
-  }
-
-  return drizzle_state_loop(result->con);
-}
-
-/*
  * Internal state functions.
  */
 

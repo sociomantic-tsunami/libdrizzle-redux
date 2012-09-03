@@ -169,52 +169,6 @@ void drizzle_field_free(drizzle_field_t field)
 }
 
 /*
- * Server definitions
- */
-
-drizzle_return_t drizzle_field_write(drizzle_result_st *result,
-                                     const drizzle_field_t field, size_t size,
-                                     size_t total)
-{
-  if (result == NULL)
-  {
-    return  DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  drizzle_return_t ret;
-
-  if (drizzle_state_none(result->con))
-  {
-    if (result->options & DRIZZLE_RESULT_ROW_BREAK)
-    {
-      result->options&= ~DRIZZLE_RESULT_ROW_BREAK;
-      result->field= field;
-      result->field_size= size;
-    }
-    else
-    {
-      result->field= field;
-      result->field_size= size;
-      result->field_offset= 0;
-      result->field_total= total;
-    }
-
-    drizzle_state_push(result->con, drizzle_state_field_write);
-  }
-  else if (result->field == NULL)
-  {
-    result->field= field;
-    result->field_size= size;
-  }
-
-  ret= drizzle_state_loop(result->con);
-  if (ret == DRIZZLE_RETURN_PAUSE)
-    ret= DRIZZLE_RETURN_OK;
-
-  return ret;
-}
-
-/*
  * Internal state functions.
  */
 

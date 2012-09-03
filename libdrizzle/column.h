@@ -161,6 +161,12 @@ DRIZZLE_API
 const uint8_t *drizzle_column_default_value(drizzle_column_st *column,
                                             size_t *size);
 
+DRIZZLE_LOCAL
+void drizzle_column_set_default_value(drizzle_column_st *column,
+                                      const uint8_t *default_value,
+                                      size_t size);
+
+
 /** @} */
 
 #ifdef __cplusplus

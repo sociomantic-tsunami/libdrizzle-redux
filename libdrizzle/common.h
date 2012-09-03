@@ -44,7 +44,6 @@
 #include "config.h"
 
 #include <libdrizzle/drizzle_client.h>
-#include <libdrizzle/drizzle_server.h>
 
 #include <assert.h>
 #include <errno.h>
