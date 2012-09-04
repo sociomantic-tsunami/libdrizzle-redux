@@ -92,8 +92,9 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose)
   return _verbose_name[verbose];
 }
 
-drizzle_st *drizzle_create(drizzle_st *drizzle)
+drizzle_st *drizzle_create(void)
 {
+  drizzle_st *drizzle;
 #if defined(_WIN32)
   /* if it is MS windows, invoke WSAStartup */
   WSADATA wsaData;
@@ -107,20 +108,13 @@ drizzle_st *drizzle_create(drizzle_st *drizzle)
   sigaction(SIGPIPE, &act, NULL);
 #endif
 
+  drizzle= malloc(sizeof(drizzle_st));
   if (drizzle == NULL)
   {
-    drizzle= malloc(sizeof(drizzle_st));
-    if (drizzle == NULL)
-    {
-      return NULL;
-    }
+    return NULL;
+  }
 
-    drizzle->options= DRIZZLE_ALLOCATED;
-  }
-  else
-  {
-    drizzle->options= DRIZZLE_NONE;
-  }
+  drizzle->options= DRIZZLE_NONE;
 
   /* @todo remove this default free flag with new API. */
   drizzle->options|= DRIZZLE_FREE_OBJECTS;
@@ -145,29 +139,6 @@ drizzle_st *drizzle_create(drizzle_st *drizzle)
   drizzle->query_list= NULL;
   drizzle->sqlstate[0]= 0;
   drizzle->last_error[0]= 0;
-
-  return drizzle;
-}
-
-drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
-{
-  drizzle_con_st *con;
-  drizzle= drizzle_create(drizzle);
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  drizzle->options|= (from->options & ~DRIZZLE_ALLOCATED);
-
-  for (con= from->con_list; con != NULL; con= con->next)
-  {
-    if (drizzle_con_clone(drizzle, NULL, con) == NULL)
-    {
-      drizzle_free(drizzle);
-      return NULL;
-    }
-  }
 
   return drizzle;
 }
@@ -197,10 +168,7 @@ void drizzle_free(drizzle_st *drizzle)
 
   free(drizzle->pfds);
 
-  if (drizzle->options & DRIZZLE_ALLOCATED)
-  {
-    free(drizzle);
-  }
+  free(drizzle);
 #if defined(_WIN32)
   /* if it is MS windows, invoke WSACleanup() at the end*/
   WSACleanup();
@@ -383,32 +351,27 @@ void drizzle_set_event_watch_fn(drizzle_st *drizzle,
   drizzle->event_watch_context= context;
 }
 
-drizzle_con_st *drizzle_con_create(drizzle_st *drizzle, drizzle_con_st *con)
+drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
 {
+  drizzle_con_st *con;
+
   if (drizzle == NULL)
   {
     return NULL;
   }
 
+  con= malloc(sizeof(drizzle_con_st));
   if (con == NULL)
   {
-    con= malloc(sizeof(drizzle_con_st));
-    if (con == NULL)
+    if (drizzle != NULL)
     {
-      if (drizzle != NULL)
-      {
-        drizzle_set_error(drizzle, __func__, "Failed to allocate.");
-      }
-
-      return NULL;
+      drizzle_set_error(drizzle, __func__, "Failed to allocate.");
     }
 
-    con->options= DRIZZLE_CON_ALLOCATED;
+    return NULL;
   }
-  else
-  {
-    con->options= 0;
-  }
+
+  con->options= 0;
 
   if (drizzle->con_list != NULL)
   {
@@ -477,7 +440,7 @@ drizzle_con_st *drizzle_con_clone(drizzle_st *drizzle, drizzle_con_st *con,
     return NULL;
   }
 
-  con= drizzle_con_create(drizzle, con);
+  con= drizzle_con_create(drizzle);
   if (con == NULL)
   {
     return NULL;
@@ -485,7 +448,7 @@ drizzle_con_st *drizzle_con_clone(drizzle_st *drizzle, drizzle_con_st *con,
 
   /* Clear "operational" options such as IO status. */
   con->options|= (from->options & ~(
-                  DRIZZLE_CON_ALLOCATED|DRIZZLE_CON_READY|
+                  DRIZZLE_CON_READY|
                   DRIZZLE_CON_NO_RESULT_READ|DRIZZLE_CON_IO_READY|
                   DRIZZLE_CON_LISTEN));
   con->backlog= from->backlog;
@@ -555,10 +518,7 @@ void drizzle_con_free(drizzle_con_st *con)
 
   con->drizzle->con_count--;
 
-  if (con->options & DRIZZLE_CON_ALLOCATED)
-  {
-    free(con);
-  }
+  free(con);
 }
 
 void drizzle_con_free_all(drizzle_st *drizzle)
@@ -718,18 +678,20 @@ drizzle_con_st *drizzle_con_ready_listen(drizzle_st *drizzle)
  * Client Definitions
  */
 
-drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle, drizzle_con_st *con,
+drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
                                     const char *host, in_port_t port,
                                     const char *user, const char *password,
                                     const char *db,
                                     drizzle_con_options_t options)
 {
+  drizzle_con_st *con;
+
   if (drizzle == NULL)
   {
     return NULL;
   }
 
-  con= drizzle_con_create(drizzle, con);
+  con= drizzle_con_create(drizzle);
   if (con == NULL)
   {
     return NULL;
@@ -743,17 +705,19 @@ drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle, drizzle_con_st *con,
   return con;
 }
 
-drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle, drizzle_con_st *con,
+drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle,
                                     const char *uds, const char *user,
                                     const char *password, const char *db,
                                     drizzle_con_options_t options)
 {
+  drizzle_con_st *con;
+
   if (drizzle == NULL)
   {
     return NULL;
   }
 
-  con= drizzle_con_create(drizzle, con);
+  con= drizzle_con_create(drizzle);
   if (con == NULL)
   {
     return NULL;

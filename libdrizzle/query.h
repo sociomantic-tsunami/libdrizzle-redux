@@ -69,7 +69,7 @@ extern "C" {
  *         if the allocation failed.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_query(drizzle_con_st *con, drizzle_result_st *result,
+drizzle_result_st *drizzle_query(drizzle_con_st *con, 
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr);
 
@@ -78,7 +78,6 @@ drizzle_result_st *drizzle_query(drizzle_con_st *con, drizzle_result_st *result,
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
-                                     drizzle_result_st *result,
                                      const char *query,
                                      drizzle_return_t *ret_ptr);
 
@@ -96,7 +95,6 @@ drizzle_result_st *drizzle_query_inc(drizzle_con_st *con,
  */
 DRIZZLE_API
 drizzle_query_st *drizzle_query_add(drizzle_st *drizzle,
-                                    drizzle_query_st *query,
                                     drizzle_con_st *con,
                                     drizzle_result_st *result,
                                     const char *query_string, size_t size,
@@ -107,8 +105,7 @@ drizzle_query_st *drizzle_query_add(drizzle_st *drizzle,
  * Initialize a query structure.
  */
 DRIZZLE_API
-drizzle_query_st *drizzle_query_create(drizzle_st *drizzle,
-                                       drizzle_query_st *query);
+drizzle_query_st *drizzle_query_create(drizzle_st *drizzle);
 
 /**
  * Free a query structure.

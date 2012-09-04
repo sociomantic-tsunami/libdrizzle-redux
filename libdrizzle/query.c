@@ -42,16 +42,15 @@
 
 #include <libdrizzle/common.h>
 
-drizzle_result_st *drizzle_query(drizzle_con_st *con, drizzle_result_st *result,
+drizzle_result_st *drizzle_query(drizzle_con_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr)
 {
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_QUERY,
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
                                    (uint8_t *)query, size, size, ret_ptr);
 }
 
 drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
-                                     drizzle_result_st *result,
                                      const char *query, 
                                      drizzle_return_t *ret_ptr)
 {
@@ -62,7 +61,7 @@ drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
 
   size_t size= strlen(query);
 
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_QUERY,
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
                                    (uint8_t *)query, size, size, ret_ptr);
 }
 
@@ -76,19 +75,20 @@ drizzle_result_st *drizzle_query_inc(drizzle_con_st *con,
 }
 
 drizzle_query_st *drizzle_query_add(drizzle_st *drizzle,
-                                    drizzle_query_st *query,
                                     drizzle_con_st *con,
                                     drizzle_result_st *result,
                                     const char *query_string, size_t size,
                                     drizzle_query_options_t options,
                                     void *context)
 {
+  drizzle_query_st *query;
+
   if (drizzle == NULL)
   {
     return NULL;
   }
 
-  query= drizzle_query_create(drizzle, query);
+  query= drizzle_query_create(drizzle);
   if (query == NULL)
   {
     return NULL;
@@ -103,28 +103,20 @@ drizzle_query_st *drizzle_query_add(drizzle_st *drizzle,
   return query;
 }
 
-drizzle_query_st *drizzle_query_create(drizzle_st *drizzle,
-                                       drizzle_query_st *query)
+drizzle_query_st *drizzle_query_create(drizzle_st *drizzle)
 {
+  drizzle_query_st *query;
+
   if (drizzle == NULL)
   {
     return NULL;
   }
 
+  query= malloc(sizeof(drizzle_query_st));
   if (query == NULL)
   {
-    query= malloc(sizeof(drizzle_query_st));
-    if (query == NULL)
-    {
-      drizzle_set_error(drizzle, __func__, "Failed to allocate.");
-      return NULL;
-    }
-
-    query->options|= DRIZZLE_CON_ALLOCATED;
-  }
-  else
-  {
-    memset(query, 0, sizeof(drizzle_query_st));
+    drizzle_set_error(drizzle, __func__, "Failed to allocate.");
+    return NULL;
   }
 
   query->drizzle= drizzle;
@@ -159,10 +151,7 @@ void drizzle_query_free(drizzle_query_st *query)
     query->next->prev= query->prev;
   query->drizzle->query_count--;
 
-  if (query->options & DRIZZLE_QUERY_ALLOCATED)
-  {
-    free(query);
-  }
+  free(query);
 }
 
 void drizzle_query_free_all(drizzle_st *drizzle)
@@ -340,7 +329,7 @@ static void drizzle_query_run_state(drizzle_query_st* query,
   case DRIZZLE_QUERY_STATE_INIT:
     query->state= DRIZZLE_QUERY_STATE_QUERY;
   case DRIZZLE_QUERY_STATE_QUERY:
-    query->result= drizzle_query(query->con, query->result, query->string,
+    query->result= drizzle_query(query->con, query->string,
                                  query->size, ret_ptr);
     if (*ret_ptr == DRIZZLE_RETURN_IO_WAIT)
     {

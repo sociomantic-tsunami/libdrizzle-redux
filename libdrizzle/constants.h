@@ -100,7 +100,6 @@ extern "C" {
 enum drizzle_options_t
 {
   DRIZZLE_NONE=            0,
-  DRIZZLE_ALLOCATED=       (1 << 0),
   DRIZZLE_NON_BLOCKING=    (1 << 1),
   DRIZZLE_FREE_OBJECTS=    (1 << 2),
   DRIZZLE_ASSERT_DANGLING= (1 << 3)
@@ -117,7 +116,6 @@ typedef enum drizzle_options_t drizzle_options_t;
 enum drizzle_con_options_t
 {
   DRIZZLE_CON_NONE=             0,
-  DRIZZLE_CON_ALLOCATED=        (1 << 0),
   DRIZZLE_CON_RAW_PACKET=       (1 << 2),
   DRIZZLE_CON_RAW_SCRAMBLE=     (1 << 3),
   DRIZZLE_CON_READY=            (1 << 4),
@@ -264,7 +262,6 @@ typedef enum drizzle_command_t drizzle_command_t;
 enum drizzle_query_options_t
 {
   DRIZZLE_QUERY_NONE,
-  DRIZZLE_QUERY_ALLOCATED= (1 << 0)
 };
 
 #ifndef __cplusplus
@@ -294,7 +291,6 @@ typedef enum drizzle_query_state_t drizzle_query_state_t;
 enum drizzle_result_options_t
 {
   DRIZZLE_RESULT_NONE=          0,
-  DRIZZLE_RESULT_ALLOCATED=     (1 << 0),
   DRIZZLE_RESULT_SKIP_COLUMN=   (1 << 1),
   DRIZZLE_RESULT_BUFFER_COLUMN= (1 << 2),
   DRIZZLE_RESULT_BUFFER_ROW=    (1 << 3),
@@ -308,11 +304,11 @@ typedef enum drizzle_result_options_t drizzle_result_options_t;
 
 /**
  * @ingroup drizzle_column
- * Options for drizzle_column_st.
+ * Options for drizzle_column_st, currently unused.
  */
 enum drizzle_column_options_t
 {
-  DRIZZLE_COLUMN_ALLOCATED= (1 << 0)
+  DRIZZLE_COLUMN_UNUSED= (1 << 0)
 };
 
 #ifndef __cplusplus

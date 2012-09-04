@@ -786,7 +786,7 @@ drizzle_result_st *drizzle_con_command_write(drizzle_con_st *con,
         }
       }
 
-      con->result= drizzle_result_create(con, result);
+      con->result= drizzle_result_create(con);
       if (con->result == NULL)
       {
         *ret_ptr= DRIZZLE_RETURN_MEMORY;

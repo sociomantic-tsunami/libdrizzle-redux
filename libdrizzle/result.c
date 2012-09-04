@@ -46,28 +46,19 @@
  * Common definitions
  */
 
-drizzle_result_st *drizzle_result_create(drizzle_con_st *con,
-                                         drizzle_result_st *result)
+drizzle_result_st *drizzle_result_create(drizzle_con_st *con)
 {
+  drizzle_result_st *result;
   if (con == NULL)
   {
     return NULL;
   }
 
+  result= malloc(sizeof(drizzle_result_st));
   if (result == NULL)
   {
-    result= malloc(sizeof(drizzle_result_st));
-    if (result == NULL)
-    {
-      drizzle_set_error(con->drizzle, __func__, "Failed to allocate.");
-      return NULL;
-    }
-
-    result->options|= DRIZZLE_RESULT_ALLOCATED;
-  }
-  else
-  {
-    memset(result, 0, sizeof(drizzle_result_st));
+    drizzle_set_error(con->drizzle, __func__, "Failed to allocate.");
+    return NULL;
   }
 
   result->con= con;
@@ -126,10 +117,7 @@ void drizzle_result_free(drizzle_result_st *result)
     result->next->prev= result->prev;
   }
 
-  if (result->options & DRIZZLE_RESULT_ALLOCATED)
-  {
-    free(result);
-  }
+  free(result);
 }
 
 void drizzle_result_free_all(drizzle_con_st *con)
@@ -260,7 +248,6 @@ uint64_t drizzle_result_row_count(drizzle_result_st *result)
  */
 
 drizzle_result_st *drizzle_result_read(drizzle_con_st *con,
-                                       drizzle_result_st *result,
                                        drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused;
@@ -277,7 +264,7 @@ drizzle_result_st *drizzle_result_read(drizzle_con_st *con,
 
   if (drizzle_state_none(con))
   {
-    con->result= drizzle_result_create(con, result);
+    con->result= drizzle_result_create(con);
     if (con->result == NULL)
     {
       *ret_ptr= DRIZZLE_RETURN_MEMORY;

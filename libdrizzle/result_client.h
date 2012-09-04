@@ -58,7 +58,6 @@ extern "C" {
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_result_read(drizzle_con_st *con,
-                                       drizzle_result_st *result,
                                        drizzle_return_t *ret_ptr);
 
 /**

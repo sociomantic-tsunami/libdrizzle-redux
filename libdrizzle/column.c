@@ -47,64 +47,38 @@
  * Common definitions
  */
 
-drizzle_column_st *drizzle_column_create(drizzle_result_st *result,
-                                         drizzle_column_st *column)
+drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
 {
+  drizzle_column_st *column;
   if (result == NULL)
   {
     return NULL;
   }
 
+  column= malloc(sizeof(drizzle_column_st));
   if (column == NULL)
   {
-    column= malloc(sizeof(drizzle_column_st));
-    if (column == NULL)
-    {
-      drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
-      return NULL;
-    }
-
-    column->result = result;
-    /* SET BELOW: column->next */
-    column->prev = NULL;
-    column->options= DRIZZLE_COLUMN_ALLOCATED;
-    column->catalog[0] = '\0';
-    column->db[0] = '\0';
-    column->table[0] = '\0';
-    column->orig_table[0] = '\0';
-    column->name[0] = '\0';
-    column->orig_name[0] = '\0';
-    column->charset = 0;
-    column->size = 0;
-    column->max_size = 0;
-    column->type = 0;
-    column->flags = 0;
-    column->decimals = 0;
-    /* UNSET: column->default_value */
-    column->default_value_size = 0;
-
+    drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
+    return NULL;
   }
-  else
-  {
-    column->result = result;
-    /* SET BELOW: column->next */
-    column->prev = NULL;
-    column->options= 0;
-    column->catalog[0] = '\0';
-    column->db[0] = '\0';
-    column->table[0] = '\0';
-    column->orig_table[0] = '\0';
-    column->name[0] = '\0';
-    column->orig_name[0] = '\0';
-    column->charset = 0;
-    column->size = 0;
-    column->max_size = 0;
-    column->type = 0;
-    column->flags = 0;
-    column->decimals = 0;
-    /* UNSET: column->default_value */
-    column->default_value_size = 0;
-  }
+
+  column->result = result;
+  /* SET BELOW: column->next */
+  column->prev = NULL;
+  column->catalog[0] = '\0';
+  column->db[0] = '\0';
+  column->table[0] = '\0';
+  column->orig_table[0] = '\0';
+  column->name[0] = '\0';
+  column->orig_name[0] = '\0';
+  column->charset = 0;
+  column->size = 0;
+  column->max_size = 0;
+  column->type = 0;
+  column->flags = 0;
+  column->decimals = 0;
+  /* UNSET: column->default_value */
+  column->default_value_size = 0;
 
   column->result= result;
 
@@ -133,10 +107,7 @@ void drizzle_column_free(drizzle_column_st *column)
   if (column->next)
     column->next->prev= column->prev;
 
-  if (column->options & DRIZZLE_COLUMN_ALLOCATED)
-  {
-    free(column);
-  }
+  free(column);
 }
 
 drizzle_result_st *drizzle_column_drizzle_result(drizzle_column_st *column)
@@ -553,7 +524,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
   }
   else
   {
-    column= drizzle_column_create(con->result, con->result->column);
+    column= drizzle_column_create(con->result);
     if (column == NULL)
       return DRIZZLE_RETURN_MEMORY;
 

@@ -162,17 +162,7 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose);
  * failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_st *drizzle_create(drizzle_st *drizzle);
-
-/**
- * Clone a drizzle structure.
- *
- * @param[in] drizzle Caller allocated structure, or NULL to allocate one.
- * @param[in] from Drizzle structure to use as a source to clone from.
- * @return Same return as drizzle_create().
- */
-DRIZZLE_API
-drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from);
+drizzle_st *drizzle_create(void);
 
 /**
  * Free a drizzle structure.
@@ -385,7 +375,7 @@ void drizzle_set_event_watch_fn(drizzle_st *drizzle,
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_create(drizzle_st *drizzle, drizzle_con_st *con);
+drizzle_con_st *drizzle_con_create(drizzle_st *drizzle);
 
 /**
  * Clone a connection structure.

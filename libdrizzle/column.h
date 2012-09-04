@@ -61,8 +61,7 @@ extern "C" {
  * Initialize a column structure.
  */
 DRIZZLE_API
-drizzle_column_st *drizzle_column_create(drizzle_result_st *result,
-                                         drizzle_column_st *column);
+drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 
 /**
  * Free a column structure.

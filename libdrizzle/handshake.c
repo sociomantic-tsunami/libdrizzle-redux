@@ -639,20 +639,21 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_con_st *con)
   }
   drizzle_log_debug(con->drizzle, "drizzle_state_handshake_result_read");
 
-  drizzle_result_st result;
-  if (drizzle_result_create(con, &result) == NULL)
+  drizzle_result_st *result = drizzle_result_create(con);
+
+  if (result == NULL)
   {
     return DRIZZLE_RETURN_MEMORY;
   }
 
-  con->result= &result;
+  con->result= result;
 
   drizzle_return_t ret= drizzle_state_result_read(con);
   if (drizzle_state_none(con))
   {
     if (ret == DRIZZLE_RETURN_OK)
     {
-      if (drizzle_result_eof(&result))
+      if (drizzle_result_eof(result))
       {
         drizzle_set_error(con->drizzle, "drizzle_state_handshake_result_read",
                          "old insecure authentication mechanism not supported");
@@ -665,7 +666,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_con_st *con)
     }
   }
 
-  drizzle_result_free(&result);
+  drizzle_result_free(result);
 
   if (ret == DRIZZLE_RETURN_ERROR_CODE)
   {
