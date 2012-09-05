@@ -8,7 +8,7 @@ set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
-find_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
 
 option(DEBUG_BUILD "Build in debug mode" OFF)
 
