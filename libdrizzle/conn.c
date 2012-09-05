@@ -200,8 +200,6 @@ void drizzle_con_close(drizzle_con_st *con)
 
 drizzle_return_t drizzle_con_set_events(drizzle_con_st *con, short events)
 {
-  drizzle_return_t ret;
-
   if ((con->events | events) == con->events)
   {
     return DRIZZLE_RETURN_OK;
@@ -211,6 +209,7 @@ drizzle_return_t drizzle_con_set_events(drizzle_con_st *con, short events)
 
   if (con->drizzle->event_watch_fn != NULL)
   {
+    drizzle_return_t ret;
     ret= con->drizzle->event_watch_fn(con, con->events,
                                       con->drizzle->event_watch_context);
     if (ret != DRIZZLE_RETURN_OK)
@@ -225,7 +224,6 @@ drizzle_return_t drizzle_con_set_events(drizzle_con_st *con, short events)
 
 drizzle_return_t drizzle_con_set_revents(drizzle_con_st *con, short revents)
 {
-  drizzle_return_t ret;
   if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
@@ -243,6 +241,7 @@ drizzle_return_t drizzle_con_set_revents(drizzle_con_st *con, short revents)
   if (revents & POLLOUT && !(con->events & POLLOUT) &&
       con->drizzle->event_watch_fn != NULL)
   {
+    drizzle_return_t ret;
     ret= con->drizzle->event_watch_fn(con, con->events,
                                       con->drizzle->event_watch_context);
     if (ret != DRIZZLE_RETURN_OK)
@@ -696,6 +695,7 @@ drizzle_result_st *drizzle_shutdown(drizzle_con_st *con,
                                     drizzle_result_st *result, uint32_t level,
                                     drizzle_return_t *ret_ptr)
 {
+  (void) level;
   return drizzle_con_shutdown(con, result, ret_ptr);
 }
 
@@ -942,9 +942,6 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_con_st *con)
 
 drizzle_return_t drizzle_state_connect(drizzle_con_st *con)
 {
-  int ret;
-  drizzle_return_t dret;
-
   if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
@@ -1002,6 +999,7 @@ drizzle_return_t drizzle_state_connect(drizzle_con_st *con)
   }
   else
   {
+    drizzle_return_t dret;
     if (con->addrinfo_next == NULL)
     {
       drizzle_set_error(con->drizzle, __func__, "could not connect");
@@ -1028,6 +1026,7 @@ drizzle_return_t drizzle_state_connect(drizzle_con_st *con)
 
     while (1)
     {
+      int ret;
       ret= connect(con->fd, con->addrinfo_next->ai_addr,
                    con->addrinfo_next->ai_addrlen);
 

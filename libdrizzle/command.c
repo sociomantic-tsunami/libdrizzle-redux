@@ -98,7 +98,6 @@ drizzle_return_t drizzle_state_command_write(drizzle_con_st *con)
 {
   uint8_t *start;
   uint8_t *ptr;
-  size_t free_size;
   drizzle_return_t ret;
 
   if (con == NULL)
@@ -126,6 +125,8 @@ drizzle_return_t drizzle_state_command_write(drizzle_con_st *con)
 
   if (con->command_offset == 0)
   {
+    size_t free_size;
+
     /* Make sure we can fit the largest non-streaming packet, currently a
        DRIZZLE_COMMAND_CHANGE_USER command. */
 

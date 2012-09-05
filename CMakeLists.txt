@@ -8,6 +8,11 @@ set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
+if(NOT DEFINED BUILD_SHARED_LIBS)
+    option(BUILD_SHARED_LIBS "Build a shared library instead of static" ON)
+endif()
+
+
 find_package(OpenSSL REQUIRED)
 
 option(DEBUG_BUILD "Build in debug mode" OFF)
@@ -61,12 +66,33 @@ libdrizzle/ssl.c
 libdrizzle/state.c
 )
 
-add_library(drizzle ${SOURCE_FILES})
-target_link_libraries(drizzle ${OPENSSL_LIBRARIES})
-set_target_properties(drizzle PROPERTIES DEFINE_SYMBOL DRIZZLECLIENT_DLL)
-set_target_properties(drizzle PROPERTIES SOVERSION 1)
-set_target_properties(drizzle PROPERTIES VERSION ${LIBDRIZZLE_VERSION})
+add_library(drizzle-redux ${SOURCE_FILES})
+target_link_libraries(drizzle-redux ${OPENSSL_LIBRARIES})
+set_target_properties(drizzle-redux PROPERTIES DEFINE_SYMBOL DRIZZLECLIENT_DLL)
+set_target_properties(drizzle-redux PROPERTIES SOVERSION 1)
+set_target_properties(drizzle-redux PROPERTIES VERSION ${LIBDRIZZLE_VERSION})
 
-INSTALL(TARGETS drizzle ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+INSTALL(TARGETS drizzle-redux ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 
 INSTALL(DIRECTORY libdrizzle DESTINATION include FILES_MATCHING PATTERN "*.h")
+
+option(CI_TESTS "Run CI tests on the code" OFF)
+
+if (CI_TESTS)
+  include(CTest)
+  find_package(cppcheck REQUIRED)
+  include(CppcheckTargets)
+  add_cppcheck(drizzle-redux)
+endif (CI_TESTS)
+
+
+MESSAGE(STATUS "-----------------------------------------------")
+MESSAGE(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
+MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "DEBUG_BUILD = ${DEBUG_BUILD}")
+MESSAGE(STATUS "CI_TESTS = ${CI_TESTS}")
+MESSAGE(STATUS "================================================")
+MESSAGE(STATUS "Change a values with: cmake -D<Variable>=<Value>")
+MESSAGE(STATUS "------------------------------------------------")
+MESSAGE(STATUS)
+

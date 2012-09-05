@@ -649,31 +649,6 @@ drizzle_con_st *drizzle_con_ready(drizzle_st *drizzle)
   return NULL;
 }
 
-drizzle_con_st *drizzle_con_ready_listen(drizzle_st *drizzle)
-{
-  drizzle_con_st *con;
-
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  /* We can't keep state between calls since connections may be removed during
-     processing. If this list ever gets big, we may want something faster. */
-
-  for (con= drizzle->con_list; con != NULL; con= con->next)
-  {
-    if ((con->options & (DRIZZLE_CON_IO_READY | DRIZZLE_CON_LISTEN)) ==
-        (DRIZZLE_CON_IO_READY | DRIZZLE_CON_LISTEN))
-    {
-      con->options&= ~DRIZZLE_CON_IO_READY;
-      return con;
-    }
-  }
-
-  return NULL;
-}
-
 /*
  * Client Definitions
  */

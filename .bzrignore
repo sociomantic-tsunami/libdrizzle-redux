@@ -3,4 +3,8 @@ CMakeFiles/
 Makefile
 cmake_install.cmake
 config.h
+CTestTestfile.cmake
+DartConfiguration.tcl
+Testing/
+libdrizzle-redux.so*
 
