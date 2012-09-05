@@ -8,6 +8,8 @@ set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
+find_package(OpenSSL)
+
 option(DEBUG_BUILD "Build in debug mode" OFF)
 
 set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -g")
@@ -37,7 +39,7 @@ endif (ERROR_ON_WARN)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${drizzle_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${drizzle_SOURCE_DIR} ${OPENSSL_INCLUDE_DIRECTORIES})
 
 add_definitions(-DBUILDING_LIBDRIZZLE)
 
@@ -60,6 +62,7 @@ libdrizzle/state.c
 )
 
 add_library(drizzle ${SOURCE_FILES})
+target_link_libraries(drizzle ${OPENSSL_LIBRARIES})
 set_target_properties(drizzle PROPERTIES DEFINE_SYMBOL DRIZZLECLIENT_DLL)
 set_target_properties(drizzle PROPERTIES SOVERSION 1)
 set_target_properties(drizzle PROPERTIES VERSION ${LIBDRIZZLE_VERSION})
