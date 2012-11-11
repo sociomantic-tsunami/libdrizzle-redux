@@ -7,4 +7,12 @@ CTestTestfile.cmake
 DartConfiguration.tcl
 Testing/
 libdrizzle-redux.so*
-
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+cmake/modules/FindLibEvent.cmake
+docs/_doctrees/
+docs/_sources/
+docs/html/
+docs/pdf/

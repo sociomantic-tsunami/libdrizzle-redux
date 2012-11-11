@@ -3,7 +3,7 @@ project(libdrizzle C)
 set(VERSION_MAJOR 3)
 set(VERSION_RELEASE 0)
 set(LIBDRIZZLE_VERSION ${VERSION_MAJOR}.${VERSION_RELEASE})
-set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${VERSION}")
+set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${LIBDRIZZLE-VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
@@ -84,12 +84,48 @@ if (CI_TESTS)
   add_cppcheck(drizzle-redux)
 endif (CI_TESTS)
 
+option(BUILD_HTML_DOCS "Build the HTML documentation" OFF)
+option(BUILD_PDF_DOCS "Build the PDF documentation (requires latex and BUILD_HTML_DOCS)" OFF)
 
+if (BUILD_HTML_DOCS)
+  add_subdirectory(docs)
+  if (BUILD_PDF_DOCS)
+    find_package(LATEX REQUIRED)
+    if (NOT PDFLATEX_COMPILER)
+      message(FATAL_ERROR "pdflatex required, please install texlive-latex and texlive-scheme-all")
+    endif()
+  endif()
+endif (BUILD_HTML_DOCS)
+
+if (EXISTS "${CMAKE_SOURCE_DIR}/.bzr/")
+    set(USING_BZR TRUE)
+else()
+    set(USING_BZR FALSE)
+endif()
+
+if (USING_BZR)
+  add_custom_target(dist
+    COMMAND bzr export --root=${ARCHIVE_NAME}
+      ${CMAKE_BINARY_DIR}/${ARCHIVE_NAME}.tar.gz
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_VERSION "${LIBDRIZZLE-VERSION}")
+include(CPack)
+
+MESSAGE(STATUS "-----------------------------------------------")
+MESSAGE(STATUS "libdrizzle-redux ${LIBDRIZZLE-VERSION}")
+if (USING_BZR)
+  MESSAGE(STATUS "from BZR tree")
+endif()
 MESSAGE(STATUS "-----------------------------------------------")
 MESSAGE(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS "DEBUG_BUILD = ${DEBUG_BUILD}")
 MESSAGE(STATUS "CI_TESTS = ${CI_TESTS}")
+MESSAGE(STATUS "BUILD_HTML_DOCS = ${BUILD_HTML_DOCS}")
+MESSAGE(STATUS "BUILD_PDF_DOCS = ${BUILD_PDF_DOCS}")
 MESSAGE(STATUS "================================================")
 MESSAGE(STATUS "Change a values with: cmake -D<Variable>=<Value>")
 MESSAGE(STATUS "------------------------------------------------")
