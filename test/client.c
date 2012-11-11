@@ -60,7 +60,12 @@ int main(int argc, char *argv[])
   }
   drizzle_con_set_tcp(con, "localhost", 3306);
   drizzle_con_set_auth(con, "root", "");
-  drizzle_con_connect(con);
+  ret = drizzle_con_connect(con);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Drizzle connection failure\n");
+    return EXIT_FAILURE;
+  }
 
   drizzle_con_quit(con, NULL, &ret);
   drizzle_con_free(con);
