@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(libdrizzle C)
-set(VERSION_MAJOR 1)
+set(VERSION_MAJOR 3)
 set(VERSION_RELEASE 0)
-set(VERSION_MINOR 0)
-set(LIBDRIZZLE_VERSION ${VERSION_MAJOR}.${VERSION_RELEASE}.${VERSION_MINOR})
+set(LIBDRIZZLE_VERSION ${VERSION_MAJOR}.${VERSION_RELEASE})
 set(ARCHIVE_NAME "${CMAKE_PROJECT_NAME}-${VERSION}")
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -69,7 +68,7 @@ libdrizzle/state.c
 add_library(drizzle-redux ${SOURCE_FILES})
 target_link_libraries(drizzle-redux ${OPENSSL_LIBRARIES})
 set_target_properties(drizzle-redux PROPERTIES DEFINE_SYMBOL DRIZZLECLIENT_DLL)
-set_target_properties(drizzle-redux PROPERTIES SOVERSION 1)
+set_target_properties(drizzle-redux PROPERTIES SOVERSION ${VERSION_MAJOR})
 set_target_properties(drizzle-redux PROPERTIES VERSION ${LIBDRIZZLE_VERSION})
 
 INSTALL(TARGETS drizzle-redux ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
