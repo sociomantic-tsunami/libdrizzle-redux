@@ -1,6 +1,6 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
- *  Drizzle Client & Protocol Library
+ * Drizzle Client & Protocol Library
  *
  * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
  * All rights reserved.
@@ -35,40 +35,17 @@
  *
  */
 
-#include <libdrizzle/drizzle.h>
+#include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-  drizzle_st *drizzle;
-  drizzle_con_st *con;
-  drizzle_result_st *result;
-  drizzle_return_t ret;
+  (void) argc;
+  (void) argv;
+  const char* version;
 
-  drizzle = drizzle_create();
-  if (drizzle == NULL)
-  {
-    printf("Drizzle object creation error\n");
-    return EXIT_FAILURE;
-  }
-  con = drizzle_con_create(drizzle);
-  if (con == NULL)
-  {
-    printf("Drizzle connection object creation error\n");
-    return EXIT_FAILURE;
-  }
-  drizzle_con_set_tcp(con, "localhost", 3306);
-  drizzle_con_set_auth(con, "root", "");
-  ret = drizzle_con_connect(con);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drizzle connection failure\n");
-    return EXIT_FAILURE;
-  }
-
-  drizzle_con_quit(con, NULL, &ret);
-  drizzle_con_free(con);
-  drizzle_free(drizzle);
+  version= drizzle_version();
+  printf("%s\n", version);
   return EXIT_SUCCESS;
 }

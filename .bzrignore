@@ -16,3 +16,9 @@ docs/_doctrees/
 docs/_sources/
 docs/html/
 docs/pdf/
+docs/_build/conf.py
+docs/_build/sources.cmake
+test/unit/connect
+test/unit/escape
+test/unit/version
+

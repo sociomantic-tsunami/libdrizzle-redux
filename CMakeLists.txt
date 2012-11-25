@@ -82,6 +82,7 @@ if (CI_TESTS)
   find_package(cppcheck REQUIRED)
   include(CppcheckTargets)
   add_cppcheck(drizzle-redux)
+  add_subdirectory(test/unit)
 endif (CI_TESTS)
 
 option(BUILD_HTML_DOCS "Build the HTML documentation" OFF)
