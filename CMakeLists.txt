@@ -63,6 +63,7 @@ libdrizzle/row.c
 libdrizzle/sha1.c
 libdrizzle/ssl.c
 libdrizzle/state.c
+libdrizzle/binlog.c
 )
 
 add_library(drizzle-redux ${SOURCE_FILES})

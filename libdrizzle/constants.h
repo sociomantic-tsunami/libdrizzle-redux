@@ -91,6 +91,8 @@ extern "C" {
 #define DRIZZLE_DEFAULT_SOCKET_RECV_SIZE 32768
 #define DRIZZLE_MYSQL_PASSWORD_HASH      41
 
+#define DRIZZLE_BINLOG_MAGIC             "\xFE\x62\x69\x6E"
+
 /** @} */
 
 /**
@@ -392,6 +394,51 @@ typedef enum
   DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE
 } drizzle_ssl_state_t;
 
+typedef enum
+{
+  DRIZZLE_EVENT_POSITION_TIMESTAMP= 0,
+  DRIZZLE_EVENT_POSITION_TYPE= 4,
+  DRIZZLE_EVENT_POSITION_SERVERID= 5,
+  DRIZZLE_EVENT_POSITION_LENGTH= 9,
+  DRIZZLE_EVENT_POSITION_NEXT= 13,
+  DRIZZLE_EVENT_POSITION_FLAGS= 17,
+  DRIZZLE_EVENT_POSITION_EXTRA_FLAGS= 19
+} drizzle_binlog_event_positions_t;
+
+typedef enum
+{
+  DRIZZLE_EVENT_TYPE_UNKNOWN= 0,
+  DRIZZLE_EVENT_TYPE_START= 1,
+  DRIZZLE_EVENT_TYPE_QUERY= 2,
+  DRIZZLE_EVENT_TYPE_STOP= 3,
+  DRIZZLE_EVENT_TYPE_ROTATE= 4,
+  DRIZZLE_EVENT_TYPE_INTVAR= 5,
+  DRIZZLE_EVENT_TYPE_LOAD= 6,
+  DRIZZLE_EVENT_TYPE_SLAVE= 7,
+  DRIZZLE_EVENT_TYPE_CREATE_FILE= 8,
+  DRIZZLE_EVENT_TYPE_APPEND_BLOCK= 9,
+  DRIZZLE_EVENT_TYPE_EXEC_LOAD= 10,
+  DRIZZLE_EVENT_TYPE_DELETE_FILE= 11,
+  DRIZZLE_EVENT_TYPE_NEW_LOAD= 12,
+  DRIZZLE_EVENT_TYPE_RAND= 13,
+  DRIZZLE_EVENT_TYPE_USER_VAR= 14,
+  DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION= 15,
+  DRIZZLE_EVENT_TYPE_XID= 16,
+  DRIZZLE_EVENT_TYPE_BEGIN_LOAD_QUERY= 17,
+  DRIZZLE_EVENT_TYPE_EXECUTE_LOAD_QUERY= 18,
+  DRIZZLE_EVENT_TYPE_TABLE_MAP= 19,
+  // Next 3 are used in 5.1.0 -> 5.1.15 only
+  DRIZZLE_EVENT_TYPE_OBSOLETE_WRITE_ROWS= 20,
+  DRIZZLE_EVENT_TYPE_OBSOLETE_UPDATE_ROWS= 21,
+  DRIZZLE_EVENT_TYPE_OBSOLETE_DELETE_ROWS= 22,
+  DRIZZLE_EVENT_TYPE_WRITE_ROWS= 23,
+  DRIZZLE_EVENT_TYPE_UPDATE_ROWS= 24,
+  DRIZZLE_EVENT_TYPE_DELETE_ROWS= 25,
+  DRIZZLE_EVENT_TYPE_INCIDENT= 26,
+  DRIZZLE_EVENT_TYPE_HEARTBEAT= 27,
+  DRIZZLE_EVENT_TYPE_END
+} drizzle_binlog_event_types_t;
+
 #ifndef __cplusplus
 typedef enum drizzle_column_flags_t drizzle_column_flags_t;
 #endif
@@ -411,6 +458,7 @@ typedef struct drizzle_con_st drizzle_con_st;
 typedef struct drizzle_query_st drizzle_query_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
+typedef struct drizzle_binlog_st drizzle_binlog_st;
 typedef char *drizzle_field_t;
 typedef drizzle_field_t *drizzle_row_t;
 typedef uint8_t drizzle_charset_t;

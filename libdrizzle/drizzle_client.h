@@ -54,6 +54,7 @@
 #include <libdrizzle/field_client.h>
 #include <libdrizzle/error.h>
 #include <libdrizzle/ssl.h>
+#include <libdrizzle/binlog.h>
 
 #ifdef __cplusplus
 extern "C" {

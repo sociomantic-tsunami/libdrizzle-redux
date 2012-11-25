@@ -61,6 +61,8 @@ drizzle_result_st *drizzle_result_create(drizzle_con_st *con)
     return NULL;
   }
 
+  result->binlog_event= NULL;
+
   result->con= con;
   con->result= result;
 
@@ -80,6 +82,12 @@ void drizzle_result_free(drizzle_result_st *result)
   if (result == NULL)
   {
     return;
+  }
+
+  if (result->binlog_event != NULL)
+  {
+    free(result->binlog_event->data);
+    free(result->binlog_event);
   }
 
   for (column= result->column_list; column != NULL; column= result->column_list)

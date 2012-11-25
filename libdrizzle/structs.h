@@ -238,6 +238,7 @@ struct drizzle_result_st
   drizzle_row_t *row_list;
   size_t *field_sizes;
   size_t **field_sizes_list;
+  drizzle_binlog_st *binlog_event;
 
 #ifdef __cplusplus
 
@@ -267,13 +268,26 @@ struct drizzle_result_st
     row(),
     row_list(NULL),
     field_sizes(NULL),
-    field_sizes_list(NULL)
+    field_sizes_list(NULL),
+    binlog_event(NULL)
   {
     info[0]= 0;
     sqlstate[0]= 0;
   }
 
 #endif
+};
+
+struct drizzle_binlog_st
+{
+  uint32_t timestamp;
+  drizzle_binlog_event_types_t type;
+  uint32_t server_id;
+  uint32_t length;
+  uint32_t next_pos;
+  uint16_t flags;
+  uint16_t extra_flags;
+  uint8_t *data;
 };
 
 /**
