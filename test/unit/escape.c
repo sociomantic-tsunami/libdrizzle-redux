@@ -48,7 +48,12 @@ int main(int argc, char* argv[])
   (void) argc;
   (void) argv;
 
-  out_len= drizzle_escape_string(out, in, strlen(in));
+  // Test for data too long
+  out_len= drizzle_escape_string(out, 2, in, strlen(in));
+  if (out_len != -1)
+    return EXIT_FAILURE;
+
+  out_len= drizzle_escape_string(out, 255, in, strlen(in));
   printf("%d\n%s\n", out_len, out);
   return EXIT_SUCCESS;
 }

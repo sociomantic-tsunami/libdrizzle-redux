@@ -223,17 +223,15 @@ drizzle_return_t drizzle_query_run_all(drizzle_st *drizzle);
  * Escape a string or encode a string in hexadecimal. The return value is the
  * size of the output string in to.
  */
-DRIZZLE_API
-size_t drizzle_escape_string(char *to, const char *from, const size_t from_size);
 
 DRIZZLE_API
-ssize_t drizzle_safe_escape_string(char *to, const size_t max_to_size, const char *from, const size_t from_size);
+ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *from, const size_t from_size);
 
 DRIZZLE_API
-size_t drizzle_hex_string(char *to, const char *from, const size_t from_size);
+bool drizzle_hex_string(char *to, const char *from, const size_t from_size);
 
 DRIZZLE_API
-void drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);
+bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);
 
 /** @} */
 
