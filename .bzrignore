@@ -21,4 +21,6 @@ docs/_build/sources.cmake
 test/unit/connect
 test/unit/escape
 test/unit/version
+test/unit/passwd
+test/unit/hex
 
