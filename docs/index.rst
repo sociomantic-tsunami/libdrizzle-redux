@@ -5,3 +5,6 @@ Welcome to libdrizzle-redux documentation
    :maxdepth: 2
 
    introduction
+   structs
+   constants
+   binlog
