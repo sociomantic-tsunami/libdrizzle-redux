@@ -652,13 +652,6 @@ drizzle_result_st *drizzle_con_quit(drizzle_con_st *con,
                                    0, ret_ptr);
 }
 
-drizzle_result_st *drizzle_quit(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                drizzle_return_t *ret_ptr)
-{
-  return drizzle_con_quit(con, result, ret_ptr);
-}
-
 drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
                                          drizzle_result_st *result,
                                          const char *db,
@@ -667,14 +660,6 @@ drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
   drizzle_con_set_db(con, db);
   return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_INIT_DB,
                                    db, strlen(db), strlen(db), ret_ptr);
-}
-
-drizzle_result_st *drizzle_select_db(drizzle_con_st *con,
-                                     drizzle_result_st *result,
-                                     const char *db,
-                                     drizzle_return_t *ret_ptr)
-{
-  return drizzle_con_select_db(con, result, db, ret_ptr);
 }
 
 drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
@@ -689,14 +674,6 @@ drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
 
   return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_SHUTDOWN,
                                    "0", 1, 1, ret_ptr);
-}
-
-drizzle_result_st *drizzle_shutdown(drizzle_con_st *con,
-                                    drizzle_result_st *result, uint32_t level,
-                                    drizzle_return_t *ret_ptr)
-{
-  (void) level;
-  return drizzle_con_shutdown(con, result, ret_ptr);
 }
 
 drizzle_result_st *drizzle_kill(drizzle_con_st *con,

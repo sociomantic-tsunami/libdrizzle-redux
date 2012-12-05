@@ -77,14 +77,6 @@ drizzle_result_st *drizzle_con_quit(drizzle_con_st *con,
                                     drizzle_return_t *ret_ptr);
 
 /**
- * @todo Remove this with next major API change.
- */
-DRIZZLE_API
-drizzle_result_st *drizzle_quit(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                drizzle_return_t *ret_ptr);
-
-/**
  * Select a new default database for a connection.
  *
  * @param[in] con Connection structure previously initialized with
@@ -100,15 +92,6 @@ drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
                                          drizzle_result_st *result,
                                          const char *db,
                                          drizzle_return_t *ret_ptr);
-
-/**
- * @todo Remove this with next major API change.
- */
-DRIZZLE_API
-drizzle_result_st *drizzle_select_db(drizzle_con_st *con,
-                                     drizzle_result_st *result,
-                                     const char *db,
-                                     drizzle_return_t *ret_ptr);
 
 /**
  * Send a shutdown message to the server.
@@ -130,15 +113,6 @@ drizzle_result_st *drizzle_kill(drizzle_con_st *con,
                                 drizzle_result_st *result,
                                 uint32_t query_id,
                                 drizzle_return_t *ret_ptr);
-
-/**
- * @todo Remove this with next major API change.
- */
-#define DRIZZLE_SHUTDOWN_DEFAULT 0
-DRIZZLE_API
-drizzle_result_st *drizzle_shutdown(drizzle_con_st *con,
-                                    drizzle_result_st *result, uint32_t level,
-                                    drizzle_return_t *ret_ptr);
 
 /**
  * Send a ping request to the server.

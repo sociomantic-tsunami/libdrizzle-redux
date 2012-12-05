@@ -121,6 +121,10 @@ Return
 
       An error occured during SSL handshake
 
+   .. py:data:: DRIZZLE_RETURN_EOF
+
+      No more data to retrieve
+
 Binlog
 ------
 

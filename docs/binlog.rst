@@ -32,5 +32,5 @@ Functions
    Get a single event from the binlog stream.
 
    :param result: The result set for the binlog stream
-   :param ret_ptr: A pointer to a Drizzle return type
+   :param ret_ptr: A pointer to a Drizzle return type.  :py:const:`DRIZZLE_RETURN_OK` upon success or :py:const:`DRIZZLE_RETURN_EOF` if there is no more data
    :returns: A Binlog event struct

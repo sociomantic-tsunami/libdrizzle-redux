@@ -56,13 +56,6 @@ extern "C" {
  * @{
  */
 
-/**
- * @todo Remove these with next major API change.
- */
-#define DRIZZLE_RETURN_SERVER_GONE DRIZZLE_RETURN_LOST_CONNECTION
-#define DRIZZLE_RETURN_EOF DRIZZLE_RETURN_LOST_CONNECTION
-#define DRIZZLE_COLUMN_TYPE_VIRTUAL 17
-
 /* Defines. */
 #define DRIZZLE_DEFAULT_TCP_HOST         "localhost"
 #define DRIZZLE_DEFAULT_TCP_PORT         3306
