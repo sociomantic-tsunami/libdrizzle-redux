@@ -7,6 +7,58 @@ Introduction
 Libdrizzle Redux contains a number of constants, most of what are in the form
 of ENUMs.  All ENUMs are typedef'd so no need to use the 'enum' keyword.
 
+Library
+-------
+
+.. c:type:: drizzle_verbose_t
+
+   An ENUM of the verbosity for the library
+
+   .. py:data:: DRIZZLE_VERBOSE_NEVER
+
+      Completely silent
+
+   .. py:data:: DRIZZLE_VERBOSE_FATAL
+
+      Fatal errors only
+
+   .. py:data:: DRIZZLE_VERBOSE_ERROR
+
+      All errors
+
+   .. py:data:: DRIZZLE_VERBOSE_INFO
+
+      Information messages and errors
+
+   .. py:data:: DRIZZLE_VERBOSE_DEBUG
+
+      Debugging messages and errors
+
+   .. py:data:: DRIZZLE_VERBOSE_CRAZY
+
+      Everything
+
+.. c:type:: drizzle_options_t
+
+   An ENUM of options for a Drizzle object intended to be used in a bit field
+
+   .. py:data:: DRIZZLE_NONE
+
+   No options set
+
+   .. py:data:: DRIZZLE_NON_BLOCKING
+
+   Use the library in non-blocking mode
+
+   .. py:data:: DRIZZLE_FREE_OBJECTS
+
+   Automatically free all result sets when disconnecting
+
+   .. py:data:: DRIZZLE_ASSERT_DANGLING
+
+   Fire an :c:func:`assert` if there are results that are still allocated upon
+   disconnect
+
 Return
 ------
 

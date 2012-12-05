@@ -7,4 +7,5 @@ Welcome to libdrizzle-redux documentation
    introduction
    structs
    constants
+   library
    binlog
