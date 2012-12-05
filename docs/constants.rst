@@ -28,6 +28,98 @@ Return
 
       Row break because row is larger than packet size
 
+   .. py:data:: DRIZZLE_RETURN_MEMORY
+
+      Memory allocation error
+
+   .. py:data:: DRIZZLE_RETURN_ERRNO
+
+      OS error code
+
+   .. py:data:: DRIZZLE_RETURN_INTERNAL_ERROR
+
+      Internal error during handshake
+
+   .. py:data:: DRIZZLE_RETURN_GETADDRINFO
+
+      Domain lookup failure
+
+   .. py:data:: DRIZZLE_RETURN_NOT_READY
+
+      Client is not connected to server
+
+   .. py:data:: DRIZZLE_RETURN_BAD_PACKET_NUMBER
+
+      Packets are out of sequence
+
+   .. py:data:: DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET
+
+      Bad packet received during handshake
+
+   .. py:data:: DRIZZLE_RETURN_BAD_PACKET
+
+      Bad packet received (unused)
+
+   .. py:data:: DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED
+
+      Attempt to connect to a version of MySQL less than 4.1
+
+   .. py:data:: DRIZZLE_RETURN_UNEXPECTED_DATA
+
+      Unexpected data in the receive buffer
+
+   .. py:data:: DRIZZLE_RETURN_NO_SCRAMBLE
+
+      No password scrable received (usually if server is expecting an auth
+      plugin but client didn't use one)
+
+   .. py:data:: DRIZZLE_RETURN_AUTH_FAILED
+
+      Authentication failure
+
+   .. py:data:: DRIZZLE_RETURN_NULL_SIZE
+
+      Internal status
+
+   .. py:data:: DRIZZLE_RETURN_ERROR_CODE
+
+      Error code received from MySQL server
+
+   .. py:data:: DRIZZLE_RETURN_TOO_MANY_COLUMNS
+
+      Unused
+
+   .. py:data:: DRIZZLE_RETURN_ROW_END
+
+      Internal status
+
+   .. py:data:: DRIZZLE_RETURN_LOST_CONNECTION
+
+      Connection failure
+
+   .. py:data:: DRIZZLE_RETURN_COULD_NOT_CONNECT
+
+      Could not connect to server
+
+   .. py:data:: DRIZZLE_RETURN_NO_ACTIVE_CONNECTIONS
+
+      Waiting on a connection which doesn't exist (this shouldn't happen)
+
+   .. py:data:: DRIZZLE_RETURN_HANDSHAKE_FAILED
+
+      Handshake failure
+
+   .. py:data:: DRIZZLE_RETURN_TIMEOUT
+
+      Timeout during connection
+
+   .. py:data:: DRIZZLE_RETURN_INVALID_ARGUMENT
+
+      Bad arguments supplied to a function
+
+   .. py:data:: DRIZZLE_RETURN_SSL_ERROR
+
+      An error occured during SSL handshake
 
 Binlog
 ------
