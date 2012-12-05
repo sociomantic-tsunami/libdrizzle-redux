@@ -432,47 +432,6 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
   return con;
 }
 
-drizzle_con_st *drizzle_con_clone(drizzle_st *drizzle, drizzle_con_st *con,
-                                  const drizzle_con_st *from)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  con= drizzle_con_create(drizzle);
-  if (con == NULL)
-  {
-    return NULL;
-  }
-
-  /* Clear "operational" options such as IO status. */
-  con->options|= (from->options & ~(
-                  DRIZZLE_CON_READY|
-                  DRIZZLE_CON_NO_RESULT_READ|DRIZZLE_CON_IO_READY|
-                  DRIZZLE_CON_LISTEN));
-  con->backlog= from->backlog;
-  strcpy(con->db, from->db);
-  strcpy(con->password, from->password);
-  strcpy(con->user, from->user);
-
-  switch (from->socket_type)
-  {
-  case DRIZZLE_CON_SOCKET_TCP:
-    drizzle_con_set_tcp(con, from->socket.tcp.host, from->socket.tcp.port);
-    break;
-
-  case DRIZZLE_CON_SOCKET_UDS:
-    drizzle_con_set_uds(con, from->socket.uds.path_buffer);
-    break;
-
-  default:
-    break;
-  }
-
-  return con;
-}
-
 void drizzle_con_free(drizzle_con_st *con)
 {
   if (con == NULL)

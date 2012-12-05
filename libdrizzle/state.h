@@ -72,7 +72,6 @@ drizzle_return_t drizzle_state_connect(drizzle_con_st *con);
 drizzle_return_t drizzle_state_connecting(drizzle_con_st *con);
 drizzle_return_t drizzle_state_read(drizzle_con_st *con);
 drizzle_return_t drizzle_state_write(drizzle_con_st *con);
-drizzle_return_t drizzle_state_listen(drizzle_con_st *con);
 
 /* Functions in handshake.c */
 drizzle_return_t drizzle_state_handshake_server_read(drizzle_con_st *con);

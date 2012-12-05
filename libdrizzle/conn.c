@@ -154,25 +154,6 @@ int drizzle_con_fd(const drizzle_con_st *con)
   return con->fd;
 }
 
-drizzle_return_t drizzle_con_set_fd(drizzle_con_st *con, int fd)
-{
-  drizzle_return_t ret;
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  con->fd= fd;
-
-  ret= _con_setsockopt(con);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    con->drizzle->last_errno= errno;
-  }
-
-  return ret;
-}
-
 void drizzle_con_close(drizzle_con_st *con)
 {
   if (con == NULL)
@@ -414,16 +395,6 @@ const char *drizzle_con_user(const drizzle_con_st *con)
   }
 
   return con->user;
-}
-
-const char *drizzle_con_password(const drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return NULL;
-  }
-
-  return con->password;
 }
 
 void drizzle_con_set_auth(drizzle_con_st *con, const char *user,
@@ -1404,119 +1375,6 @@ drizzle_return_t drizzle_state_write(drizzle_con_st *con)
   }
 
   con->buffer_ptr= con->buffer;
-
-  drizzle_state_pop(con);
-
-  return DRIZZLE_RETURN_OK;
-}
-
-drizzle_return_t drizzle_state_listen(drizzle_con_st *con)
-{
-  char host[NI_MAXHOST];
-  char port[NI_MAXSERV];
-  int fd;
-  int opt;
-  drizzle_con_st *new_con;
-
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  for (; con->addrinfo_next != NULL;
-       con->addrinfo_next= con->addrinfo_next->ai_next)
-  {
-    int ret= getnameinfo(con->addrinfo_next->ai_addr,
-                         con->addrinfo_next->ai_addrlen, host, NI_MAXHOST, port,
-                         NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
-    if (ret != 0)
-    {
-      drizzle_set_error(con->drizzle, __func__, "getnameinfo:%s", gai_strerror(ret));
-      return DRIZZLE_RETURN_GETADDRINFO;
-    }
-
-    /* Call to socket() can fail for some getaddrinfo results, try another. */
-    fd= socket(con->addrinfo_next->ai_family, con->addrinfo_next->ai_socktype,
-               con->addrinfo_next->ai_protocol);
-    if (fd == -1)
-    {
-      drizzle_log_info(con->drizzle, "could not listen on %s:%s", host, port);
-      drizzle_set_error(con->drizzle, __func__, "socket:%s", strerror(errno));
-      continue;
-    }
-	
-	opt= 1;
-#ifdef _WIN32
-        ret= setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,(const char*) &opt, sizeof(opt));
-#else
-        ret= setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-#endif /* _WIN32 */
-    if (ret == -1)
-    {
-      closesocket(fd);
-      drizzle_set_error(con->drizzle, __func__, "setsockopt:%s", strerror(errno));
-      return DRIZZLE_RETURN_COULD_NOT_CONNECT;
-    }
-
-    ret= bind(fd, con->addrinfo_next->ai_addr, con->addrinfo_next->ai_addrlen);
-    if (ret == -1)
-    {
-      closesocket(fd);
-      drizzle_set_error(con->drizzle, __func__, "bind:%s", strerror(errno));
-      if (errno == EADDRINUSE)
-      {
-        if (con->fd == -1)
-        {
-          drizzle_log_info(con->drizzle, "could not listen on %s:%s", host,
-                           port);
-        }
-
-        continue;
-      }
-
-      return DRIZZLE_RETURN_ERRNO;
-    }
-
-    if (listen(fd, con->backlog) == -1)
-    {
-      closesocket(fd);
-      drizzle_set_error(con->drizzle, __func__, "listen:%s", strerror(errno));
-      return DRIZZLE_RETURN_COULD_NOT_CONNECT;
-    }
-
-    if (con->fd == -1)
-    {
-      con->fd= fd;
-      new_con= con;
-    }
-    else
-    {
-      new_con= drizzle_con_clone(con->drizzle, NULL, con);
-      if (new_con == NULL)
-      {
-        closesocket(fd);
-        return DRIZZLE_RETURN_MEMORY;
-      }
-
-      new_con->fd= fd;
-    }
-
-    /* Wait for read events on the listening socket. */
-    drizzle_return_t local_ret= drizzle_con_set_events(new_con, POLLIN);
-    if (local_ret != DRIZZLE_RETURN_OK)
-    {
-      drizzle_con_free(new_con);
-      return local_ret;
-    }
-
-    drizzle_log_info(con->drizzle, "listening on %s:%s", host, port);
-  }
-
-  /* Report last socket() error if we couldn't find an address to bind. */
-  if (con->fd == -1)
-  {
-    return DRIZZLE_RETURN_COULD_NOT_CONNECT;
-  }
 
   drizzle_state_pop(con);
 

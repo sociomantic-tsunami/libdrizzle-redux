@@ -63,17 +63,6 @@ DRIZZLE_API
 int drizzle_con_fd(const drizzle_con_st *con);
 
 /**
- * Use given file descriptor for connction.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
- * @param[in] fd File descriptor for connection.
- * @return Standard drizzle return value.
- */
-DRIZZLE_API
-drizzle_return_t drizzle_con_set_fd(drizzle_con_st *con, int fd);
-
-/**
  * Close a connection.
  *
  * @param[in] con Connection structure previously initialized with
@@ -226,7 +215,7 @@ in_port_t drizzle_con_port(const drizzle_con_st *con);
  * @param[in] host Host to use for this connection, NULL for default value.
  * @param[in] port Port to use for this connection, 0 for default value.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 void drizzle_con_set_tcp(drizzle_con_st *con, const char *host, in_port_t port);
 
 /**
@@ -236,7 +225,7 @@ void drizzle_con_set_tcp(drizzle_con_st *con, const char *host, in_port_t port);
  *  drizzle_con_create(), drizzle_con_clone(), or related functions.
  * @return Unix domain socket set for this connection, NULL if not set.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 const char *drizzle_con_uds(const drizzle_con_st *con);
 
 /**
@@ -261,16 +250,6 @@ DRIZZLE_API
 const char *drizzle_con_user(const drizzle_con_st *con);
 
 /**
- * Get password for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
- * @return Password associated with this connection.
- */
-DRIZZLE_API
-const char *drizzle_con_password(const drizzle_con_st *con);
-
-/**
  * Set username and password for a connection.
  *
  * @param[in] con Connection structure previously initialized with
@@ -278,7 +257,7 @@ const char *drizzle_con_password(const drizzle_con_st *con);
  * @param[in] user Username to use for this connection.
  * @param[in] password Password to use for this connection.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 void drizzle_con_set_auth(drizzle_con_st *con, const char *user,
                           const char *password);
 
@@ -299,7 +278,7 @@ const char *drizzle_con_db(const drizzle_con_st *con);
  *  drizzle_con_create(), drizzle_con_clone(), or related functions.
  * @param[in] db Database to use with this connection.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 void drizzle_con_set_db(drizzle_con_st *con, const char *db);
 
 /**
