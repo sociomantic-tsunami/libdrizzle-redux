@@ -62,6 +62,10 @@ drizzle_result_st *drizzle_result_create(drizzle_con_st *con)
   }
 
   result->binlog_event= NULL;
+  result->column_list= NULL;
+  result->options= 0;
+  result->prev= NULL;
+  result->column_buffer= NULL;
 
   result->con= con;
   con->result= result;

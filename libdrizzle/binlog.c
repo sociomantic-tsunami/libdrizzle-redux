@@ -118,6 +118,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
   if (con->result->binlog_event == NULL)
   {
     con->result->binlog_event = malloc(sizeof(drizzle_binlog_st));
+    con->result->binlog_event->data= NULL;
   }
   binlog_event= con->result->binlog_event;
 
