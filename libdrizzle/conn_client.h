@@ -66,15 +66,10 @@ drizzle_return_t drizzle_con_connect(drizzle_con_st *con);
  *
  * @param[in] con Connection structure previously initialized with
  *  drizzle_con_create(), drizzle_con_clone(), or related functions.
- * @param[in] result Caller allocated structure, or NULL to allocate one.
- * @param[out] ret_ptr Standard drizzle return value.
- * @return On success, a pointer to the (possibly allocated) structure. On
- *  failure this will be NULL.
+ * @return ret_ptr Standard drizzle return value.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_con_quit(drizzle_con_st *con,
-                                    drizzle_result_st *result,
-                                    drizzle_return_t *ret_ptr);
+drizzle_return_t drizzle_con_quit(drizzle_con_st *con);
 
 /**
  * Select a new default database for a connection.

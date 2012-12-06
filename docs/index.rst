@@ -8,4 +8,5 @@ Welcome to libdrizzle-redux documentation
    structs
    constants
    library
+   connection
    binlog

@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
     printf("\n\n");
   }
 
-  drizzle_con_free(con);
   drizzle_free(drizzle);
   if (ret != DRIZZLE_RETURN_EOF)
     return EXIT_FAILURE;

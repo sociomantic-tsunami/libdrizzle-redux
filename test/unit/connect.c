@@ -66,8 +66,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  drizzle_con_quit(con, NULL, &ret);
-  drizzle_con_free(con);
+  drizzle_con_quit(con);
   drizzle_free(drizzle);
   return EXIT_SUCCESS;
 }

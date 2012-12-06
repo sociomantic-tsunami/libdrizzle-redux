@@ -615,12 +615,15 @@ drizzle_return_t drizzle_con_connect(drizzle_con_st *con)
   return drizzle_state_loop(con);
 }
 
-drizzle_result_st *drizzle_con_quit(drizzle_con_st *con,
-                                    drizzle_result_st *result,
-                                    drizzle_return_t *ret_ptr)
+drizzle_return_t drizzle_con_quit(drizzle_con_st *con)
 {
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_QUIT, NULL, 0,
-                                   0, ret_ptr);
+  drizzle_return_t ret;
+  drizzle_result_st *result;
+  result= drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_QUIT, NULL, 0,
+                                   0, &ret);
+  drizzle_result_free(result);
+  drizzle_con_free(con);
+  return ret;
 }
 
 drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
