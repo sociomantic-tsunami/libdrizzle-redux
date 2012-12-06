@@ -24,3 +24,4 @@ test/unit/version
 test/unit/passwd
 test/unit/hex
 test/unit/binlog
+test/unit/query

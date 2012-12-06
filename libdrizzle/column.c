@@ -352,7 +352,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
       return DRIZZLE_RETURN_OK;
     }
 
-    result->column_buffer= malloc(result->column_count * sizeof(drizzle_column_st));
+    result->column_buffer= calloc(result->column_count, sizeof(drizzle_column_st));
     if (result->column_buffer == NULL)
     {
       drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
