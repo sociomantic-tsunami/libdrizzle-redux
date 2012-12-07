@@ -17,10 +17,10 @@ find_package(OpenSSL REQUIRED)
 
 option(DEBUG_BUILD "Build in debug mode" OFF)
 
-set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -std=gnu99 -pedantic -g")
+set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -std=gnu99 -pedantic -Wformat=2 -Wframe-larger-than=32768 -Wlogical-op -Wredundant-decls -g")
 
 if (NOT DEBUG_BUILD)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -floop-parallelize-all")
 endif ()
 
 if (NOT WIN32)
