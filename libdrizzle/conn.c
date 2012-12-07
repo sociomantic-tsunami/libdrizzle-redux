@@ -627,17 +627,15 @@ drizzle_return_t drizzle_con_quit(drizzle_con_st *con)
 }
 
 drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
-                                         drizzle_result_st *result,
                                          const char *db,
                                          drizzle_return_t *ret_ptr)
 {
   drizzle_con_set_db(con, db);
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_INIT_DB,
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
                                    db, strlen(db), strlen(db), ret_ptr);
 }
 
 drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
-                                        drizzle_result_st *result,
                                         drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused;
@@ -646,13 +644,12 @@ drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
     ret_ptr= &unused;
   }
 
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_SHUTDOWN,
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_SHUTDOWN,
                                    "0", 1, 1, ret_ptr);
 }
 
-drizzle_result_st *drizzle_kill(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                uint32_t query_id,
+drizzle_result_st *drizzle_con_kill(drizzle_con_st *con,
+                                uint32_t connection_id,
                                 drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused;
@@ -661,24 +658,16 @@ drizzle_result_st *drizzle_kill(drizzle_con_st *con,
     ret_ptr= &unused;
   }
 
-  uint32_t sent= htonl(query_id);
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_PROCESS_KILL,
+  uint32_t sent= htonl(connection_id);
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_PROCESS_KILL,
                                    &sent, sizeof(uint32_t), sizeof(uint32_t), ret_ptr);
 }
 
 drizzle_result_st *drizzle_con_ping(drizzle_con_st *con,
-                                    drizzle_result_st *result,
                                     drizzle_return_t *ret_ptr)
 {
-  return drizzle_con_command_write(con, result, DRIZZLE_COMMAND_PING, NULL, 0,
+  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_PING, NULL, 0,
                                    0, ret_ptr);
-}
-
-drizzle_result_st *drizzle_ping(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                drizzle_return_t *ret_ptr)
-{
-  return drizzle_con_ping(con, result, ret_ptr);
 }
 
 drizzle_result_st *drizzle_con_command_write(drizzle_con_st *con,

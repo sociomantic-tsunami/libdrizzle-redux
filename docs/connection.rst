@@ -34,12 +34,6 @@ Functions
    :param options: The connection options to set
    :returns: A newly allocated and setup connection object
 
-.. c:function:: void drizzle_con_close(drizzle_con_st *con)
-
-   Closes and frees a connection
-
-   :param con: The connection to close and free
-
 .. c:function:: drizzle_st* drizzle_con_drizzle(const drizzle_con_st *con)
 
    Gets the Drizzle object from the connection object
@@ -185,3 +179,74 @@ Functions
 
    :param con: A connection object
    :returns: A bit field of capabilities
+
+.. c:function:: drizzle_charset_t drizzle_con_charset(const drizzle_con_st *con)
+
+   Gets the character set ID for the connection
+
+   :param con: A connection object
+   :returns: The character set used
+
+.. c:function:: drizzle_con_status_t drizzle_con_status(const drizzle_con_st *con)
+
+   Gets the status of the connection
+
+   :param con: A connection object
+   :returns: The status of the connection
+
+.. c:function:: uint32_t drizzle_con_max_packet_size(const drizzle_con_st *con)
+
+   Gets the max packet size for a connection
+
+   :param con: A connection object
+   :returns: The max packet size for the connection
+
+.. c:function:: drizzle_return_t drizzle_con_connect(drizzle_con_st *con)
+
+   Open connection to the specified server
+
+   :param con: A connection object
+   :returns: A :c:type:`drizzle_return_t` status.  :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_con_quit(drizzle_con_st *con)
+
+   Gracefully disconnect from a server and free the connection object
+
+   :param con: A connection object
+   :returns: A :c:type:`drizzle_return_t` response for the quit command sent to the server
+
+.. c:function:: drizzle_result_st* drizzle_con_select_db(drizzle_con_st *con, const char *db, drizzle_return_t *ret_ptr)
+
+   Change the current default database
+
+   :param con: A connection object
+   :param db: The new default database
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: A newly allocated result object
+
+.. c:function:: drizzle_result_st* drizzle_con_shutdown(drizzle_con_st *con, drizzle_return_t *ret_ptr)
+
+   Send a shutdown command to the server
+
+   :param con: A connection object
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: A newly allocated result object
+
+.. c:function:: drizzle_result_st* drizzle_con_kill(drizzle_con_st *con, uint32_t connection_id, drizzle_return_t *ret_ptr)
+
+   Sends a query kill command to the server
+
+   :param con: A connection object
+   :param connection_id: The connection ID to kill a query from
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: A newly allocated result object
+
+.. c:function:: drizzle_result_st* drizzle_con_ping(drizzle_con_st *con, drizzle_return_t *ret_ptr)
+
+   Sends a ping to the server
+
+   :param con: A connection object
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: A newly allocated result object
+
+

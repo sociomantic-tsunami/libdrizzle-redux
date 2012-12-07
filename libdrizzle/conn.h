@@ -68,7 +68,7 @@ int drizzle_con_fd(const drizzle_con_st *con);
  * @param[in] con Connection structure previously initialized with
  *  drizzle_con_create(), drizzle_con_clone(), or related functions.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 void drizzle_con_close(drizzle_con_st *con);
 
 /**

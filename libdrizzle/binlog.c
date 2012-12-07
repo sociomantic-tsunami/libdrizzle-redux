@@ -149,14 +149,14 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     binlog_event->type= con->buffer_ptr[4];
     binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
     binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
-    if (binlog_event->length == 19)
+    if (binlog_event->length <= 27)
     {
-      binlog_event->length= 0;
       binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
       binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
-      con->buffer_ptr+= 19;
-      con->buffer_size-= 19;
-      con->packet_size-= 19;
+      con->buffer_ptr+= binlog_event->length;
+      con->buffer_size-= binlog_event->length;
+      con->packet_size-= binlog_event->length;
+      binlog_event->length= 0;
       free(binlog_event->data);
       binlog_event->data= NULL;
     }

@@ -84,7 +84,6 @@ drizzle_return_t drizzle_con_quit(drizzle_con_st *con);
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
-                                         drizzle_result_st *result,
                                          const char *db,
                                          drizzle_return_t *ret_ptr);
 
@@ -100,13 +99,11 @@ drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
-                                        drizzle_result_st *result,
                                         drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-drizzle_result_st *drizzle_kill(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                uint32_t query_id,
+drizzle_result_st *drizzle_con_kill(drizzle_con_st *con,
+                                uint32_t connection_id,
                                 drizzle_return_t *ret_ptr);
 
 /**
@@ -121,16 +118,7 @@ drizzle_result_st *drizzle_kill(drizzle_con_st *con,
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_con_ping(drizzle_con_st *con,
-                                    drizzle_result_st *result,
                                     drizzle_return_t *ret_ptr);
-
-/**
- * @todo Remove this with next major API change.
- */
-DRIZZLE_API
-drizzle_result_st *drizzle_ping(drizzle_con_st *con,
-                                drizzle_result_st *result,
-                                drizzle_return_t *ret_ptr);
 
 /**
  * Send raw command to server, possibly in parts.
