@@ -2,7 +2,7 @@ Constants
 =========
 
 Introduction
-============
+------------
 
 Libdrizzle Redux contains a number of constants, most of what are in the form
 of ENUMs.  All ENUMs are typedef'd so no need to use the 'enum' keyword.
@@ -176,6 +176,215 @@ Return
    .. py:data:: DRIZZLE_RETURN_EOF
 
       No more data to retrieve
+
+Connection
+----------
+
+.. c:type:: drizzle_con_options_t
+
+   An ENUM of connection options intended to be used in a bit field
+
+   .. py:data:: DRIZZLE_CON_NONE
+
+      No option set
+
+   .. py:data:: DRIZZLE_CON_RAW_PACKET
+
+      Raw packet data mode (for low-level clients)
+
+   .. py:data:: DRIZZLE_CON_RAW_SCRAMBLE
+
+      Raw auth scramble data (for low-level clients)
+
+   .. py:data:: DRIZZLE_CON_READY
+
+      Connection is ready
+
+   .. py:data:: DRIZZLE_CON_NO_RESULT_READ
+
+      Don't read result data from buffer (advanced feature, use with caution)
+
+   .. py:data:: DRIZZLE_CON_IO_READY
+   
+      Used for event handling
+
+   .. py:data:: DRIZZLE_CON_LISTEN
+
+      Unused
+
+   .. py:data:: DRIZZLE_CON_FOUND_ROWS
+
+      Enable the FOUND_ROWS functionality
+
+   .. py:data:: DRIZZLE_CON_INTERACTIVE
+
+      This is an interactive client
+
+   .. py:data:: DRIZZLE_CON_MULTI_STATEMENTS
+
+      Multi-statement support
+
+   .. py:data:: DRIZZLE_CON_AUTH_PLUGIN
+
+      Authentiaction plugin support
+
+.. c:type:: drizzle_charset_t
+
+   Character set ID, an alias for uint8_t
+
+.. c:type:: drizzle_con_status_t
+
+   An ENUM of connection statuses intended to be used in a bit field
+
+   .. py:data:: DRIZZLE_CON_STATUS_NONE
+
+      No status set
+
+   .. py:data:: DRIZZLE_CON_STATUS_IN_TRANS
+
+      In a transaction
+
+   .. py:data:: DRIZZLE_CON_STATUS_AUTOCOMMIT
+
+      Autocommit is enabled
+
+   .. py:data:: DRIZZLE_CON_STATUS_MORE_RESULTS_EXISTS
+
+      There are more result sets available
+
+   .. py:data:: DRIZZLE_CON_STATUS_QUERY_NO_GOOD_INDEX_USED
+
+      No good index couldn't be used
+
+   .. py:data:: DRIZZLE_CON_STATUS_QUERY_NO_INDEX_USED
+
+      No index was used
+
+   .. py:data:: DRIZZLE_CON_STATUS_CURSOR_EXISTS
+
+      A cursor is available
+
+   .. py:data:: DRIZZLE_CON_STATUS_LAST_ROW_SENT
+
+      The last row has been sent to the client
+
+   .. py:data:: DRIZZLE_CON_STATUS_DB_DROPPED
+
+      The database has been dropped
+
+   .. py:data:: DRIZZLE_CON_STATUS_NO_BACKSLASH_ESCAPES
+
+      NO_BACKSLASH_ESCAPES SQL mode set
+
+   .. py:data:: DRIZZLE_CON_STATUS_QUERY_WAS_SLOW
+
+      Query hit the slow query timeout
+
+.. c:type:: drizzle_capabilities_t
+
+   An ENUM of connection capabilities intended to be used in a bit field
+
+   .. py:data:: DRIZZLE_CAPABILITIES_NONE
+
+      No capabilities set
+
+   .. py:data:: DRIZZLE_CAPABILITIES_LONG_PASSWORD
+
+      Long password support
+
+   .. py:data:: DRIZZLE_CAPABILITIES_FOUND_ROWS
+
+      FOUND_ROWS support
+
+   .. py:data:: DRIZZLE_CAPABILITIES_LONG_FLAG
+
+      Get all column flags
+
+   .. py:data:: DRIZZLE_CAPABILITIES_IGNORE_SPACE
+
+      Ignore spaces before open brackets
+
+   .. py:data:: DRIZZLE_CAPABILITIES_CONNECT_WITH_DB
+
+      A database can be specified upon connect
+
+   .. py:data:: DRIZZLE_CAPABILITIES_NO_SCHEMA
+
+      Disable access to database.table.column way of accessing things
+
+   .. py:data:: DRIZZLE_CAPABILITIES_COMPRESS
+
+      Enable compression protocol
+
+   .. py:data:: DRIZZLE_CAPABILITIES_ODBC
+
+      An ODBC client
+
+   .. py:data:: DRIZZLE_CAPABILITIES_LOCAL_FILES
+
+      Enables LOAD DATA LOCAL
+
+   .. py:data:: DRIZZLE_CAPABILITIES_PROTOCOL_41
+
+      MySQL 4.1 and higher protocol
+
+   .. py:data:: DRIZZLE_CAPABILITIES_INTERACTIVE
+
+      An interactive client
+
+   .. py:data:: DRIZZLE_CAPABILITIES_SSL
+
+      Use SSL
+
+   .. py:data:: DRIZZLE_CAPABILITIES_IGNORE_SIGPIPE
+
+      Ignore sigpipe
+
+   .. py:data:: DRIZZLE_CAPABILITIES_TRANSACTIONS
+
+      Client understands transactions
+
+   .. py:data:: DRIZZLE_CAPABILITIES_RESERVED
+
+      Unused
+
+   .. py:data:: DRIZZLE_CAPABILITIES_SECURE_CONNECTION
+
+      MySQL 4.1 and higher authentication
+
+   .. py:data:: DRIZZLE_CAPABILITIES_MULTI_STATEMENTS
+
+      Enable multiple statement support
+
+   .. py:data:: DRIZZLE_CAPABILITIES_MULTI_RESULTS
+
+      Enable multiple result sets
+
+   .. py:data:: DRIZZLE_CAPABILITIES_PS_MULTI_RESULTS
+
+   .. py:data:: DRIZZLE_CAPABILITIES_PLUGIN_AUTH
+
+      Enable plugin authentication
+
+   .. py:data:: DRIZZLE_CAPABILITIES_SSL_VERIFY_SERVER_CERT
+
+      Verify SSL cert
+
+   .. py:data:: DRIZZLE_CAPABILITIES_REMEBER_OPTIONS
+
+   .. py:data:: DRIZZLE_CAPABILITIES_CLIENT
+
+      Enables the following:
+      :py:const:`DRIZZLE_CAPABILITIES_LONG_PASSWORD`,
+      :py:const:`DRIZZLE_CAPABILITIES_FOUND_ROWS`,
+      :py:const:`DRIZZLE_CAPABILITIES_LONG_FLAG`,
+      :py:const:`DRIZZLE_CAPABILITIES_CONNECT_WITH_DB`,
+      :py:const:`DRIZZLE_CAPABILITIES_PLUGIN_AUTH`,
+      :py:const:`DRIZZLE_CAPABILITIES_TRANSACTIONS`,
+      :py:const:`DRIZZLE_CAPABILITIES_PROTOCOL_41`,
+      :py:const:`DRIZZLE_CAPABILITIES_SECURE_CONNECTION`
+
+
 
 Binlog
 ------
