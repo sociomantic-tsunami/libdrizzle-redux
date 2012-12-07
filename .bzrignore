@@ -18,10 +18,6 @@ docs/html/
 docs/pdf/
 docs/_build/conf.py
 docs/_build/sources.cmake
-test/unit/connect
-test/unit/escape
-test/unit/version
-test/unit/passwd
-test/unit/hex
-test/unit/binlog
-test/unit/query
+test/unit/*
+!test/unit/*.c
+!test/unit/CMakeLists.txt
