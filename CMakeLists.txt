@@ -17,7 +17,7 @@ find_package(OpenSSL REQUIRED)
 
 option(DEBUG_BUILD "Build in debug mode" OFF)
 
-set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -g")
+set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -std=gnu99 -pedantic -g")
 
 if (NOT DEBUG_BUILD)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
