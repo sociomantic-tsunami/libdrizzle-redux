@@ -5,6 +5,7 @@ Welcome to libdrizzle-redux documentation
    :maxdepth: 2
 
    introduction
+   license
    structs
    constants
    library
