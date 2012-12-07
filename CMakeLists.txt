@@ -20,7 +20,7 @@ option(DEBUG_BUILD "Build in debug mode" OFF)
 set(CMAKE_C_FLAGS "-Wall -Wunused -Wwrite-strings -Wno-strict-aliasing -Wextra -Wshadow -std=gnu99 -pedantic -Wformat=2 -Wframe-larger-than=32768 -Wlogical-op -Wredundant-decls -g")
 
 if (NOT DEBUG_BUILD)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -floop-parallelize-all")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -floop-parallelize-all -ftree-parallelize-loops=4")
 endif ()
 
 if (NOT WIN32)
