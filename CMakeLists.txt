@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(libdrizzle C)
+project(libdrizzle-redux C)
 set(VERSION_MAJOR 5)
 set(VERSION_RELEASE 0)
 set(VERSION_TAG "alpha1")
