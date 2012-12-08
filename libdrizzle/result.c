@@ -187,17 +187,7 @@ bool drizzle_result_eof(drizzle_result_st *result)
   return result->options & DRIZZLE_RESULT_EOF_PACKET;
 }
 
-const char *drizzle_result_info(drizzle_result_st *result)
-{
-  if (result == NULL)
-  {
-    return NULL;
-  }
-
-  return result->info;
-}
-
-const char *drizzle_result_error(drizzle_result_st *result)
+const char *drizzle_result_message(drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -479,105 +469,4 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
 
   drizzle_state_pop(con);
   return ret;
-}
-
-drizzle_return_t drizzle_state_result_write(drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  uint8_t *start= con->buffer_ptr + con->buffer_size;
-  uint8_t *ptr;
-  drizzle_result_st *result= con->result;
-
-  drizzle_log_debug(con->drizzle, "drizzle_state_result_write");
-
-  /* Calculate max packet size. */
-  con->packet_size= 1 /* OK/Field Count/EOF/Error */
-                  + 9 /* Affected rows */
-                  + 9 /* Insert ID */
-                  + 2 /* Status */
-                  + 2 /* Warning count */
-                  + strlen(result->info); /* Info/error message */
-
-  /* Assume the entire result packet will fit in the buffer. */
-  if ((con->packet_size + 4) > DRIZZLE_MAX_BUFFER_SIZE)
-  {
-    drizzle_set_error(con->drizzle, "drizzle_state_result_write",
-                      "buffer too small:%zu", con->packet_size + 4);
-    return DRIZZLE_RETURN_INTERNAL_ERROR;
-  }
-
-  /* Flush buffer if there is not enough room. */
-  if (((size_t)DRIZZLE_MAX_BUFFER_SIZE - (size_t)(start - con->buffer)) <
-      con->packet_size)
-  {
-    drizzle_state_push(con, drizzle_state_write);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  /* Store packet size at the end since it may change. */
-  ptr= start;
-  ptr[3]= con->packet_number;
-  con->packet_number++;
-  ptr+= 4;
-
-  if (result->options & DRIZZLE_RESULT_EOF_PACKET)
-  {
-    ptr[0]= 254;
-    ptr++;
-
-    drizzle_set_byte2(ptr, result->warning_count);
-    ptr+= 2;
-
-    drizzle_set_byte2(ptr, con->status);
-    ptr+= 2;
-  }
-  else if (result->error_code != 0)
-  {
-    ptr[0]= 255;
-    ptr++;
-
-    drizzle_set_byte2(ptr, result->error_code);
-    ptr+= 2;
-
-    ptr[0]= '#';
-    ptr++;
-
-    memcpy(ptr, result->sqlstate, DRIZZLE_MAX_SQLSTATE_SIZE);
-    ptr+= DRIZZLE_MAX_SQLSTATE_SIZE;
-
-    memcpy(ptr, result->info, strlen(result->info));
-    ptr+= strlen(result->info);
-  }
-  else if (result->column_count == 0)
-  {
-    ptr[0]= 0;
-    ptr++;
-
-    ptr= drizzle_pack_length(result->affected_rows, ptr);
-    ptr= drizzle_pack_length(result->insert_id, ptr);
-
-    drizzle_set_byte2(ptr, con->status);
-    ptr+= 2;
-
-    drizzle_set_byte2(ptr, result->warning_count);
-    ptr+= 2;
-
-    memcpy(ptr, result->info, strlen(result->info));
-    ptr+= strlen(result->info);
-  }
-  else
-    ptr= drizzle_pack_length(result->column_count, ptr);
-
-  con->packet_size= ((size_t)(ptr - start) - 4);
-  con->buffer_size+= (4 + con->packet_size);
-
-  /* Store packet size now. */
-  drizzle_set_byte3(start, con->packet_size);
-
-  drizzle_state_pop(con);
-  return DRIZZLE_RETURN_OK;
 }

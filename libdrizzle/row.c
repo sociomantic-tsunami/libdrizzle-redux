@@ -287,30 +287,3 @@ drizzle_return_t drizzle_state_row_read(drizzle_con_st *con)
   return DRIZZLE_RETURN_OK;
 }
 
-drizzle_return_t drizzle_state_row_write(drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  uint8_t *start= con->buffer_ptr + con->buffer_size;
-
-  drizzle_log_debug(con->drizzle, "drizzle_state_row_write");
-
-  /* Flush buffer if there is not enough room. */
-  if (((size_t)DRIZZLE_MAX_BUFFER_SIZE - (size_t)(start - con->buffer)) < 4)
-  {
-    drizzle_state_push(con, drizzle_state_write);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  drizzle_set_byte3(start, con->packet_size);
-  start[3]= con->packet_number;
-  con->packet_number++;
-
-  con->buffer_size+= 4;
-
-  drizzle_state_pop(con);
-  return DRIZZLE_RETURN_OK;
-}

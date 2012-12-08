@@ -88,13 +88,7 @@ bool drizzle_result_eof(drizzle_result_st *result);
  * Get information string for a result.
  */
 DRIZZLE_API
-const char *drizzle_result_info(drizzle_result_st *result);
-
-/**
- * Get error string for a result.
- */
-DRIZZLE_API
-const char *drizzle_result_error(drizzle_result_st *result);
+const char *drizzle_result_message(drizzle_result_st *result);
 
 /**
  * Get server defined error code for a result.

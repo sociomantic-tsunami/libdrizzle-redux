@@ -116,7 +116,6 @@ enum drizzle_con_options_t
   DRIZZLE_CON_READY=            (1 << 4),
   DRIZZLE_CON_NO_RESULT_READ=   (1 << 5),
   DRIZZLE_CON_IO_READY=         (1 << 6),
-  DRIZZLE_CON_LISTEN=           (1 << 7),
   DRIZZLE_CON_FOUND_ROWS=       (1 << 9),
   DRIZZLE_CON_INTERACTIVE=      (1 << 11),
   DRIZZLE_CON_MULTI_STATEMENTS= (1 << 12),
@@ -248,22 +247,6 @@ enum drizzle_command_t
 
 #ifndef __cplusplus
 typedef enum drizzle_command_t drizzle_command_t;
-#endif
-
-/**
- * @ingroup drizzle_query
- * States for drizle_query_st.
- */
-enum drizzle_query_state_t
-{
-  DRIZZLE_QUERY_STATE_INIT,
-  DRIZZLE_QUERY_STATE_QUERY,
-  DRIZZLE_QUERY_STATE_RESULT,
-  DRIZZLE_QUERY_STATE_DONE
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_query_state_t drizzle_query_state_t;
 #endif
 
 /**

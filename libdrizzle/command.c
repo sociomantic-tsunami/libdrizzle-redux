@@ -47,53 +47,6 @@
  * State Definitions
  */
 
-drizzle_return_t drizzle_state_command_read(drizzle_con_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  drizzle_log_debug(con->drizzle, "drizzle_state_command_read");
-
-  if (con->buffer_size == 0)
-  {
-    drizzle_state_push(con, drizzle_state_read);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  if (con->command_total == 0)
-  {
-    con->command= (drizzle_command_t)(con->buffer_ptr[0]);
-    con->buffer_ptr++;
-    con->buffer_size--;
-
-    con->command_total= (con->packet_size - 1);
-  }
-
-  if (con->buffer_size < (con->command_total - con->command_offset))
-  {
-    con->command_size= con->buffer_size;
-    con->command_offset+= con->command_size;
-  }
-  else
-  {
-    con->command_size= (con->command_total - con->command_offset);
-    con->command_offset= con->command_total;
-  }
-
-  con->command_data= con->buffer_ptr;
-  con->buffer_ptr+= con->command_size;
-  con->buffer_size-= con->command_size;
-
-  if (con->command_offset == con->command_total)
-    drizzle_state_pop(con);
-  else
-    return DRIZZLE_RETURN_PAUSE;
-
-  return DRIZZLE_RETURN_OK;
-}
-
 drizzle_return_t drizzle_state_command_write(drizzle_con_st *con)
 {
   uint8_t *start;

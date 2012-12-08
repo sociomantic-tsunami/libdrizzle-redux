@@ -82,24 +82,19 @@ drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_con_st *con);
 drizzle_return_t drizzle_state_handshake_result_read(drizzle_con_st *con);
 
 /* Functions in command.c */
-drizzle_return_t drizzle_state_command_read(drizzle_con_st *con);
 drizzle_return_t drizzle_state_command_write(drizzle_con_st *con);
 
 /* Functions in result.c */
 drizzle_return_t drizzle_state_result_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_result_write(drizzle_con_st *con);
 
 /* Functions in column.c */
 drizzle_return_t drizzle_state_column_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_column_write(drizzle_con_st *con);
 
 /* Functions in row.c */
 drizzle_return_t drizzle_state_row_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_row_write(drizzle_con_st *con);
 
 /* Functions in field.c */
 drizzle_return_t drizzle_state_field_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_field_write(drizzle_con_st *con);
 
 /** @} */
 

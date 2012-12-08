@@ -338,7 +338,7 @@ const char *drizzle_con_host(const drizzle_con_st *con)
 
   if (con->socket_type == DRIZZLE_CON_SOCKET_TCP)
   {
-    if (con->socket.tcp.host == NULL && !(con->options & DRIZZLE_CON_LISTEN))
+    if (con->socket.tcp.host == NULL)
       return DRIZZLE_DEFAULT_TCP_HOST;
 
     return con->socket.tcp.host;
@@ -842,20 +842,13 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_con_st *con)
     ai.ai_flags = AI_PASSIVE;
     ai.ai_family = AF_UNSPEC;
 
-    if (con->options & DRIZZLE_CON_LISTEN)
+    if (tcp->host == NULL)
     {
-      host= tcp->host;
+      host= DRIZZLE_DEFAULT_TCP_HOST;
     }
     else
     {
-      if (tcp->host == NULL)
-      {
-        host= DRIZZLE_DEFAULT_TCP_HOST;
-      }
-      else
-      {
-        host= tcp->host;
-      }
+      host= tcp->host;
     }
 
     ret= getaddrinfo(host, port, &ai, &(tcp->addrinfo));
