@@ -12,3 +12,4 @@ Welcome to libdrizzle-redux documentation
    connection
    query
    binlog
+   examples
