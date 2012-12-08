@@ -82,7 +82,6 @@ struct drizzle_st
   drizzle_log_fn *log_fn;
   void *log_context;
   struct pollfd *pfds;
-  drizzle_query_st *query_list;
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
 };
@@ -141,7 +140,6 @@ struct drizzle_con_st
   drizzle_st *drizzle;
   drizzle_con_st *next;
   drizzle_con_st *prev;
-  drizzle_query_st *query;
   drizzle_result_st *result;
   drizzle_result_st *result_list;
   uint8_t *scramble;
@@ -161,43 +159,6 @@ struct drizzle_con_st
   SSL_CTX *ssl_context;
   SSL *ssl;
   drizzle_ssl_state_t ssl_state;
-};
-
-/**
- * @ingroup drizzle_query
- */
-struct drizzle_query_st
-{
-  drizzle_st *drizzle;
-  drizzle_query_st *next;
-  drizzle_query_st *prev;
-  int options;
-  drizzle_query_state_t state;
-  drizzle_con_st *con;
-  drizzle_result_st *result;
-  const char *string;
-  size_t size;
-  void *context;
-  drizzle_query_context_free_fn *context_free_fn;
-
-#ifdef __cplusplus
-
-  drizzle_query_st() :
-    drizzle(NULL),
-    next(NULL),
-    prev(NULL),
-    options(0),
-    state(DRIZZLE_QUERY_STATE_INIT),
-    con(NULL),
-    result(NULL),
-    string(NULL),
-    size(0),
-    context(NULL),
-    context_free_fn(NULL)
-  { 
-  }
-
-#endif
 };
 
 /**

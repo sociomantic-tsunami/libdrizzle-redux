@@ -136,7 +136,6 @@ drizzle_st *drizzle_create(void)
   drizzle->log_fn= NULL;
   drizzle->log_context= NULL;
   drizzle->pfds= NULL;
-  drizzle->query_list= NULL;
   drizzle->sqlstate[0]= 0;
   drizzle->last_error[0]= 0;
 
@@ -158,12 +157,10 @@ void drizzle_free(drizzle_st *drizzle)
   if (drizzle->options & DRIZZLE_FREE_OBJECTS)
   {
     drizzle_con_free_all(drizzle);
-    drizzle_query_free_all(drizzle);
   }
   else if (drizzle->options & DRIZZLE_ASSERT_DANGLING)
   {
     assert(drizzle->con_list == NULL);
-    assert(drizzle->query_list == NULL);
   }
 
   free(drizzle->pfds);
@@ -411,7 +408,6 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
   con->drizzle= drizzle;
   /* con->next set above */
   /* con->prev set above */
-  con->query= NULL;
   /* con->result doesn't need to be set */
   con->result_list= NULL;
   con->scramble= NULL;

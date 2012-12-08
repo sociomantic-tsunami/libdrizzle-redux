@@ -10,4 +10,5 @@ Welcome to libdrizzle-redux documentation
    constants
    library
    connection
+   query
    binlog

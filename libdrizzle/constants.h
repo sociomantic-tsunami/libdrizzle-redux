@@ -252,19 +252,6 @@ typedef enum drizzle_command_t drizzle_command_t;
 
 /**
  * @ingroup drizzle_query
- * Options for drizzle_query_st.
- */
-enum drizzle_query_options_t
-{
-  DRIZZLE_QUERY_NONE,
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_query_options_t drizzle_query_options_t;
-#endif
-
-/**
- * @ingroup drizzle_query
  * States for drizle_query_st.
  */
 enum drizzle_query_state_t
@@ -448,7 +435,6 @@ typedef struct drizzle_st drizzle_st;
 typedef struct drizzle_con_tcp_st drizzle_con_tcp_st;
 typedef struct drizzle_con_uds_st drizzle_con_uds_st;
 typedef struct drizzle_con_st drizzle_con_st;
-typedef struct drizzle_query_st drizzle_query_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
@@ -464,8 +450,6 @@ typedef void (drizzle_log_fn)(const char *line, drizzle_verbose_t verbose,
 typedef drizzle_return_t (drizzle_state_fn)(drizzle_con_st *con);
 typedef void (drizzle_con_context_free_fn)(drizzle_con_st *con,
                                            void *context);
-typedef void (drizzle_query_context_free_fn)(drizzle_query_st *query,
-                                             void *context);
 /**
  * Custom function to register or deregister interest in file descriptor
  * events. See drizzle_set_event_watch_fn().
