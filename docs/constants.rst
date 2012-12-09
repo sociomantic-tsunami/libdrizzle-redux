@@ -384,6 +384,162 @@ Connection
       :py:const:`DRIZZLE_CAPABILITIES_PROTOCOL_41`,
       :py:const:`DRIZZLE_CAPABILITIES_SECURE_CONNECTION`
 
+Query
+-----
+
+.. c:type:: drizzle_field_t
+
+   Field data (an alias for :c:type:`char*`)
+
+.. c:type:: drizzle_row_t
+
+   Row data (an array of :c:type:`drizzle_field_t`)
+
+.. c:type:: drizzle_column_t
+
+   An ENUM of column types
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_DECIMAL
+
+      An old style decimal type
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_TINY
+
+      A tiny int
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_SHORT
+
+      A short int
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_LONG
+
+      A long int
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_FLOAT
+
+      A float
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_DOUBLE
+
+      A double
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_NULL
+
+      A NULL
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_TIMESTAMP
+
+      A timestamp
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_LONGLONG
+
+      A bigint
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_INT24
+   .. py:data:: DRIZZLE_COLUMN_TYPE_DATE
+   .. py:data:: DRIZZLE_COLUMN_TYPE_TIME
+   .. py:data:: DRIZZLE_COLUMN_TYPE_DATETIME
+   .. py:data:: DRIZZLE_COLUMN_TYPE_YEAR
+   .. py:data:: DRIZZLE_COLUMN_TYPE_NEWDATE
+   .. py:data:: DRIZZLE_COLUMN_TYPE_VARCHAR
+   .. py:data:: DRIZZLE_COLUMN_TYPE_BIT
+   .. py:data:: DRIZZLE_COLUMN_TYPE_NEWDECIMAL
+   .. py:data:: DRIZZLE_COLUMN_TYPE_ENUM
+   .. py:data:: DRIZZLE_COLUMN_TYPE_SET
+   .. py:data:: DRIZZLE_COLUMN_TYPE_TINY_BLOB
+   .. py:data:: DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB
+   .. py:data:: DRIZZLE_COLUMN_TYPE_LONG_BLOB
+   .. py:data:: DRIZZLE_COLUMN_TYPE_BLOB
+   .. py:data:: DRIZZLE_COLUMN_TYPE_VAR_STRING
+
+      Text column type
+
+   .. py:data:: DRIZZLE_COLUMN_TYPE_STRING
+   .. py:data:: DRIZZLE_COLUMN_TYPE_GEOMETRY
+
+.. c:type:: drizzle_column_flags_t
+
+   An ENUM of column flags intended to be used in a bit field
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_NONE
+
+      No flags set
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_NOT_NULL
+
+      Column is not NULL
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_PRI_KEY
+
+      Column is a primary key
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_UNIQUE_KEY
+
+      Column is a unique key
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_MULTIPLE_KEY
+
+      Column is part of a multi-part key
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_BLOB
+
+      Column is a blob
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_UNSIGNED
+
+      Column in unsigned
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_ZEROFILL
+
+      Column has a zerofill
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_BINARY
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_ENUM
+
+      Column is an ENUM
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_AUTO_INCREMENT
+
+      Column has auto increment
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_TIMESTAMP
+
+      Column in a timestamp
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_SET
+
+      Column is a SET data type
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_NO_DEFAULT_VALUE
+
+      Column has no default value
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_ON_UPDATE_NOW
+
+      Column has on update now timestamp
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_PART_KEY
+
+      Column is part of a key
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_NUM
+
+      Column is a number
+
+      .. note::
+         Group and num are the same flag
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_GROUP
+
+      .. note::
+         Group and num are the same flag
+
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_UNIQUE
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_BINCMP
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_GET_FIXED_FIELDS
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_IN_PART_FUNC
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_IN_ADD_INDEX
+   .. py:data:: DRIZZLE_COLUMN_FLAGS_RENAMED
 
 
 Binlog

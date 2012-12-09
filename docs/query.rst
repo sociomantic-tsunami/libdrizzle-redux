@@ -9,6 +9,18 @@ This section outlines the query and result functions
 Functions
 ---------
 
+.. c:function:: drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
+
+   Sets the SSL data
+
+   :param con: A connection object
+   :param key: The path to a key file
+   :param cert: The path to a certificate file
+   :param ca: The path to a certificate authority file
+   :param capath: The path to a directory that contains trusted CA certificate files
+   :param cipher: A list of allowed ciphers for SSL encryption
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
 .. c:function:: drizzle_result_st* drizzle_query(drizzle_con_st *con, const char *query, size_t size, drizzle_return_t *ret_ptr)
 
    Executes a query and returns a newly allocated result struct

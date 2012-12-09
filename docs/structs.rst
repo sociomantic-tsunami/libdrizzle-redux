@@ -61,6 +61,10 @@ Query
 
    The internal result object struct
 
+.. c:type:: drizzle_column_st
+
+   The internal column object struct
+
 Connection
 ----------
 
