@@ -1,5 +1,5 @@
 Compiling Libdrizzle Redux
---------------------------
+==========================
 
 Building Libdrizzle Redux
 -------------------------
