@@ -21,3 +21,4 @@ docs/_build/sources.cmake
 test/unit/*
 !test/unit/*.c
 !test/unit/CMakeLists.txt
+*.tar.gz

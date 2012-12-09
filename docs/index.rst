@@ -6,6 +6,7 @@ Welcome to libdrizzle-redux documentation
 
    introduction
    license
+   compiling
    structs
    constants
    library

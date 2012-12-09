@@ -49,3 +49,8 @@ Libdrizzle Redux is licensed under the `BSD 3-Clause License <http://opensource.
     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Trademarks
+----------
+
+MySQL is a registered trademark of Oracle and/or its affiliates
