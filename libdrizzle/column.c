@@ -210,16 +210,6 @@ size_t drizzle_column_max_size(drizzle_column_st *column)
   return column->max_size;
 }
 
-void drizzle_column_set_max_size(drizzle_column_st *column, size_t size)
-{
-  if (column == NULL)
-  {
-    return;
-  }
-
-  column->max_size= size;
-}
-
 drizzle_column_type_t drizzle_column_type(drizzle_column_st *column)
 {
   if (column == NULL)
@@ -308,7 +298,6 @@ drizzle_return_t drizzle_column_skip_all(drizzle_result_st *result)
 }
 
 drizzle_column_st *drizzle_column_read(drizzle_result_st *result,
-                                       drizzle_column_st *column,
                                        drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
@@ -324,8 +313,6 @@ drizzle_column_st *drizzle_column_read(drizzle_result_st *result,
 
   if (drizzle_state_none(result->con))
   {
-    result->column= column;
-
     drizzle_state_push(result->con, drizzle_state_column_read);
     drizzle_state_push(result->con, drizzle_state_packet_read);
   }
@@ -362,9 +349,12 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
   }
 
   /* No while body, just keep calling to buffer columns. */
-  while (drizzle_column_read(result,
-                             &(result->column_buffer[result->column_current]),
-                             &ret) != NULL && ret == DRIZZLE_RETURN_OK);
+  do
+  {
+    result->column= &(result->column_buffer[result->column_current]);
+  }
+  while(drizzle_column_read(result, &ret) != NULL && ret == DRIZZLE_RETURN_OK);
+
   if (ret == DRIZZLE_RETURN_OK)
   {
     result->column_current= 0;

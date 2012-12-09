@@ -60,7 +60,7 @@ extern "C" {
 /**
  * Initialize a column structure.
  */
-DRIZZLE_API
+DRIZZLE_LOCAL
 drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 
 /**
@@ -128,12 +128,6 @@ uint32_t drizzle_column_size(drizzle_column_st *column);
  */
 DRIZZLE_API
 size_t drizzle_column_max_size(drizzle_column_st *column);
-
-/**
- * Set max size of a column.
- */
-DRIZZLE_API
-void drizzle_column_set_max_size(drizzle_column_st *column, size_t size);
 
 /**
  * Get the type of a column.
