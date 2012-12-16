@@ -497,12 +497,12 @@ int drizzle_compile_capabilities(drizzle_con_st *con)
   {
     capabilities|= DRIZZLE_CAPABILITIES_PLUGIN_AUTH;
   }
-
+#ifdef USE_OPENSSL
   if (con->ssl)
   {
     capabilities|= DRIZZLE_CAPABILITIES_SSL;
   }
-
+#endif
   capabilities&= ~DRIZZLE_CAPABILITIES_COMPRESS;
   if (con->db[0] == 0)
     capabilities&= ~DRIZZLE_CAPABILITIES_CONNECT_WITH_DB;
@@ -514,7 +514,9 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_con_st *con)
 {
   uint8_t *ptr;
   int capabilities;
+#ifdef USE_OPENSSL
   int ssl_ret;
+#endif
   drizzle_return_t ret;
 
   if (con == NULL)
@@ -522,7 +524,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_con_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
   drizzle_log_debug(con->drizzle, "drizzle_state_handshake_client_write");
-
+#ifdef USE_OPENSSL
   if (con->ssl)
   {
     ssl_ret= SSL_connect(con->ssl);
@@ -533,7 +535,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_con_st *con)
     }
     con->ssl_state= DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE;
   }
-
+#endif
   /* Calculate max packet size. */
   con->packet_size= 4   /* Capabilities */
                   + 4   /* Max packet size */

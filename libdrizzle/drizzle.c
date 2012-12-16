@@ -69,7 +69,9 @@ static const char *_verbose_name[DRIZZLE_VERBOSE_MAX]=
 
 void drizzle_library_init(void)
 {
+#ifdef USE_OPENSSL
   SSL_library_init();
+#endif
 }
 
 const char *drizzle_version(void)
@@ -465,12 +467,13 @@ void drizzle_con_free(drizzle_con_st *con)
   if (con->next != NULL)
     con->next->prev= con->prev;
 
+#ifdef USE_OPENSSL
   if (con->ssl)
     SSL_free(con->ssl);
 
   if (con->ssl_context)
     SSL_CTX_free(con->ssl_context);
-
+#endif
   con->drizzle->con_count--;
 
   free(con);

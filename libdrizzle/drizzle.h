@@ -89,9 +89,9 @@ typedef _Bool bool;
 # include <netdb.h>
 # include <poll.h>
 #endif
-
+#ifdef USE_OPENSSL
 #include <openssl/ssl.h>
-
+#endif
 #include <assert.h>
 #include <errno.h>
 

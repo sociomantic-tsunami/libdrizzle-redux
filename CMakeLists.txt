@@ -12,8 +12,10 @@ if(NOT DEFINED BUILD_SHARED_LIBS)
     option(BUILD_SHARED_LIBS "Build a shared library instead of static" ON)
 endif()
 
-
-find_package(OpenSSL REQUIRED)
+option(USE_OPENSSL "Build SSL using OpenSSL" ON)
+if (USE_OPENSSL)
+    find_package(OpenSSL REQUIRED)
+endif ()
 
 option(DEBUG_BUILD "Build in debug mode" OFF)
 
@@ -63,10 +65,12 @@ libdrizzle/query.c
 libdrizzle/result.c
 libdrizzle/row.c
 libdrizzle/sha1.c
-libdrizzle/ssl.c
 libdrizzle/state.c
 libdrizzle/binlog.c
 )
+if (USE_OPENSSL)
+    SET(SOURCE_FILES ${SOURCE_FILES} libdrizzle/ssl.c)
+endif ()
 
 add_library(drizzle-redux ${SOURCE_FILES})
 target_link_libraries(drizzle-redux ${OPENSSL_LIBRARIES})
@@ -128,6 +132,7 @@ endif()
 MESSAGE(STATUS "-----------------------------------------------")
 MESSAGE(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 MESSAGE(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
+MESSAGE(STATUS "USE_OPENSSL = ${USE_OPENSSL}")
 MESSAGE(STATUS "DEBUG_BUILD = ${DEBUG_BUILD}")
 MESSAGE(STATUS "CI_TESTS = ${CI_TESTS}")
 MESSAGE(STATUS "BUILD_HTML_DOCS = ${BUILD_HTML_DOCS}")

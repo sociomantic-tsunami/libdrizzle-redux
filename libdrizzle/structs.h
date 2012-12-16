@@ -43,8 +43,9 @@
 #pragma once
 
 #include <sys/types.h>
+#ifdef USE_OPENSSL
 #include <openssl/ssl.h>
-
+#endif
 #ifdef NI_MAXHOST
 # define LIBDRIZZLE_NI_MAXHOST NI_MAXHOST
 #else
@@ -156,8 +157,13 @@ struct drizzle_con_st
   char server_extra[DRIZZLE_MAX_SERVER_EXTRA_SIZE];
   drizzle_state_fn *state_stack[DRIZZLE_STATE_STACK_SIZE];
   char user[DRIZZLE_MAX_USER_SIZE];
+#ifdef USE_OPENSSL
   SSL_CTX *ssl_context;
   SSL *ssl;
+#else
+  void *ssl_context;
+  void *ssl;
+#endif
   drizzle_ssl_state_t ssl_state;
 };
 
