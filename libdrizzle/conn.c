@@ -1028,12 +1028,12 @@ drizzle_return_t drizzle_state_connect(drizzle_con_st *con)
       con->drizzle->last_errno= errno;
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
-
+#ifdef USE_OPENSSL
     if (con->ssl)
     {
       SSL_set_fd(con->ssl, con->fd);
     }
-
+#endif
     drizzle_state_pop(con);
   }
 
@@ -1140,10 +1140,11 @@ drizzle_return_t drizzle_state_read(drizzle_con_st *con)
   {
     size_t available_buffer= (size_t)DRIZZLE_MAX_BUFFER_SIZE -
         ((size_t)(con->buffer_ptr - con->buffer) + con->buffer_size);
-
+#ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
       read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, available_buffer);
     else
+#endif
       read_size = recv(con->fd, (char *)con->buffer_ptr + con->buffer_size,
                      available_buffer, 0);
 #ifdef _WIN32
@@ -1265,9 +1266,11 @@ drizzle_return_t drizzle_state_write(drizzle_con_st *con)
 
   while (con->buffer_size != 0)
   {
+#ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
       write_size= SSL_write(con->ssl, con->buffer_ptr, con->buffer_size);
     else
+#endif      
       write_size = send(con->fd,(char *) con->buffer_ptr, con->buffer_size, 0);
 
 #ifdef _WIN32

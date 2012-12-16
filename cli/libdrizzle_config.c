@@ -54,7 +54,11 @@ gboolean show_version= FALSE;
 static GOptionEntry options[] = {
   { "cflags", 0, 0, G_OPTION_ARG_NONE, &show_cflags, "["CMAKE_C_FLAGS"]", NULL },
   { "include", 0, 0, G_OPTION_ARG_NONE, &show_include, "[-I"CMAKE_INSTALL_PREFIX"]", NULL },
+#ifdef USE_OPENSSL
   { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"CMAKE_INSTALL_PREFIX" -ldrizzle-redux -lssl]", NULL },
+#else
+  { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"CMAKE_INSTALL_PREFIX" -ldrizzle-redux]", NULL },
+#endif
   { "socket", 0, 0, G_OPTION_ARG_NONE, &show_socket, "["DRIZZLE_DEFAULT_UDS"]", NULL },
   { "port", 0, 0, G_OPTION_ARG_NONE, &show_port, "["STR(DRIZZLE_DEFAULT_TCP_PORT)"]", NULL },
   { "version", 0, 0, G_OPTION_ARG_NONE, &show_version, "["LIBDRIZZLE_VERSION_STRING"]", NULL },
@@ -97,7 +101,11 @@ int main(int argc, char *argv[])
   }
   if (show_libs)
   {
+#ifdef USE_OPENSSL
     g_print("-L"CMAKE_INSTALL_PREFIX" -ldrizzle-redux -lssl\n");
+#else
+    g_print("-L"CMAKE_INSTALL_PREFIX" -ldrizzle-redux\n");
+#endif
   }
   if (show_socket)
   {
