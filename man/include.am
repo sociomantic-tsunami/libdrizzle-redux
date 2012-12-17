@@ -1,0 +1,18 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+if HAVE_RECENT_SPHINX
+
+if IS_VCS_CHECKOUT
+
+# Build rule for documentation
+$(dist_man_MANS): man
+
+endif
+
+BUILT_SOURCES+= $(dist_man_MANS)
+
+dist_man_MANS+=  man/libdrizzle.3
+
+endif

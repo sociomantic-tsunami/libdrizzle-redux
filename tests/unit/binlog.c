@@ -1,6 +1,6 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
  *
- * Drizzle Client & Protocol Library
+ *  Drizzle Client & Protocol Library
  *
  * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
  * All rights reserved.
@@ -35,28 +35,66 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  const char* in= "a nice passphrase";
-  char out[255];
-  bool result;
-
   (void) argc;
   (void) argv;
+  drizzle_st *drizzle;
+  drizzle_con_st *con;
+  drizzle_return_t ret;
+  drizzle_result_st *result;
+  drizzle_binlog_st *binlog_event;
 
-  // Test for bad usage
-  result= drizzle_mysql_password_hash(out, in, 0);
-  if (result)
+  drizzle = drizzle_create();
+  if (drizzle == NULL)
+  {
+    printf("Drizzle object creation error\n");
     return EXIT_FAILURE;
-
-  result= drizzle_mysql_password_hash(out, in, strlen(in));
-  if (!result)
+  }
+  con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "", 0);
+  if (con == NULL)
+  {
+    printf("Drizzle connection object creation error\n");
     return EXIT_FAILURE;
+  }
+  ret = drizzle_con_connect(con);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Drizzle connection failure\n");
+    return EXIT_FAILURE;
+  }
 
-  printf("%s\n", out);
+  result= drizzle_start_binlog(con, 0, "", 0, &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Drizzle binlog start failure\n");
+    return EXIT_FAILURE;
+  }
+
+  while (ret == DRIZZLE_RETURN_OK)
+  {
+    uint32_t i;
+    binlog_event= drizzle_binlog_get_event(result, &ret);
+    if (ret != DRIZZLE_RETURN_OK)
+      break;
+    printf("Timestamp: %" PRIu32 "\n", binlog_event->timestamp);
+    printf("Type: %"PRIu8"\n", binlog_event->type);
+    printf("Server-id: %"PRIu32"\n", binlog_event->server_id);
+    printf("Next-pos: %"PRIu32"\n", binlog_event->next_pos);
+    printf("Length: %"PRIu32"\n", binlog_event->length);
+    printf("Data: 0x");
+    for (i=0; i<binlog_event->length; i++)
+      printf("%02X ", binlog_event->data[i]);
+    printf("\n\n");
+  }
+
+  drizzle_con_quit(con);
+  drizzle_free(drizzle);
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
- *  Drizzle Client & Protocol Library
+ * Drizzle Client & Protocol Library
  *
  * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
  * All rights reserved.
@@ -35,80 +35,30 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
+  const uint8_t in[6]= {0x00, 0xFF, 0x7F, 0x80, 0xB9, 0xC0};
+  char out[255];
+  bool result;
+
   (void) argc;
   (void) argv;
-  drizzle_st *drizzle;
-  drizzle_con_st *con;
-  drizzle_return_t ret;
-  drizzle_result_st *result;
-  drizzle_row_t row;
-  int num_fields;
 
-  drizzle = drizzle_create();
-  if (drizzle == NULL)
-  {
-    printf("Drizzle object creation error\n");
+  // Test for bad usage
+  result= drizzle_hex_string(out, in, 0);
+  if (result)
     return EXIT_FAILURE;
-  }
-  con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "libdrizzle", 0);
-  if (con == NULL)
-  {
-    printf("Drizzle connection object creation error\n");
+
+  result= drizzle_hex_string(out, in, 6);
+  if (!result)
     return EXIT_FAILURE;
-  }
-  ret = drizzle_con_connect(con);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drizzle connection failure\n");
-    return EXIT_FAILURE;
-  }
 
-  drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Create table failure\n");
-    return EXIT_FAILURE;
-  }
-
-  drizzle_query_str(con, "insert into libdrizzle.t1 values (1),(2),(3)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Insert failure\n");
-    return EXIT_FAILURE;
-  }
-
-  result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Select failure\n");
-    return EXIT_FAILURE;
-  }
-  drizzle_result_buffer(result);
-  num_fields= drizzle_result_column_count(result);
-
-  printf("%d fields\n", num_fields);
-  while ((row = drizzle_row_next(result)))
-  {
-    printf("Data: %s\n", row[0]);
-  }
-
-  drizzle_result_free(result);
-
-  drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drop table failure\n");
-    return EXIT_FAILURE;
-  }
-
-
-  drizzle_con_quit(con);
-  drizzle_free(drizzle);
+  printf("%s\n", out);
   return EXIT_SUCCESS;
 }
