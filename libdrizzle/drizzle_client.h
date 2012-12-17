@@ -52,7 +52,9 @@
 #include <libdrizzle/row_client.h>
 #include <libdrizzle/field_client.h>
 #include <libdrizzle/error.h>
+#ifdef USE_OPENSSL
 #include <libdrizzle/ssl.h>
+#endif
 #include <libdrizzle/binlog.h>
 #include <libdrizzle/version.h>
 

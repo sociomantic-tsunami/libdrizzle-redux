@@ -36,6 +36,8 @@
  */
 
 #include <libdrizzle/common.h>
+#include <libdrizzle/ssl.h>
+#include <openssl/ssl.h>
 
 drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 {
