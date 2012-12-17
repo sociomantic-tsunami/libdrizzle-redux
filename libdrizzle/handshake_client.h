@@ -85,6 +85,9 @@ drizzle_return_t drizzle_handshake_client_write(drizzle_con_st *con);
 DRIZZLE_API
 drizzle_return_t drizzle_handshake_ssl_client_write(drizzle_con_st *con);
 
+DRIZZLE_API
+int drizzle_compile_capabilities(drizzle_con_st *con);
+
 /** @} */
 
 #ifdef __cplusplus

@@ -35,6 +35,8 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +49,6 @@ int main(int argc, char *argv[])
   drizzle_con_st *con;
   drizzle_return_t ret;
   drizzle_result_st *result;
-  drizzle_binlog_st *binlog_event;
 
   drizzle = drizzle_create();
   if (drizzle == NULL)
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     printf("Drizzle object creation error\n");
     return EXIT_FAILURE;
   }
-  con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "", 0);
+  con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "libdrizzle", 0);
   if (con == NULL)
   {
     printf("Drizzle connection object creation error\n");
@@ -68,29 +69,40 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  result= drizzle_start_binlog(con, 0, "", 0, &ret);
+  drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Drizzle binlog start failure\n");
+    printf("Create table failure\n");
     return EXIT_FAILURE;
   }
 
-  while (ret == DRIZZLE_RETURN_OK)
+  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
   {
-    uint32_t i;
-    binlog_event= drizzle_binlog_get_event(result, &ret);
-    if (ret != DRIZZLE_RETURN_OK)
-      break;
-    printf("Timestamp: %"PRIu32"\n", binlog_event->timestamp);
-    printf("Type: %"PRIu8"\n", binlog_event->type);
-    printf("Server-id: %"PRIu32"\n", binlog_event->server_id);
-    printf("Next-pos: %"PRIu32"\n", binlog_event->next_pos);
-    printf("Length: %"PRIu32"\n", binlog_event->length);
-    printf("Data: 0x");
-    for (i=0; i<binlog_event->length; i++)
-      printf("%02X ", binlog_event->data[i]);
-    printf("\n\n");
+    printf("Insert failure\n");
+    return EXIT_FAILURE;
   }
+
+  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
+  drizzle_result_free(result);
+
+  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (4),(5),(6)", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Insert failure\n");
+    return EXIT_FAILURE;
+  }
+
+  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
+  drizzle_result_free(result);
+
+  drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Drop table failure\n");
+    return EXIT_FAILURE;
+  }
+
 
   drizzle_con_quit(con);
   drizzle_free(drizzle);

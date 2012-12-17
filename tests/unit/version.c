@@ -35,28 +35,19 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char* argv[])
 {
-  const uint8_t in[6]= {0x00, 0xFF, 0x7F, 0x80, 0xB9, 0xC0};
-  char out[255];
-  bool result;
-
   (void) argc;
   (void) argv;
+  const char* version;
 
-  // Test for bad usage
-  result= drizzle_hex_string(out, in, 0);
-  if (result)
-    return EXIT_FAILURE;
-
-  result= drizzle_hex_string(out, in, 6);
-  if (!result)
-    return EXIT_FAILURE;
-
-  printf("%s\n", out);
+  version= drizzle_version();
+  printf("%s\n", version);
   return EXIT_SUCCESS;
 }

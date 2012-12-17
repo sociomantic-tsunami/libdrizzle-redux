@@ -1,0 +1,90 @@
+Summary: libdrizzle
+Name: @PACKAGE@
+Version: @VERSION@
+Release: 1
+License: BSD
+Group: System Environment/Libraries
+BuildRequires: 
+URL: https://launchpad.net/libdrizzle
+
+Packager: Brian Aker <brian@tangent.org>
+
+Source: 
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
+
+%description
+Drizzle and MySQL client library.
+
+This package provides the client utilities.
+
+%package devel
+Summary: Header files and development libraries for %{name}
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+This package contains the header files and development libraries
+for %{name}. If you like to develop programs using %{name}, 
+you will need to install %{name}-devel.
+
+%prep
+%setup -q
+
+%configure
+
+
+%build
+%{__make} %{?_smp_mflags}
+
+%install
+%{__rm} -rf %{buildroot}
+%{__make} install  DESTDIR="%{buildroot}" AM_INSTALL_PROGRAM_FLAGS=""
+mkdir -p $RPM_BUILD_ROOT/
+
+%check
+%{__make} check
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README HACKING THANKS
+
+%files devel
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README HACKING THANKS
+%{_includedir}/libdrizzle-5.0/gearman.h
+%{_includedir}/libdrizzle-5.0/binlog.h
+%{_includedir}/libdrizzle-5.0/column.h
+%{_includedir}/libdrizzle-5.0/column_client.h
+%{_includedir}/libdrizzle-5.0/command_client.h
+%{_includedir}/libdrizzle-5.0/common.h
+%{_includedir}/libdrizzle-5.0/conn.h
+%{_includedir}/libdrizzle-5.0/conn_client.h
+%{_includedir}/libdrizzle-5.0/conn_local.h
+%{_includedir}/libdrizzle-5.0/constants.h
+%{_includedir}/libdrizzle-5.0/drizzle.h
+%{_includedir}/libdrizzle-5.0/drizzle_client.h
+%{_includedir}/libdrizzle-5.0/drizzle_local.h
+%{_includedir}/libdrizzle-5.0/error.h
+%{_includedir}/libdrizzle-5.0/field_client.h
+%{_includedir}/libdrizzle-5.0/handshake_client.h
+%{_includedir}/libdrizzle-5.0/libdrizzle.h
+%{_includedir}/libdrizzle-5.0/pack.h
+%{_includedir}/libdrizzle-5.0/query.h
+%{_includedir}/libdrizzle-5.0/result.h
+%{_includedir}/libdrizzle-5.0/result_client.h
+%{_includedir}/libdrizzle-5.0/return.h
+%{_includedir}/libdrizzle-5.0/row_client.h
+%{_includedir}/libdrizzle-5.0/sha1.h
+%{_includedir}/libdrizzle-5.0/ssl.h
+%{_includedir}/libdrizzle-5.0/state.h
+%{_includedir}/libdrizzle-5.0/structs.h
+%{_includedir}/libdrizzle-5.0/verbose.h
+%{_includedir}/libdrizzle-5.0/visibility.h
+%{_libdir}/libdrizzle.so
+
+%changelog
+* Wed Oct 11 2012 Brian Aker <brian@tangent.org> - 0.1-1
+- Initial package

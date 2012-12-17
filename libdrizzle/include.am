@@ -1,0 +1,66 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+nobase_include_HEADERS+= libdrizzle/binlog.h
+nobase_include_HEADERS+= libdrizzle/column.h
+nobase_include_HEADERS+= libdrizzle/column_client.h
+nobase_include_HEADERS+= libdrizzle/command_client.h
+nobase_include_HEADERS+= libdrizzle/common.h
+nobase_include_HEADERS+= libdrizzle/conn.h
+nobase_include_HEADERS+= libdrizzle/conn_client.h
+nobase_include_HEADERS+= libdrizzle/conn_local.h
+nobase_include_HEADERS+= libdrizzle/constants.h
+nobase_include_HEADERS+= libdrizzle/drizzle.h
+nobase_include_HEADERS+= libdrizzle/drizzle_client.h
+nobase_include_HEADERS+= libdrizzle/drizzle_local.h
+nobase_include_HEADERS+= libdrizzle/error.h
+nobase_include_HEADERS+= libdrizzle/field_client.h
+nobase_include_HEADERS+= libdrizzle/handshake_client.h
+nobase_include_HEADERS+= libdrizzle/libdrizzle.h
+nobase_include_HEADERS+= libdrizzle/pack.h
+nobase_include_HEADERS+= libdrizzle/query.h
+nobase_include_HEADERS+= libdrizzle/result.h
+nobase_include_HEADERS+= libdrizzle/result_client.h
+nobase_include_HEADERS+= libdrizzle/return.h
+nobase_include_HEADERS+= libdrizzle/row_client.h
+nobase_include_HEADERS+= libdrizzle/sha1.h
+nobase_include_HEADERS+= libdrizzle/ssl.h
+nobase_include_HEADERS+= libdrizzle/state.h
+nobase_include_HEADERS+= libdrizzle/structs.h
+nobase_include_HEADERS+= libdrizzle/verbose.h
+nobase_include_HEADERS+= libdrizzle/visibility.h
+nobase_include_HEADERS+= libdrizzle/version.h
+
+noinst_HEADERS+= libdrizzle/structs.h
+
+lib_LTLIBRARIES+= libdrizzle/libdrizzle.la
+libdrizzle_libdrizzle_la_SOURCES=
+libdrizzle_libdrizzle_la_LIBADD=
+libdrizzle_libdrizzle_la_LDFLAGS=
+libdrizzle_libdrizzle_la_CFLAGS= -DBUILDING_LIBDRIZZLE
+libdrizzle_libdrizzle_la_CXXFLAGS= -DBUILDING_LIBDRIZZLE
+
+libdrizzle_libdrizzle_la_CFLAGS+= @OPENSSL_INCLUDES@
+libdrizzle_libdrizzle_la_CXXFLAGS+= @OPENSSL_INCLUDES@
+libdrizzle_libdrizzle_la_LIBADD+= @OPENSSL_LIBS@
+libdrizzle_libdrizzle_la_LDFLAGS+= @OPENSSL_LDFLAGS@
+
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/binlog.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/command.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/conn_uds.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/error.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/handshake.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/query.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/row.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/ssl.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/column.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/conn.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/drizzle.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/field.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/pack.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/result.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/sha1.c
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/state.c
+
+libdrizzle_libdrizzle_la_LDFLAGS+= -version-info ${LIBDRIZZLE_LIBRARY_VERSION}

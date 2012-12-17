@@ -41,7 +41,6 @@
  * @brief Drizzle Declarations
  */
 
-#include <inttypes.h>
 #include <sys/types.h>
 
 #ifdef _WIN32

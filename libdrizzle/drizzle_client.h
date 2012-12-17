@@ -42,7 +42,6 @@
 
 #pragma once
 
-#include "config.h"
 #include <libdrizzle/drizzle.h>
 #include <libdrizzle/conn_client.h>
 #include <libdrizzle/handshake_client.h>
@@ -55,6 +54,7 @@
 #include <libdrizzle/error.h>
 #include <libdrizzle/ssl.h>
 #include <libdrizzle/binlog.h>
+#include <libdrizzle/version.h>
 
 #ifdef __cplusplus
 extern "C" {
