@@ -1,0 +1,48 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+tests_unit_binlog_SOURCES= tests/unit/binlog.c
+tests_unit_binlog_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/binlog
+noinst_PROGRAMS+= tests/unit/binlog
+
+tests_unit_escape_SOURCES= tests/unit/escape.c
+tests_unit_escape_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/escape
+noinst_PROGRAMS+= tests/unit/escape
+
+tests_unit_insert_id_SOURCES= tests/unit/insert_id.c
+tests_unit_insert_id_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/insert_id
+noinst_PROGRAMS+= tests/unit/insert_id
+
+tests_unit_query_SOURCES= tests/unit/query.c
+tests_unit_query_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/query
+noinst_PROGRAMS+= tests/unit/query
+
+tests_unit_version_SOURCES= tests/unit/version.c
+tests_unit_version_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/version
+noinst_PROGRAMS+= tests/unit/version
+
+tests_unit_connect_SOURCES= tests/unit/connect.c
+tests_unit_connect_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/connect
+noinst_PROGRAMS+= tests/unit/connect
+
+tests_unit_hex_SOURCES= tests/unit/hex.c
+tests_unit_hex_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/hex
+noinst_PROGRAMS+= tests/unit/hex
+
+tests_unit_passwd_SOURCES= tests/unit/passwd.c
+tests_unit_passwd_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/passwd
+noinst_PROGRAMS+= tests/unit/passwd
+
+tests_unit_unbuffered_query_SOURCES= tests/unit/unbuffered_query.c
+tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/unbuffered_query
+noinst_PROGRAMS+= tests/unit/unbuffered_query

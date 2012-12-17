@@ -37,6 +37,10 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 DRIZZLE_API
 drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
                                         uint32_t server_id,
@@ -50,3 +54,7 @@ drizzle_binlog_st *drizzle_binlog_get_event(drizzle_result_st *result,
 
 DRIZZLE_LOCAL
 drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con);
+
+#ifdef __cplusplus
+}
+#endif

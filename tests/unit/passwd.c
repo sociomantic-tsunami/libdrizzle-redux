@@ -35,17 +35,30 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char* argv[])
 {
+  const char* in= "a nice passphrase";
+  char out[255];
+  bool result;
+
   (void) argc;
   (void) argv;
-  const char* version;
 
-  version= drizzle_version();
-  printf("%s\n", version);
+  // Test for bad usage
+  result= drizzle_mysql_password_hash(out, in, 0);
+  if (result)
+    return EXIT_FAILURE;
+
+  result= drizzle_mysql_password_hash(out, in, strlen(in));
+  if (!result)
+    return EXIT_FAILURE;
+
+  printf("%s\n", out);
   return EXIT_SUCCESS;
 }

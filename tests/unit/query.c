@@ -35,6 +35,8 @@
  *
  */
 
+#include "config.h"
+
 #include <libdrizzle/drizzle_client.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,6 +49,8 @@ int main(int argc, char *argv[])
   drizzle_con_st *con;
   drizzle_return_t ret;
   drizzle_result_st *result;
+  drizzle_row_t row;
+  int num_fields;
 
   drizzle = drizzle_create();
   if (drizzle == NULL)
@@ -67,31 +71,35 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", &ret);
+  drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Create table failure\n");
     return EXIT_FAILURE;
   }
 
-  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
+  drizzle_query_str(con, "insert into libdrizzle.t1 values (1),(2),(3)", &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Insert failure\n");
     return EXIT_FAILURE;
   }
 
-  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
-  drizzle_result_free(result);
-
-  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (4),(5),(6)", &ret);
+  result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Insert failure\n");
+    printf("Select failure\n");
     return EXIT_FAILURE;
   }
+  drizzle_result_buffer(result);
+  num_fields= drizzle_result_column_count(result);
 
-  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
+  printf("%d fields\n", num_fields);
+  while ((row = drizzle_row_next(result)))
+  {
+    printf("Data: %s\n", row[0]);
+  }
+
   drizzle_result_free(result);
 
   drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
