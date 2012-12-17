@@ -900,11 +900,11 @@ function autoreconf_setup ()
   fi
 
   if [[ -z "$WARNINGS" ]]; then
-    if [[ -n "$VCS_CHECKOUT" ]]; then
-      WARNINGS="all,error"
-    else
+#    if [[ -n "$VCS_CHECKOUT" ]]; then
+#      WARNINGS="all,error"
+#    else
       WARNINGS="all"
-    fi
+#    fi
   fi
 
   if test $use_libtool = 1; then

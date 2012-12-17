@@ -21,6 +21,7 @@ EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST=
 CONFIGURE_DEPENDENCIES=
+PREFIX= @prefix@
 
 #includes additional rules from aminclude.am
 @INC_AMINCLUDE@

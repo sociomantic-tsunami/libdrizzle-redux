@@ -13,7 +13,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
-AC_PREREQ([2.63])
+AC_PREREQ([2.69])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -59,6 +59,7 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 AX_CHECK_OPENSSL
+AM_PATH_GLIB_2_0()
 
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],
