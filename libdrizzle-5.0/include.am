@@ -1,0 +1,27 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+nobase_include_HEADERS+= libdrizzle-5.0/binlog.h
+nobase_include_HEADERS+= libdrizzle-5.0/column.h
+nobase_include_HEADERS+= libdrizzle-5.0/column_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/command_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/conn.h
+nobase_include_HEADERS+= libdrizzle-5.0/conn_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/constants.h
+nobase_include_HEADERS+= libdrizzle-5.0/drizzle.h
+nobase_include_HEADERS+= libdrizzle-5.0/drizzle_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/error.h
+nobase_include_HEADERS+= libdrizzle-5.0/field_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/handshake_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/libdrizzle.h
+nobase_include_HEADERS+= libdrizzle-5.0/pack.h
+nobase_include_HEADERS+= libdrizzle-5.0/query.h
+nobase_include_HEADERS+= libdrizzle-5.0/result.h
+nobase_include_HEADERS+= libdrizzle-5.0/result_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/return.h
+nobase_include_HEADERS+= libdrizzle-5.0/row_client.h
+nobase_include_HEADERS+= libdrizzle-5.0/ssl.h
+nobase_include_HEADERS+= libdrizzle-5.0/verbose.h
+nobase_include_HEADERS+= libdrizzle-5.0/visibility.h
+nobase_include_HEADERS+= libdrizzle-5.0/version.h
