@@ -255,6 +255,8 @@ struct drizzle_binlog_st
   uint16_t flags;
   uint16_t extra_flags;
   uint8_t *data;
+  uint8_t *raw_data;
+  uint32_t raw_length;
 };
 
 /**

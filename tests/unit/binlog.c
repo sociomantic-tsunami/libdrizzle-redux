@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
   drizzle_con_st *con;
   drizzle_return_t ret;
   drizzle_result_st *result;
-  drizzle_binlog_st *binlog_event;
 
   drizzle = drizzle_create();
   if (drizzle == NULL)
@@ -80,18 +79,21 @@ int main(int argc, char *argv[])
 
   while (ret == DRIZZLE_RETURN_OK)
   {
-    uint32_t i;
-    binlog_event= drizzle_binlog_get_event(result, &ret);
+    uint32_t i, length;
+    const uint8_t *data;
+    ret= drizzle_binlog_get_next_event(result);
     if (ret != DRIZZLE_RETURN_OK)
       break;
-    printf("Timestamp: %" PRIu32 "\n", binlog_event->timestamp);
-    printf("Type: %"PRIu8"\n", binlog_event->type);
-    printf("Server-id: %"PRIu32"\n", binlog_event->server_id);
-    printf("Next-pos: %"PRIu32"\n", binlog_event->next_pos);
-    printf("Length: %"PRIu32"\n", binlog_event->length);
+    printf("Timestamp: %" PRIu32 "\n", drizzle_binlog_event_timestamp(result));
+    printf("Type: %"PRIu8"\n", drizzle_binlog_event_type(result));
+    printf("Server-id: %"PRIu32"\n", drizzle_binlog_event_server_id(result));
+    printf("Next-pos: %"PRIu32"\n", drizzle_binlog_event_next_pos(result));
+    length= drizzle_binlog_event_length(result);
+    printf("Length: %"PRIu32"\n", length);
+    data= drizzle_binlog_event_data(result);
     printf("Data: 0x");
-    for (i=0; i<binlog_event->length; i++)
-      printf("%02X ", binlog_event->data[i]);
+    for (i=0; i<length; i++)
+      printf("%02X ", data[i]);
     printf("\n\n");
   }
 

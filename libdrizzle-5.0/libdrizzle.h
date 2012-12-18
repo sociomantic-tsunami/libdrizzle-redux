@@ -33,4 +33,4 @@
 
 #pragma once
 
-#include <libdrizzle/drizzle_client.h>
+#include <libdrizzle-5.0/drizzle_client.h>

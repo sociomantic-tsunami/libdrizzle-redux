@@ -38,7 +38,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <glib/gstdio.h>
-#include <libdrizzle/constants.h>
+#include <libdrizzle-5.0/constants.h>
 #include "config.h"
 
 #define STR_HELPER(x) #x
