@@ -84,7 +84,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 libdrizzle/version.h
+                 libdrizzle-5.0/version.h
                  ])
 
 AC_OUTPUT

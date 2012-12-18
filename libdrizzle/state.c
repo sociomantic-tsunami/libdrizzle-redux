@@ -40,7 +40,8 @@
  * @brief State machine definitions
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 drizzle_return_t drizzle_state_loop(drizzle_con_st *con)
 {

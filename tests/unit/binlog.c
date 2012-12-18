@@ -37,7 +37,8 @@
 
 #include "config.h"
 
-#include <libdrizzle/drizzle_client.h>
+#include <libdrizzle-5.0/drizzle_client.h>
+#include "libdrizzle/structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -41,7 +41,8 @@
  * @brief Column definitions
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 /*
  * Common definitions
