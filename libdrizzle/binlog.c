@@ -68,16 +68,19 @@ drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
        4;   // Server ID
 
   // Prevent buffer overflow with long binlog filenames
-  if (strlen(file) >= (size_t)(128 - len))
+  if (file)
   {
-    fn_len= 128 - len;
+    if (strlen(file) >= (size_t)(128 - len))
+    {
+      fn_len= 128 - len;
+    }
+    else
+    {
+      fn_len = strlen(file);
+    }
+    len+= fn_len;
+    memcpy(ptr, file, fn_len);
   }
-  else
-  {
-    fn_len = strlen(file);
-  }
-  len+= fn_len;
-  memcpy(ptr, file, fn_len);
 
   return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_BINLOG_DUMP,
                                    data, len, len, ret_ptr);
@@ -144,10 +147,11 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     con->buffer_ptr++;
     con->packet_size--;
     con->buffer_size--;
+    binlog_event->raw_data= con->buffer_ptr;
     binlog_event->timestamp= drizzle_get_byte4(con->buffer_ptr);
     binlog_event->type= con->buffer_ptr[4];
     binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
-    binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
+    binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
     if (binlog_event->length <= 27)
     {
       binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
