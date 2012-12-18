@@ -74,7 +74,7 @@ gboolean get_system_user(char *dest, uint8_t len);
 drizzle_con_st *_connect(void);
 FILE *create_binlog_file(char *binlog_file);
 void get_binlogs(drizzle_con_st *con);
-void write_binlog(FILE* file, const char* data, guint64 len);
+void write_binlog(FILE* file, const uint8_t* data, uint32_t len);
 
 gboolean get_system_user(char *dest, uint8_t len)
 {
@@ -151,6 +151,8 @@ void get_binlogs(drizzle_con_st *con)
   int server_id;
   FILE *outfile;
   gchar *binlog_file;
+  uint32_t event_len;
+  gboolean read_end= FALSE;
 
   if (continuous)
   {
@@ -169,22 +171,55 @@ void get_binlogs(drizzle_con_st *con)
   }
 
   binlog_file= g_strdup(start_file);
+  outfile= create_binlog_file(binlog_file);
+  if (!outfile)
+  {
+    g_print("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
+    exit(EXIT_FAILURE);
+  }
+
   while(1)
   {
-    outfile= create_binlog_file(binlog_file);
-    if (!outfile)
+    write_binlog(outfile, (uint8_t *)DRIZZLE_BINLOG_MAGIC, 4);
+    while(1)
     {
-      g_print("Could not create binlog file '%s', errno %d", binlog_file, errno);
-      exit(EXIT_FAILURE);
+      ret= drizzle_binlog_get_next_event(result);
+      event_len= drizzle_binlog_event_raw_length(result);
+      if (ret != DRIZZLE_RETURN_OK)
+      {
+          // EOF
+          if (ret != DRIZZLE_RETURN_EOF)
+          {
+            g_print("Read error: %d - %s\n", ret, drizzle_con_error(con));
+          }
+          read_end= TRUE;
+          break;
+      }
+      if (drizzle_binlog_event_type(result) == DRIZZLE_EVENT_TYPE_ROTATE)
+      {
+        fclose(outfile);
+        g_free(binlog_file);
+        binlog_file= g_strndup((const gchar *)drizzle_binlog_event_data(result), drizzle_binlog_event_length(result));
+        outfile= create_binlog_file(binlog_file);
+        if (!outfile)
+        {
+          g_print("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
+          exit(EXIT_FAILURE);
+        }
+        break;
+      }
+      write_binlog(outfile, drizzle_binlog_event_raw_data(result), event_len);
     }
-    write_binlog(outfile, DRIZZLE_BINLOG_MAGIC, 4);
-    break;
+    if (read_end)
+    {
+      break;
+    }
   }
 
   drizzle_result_free(result);
 }
 
-void write_binlog(FILE* file, const char* data, guint64 len)
+void write_binlog(FILE* file, const uint8_t* data, uint32_t len)
 {
   if (len)
   {

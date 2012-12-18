@@ -49,8 +49,37 @@ drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
                                         drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-drizzle_binlog_st *drizzle_binlog_get_event(drizzle_result_st *result,
-                                            drizzle_return_t *ret_ptr);
+drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result);
+
+DRIZZLE_API
+uint32_t drizzle_binlog_event_timestamp(drizzle_result_st *result);
+
+DRIZZLE_API
+drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result);
+
+DRIZZLE_API
+uint32_t drizzle_binlog_event_server_id(drizzle_result_st *result);
+
+DRIZZLE_API
+uint32_t drizzle_binlog_event_length(drizzle_result_st *result);
+
+DRIZZLE_API
+uint32_t drizzle_binlog_event_next_pos(drizzle_result_st *result);
+
+DRIZZLE_API
+uint16_t drizzle_binlog_event_flags(drizzle_result_st *result);
+
+DRIZZLE_API
+uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result);
+
+DRIZZLE_API
+const uint8_t *drizzle_binlog_event_data(drizzle_result_st *result);
+
+DRIZZLE_API
+const uint8_t *drizzle_binlog_event_raw_data(drizzle_result_st *result);
+
+DRIZZLE_API
+uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result);
 
 DRIZZLE_LOCAL
 drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con);

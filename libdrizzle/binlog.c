@@ -87,26 +87,116 @@ drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
                                    data, len, len, ret_ptr);
 }
 
-drizzle_binlog_st *drizzle_binlog_get_event(drizzle_result_st *result,
-                                            drizzle_return_t *ret_ptr)
+drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result)
 {
-  drizzle_return_t unused;
-  if (ret_ptr == NULL)
-  {
-    ret_ptr= &unused;
-  }
-
   if (result == NULL)
   {
-    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
-    return NULL;
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
   drizzle_state_push(result->con, drizzle_state_binlog_read);
   drizzle_state_push(result->con, drizzle_state_packet_read);
-  *ret_ptr= drizzle_state_loop(result->con);
+  return drizzle_state_loop(result->con);
+}
 
-  return result->binlog_event;
+uint32_t drizzle_binlog_event_timestamp(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->timestamp;
+}
+
+drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->type;
+}
+
+uint32_t drizzle_binlog_event_server_id(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->server_id;
+}
+
+uint32_t drizzle_binlog_event_length(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->length;
+}
+
+uint32_t drizzle_binlog_event_next_pos(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->next_pos;
+}
+
+uint16_t drizzle_binlog_event_flags(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->flags;
+}
+
+uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->extra_flags;
+}
+
+const uint8_t *drizzle_binlog_event_data(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return NULL;
+  }
+
+  return result->binlog_event->data;
+}
+
+const uint8_t *drizzle_binlog_event_raw_data(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return NULL;
+  }
+
+  return result->binlog_event->raw_data;
+}
+
+uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result)
+{
+  if ((result == NULL) || (result->binlog_event == NULL))
+  {
+    return 0;
+  }
+
+  return result->binlog_event->raw_length;
 }
 
 drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
@@ -125,8 +215,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
   }
   binlog_event= con->result->binlog_event;
 
-  if (con->packet_size != 0 && con->buffer_size < con->packet_size &&
-      con->buffer_size < 5)
+  if (con->packet_size != 0 && con->buffer_size < con->packet_size)
   {
     drizzle_state_push(con, drizzle_state_read);
     return DRIZZLE_RETURN_OK;
@@ -134,8 +223,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
 
   if (con->packet_size == 5 && con->buffer_ptr[0] == 254)
   {
-    /* Got EOF packet, no more rows. */
-    con->result->row_current= 0;
+    /* Got EOF packet, no more data. */
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
     con->status= drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
@@ -153,6 +241,12 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     binlog_event->type= con->buffer_ptr[4];
     binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
     binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
+    if (con->packet_size != binlog_event->length)
+    {
+        drizzle_set_error(con->drizzle, "drizzle_state_binlog_read",
+                          "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
+        return DRIZZLE_RETURN_UNEXPECTED_DATA;
+    }
     if (binlog_event->length <= 27)
     {
       binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
@@ -181,7 +275,14 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
     }
+    if (con->packet_size != 0)
+    {
+      drizzle_set_error(con->drizzle, "drizzle_state_binlog_read",
+                        "unexpected data after packet:%zu", con->buffer_size);
+      return DRIZZLE_RETURN_UNEXPECTED_DATA;
+    }
     drizzle_state_pop(con);
   }
   return DRIZZLE_RETURN_OK;
 }
+
