@@ -93,8 +93,8 @@ drizzle_return_t drizzle_state_packet_read(drizzle_con_st *con)
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
   }
 
-  drizzle_log_debug(con->drizzle, "packet_size= %zu, packet_number= %u",
-                    con->packet_size, con->packet_number);
+  drizzle_log_debug(con->drizzle, "buffer_size= %zu, packet_size= %zu, packet_number= %u",
+                    con->buffer_size, con->packet_size, con->packet_number);
 
   con->packet_number++;
 
