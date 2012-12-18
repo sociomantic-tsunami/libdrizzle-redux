@@ -40,7 +40,8 @@
  * @brief Drizzle Definitions
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 /**
  * @addtogroup drizzle_static Static Drizzle Declarations

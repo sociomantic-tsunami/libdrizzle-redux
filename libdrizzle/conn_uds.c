@@ -40,7 +40,8 @@
  * @brief Connection Definitions for Unix Domain Sockets
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 const char *drizzle_con_uds(const drizzle_con_st *con)
 {

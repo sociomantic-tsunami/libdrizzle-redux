@@ -2,7 +2,7 @@
  *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,30 +35,14 @@
  *
  */
 
-#include "config.h"
+#pragma once
 
-#include <libdrizzle-5.0/drizzle_client.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(int argc, char* argv[])
-{
-  const uint8_t in[6]= {0x00, 0xFF, 0x7F, 0x80, 0xB9, 0xC0};
-  char out[255];
-  bool result;
-
-  (void) argc;
-  (void) argv;
-
-  // Test for bad usage
-  result= drizzle_hex_string(out, in, 0);
-  if (result)
-    return EXIT_FAILURE;
-
-  result= drizzle_hex_string(out, in, 6);
-  if (!result)
-    return EXIT_FAILURE;
-
-  printf("%s\n", out);
-  return EXIT_SUCCESS;
-}
+#ifdef __cplusplus
+struct drizzle_st;
+struct drizzle_con_tcp_st;
+struct drizzle_con_uds_st;
+struct drizzle_con_st;
+struct drizzle_result_st;
+struct drizzle_binlog_st;
+struct drizzle_column_st;
+#endif

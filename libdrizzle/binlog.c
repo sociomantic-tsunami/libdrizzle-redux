@@ -35,7 +35,8 @@
  *
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
                                             uint32_t server_id,

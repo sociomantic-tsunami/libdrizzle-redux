@@ -13,7 +13,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_TARGET
 
 AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -84,7 +84,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 libdrizzle/version.h
+                 libdrizzle-5.0/version.h
                  ])
 
 AC_OUTPUT
