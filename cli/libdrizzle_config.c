@@ -55,9 +55,9 @@ static GOptionEntry options[] = {
   { "cflags", 0, 0, G_OPTION_ARG_NONE, &show_cflags, "["ECHO_CFLAGS"]", NULL },
   { "include", 0, 0, G_OPTION_ARG_NONE, &show_include, "[-I"PREFIX"]", NULL },
 #ifdef USE_OPENSSL
-  { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"PREFIX" -ldrizzle-redux -lssl]", NULL },
+  { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"PREFIX" -ldrizzle -lssl]", NULL },
 #else
-  { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"PREFIX" -ldrizzle-redux]", NULL },
+  { "libs", 0, 0, G_OPTION_ARG_NONE, &show_libs, "[-L"PREFIX" -ldrizzle]", NULL },
 #endif
   { "socket", 0, 0, G_OPTION_ARG_NONE, &show_socket, "["DRIZZLE_DEFAULT_UDS"]", NULL },
   { "port", 0, 0, G_OPTION_ARG_NONE, &show_port, "["STR(DRIZZLE_DEFAULT_TCP_PORT)"]", NULL },
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
   if (show_libs)
   {
 #ifdef USE_OPENSSL
-    g_print("-L"PREFIX" -ldrizzle-redux -lssl\n");
+    g_print("-L"PREFIX" -ldrizzle -lssl\n");
 #else
-    g_print("-L"PREFIX" -ldrizzle-redux\n");
+    g_print("-L"PREFIX" -ldrizzle\n");
 #endif
   }
   if (show_socket)

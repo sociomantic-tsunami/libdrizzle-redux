@@ -34,6 +34,7 @@ include m4/include.am
 include cli/include.am
 include libdrizzle/include.am
 include rpm/include.am
+include docs/include.am
 
 # Cleanup individual files in order to preserve uninstall/etc order
 maintainer-clean-local:
