@@ -40,7 +40,8 @@
  * @brief Row definitions
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+#include "libdrizzle/common.h"
 
 /*
  * Client definitions

@@ -2,36 +2,11 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-nobase_include_HEADERS+= libdrizzle/binlog.h
-nobase_include_HEADERS+= libdrizzle/column.h
-nobase_include_HEADERS+= libdrizzle/column_client.h
-nobase_include_HEADERS+= libdrizzle/command_client.h
-nobase_include_HEADERS+= libdrizzle/common.h
-nobase_include_HEADERS+= libdrizzle/conn.h
-nobase_include_HEADERS+= libdrizzle/conn_client.h
-nobase_include_HEADERS+= libdrizzle/conn_local.h
-nobase_include_HEADERS+= libdrizzle/constants.h
-nobase_include_HEADERS+= libdrizzle/drizzle.h
-nobase_include_HEADERS+= libdrizzle/drizzle_client.h
-nobase_include_HEADERS+= libdrizzle/drizzle_local.h
-nobase_include_HEADERS+= libdrizzle/error.h
-nobase_include_HEADERS+= libdrizzle/field_client.h
-nobase_include_HEADERS+= libdrizzle/handshake_client.h
-nobase_include_HEADERS+= libdrizzle/libdrizzle.h
-nobase_include_HEADERS+= libdrizzle/pack.h
-nobase_include_HEADERS+= libdrizzle/query.h
-nobase_include_HEADERS+= libdrizzle/result.h
-nobase_include_HEADERS+= libdrizzle/result_client.h
-nobase_include_HEADERS+= libdrizzle/return.h
-nobase_include_HEADERS+= libdrizzle/row_client.h
-nobase_include_HEADERS+= libdrizzle/sha1.h
-nobase_include_HEADERS+= libdrizzle/ssl.h
-nobase_include_HEADERS+= libdrizzle/state.h
-nobase_include_HEADERS+= libdrizzle/structs.h
-nobase_include_HEADERS+= libdrizzle/verbose.h
-nobase_include_HEADERS+= libdrizzle/visibility.h
-nobase_include_HEADERS+= libdrizzle/version.h
-
+noinst_HEADERS+= libdrizzle/common.h
+noinst_HEADERS+= libdrizzle/conn_local.h
+noinst_HEADERS+= libdrizzle/drizzle_local.h
+noinst_HEADERS+= libdrizzle/sha1.h
+noinst_HEADERS+= libdrizzle/state.h
 noinst_HEADERS+= libdrizzle/structs.h
 
 lib_LTLIBRARIES+= libdrizzle/libdrizzle.la

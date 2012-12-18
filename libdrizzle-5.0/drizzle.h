@@ -94,12 +94,12 @@ typedef _Bool bool;
 #include <assert.h>
 #include <errno.h>
 
-#include <libdrizzle/visibility.h>
-#include <libdrizzle/constants.h>
-#include <libdrizzle/structs.h>
-#include <libdrizzle/conn.h>
-#include <libdrizzle/result.h>
-#include <libdrizzle/column.h>
+#include <libdrizzle-5.0/visibility.h>
+#include <libdrizzle-5.0/constants.h>
+#include <libdrizzle-5.0/structs.h>
+#include <libdrizzle-5.0/conn.h>
+#include <libdrizzle-5.0/result.h>
+#include <libdrizzle-5.0/column.h>
 
 #ifdef  __cplusplus
 extern "C" {
