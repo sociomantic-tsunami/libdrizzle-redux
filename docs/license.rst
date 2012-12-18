@@ -4,7 +4,7 @@ Licensing
 Documentation Content
 ---------------------
 
-.. image:: ../_static/cc-symbol.png
+.. image:: _static/cc-symbol.png
    :alt:  Creative Commons License
    :target:  http://creativecommons.org/licenses/by-sa/3.0/
 
