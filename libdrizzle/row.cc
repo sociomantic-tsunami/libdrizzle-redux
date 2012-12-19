@@ -263,7 +263,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_con_st *con)
     /* Got EOF packet, no more rows. */
     con->result->row_current= 0;
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= drizzle_get_byte2(con->buffer_ptr + 3);
+    con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
   }

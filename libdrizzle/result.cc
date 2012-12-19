@@ -55,7 +55,7 @@ drizzle_result_st *drizzle_result_create(drizzle_con_st *con)
     return NULL;
   }
 
-  result= malloc(sizeof(drizzle_result_st));
+  result= (drizzle_result_st*)malloc(sizeof(drizzle_result_st));
   if (result == NULL)
   {
     drizzle_set_error(con->drizzle, __func__, "Failed to allocate.");
@@ -409,8 +409,8 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
     /* We can ignore the returns since we've buffered the entire packet. */
     con->result->affected_rows= drizzle_unpack_length(con, &ret);
     con->result->insert_id= drizzle_unpack_length(con, &ret);
-    con->status= drizzle_get_byte2(con->buffer_ptr);
-    con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 2);
+    con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr);
+    con->result->warning_count= drizzle_get_byte2(con->buffer_ptr +2);
     con->buffer_ptr+= 4;
     con->buffer_size-= 5;
     con->packet_size-= 5;
@@ -427,7 +427,7 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
   {
     con->result->options= DRIZZLE_RESULT_EOF_PACKET;
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= drizzle_get_byte2(con->buffer_ptr + 3);
+    con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->packet_size-= 5;

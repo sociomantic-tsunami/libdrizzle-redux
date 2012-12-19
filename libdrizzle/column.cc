@@ -56,7 +56,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
     return NULL;
   }
 
-  column= malloc(sizeof(drizzle_column_st));
+  column= (drizzle_column_st*)malloc(sizeof(drizzle_column_st));
   if (column == NULL)
   {
     drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
@@ -75,7 +75,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
   column->charset = 0;
   column->size = 0;
   column->max_size = 0;
-  column->type = 0;
+  column->type= (drizzle_column_type_t)0;
   column->flags = 0;
   column->decimals = 0;
   /* UNSET: column->default_value */
@@ -215,7 +215,7 @@ drizzle_column_type_t drizzle_column_type(drizzle_column_st *column)
 {
   if (column == NULL)
   {
-    return 0;
+    return DRIZZLE_COLUMN_TYPE_DECIMAL;
   }
 
   return column->type;
@@ -225,10 +225,10 @@ drizzle_column_flags_t drizzle_column_flags(drizzle_column_st *column)
 {
   if (column == NULL)
   {
-    return 0;
+    return DRIZZLE_COLUMN_FLAGS_NONE;
   }
 
-  return column->flags;
+  return drizzle_column_flags_t(column->flags);
 }
 
 uint8_t drizzle_column_decimals(drizzle_column_st *column)
@@ -340,7 +340,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
       return DRIZZLE_RETURN_OK;
     }
 
-    result->column_buffer= calloc(result->column_count, sizeof(drizzle_column_st));
+    result->column_buffer= (drizzle_column_st*)calloc(result->column_count, sizeof(drizzle_column_st));
     if (result->column_buffer == NULL)
     {
       drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
@@ -498,7 +498,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
     /* EOF packet marking end of columns. */
     con->result->column= NULL;
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= drizzle_get_byte2(con->buffer_ptr + 3);
+    con->status= drizzle_con_status_t(drizzle_get_byte2(con->buffer_ptr + 3));
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
 
@@ -537,7 +537,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
     column->charset= (drizzle_charset_t)drizzle_get_byte2(con->buffer_ptr + 1);
     column->size= drizzle_get_byte4(con->buffer_ptr + 3);
 
-    column->type= con->buffer_ptr[7];
+    column->type= drizzle_column_type_t(con->buffer_ptr[7]);
 
     column->flags= drizzle_get_byte2(con->buffer_ptr + 8);
     if (column->type <= DRIZZLE_COLUMN_TYPE_INT24 &&
