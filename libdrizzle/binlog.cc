@@ -113,7 +113,7 @@ drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result
 {
   if ((result == NULL) || (result->binlog_event == NULL))
   {
-    return 0;
+    return drizzle_binlog_event_types_t();
   }
 
   return result->binlog_event->type;
@@ -210,7 +210,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
 
   if (con->result->binlog_event == NULL)
   {
-    con->result->binlog_event = malloc(sizeof(drizzle_binlog_st));
+    con->result->binlog_event= (drizzle_binlog_st*)malloc(sizeof(drizzle_binlog_st));
     con->result->binlog_event->data= NULL;
   }
   binlog_event= con->result->binlog_event;
@@ -225,7 +225,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
   {
     /* Got EOF packet, no more data. */
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= drizzle_get_byte2(con->buffer_ptr + 3);
+    con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     drizzle_state_pop(con);
@@ -238,7 +238,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     con->buffer_size--;
     binlog_event->raw_data= con->buffer_ptr;
     binlog_event->timestamp= drizzle_get_byte4(con->buffer_ptr);
-    binlog_event->type= con->buffer_ptr[4];
+    binlog_event->type= (drizzle_binlog_event_types_t)con->buffer_ptr[4];
     binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
     binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
     if (con->packet_size != binlog_event->length)
@@ -269,7 +269,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
       con->buffer_ptr+= 27;
       con->buffer_size-= 27;
       con->packet_size-= 27;
-      binlog_event->data= realloc(binlog_event->data, binlog_event->length);
+      binlog_event->data= (uint8_t*)realloc(binlog_event->data, binlog_event->length);
       memcpy(binlog_event->data, con->buffer_ptr, binlog_event->length);
       con->buffer_ptr+= binlog_event->length;
       con->buffer_size-= binlog_event->length;
