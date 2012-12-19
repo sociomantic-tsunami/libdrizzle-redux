@@ -7,10 +7,6 @@ Welcome to libdrizzle-redux documentation
    introduction
    license
    compiling
-   structs
-   constants
-   library
-   connection
-   query
-   binlog
-   examples
+   api/index
+   cli/index
+   examples/index
