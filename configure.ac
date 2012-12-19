@@ -76,7 +76,7 @@ AC_CHECK_HEADERS_ONCE([sys/socket.h])
 # Checks for library functions.
 
 AX_ENDIAN
-AX_HEX_VERSION([libdrizle],[$VERSION])
+AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
 AX_AM_JOBSERVER([yes])

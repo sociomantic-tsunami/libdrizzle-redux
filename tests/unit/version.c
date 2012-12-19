@@ -38,6 +38,7 @@
 #include "config.h"
 
 #include <libdrizzle-5.0/drizzle_client.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -45,9 +46,11 @@ int main(int argc, char* argv[])
 {
   (void) argc;
   (void) argv;
-  const char* version;
 
-  version= drizzle_version();
-  printf("%s\n", version);
+  // @todo Don't use assert
+  assert(drizzle_version());
+  assert(strtol(LIBDRIZZLE_VERSION_STRING, (char **) NULL, 10));
+  assert(LIBDRIZZLE_VERSION_HEX > 0);
+
   return EXIT_SUCCESS;
 }
