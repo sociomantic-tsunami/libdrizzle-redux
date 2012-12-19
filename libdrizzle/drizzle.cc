@@ -111,7 +111,7 @@ drizzle_st *drizzle_create(void)
   sigaction(SIGPIPE, &act, NULL);
 #endif
 
-  drizzle= malloc(sizeof(drizzle_st));
+  drizzle= (drizzle_st*)malloc(sizeof(drizzle_st));
   if (drizzle == NULL)
   {
     return NULL;
@@ -219,10 +219,10 @@ drizzle_options_t drizzle_options(const drizzle_st *drizzle)
 {
   if (drizzle == NULL)
   {
-    return 0;
+    return DRIZZLE_NONE;
   }
 
-  return drizzle->options;
+  return drizzle_options_t(drizzle->options);
 }
 
 void drizzle_set_options(drizzle_st *drizzle, drizzle_options_t options)
@@ -310,7 +310,7 @@ drizzle_verbose_t drizzle_verbose(const drizzle_st *drizzle)
 {
   if (drizzle == NULL)
   {
-    return 0;
+    return DRIZZLE_VERBOSE_NEVER;
   }
 
   return drizzle->verbose;
@@ -360,7 +360,7 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
     return NULL;
   }
 
-  con= malloc(sizeof(drizzle_con_st));
+  con= (drizzle_con_st*)malloc(sizeof(drizzle_con_st));
   if (con == NULL)
   {
     if (drizzle != NULL)
@@ -389,7 +389,7 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
   con->revents= 0;
   con->capabilities= DRIZZLE_CAPABILITIES_NONE;
   con->charset= 0;
-  con->command= 0;
+  con->command= DRIZZLE_COMMAND_SLEEP;
   con->socket_type= DRIZZLE_CON_SOCKET_TCP;
   con->status= DRIZZLE_CON_STATUS_NONE;
   con->max_packet_size= DRIZZLE_MAX_PACKET_SIZE;

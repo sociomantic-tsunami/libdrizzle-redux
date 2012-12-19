@@ -173,7 +173,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_con_st *con)
   con->charset= con->buffer_ptr[0];
   con->buffer_ptr+= 1;
 
-  con->status= drizzle_get_byte2(con->buffer_ptr);
+  con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr);
   /* Skip status and filler. */
   con->buffer_ptr+= 15;
 

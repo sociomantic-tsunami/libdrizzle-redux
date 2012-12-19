@@ -1,0 +1,18 @@
+#
+# Example defaults for bootstrap
+#
+# AUTOM4TE=
+# AUTOMAKE=
+# AUTORECONF=
+# AUTORECONF=
+# DEBUG=true
+# MAKE=
+# MallocGuardEdges=
+# MallocErrorAbort=
+# MallocScribble=
+# TESTS_ENVIRONMENT=
+# VERBOSE=true
+# WARNINGS=
+BOOTSTRAP_SNAPSHOT=true
+BOOTSTRAP_SNAPSHOT_CHECK='configure'
+WARNINGS='all'

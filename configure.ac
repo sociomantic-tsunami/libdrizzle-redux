@@ -25,7 +25,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
-AC_CONFIG_SRCDIR([libdrizzle/drizzle.c])
+AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 
 #shared library versioning
 LIBDRIZZLE_LIBRARY_VERSION=5:0:0
@@ -59,7 +59,7 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 AX_CHECK_OPENSSL
-AM_PATH_GLIB_2_0()
+AM_PATH_GLIB_2_0
 
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],
@@ -76,7 +76,7 @@ AC_CHECK_HEADERS_ONCE([sys/socket.h])
 # Checks for library functions.
 
 AX_ENDIAN
-AX_HEX_VERSION([libdrizle],[$VERSION])
+AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
 AX_AM_JOBSERVER([yes])

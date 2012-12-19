@@ -291,10 +291,10 @@ drizzle_con_options_t drizzle_con_options(const drizzle_con_st *con)
 {
   if (con == NULL)
   {
-    return 0;
+    return DRIZZLE_CON_NONE;
   }
 
-  return con->options;
+  return drizzle_con_options_t(con->options);
 }
 
 void drizzle_con_set_options(drizzle_con_st *con,
@@ -549,10 +549,10 @@ drizzle_capabilities_t drizzle_con_capabilities(const drizzle_con_st *con)
 {
   if (con == NULL)
   {
-    return 0;
+    return DRIZZLE_CAPABILITIES_NONE;
   }
 
-  return con->capabilities;
+  return drizzle_capabilities_t(con->capabilities);
 }
 
 drizzle_charset_t drizzle_con_charset(const drizzle_con_st *con)
@@ -569,7 +569,7 @@ drizzle_con_status_t drizzle_con_status(const drizzle_con_st *con)
 {
   if (con == NULL)
   {
-    return 0;
+    return DRIZZLE_CON_STATUS_NONE;
   }
 
   return con->status;
