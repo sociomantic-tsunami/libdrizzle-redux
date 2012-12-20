@@ -1,8 +1,8 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
  *
- * Drizzle Client & Protocol Library
+ *  Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
+ * Copyright (C) 2012 Brian Aker (brian@tangent.org)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,23 +35,20 @@
  *
  */
 
+
 #include "config.h"
 
 #include <libdrizzle-5.0/drizzle_client.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <stddef.h>
+#include <stdlib.h>
 
-int main(int argc, char* argv[])
+int main(void)
 {
-  (void) argc;
-  (void) argv;
-
-  // @todo Don't use assert
-  assert(drizzle_version());
-  assert(strtol(LIBDRIZZLE_VERSION_STRING, (char **) NULL, 10));
-  assert(LIBDRIZZLE_VERSION_HEX > 0);
+  drizzle_st *drizzle= drizzle_create();
+  assert(drizzle);
+  drizzle_free(drizzle);
 
   return EXIT_SUCCESS;
 }

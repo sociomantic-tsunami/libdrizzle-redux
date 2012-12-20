@@ -33,6 +33,7 @@ include tests/include.am
 include m4/include.am
 include cli/include.am
 include libdrizzle/include.am
+include libdrizzle-5.0/include.am
 include rpm/include.am
 include docs/include.am
 
@@ -59,3 +60,10 @@ maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f @PACKAGE@-*.rpm
+	-rm @GENERIC_CONFIG@
+
+install-exec-local:    install-generic-config
+
+install-generic-config:
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	$(INSTALL_SCRIPT) @GENERIC_CONFIG@ $(DESTDIR)$(bindir)

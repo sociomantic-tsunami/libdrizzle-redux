@@ -91,8 +91,6 @@ typedef _Bool bool;
 #ifdef USE_OPENSSL
 #include <openssl/ssl.h>
 #endif
-#include <assert.h>
-#include <errno.h>
 
 #include <libdrizzle-5.0/visibility.h>
 #include <libdrizzle-5.0/constants.h>
