@@ -41,6 +41,7 @@
 #include <glib/gstdio.h>
 #include <pwd.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
