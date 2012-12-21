@@ -42,6 +42,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef EXIT_SKIP
+# define EXIT_SKIP 77
+#endif
+
 int main(int argc, char *argv[])
 {
   (void) argc;
@@ -67,7 +71,7 @@ int main(int argc, char *argv[])
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Drizzle connection failure\n");
-    return EXIT_FAILURE;
+    return EXIT_SKIP;
   }
 
   result= drizzle_start_binlog(con, 0, "", 0, &ret);
