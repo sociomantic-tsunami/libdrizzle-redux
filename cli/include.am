@@ -2,13 +2,6 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-
-bin_PROGRAMS+= cli/libdrizzle_config
-cli_libdrizzle_config_SOURCES= cli/libdrizzle_config.c
-cli_libdrizzle_config_LDADD= @GLIB_LIBS@
-cli_libdrizzle_config_CFLAGS= @GLIB_CFLAGS@ -DPREFIX=\"$(prefix)\" -DECHO_CFLAGS="\"${CFLAGS}\""
-cli_libdrizzle_config_CXXFLAGS= @GLIB_CFLAGS@
-
 bin_PROGRAMS+= cli/drizzle_binlogs
 cli_drizzle_binlogs_SOURCES= cli/drizzle_binlogs.c
 cli_drizzle_binlogs_LDADD= libdrizzle/libdrizzle.la @GLIB_LIBS@

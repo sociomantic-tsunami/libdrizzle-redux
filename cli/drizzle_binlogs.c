@@ -100,17 +100,10 @@ gboolean get_system_user(char *dest, uint8_t len)
 
 drizzle_con_st *_connect(void)
 {
-  drizzle_st *drizzle;
   drizzle_con_st *con;
   drizzle_return_t ret;
 
-  drizzle= drizzle_create();
-  if (!drizzle)
-  {
-    g_print("Drizzle object creation error\n");
-    return NULL;
-  }
-  con= drizzle_con_add_tcp(drizzle, host, port, user, pass, "", 0);
+  con= drizzle_con_create_tcp(host, port, user, pass, "", 0);
   if (!con)
   {
     g_print("Drizzle connection object creation error\n");
@@ -237,7 +230,6 @@ int main(int argc, char *argv[])
 {
   GError *error= NULL;
   GOptionContext *context;
-  drizzle_st *drizzle;
   drizzle_con_st *con;
   char sysuser[DRIZZLE_MAX_USER_SIZE];
 
@@ -281,9 +273,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   get_binlogs(con);
-  drizzle= drizzle_con_drizzle(con);
   drizzle_con_quit(con);
-  drizzle_free(drizzle);
   g_option_context_free(context);
   return EXIT_SUCCESS;
 }

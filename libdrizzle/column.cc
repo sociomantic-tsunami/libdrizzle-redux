@@ -59,7 +59,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
   column= (drizzle_column_st*)malloc(sizeof(drizzle_column_st));
   if (column == NULL)
   {
-    drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
+    drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
     return NULL;
   }
 
@@ -267,13 +267,13 @@ drizzle_return_t drizzle_column_skip(drizzle_result_st *result)
   drizzle_return_t ret;
   if (drizzle_state_none(result->con))
   {
-    result->options|= DRIZZLE_RESULT_SKIP_COLUMN;
+    result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_SKIP_COLUMN);
 
     drizzle_state_push(result->con, drizzle_state_column_read);
     drizzle_state_push(result->con, drizzle_state_packet_read);
   }
   ret= drizzle_state_loop(result->con);
-  result->options&= ~DRIZZLE_RESULT_SKIP_COLUMN;
+  result->options = (drizzle_result_options_t)((int)result->options & (int)~DRIZZLE_RESULT_SKIP_COLUMN);
   return ret;
 }
 
@@ -336,14 +336,14 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
   {
     if (result->column_count == 0)
     {
-      result->options|= DRIZZLE_RESULT_BUFFER_COLUMN;
+      result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_BUFFER_COLUMN);
       return DRIZZLE_RETURN_OK;
     }
 
     result->column_buffer= (drizzle_column_st*)calloc(result->column_count, sizeof(drizzle_column_st));
     if (result->column_buffer == NULL)
     {
-      drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
+      drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
 
       return DRIZZLE_RETURN_MEMORY;
     }
@@ -359,7 +359,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
   if (ret == DRIZZLE_RETURN_OK)
   {
     result->column_current= 0;
-    result->options|= DRIZZLE_RESULT_BUFFER_COLUMN;
+    result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_BUFFER_COLUMN);
   }
 
   return ret;
@@ -484,7 +484,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
 
   drizzle_column_st *column;
 
-  drizzle_log_debug(con->drizzle, "drizzle_state_column_read");
+  drizzle_log_debug(con, "drizzle_state_column_read");
 
   /* Assume the entire column packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)

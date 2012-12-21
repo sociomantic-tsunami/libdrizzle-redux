@@ -75,9 +75,6 @@ extern "C" {
 /**
  * Add TCP (IPv4 or IPv6) connection with common arguments.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] con Caller allocated structure, or NULL to allocate one.
  * @param[in] host Host to connect to. This may be a hostname to resolve, an
  *  IPv4 address, or an IPv6 address. This is passed directly to getaddrinfo().
  * @param[in] port Remote port to connect to.
@@ -88,8 +85,7 @@ extern "C" {
  * @return Same return as drizzle_con_create().
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
-                                    const char *host, in_port_t port,
+drizzle_con_st *drizzle_con_create_tcp(const char *host, in_port_t port,
                                     const char *user, const char *password,
                                     const char *db,
                                     drizzle_con_options_t options);
@@ -97,9 +93,6 @@ drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
 /**
  * Add unix domain socket connection with common arguments.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] con Caller allocated structure, or NULL to allocate one.
  * @param[in] uds Path to unix domain socket to use for connection.
  * @param[in] user User to use while establishing the connection.
  * @param[in] password Password to use while establishing the connection.
@@ -108,8 +101,7 @@ drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
  * @return Same return as drizzle_con_create().
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle,
-                                    const char *uds, const char *user,
+drizzle_con_st *drizzle_con_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
                                     drizzle_con_options_t options);
 
