@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle],[5.1.0])
+AC_INIT([libdrizzle],[5.0.1])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
