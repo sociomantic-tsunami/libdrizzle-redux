@@ -1,9 +1,30 @@
 Unbuffered Results
 ==================
 
+Introduction
+------------
+
+In this example :c:func:`drizzle_query_str` is used to send a select query to a
+MySQL server.  The first thing that is sent back in the results is a list of
+columns, so this list needs to be retieved.  The simplist way of doing this is
+to buffer the column data using :c:func:`drizzle_column_buffer`.
+
+The number of columns is retrieved using :c:func:`drizzle_result_column_count`.
+Each row is iterated through by calling :c:func:`drizzle_row_buffer` which
+buffers and returns an array containing string of the row data.  We know how
+many elements are in this array due to the earlier call to
+:c:func:`drizzle_result_column_count`.  The data from each element in the row
+is finally echoed to the console.  The row data is freed using
+:c:func:`drizzle_row_free`.
+
+To end the query the result set is freed using :c:func:`drizzle_result_free`
+
+Code
+----
+
 .. code-block:: c
 
-    #include <libdrizzle/libdrizzle.h>
+    #include <libdrizzle-5.0/libdrizzle.h>
     #include <stdio.h>
     #include <stdlib.h>
 
@@ -11,20 +32,13 @@ Unbuffered Results
     {
       (void) argc;
       (void) argv;
-      drizzle_st *drizzle;
       drizzle_con_st *con;
       drizzle_return_t ret;
       drizzle_result_st *result;
       drizzle_row_t row;
       int num_fields;
 
-      drizzle = drizzle_create();
-      if (drizzle == NULL)
-      {
-        printf("Drizzle object creation error\n");
-        return EXIT_FAILURE;
-      }
-      con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "libdrizzle", 0);
+      con = drizzle_con_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
       if (con == NULL)
       {
         printf("Drizzle connection object creation error\n");
@@ -78,6 +92,5 @@ Unbuffered Results
 
 
       drizzle_con_quit(con);
-      drizzle_free(drizzle);
       return EXIT_SUCCESS;
     }
