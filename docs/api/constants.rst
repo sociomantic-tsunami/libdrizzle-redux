@@ -38,27 +38,6 @@ Library
 
       Everything
 
-.. c:type:: drizzle_options_t
-
-   An ENUM of options for a Drizzle object intended to be used in a bit field
-
-   .. py:data:: DRIZZLE_NONE
-
-   No options set
-
-   .. py:data:: DRIZZLE_NON_BLOCKING
-
-   Use the library in non-blocking mode
-
-   .. py:data:: DRIZZLE_FREE_OBJECTS
-
-   Automatically free all result sets when disconnecting
-
-   .. py:data:: DRIZZLE_ASSERT_DANGLING
-
-   Fire an :c:func:`assert` if there are results that are still allocated upon
-   disconnect
-
 Return
 ------
 
@@ -187,6 +166,10 @@ Connection
    .. py:data:: DRIZZLE_CON_NONE
 
       No option set
+
+   .. py:data:: DRIZZLE_CON_NON_BLOCKING
+
+      Connect in non-blocking mode
 
    .. py:data:: DRIZZLE_CON_RAW_PACKET
 
