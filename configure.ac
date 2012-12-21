@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle],[5.0.1])
+AC_INIT([libdrizzle],[5.1.0])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -70,10 +70,13 @@ AC_DEFUN([CHECK_FOR_CXXABI],
 CHECK_FOR_CXXABI
 AC_CHECK_HEADERS_ONCE([errno.h])
 AC_CHECK_HEADERS_ONCE([sys/socket.h])
+AC_CHECK_HEADERS_ONCE([poll.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
+AC_CHECK_FUNCS([poll])
+AC_CHECK_FUNCS([ppoll])
 
 AX_ENDIAN
 AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])

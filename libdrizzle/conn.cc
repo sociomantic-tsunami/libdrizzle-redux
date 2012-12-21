@@ -44,6 +44,10 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#ifndef MSG_NOSIGNAL
+# define MSG_NOSIGNAL 0
+#endif
+
 /**
  * @addtogroup drizzle_con_static Static Connection Declarations
  * @ingroup drizzle_con
@@ -1146,8 +1150,7 @@ drizzle_return_t drizzle_state_read(drizzle_con_st *con)
       read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, available_buffer);
     else
 #endif
-      read_size = recv(con->fd, (char *)con->buffer_ptr + con->buffer_size,
-                     available_buffer, 0);
+      read_size= recv(con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer, MSG_NOSIGNAL);
 #ifdef _WIN32
     errno = WSAGetLastError();
     switch(errno) {
@@ -1272,7 +1275,7 @@ drizzle_return_t drizzle_state_write(drizzle_con_st *con)
       write_size= SSL_write(con->ssl, con->buffer_ptr, con->buffer_size);
     else
 #endif      
-      write_size = send(con->fd,(char *) con->buffer_ptr, con->buffer_size, 0);
+      write_size = send(con->fd,(char *) con->buffer_ptr, con->buffer_size, MSG_NOSIGNAL);
 
 #ifdef _WIN32
     errno = WSAGetLastError();
@@ -1467,6 +1470,20 @@ static drizzle_return_t _con_setsockopt(drizzle_con_st *con)
     drizzle_set_error(con->drizzle, __func__, "setsockopt:SO_RCVBUF:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
+
+#if defined(SO_NOSIGPIPE)
+  if (SO_NOSIGPIPE)
+  {
+    int ret= 1;
+    ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret), sizeof(int));
+
+    if (ret == -1)
+    {
+      drizzle_set_error(con->drizzle, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
+      return DRIZZLE_RETURN_ERRNO;
+    }
+  }
+#endif
 
 #if defined (_WIN32)
   {
