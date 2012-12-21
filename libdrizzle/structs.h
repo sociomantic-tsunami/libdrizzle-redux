@@ -61,33 +61,6 @@ extern "C" {
 #endif
 
 /**
- * @ingroup drizzle
- */
-struct drizzle_st
-{
-  uint16_t error_code;
-  int options;
-  drizzle_verbose_t verbose;
-  uint32_t con_count;
-  uint32_t pfds_size;
-  uint32_t query_count;
-  uint32_t query_new;
-  uint32_t query_running;
-  int last_errno;
-  int timeout;
-  drizzle_con_st *con_list;
-  void *context;
-  drizzle_context_free_fn *context_free_fn;
-  drizzle_event_watch_fn *event_watch_fn;
-  void *event_watch_context;
-  drizzle_log_fn *log_fn;
-  void *log_context;
-  struct pollfd *pfds;
-  char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
-  char last_error[DRIZZLE_MAX_ERROR_SIZE];
-};
-
-/**
  * @ingroup drizzle_con
  */
 struct drizzle_con_tcp_st
@@ -116,10 +89,10 @@ struct drizzle_con_st
   uint8_t state_current;
   short events;
   short revents;
-  int capabilities;
+  drizzle_capabilities_t capabilities;
   drizzle_charset_t charset;
   drizzle_command_t command;
-  int options;
+  drizzle_con_options_t options;
   drizzle_con_socket_t socket_type;
   drizzle_con_status_t status;
   uint32_t max_packet_size;
@@ -138,9 +111,6 @@ struct drizzle_con_st
   uint8_t *command_data;
   void *context;
   drizzle_con_context_free_fn *context_free_fn;
-  drizzle_st *drizzle;
-  drizzle_con_st *next;
-  drizzle_con_st *prev;
   drizzle_result_st *result;
   drizzle_result_st *result_list;
   uint8_t *scramble;
@@ -165,6 +135,15 @@ struct drizzle_con_st
   void *ssl;
 #endif
   drizzle_ssl_state_t ssl_state;
+  uint16_t error_code;
+  drizzle_verbose_t verbose;
+  int last_errno;
+  int timeout;
+  drizzle_log_fn *log_fn;
+  void *log_context;
+  struct pollfd pfds[1];
+  char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
+  char last_error[DRIZZLE_MAX_ERROR_SIZE];
 };
 
 /**
@@ -175,7 +154,7 @@ struct drizzle_result_st
   drizzle_con_st *con;
   drizzle_result_st *next;
   drizzle_result_st *prev;
-  int options;
+  drizzle_result_options_t options;
 
   char info[DRIZZLE_MAX_INFO_SIZE];
   uint16_t error_code;
@@ -213,7 +192,7 @@ struct drizzle_result_st
     con(NULL),
     next(NULL),
     prev(NULL),
-    options(0),
+    options(DRIZZLE_RESULT_NONE),
     error_code(0),
     insert_id(0),
     warning_count(0),
@@ -267,7 +246,7 @@ struct drizzle_column_st
   drizzle_result_st *result;
   drizzle_column_st *next;
   drizzle_column_st *prev;
-  int options;
+  drizzle_column_type_t options;
   char catalog[DRIZZLE_MAX_CATALOG_SIZE];
   char db[DRIZZLE_MAX_DB_SIZE];
   char table[DRIZZLE_MAX_TABLE_SIZE];

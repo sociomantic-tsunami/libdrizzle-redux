@@ -49,20 +49,13 @@ int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_st *drizzle;
   drizzle_con_st *con;
   drizzle_return_t ret;
   drizzle_result_st *result;
   drizzle_row_t row;
   int num_fields;
 
-  drizzle = drizzle_create();
-  if (drizzle == NULL)
-  {
-    printf("Drizzle object creation error\n");
-    return EXIT_FAILURE;
-  }
-  con = drizzle_con_add_tcp(drizzle, "localhost", 3306, "root", "", "libdrizzle", 0);
+  con = drizzle_con_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
   if (con == NULL)
   {
     printf("Drizzle connection object creation error\n");
@@ -132,6 +125,5 @@ int main(int argc, char *argv[])
 
 
   drizzle_con_quit(con);
-  drizzle_free(drizzle);
   return EXIT_SUCCESS;
 }

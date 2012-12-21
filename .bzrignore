@@ -39,3 +39,4 @@ m4/pkg.m4
 rpm/spec
 docs/changes/
 docs/latex/
+libdrizzle-config

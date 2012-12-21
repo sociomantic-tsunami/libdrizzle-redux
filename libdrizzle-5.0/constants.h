@@ -89,37 +89,22 @@ extern "C" {
 /** @} */
 
 /**
- * @ingroup drizzle
- * Options for drizzle_st.
- */
-enum drizzle_options_t
-{
-  DRIZZLE_NONE=            0,
-  DRIZZLE_NON_BLOCKING=    (1 << 1),
-  DRIZZLE_FREE_OBJECTS=    (1 << 2),
-  DRIZZLE_ASSERT_DANGLING= (1 << 3)
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_options_t drizzle_options_t;
-#endif
-
-/**
  * @ingroup drizzle_con
  * Options for drizzle_con_st.
  */
 enum drizzle_con_options_t
 {
-  DRIZZLE_CON_NONE=             0,
-  DRIZZLE_CON_RAW_PACKET=       (1 << 2),
-  DRIZZLE_CON_RAW_SCRAMBLE=     (1 << 3),
-  DRIZZLE_CON_READY=            (1 << 4),
-  DRIZZLE_CON_NO_RESULT_READ=   (1 << 5),
-  DRIZZLE_CON_IO_READY=         (1 << 6),
-  DRIZZLE_CON_FOUND_ROWS=       (1 << 9),
-  DRIZZLE_CON_INTERACTIVE=      (1 << 11),
-  DRIZZLE_CON_MULTI_STATEMENTS= (1 << 12),
-  DRIZZLE_CON_AUTH_PLUGIN=      (1 << 13)
+  DRIZZLE_CON_NONE=                 0,
+  DRIZZLE_CON_OPTIONS_NON_BLOCKING= (1 << 0),
+  DRIZZLE_CON_RAW_PACKET=           (1 << 2),
+  DRIZZLE_CON_RAW_SCRAMBLE=         (1 << 3),
+  DRIZZLE_CON_READY=                (1 << 4),
+  DRIZZLE_CON_NO_RESULT_READ=       (1 << 5),
+  DRIZZLE_CON_IO_READY=             (1 << 6),
+  DRIZZLE_CON_FOUND_ROWS=           (1 << 9),
+  DRIZZLE_CON_INTERACTIVE=          (1 << 11),
+  DRIZZLE_CON_MULTI_STATEMENTS=     (1 << 12),
+  DRIZZLE_CON_AUTH_PLUGIN=          (1 << 13)
 };
 
 #ifndef __cplusplus
@@ -414,7 +399,6 @@ typedef enum drizzle_column_flags_t drizzle_column_flags_t;
  */
 
 /* Types. */
-typedef struct drizzle_st drizzle_st;
 typedef struct drizzle_con_tcp_st drizzle_con_tcp_st;
 typedef struct drizzle_con_uds_st drizzle_con_uds_st;
 typedef struct drizzle_con_st drizzle_con_st;
@@ -425,9 +409,6 @@ typedef char *drizzle_field_t;
 typedef drizzle_field_t *drizzle_row_t;
 typedef uint8_t drizzle_charset_t;
 
-/* Function types. */
-typedef void (drizzle_context_free_fn)(drizzle_st *drizzle,
-                                       void *context);
 typedef void (drizzle_log_fn)(const char *line, drizzle_verbose_t verbose,
                               void *context);
 typedef drizzle_return_t (drizzle_state_fn)(drizzle_con_st *con);

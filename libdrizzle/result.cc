@@ -58,13 +58,13 @@ drizzle_result_st *drizzle_result_create(drizzle_con_st *con)
   result= (drizzle_result_st*)malloc(sizeof(drizzle_result_st));
   if (result == NULL)
   {
-    drizzle_set_error(con->drizzle, __func__, "Failed to allocate.");
+    drizzle_con_set_error(con, __func__, "Failed to allocate.");
     return NULL;
   }
 
   result->binlog_event= NULL;
   result->column_list= NULL;
-  result->options= 0;
+  result->options= DRIZZLE_RESULT_NONE;
   result->prev= NULL;
   result->column_buffer= NULL;
   result->row= NULL;
@@ -325,7 +325,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
 
   if (result->column_count == 0)
   {
-    result->options|= DRIZZLE_RESULT_BUFFER_ROW;
+    result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_BUFFER_ROW);
     return DRIZZLE_RETURN_OK;
   }
 
@@ -344,7 +344,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       if (row_list == NULL)
       {
         drizzle_row_free(result, row);
-        drizzle_set_error(result->con->drizzle, __func__, "Failed to realloc row_list.");
+        drizzle_con_set_error(result->con, __func__, "Failed to realloc row_list.");
         return DRIZZLE_RETURN_MEMORY;
       }
 
@@ -354,7 +354,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       if (field_sizes_list == NULL)
       {
         drizzle_row_free(result, row);
-        drizzle_set_error(result->con->drizzle, "drizzle_result_buffer", "Failed to realloc field list.");
+        drizzle_con_set_error(result->con, "drizzle_result_buffer", "Failed to realloc field list.");
         return DRIZZLE_RETURN_MEMORY;
       }
 
@@ -367,7 +367,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
     result->field_sizes_list[result->row_current - 1]= result->field_sizes;
   }
 
-  result->options|= DRIZZLE_RESULT_BUFFER_ROW;
+  result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_BUFFER_ROW);
   return DRIZZLE_RETURN_OK;
 }
 
@@ -394,7 +394,7 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con->drizzle, "drizzle_state_result_read");
+  drizzle_log_debug(con, "drizzle_state_result_read");
 
   /* Assume the entire result packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
@@ -436,12 +436,12 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
   else if (con->buffer_ptr[0] == 255)
   {
     con->result->error_code= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->drizzle->error_code= con->result->error_code;
+    con->error_code= con->result->error_code;
     /* Byte 3 is always a '#' character, skip it. */
     memcpy(con->result->sqlstate, con->buffer_ptr + 4,
            DRIZZLE_MAX_SQLSTATE_SIZE);
     con->result->sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE]= 0;
-    memcpy(con->drizzle->sqlstate, con->result->sqlstate,
+    memcpy(con->sqlstate, con->result->sqlstate,
            DRIZZLE_MAX_SQLSTATE_SIZE + 1);
     con->buffer_ptr+= 9;
     con->buffer_size-= 9;
@@ -457,9 +457,9 @@ drizzle_return_t drizzle_state_result_read(drizzle_con_st *con)
 
   if (con->packet_size > 0)
   {
-    snprintf(con->drizzle->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
+    snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
              (int32_t)con->packet_size, con->buffer_ptr);
-    con->drizzle->last_error[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
+    con->last_error[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
     snprintf(con->result->info, DRIZZLE_MAX_INFO_SIZE, "%.*s",
              (int32_t)con->packet_size, con->buffer_ptr);
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;

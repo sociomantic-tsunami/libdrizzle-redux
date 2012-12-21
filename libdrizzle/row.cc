@@ -63,7 +63,7 @@ uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 
   if ((result->column_current != result->column_count) && (!(result->options & DRIZZLE_RESULT_BUFFER_COLUMN)))
   {
-    drizzle_set_error(result->con->drizzle, "drizzle_row_read", "cannot retrieve rows until all columns are retrieved");
+    drizzle_con_set_error(result->con, "drizzle_row_read", "cannot retrieve rows until all columns are retrieved");
     *ret_ptr= DRIZZLE_RETURN_NOT_READY;
     return 0;
   }
@@ -108,7 +108,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
     result->row= (drizzle_row_t)realloc(NULL, (sizeof(drizzle_field_t) + sizeof(size_t)) * result->column_count);
     if (result->row == NULL)
     {
-      drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
+      drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
       return NULL;
     }
@@ -249,7 +249,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_con_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con->drizzle, "drizzle_state_row_read");
+  drizzle_log_debug(con, "drizzle_state_row_read");
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size && 
     con->buffer_size < 5)
@@ -275,7 +275,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_con_st *con)
   }
   else if (con->result->options & DRIZZLE_RESULT_ROW_BREAK)
   {
-    con->result->options&= ~DRIZZLE_RESULT_ROW_BREAK;
+    con->result->options = (drizzle_result_options_t)((int)con->result->options & (int)~DRIZZLE_RESULT_ROW_BREAK);
   }
   else
   {
