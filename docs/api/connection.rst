@@ -9,11 +9,10 @@ This section outlines the connection functions
 Functions
 ---------
 
-.. c:function:: drizzle_con_st* drizzle_con_add_tcp(drizzle_st *drizzle, const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_con_options_t options)
+.. c:function:: drizzle_con_st* drizzle_con_create_tcp(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_con_options_t options)
 
-   Allocates and adds a TCP/IP connection to a Drizzle object
+   Creates a TCP/IP connection connection object
 
-   :param drizzle: A Drizzle object allocated with :c:func:`drizzle_create`
    :param host: The hostname or IP of the server
    :param port: The port number of the server
    :param user: The username of the server
@@ -22,11 +21,10 @@ Functions
    :param options: The connection options to set
    :returns: A newly allocated and setup connection object
 
-.. c:function:: drizzle_con_st* drizzle_con_add_uds(drizzle_st *drizzle, const char *uds, const char *user, const char *password, const char *db, drizzle_con_options_t options)
+.. c:function:: drizzle_con_st* drizzle_con_create_uds(const char *uds, const char *user, const char *password, const char *db, drizzle_con_options_t options)
 
-   Allocates and adds a Unix Domain Socket connection to a Drizzle object
+   Creates a Unix Domain Socket connection object
 
-   :param drizzle: A Drizzle object allocated with :c:func:`drizzle_create`
    :param uds: The path of the UDS file
    :param user: The username of the server
    :param password: The password of the server
@@ -34,21 +32,45 @@ Functions
    :param options: The connection options to set
    :returns: A newly allocated and setup connection object
 
-.. c:function:: drizzle_st* drizzle_con_drizzle(const drizzle_con_st *con)
+.. c:function:: int drizzle_con_timeout(const drizzle_con_st *con)
 
-   Gets the Drizzle object from the connection object
+   Gets the current connection timeout set in the connection object
 
-   :param con: A connection object
-   :returns: A Drizzle object the connection object is assigned to
+   :param drizzle: A connection object
+   :returns: The current timeout
+
+.. c:function:: void drizzle_con_set_timeout(drizzle_con_st *con, int timeout)
+
+   Sets the connection timeout for the connection object
+
+   :param drizzle: A connection object
+   :param int: The new timeout to set
+
+.. c:function:: drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con)
+
+   Gets the verbosity level set in the connection object
+
+   :param drizzle: A connection object
+   :returns: The verbosity level from :c:type:`drizzle_verbose_t`
+
+.. c:function:: void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose)
+
+   Sets the verbosity level for the connection object
+
+   :param drizzle: A connection object
+   :param verbose: The verbosity level from :c:type:`drizzle_verbose_t`
+
+.. c:function:: void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function, void *context)
+
+   Sets a callback function for log handling
+
+   :param drizzle: A connection object
+   :param function: The function to use in the format of :c:func:`drizzle_log_fn`
+   :param context: A pointer to data to pass to the log function
 
 .. c:function:: const char* drizzle_con_error(const drizzle_con_st *con)
 
    Get the last error from a connection
-
-   .. note::
-      This actually gets the error from the Drizzle object so will be
-      overwritten with a new error if another connection in the same group
-      also errors
 
    :param con: A connection object
    :returns: A string containing the error message
@@ -57,11 +79,6 @@ Functions
 
    Get the last OS error code from a connection
 
-   .. note::
-      This actually gets the error from the Drizzle object so will be
-      overwritten with a new error if another connection in the same group
-      also errors
-
    :param con: A connection object
    :returns: The OS error code
 
@@ -69,22 +86,12 @@ Functions
 
    Gets the last error code from a connection
 
-   .. note::
-      This actually gets the error from the Drizzle object so will be
-      overwritten with a new error if another connection in the same group
-      also errors
-
    :param con: A connection object
    :returns: The server error code
 
 .. c:function:: const char* drizzle_con_sqlstate(const drizzle_con_st *con)
 
    Gets the last sqlstate from a connection
-
-   .. note::
-      This actually gets the error from the Drizzle object so will be
-      overwritten with a new error if another connection in the same group
-      also errors
 
    :param con: A connection object
    :returns: A string containing the sqlstate
@@ -249,4 +256,18 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
+
+Callback Functions
+------------------
+
+These are templates to be used when creating callback functions for the
+Libdrizzle Redux library.
+
+.. c:function:: void drizzle_log_fn(const char *log_buffer, drizzle_verbose_t verbose, void *context)
+
+   The format of a callback function for log handling
+
+   :param log_buffer: The log message passed to the function
+   :param verbose: The verbosity level of the message
+   :param context: A pointer to data set in :c:func:`drizzle_set_log_fn`
 
