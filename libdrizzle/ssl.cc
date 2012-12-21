@@ -47,13 +47,13 @@ drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const cha
 
   if (cipher)
   {
-    drizzle_set_error(con->drizzle, "drizzle_set_ssl", "Cannot set the SSL cipher list");
+    drizzle_con_set_error(con, "drizzle_set_ssl", "Cannot set the SSL cipher list");
     return DRIZZLE_RETURN_SSL_ERROR;
   }
 
   if (SSL_CTX_load_verify_locations((SSL_CTX*)con->ssl_context, ca, capath) != 1)
   {
-    drizzle_set_error(con->drizzle, "drizzle_set_ssl", "Cannot load the SSL certificate authority file");
+    drizzle_con_set_error(con, "drizzle_set_ssl", "Cannot load the SSL certificate authority file");
     return DRIZZLE_RETURN_SSL_ERROR;
   }
 
@@ -61,7 +61,7 @@ drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const cha
   {
     if (SSL_CTX_use_certificate_file((SSL_CTX*)con->ssl_context, cert, SSL_FILETYPE_PEM) != 1)
     {
-      drizzle_set_error(con->drizzle, "drizzle_set_ssl", "Cannot load the SSL certificate file");
+      drizzle_con_set_error(con, "drizzle_set_ssl", "Cannot load the SSL certificate file");
       return DRIZZLE_RETURN_SSL_ERROR;
     }
 
@@ -70,13 +70,13 @@ drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const cha
 
     if (SSL_CTX_use_PrivateKey_file((SSL_CTX*)con->ssl_context, key, SSL_FILETYPE_PEM) != 1)
     {
-      drizzle_set_error(con->drizzle, "drizzle_set_ssl", "Cannot load the SSL key file");
+      drizzle_con_set_error(con, "drizzle_set_ssl", "Cannot load the SSL key file");
       return DRIZZLE_RETURN_SSL_ERROR;
     }
 
     if (SSL_CTX_check_private_key((SSL_CTX*)con->ssl_context) != 1)
     {
-      drizzle_set_error(con->drizzle, "drizzle_set_ssl", "Error validating the SSL private key");
+      drizzle_con_set_error(con, "drizzle_set_ssl", "Error validating the SSL private key");
       return DRIZZLE_RETURN_SSL_ERROR;
     }
   }

@@ -73,6 +73,23 @@ void drizzle_library_init(void)
 #ifdef USE_OPENSSL
   SSL_library_init();
 #endif
+#if defined(_WIN32)
+  /* if it is MS windows, invoke WSAStartup */
+  WSADATA wsaData;
+  if ( WSAStartup( MAKEWORD(2,2), &wsaData ) != 0 )
+  {
+    printf("Error at WSAStartup()\n");
+  }
+#endif
+
+}
+
+void drizzle_library_deinit(void)
+{
+#if defined(_WIN32)
+  /* if it is MS windows, invoke WSACleanup() at the end*/
+  WSACleanup();
+#endif
 }
 
 const char *drizzle_version(void)
@@ -95,287 +112,69 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose)
   return _verbose_name[verbose];
 }
 
-drizzle_st *drizzle_create(void)
+int drizzle_con_timeout(const drizzle_con_st *con)
 {
-  drizzle_st *drizzle;
-#if defined(_WIN32)
-  /* if it is MS windows, invoke WSAStartup */
-  WSADATA wsaData;
-  if ( WSAStartup( MAKEWORD(2,2), &wsaData ) != 0 )
-    printf("Error at WSAStartup()\n");
-#endif
-
-  drizzle= (drizzle_st*)malloc(sizeof(drizzle_st));
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  drizzle->options= DRIZZLE_NONE;
-
-  /* @todo remove this default free flag with new API. */
-  drizzle->options|= DRIZZLE_FREE_OBJECTS;
-  drizzle->error_code= 0;
-  /* drizzle->options set above */
-  drizzle->verbose= DRIZZLE_VERBOSE_NEVER;
-  drizzle->con_count= 0;
-  drizzle->pfds_size= 0;
-  drizzle->query_count= 0;
-  drizzle->query_new= 0;
-  drizzle->query_running= 0;
-  drizzle->last_errno= 0;
-  drizzle->timeout= -1;
-  drizzle->con_list= NULL;
-  drizzle->context= NULL;
-  drizzle->context_free_fn= NULL;
-  drizzle->event_watch_fn= NULL;
-  drizzle->event_watch_context= NULL;
-  drizzle->log_fn= NULL;
-  drizzle->log_context= NULL;
-  drizzle->pfds= NULL;
-  drizzle->sqlstate[0]= 0;
-  drizzle->last_error[0]= 0;
-
-  return drizzle;
-}
-
-void drizzle_free(drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  if (drizzle->context != NULL && drizzle->context_free_fn != NULL)
-  {
-    drizzle->context_free_fn(drizzle, drizzle->context);
-  }
-
-  if (drizzle->options & DRIZZLE_FREE_OBJECTS)
-  {
-    drizzle_con_free_all(drizzle);
-  }
-  else if (drizzle->options & DRIZZLE_ASSERT_DANGLING)
-  {
-    assert(drizzle->con_list == NULL);
-  }
-
-  free(drizzle->pfds);
-
-  free(drizzle);
-#if defined(_WIN32)
-  /* if it is MS windows, invoke WSACleanup() at the end*/
-  WSACleanup();
-#endif
-}
-
-const char *drizzle_error(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  return (const char *)drizzle->last_error;
-}
-
-int drizzle_errno(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return 0;
-  }
-
-  return drizzle->last_errno;
-}
-
-uint16_t drizzle_error_code(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return 0;
-  }
-
-  return drizzle->error_code;
-}
-
-const char *drizzle_sqlstate(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  return drizzle->sqlstate;
-}
-
-drizzle_options_t drizzle_options(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return DRIZZLE_NONE;
-  }
-
-  return drizzle_options_t(drizzle->options);
-}
-
-void drizzle_set_options(drizzle_st *drizzle, drizzle_options_t options)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->options= options;
-}
-
-void drizzle_add_options(drizzle_st *drizzle, drizzle_options_t options)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->options|= options;
-}
-
-void drizzle_remove_options(drizzle_st *drizzle, drizzle_options_t options)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->options&= ~options;
-}
-
-void *drizzle_context(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  return drizzle->context;
-}
-
-void drizzle_set_context(drizzle_st *drizzle, void *context)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->context= context;
-}
-
-void drizzle_set_context_free_fn(drizzle_st *drizzle,
-                                 drizzle_context_free_fn *function)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->context_free_fn= function;
-}
-
-int drizzle_timeout(const drizzle_st *drizzle)
-{
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return -1;
   }
 
-  return drizzle->timeout;
+  return con->timeout;
 }
 
-void drizzle_set_timeout(drizzle_st *drizzle, int timeout)
+void drizzle_con_set_timeout(drizzle_con_st *con, int timeout)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return;
   }
 
-  drizzle->timeout= timeout;
+  con->timeout= timeout;
 }
 
-drizzle_verbose_t drizzle_verbose(const drizzle_st *drizzle)
+drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return DRIZZLE_VERBOSE_NEVER;
   }
 
-  return drizzle->verbose;
+  return con->verbose;
 }
 
-void drizzle_set_verbose(drizzle_st *drizzle, drizzle_verbose_t verbose)
+void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return;
   }
 
-  drizzle->verbose= verbose;
+  con->verbose= verbose;
 }
 
-void drizzle_set_log_fn(drizzle_st *drizzle, drizzle_log_fn *function,
-                        void *context)
+void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
+                            void *context)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return;
   }
 
-  drizzle->log_fn= function;
-  drizzle->log_context= context;
+  con->log_fn= function;
+  con->log_context= context;
 }
 
-void drizzle_set_event_watch_fn(drizzle_st *drizzle,
-                                drizzle_event_watch_fn *function,
-                                void *context)
-{
-  if (drizzle == NULL)
-  {
-    return;
-  }
-
-  drizzle->event_watch_fn= function;
-  drizzle->event_watch_context= context;
-}
-
-drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
+drizzle_con_st *drizzle_con_create(void)
 {
   drizzle_con_st *con;
-
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
 
   con= (drizzle_con_st*)malloc(sizeof(drizzle_con_st));
   if (con == NULL)
   {
-    if (drizzle != NULL)
-    {
-      drizzle_set_error(drizzle, __func__, "Failed to allocate.");
-    }
-
     return NULL;
   }
 
-  con->options= 0;
-
-  if (drizzle->con_list != NULL)
-  {
-    drizzle->con_list->prev= con;
-  }
-  con->next= drizzle->con_list;
-  con->prev= NULL;
-  drizzle->con_list= con;
-  drizzle->con_count++;
-
+  con->options= DRIZZLE_CON_NONE;
   con->packet_number= 0;
   con->protocol_version= 0;
   con->state_current= 0;
@@ -402,10 +201,6 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
   con->command_data= NULL;
   con->context= NULL;
   con->context_free_fn= NULL;
-  con->drizzle= drizzle;
-  /* con->next set above */
-  /* con->prev set above */
-  /* con->result doesn't need to be set */
   con->result_list= NULL;
   con->scramble= NULL;
   con->socket.tcp.addrinfo= NULL;
@@ -421,6 +216,14 @@ drizzle_con_st *drizzle_con_create(drizzle_st *drizzle)
   con->ssl_context= NULL;
   con->ssl= NULL;
   con->ssl_state= DRIZZLE_SSL_STATE_NONE;
+  con->error_code= 0;
+  con->verbose= DRIZZLE_VERBOSE_NEVER;
+  con->last_errno= 0;
+  con->timeout= -1;
+  con->log_fn= NULL;
+  con->log_context= NULL;
+  con->sqlstate[0]= '\0';
+  con->last_error[0]= '\0';
 
   return con;
 }
@@ -437,14 +240,7 @@ void drizzle_con_free(drizzle_con_st *con)
     con->context_free_fn(con, con->context);
   }
 
-  if (con->drizzle->options & DRIZZLE_FREE_OBJECTS)
-  {
-    drizzle_result_free_all(con);
-  }
-  else if (con->drizzle->options & DRIZZLE_ASSERT_DANGLING)
-  {
-    assert(con->result_list == NULL);
-  }
+  drizzle_result_free_all(con);
 
   if (con->fd != -1)
   {
@@ -453,15 +249,6 @@ void drizzle_con_free(drizzle_con_st *con)
 
   drizzle_con_reset_addrinfo(con);
 
-  if (con->drizzle->con_list == con)
-    con->drizzle->con_list= con->next;
-
-  if (con->prev != NULL)
-    con->prev->next= con->next;
-
-  if (con->next != NULL)
-    con->next->prev= con->prev;
-
 #ifdef USE_OPENSSL
   if (con->ssl)
     SSL_free(con->ssl);
@@ -469,73 +256,37 @@ void drizzle_con_free(drizzle_con_st *con)
   if (con->ssl_context)
     SSL_CTX_free(con->ssl_context);
 #endif
-  con->drizzle->con_count--;
 
   free(con);
 }
 
-void drizzle_con_free_all(drizzle_st *drizzle)
+drizzle_return_t drizzle_con_wait(drizzle_con_st *con)
 {
-  while (drizzle->con_list != NULL)
-    drizzle_con_free(drizzle->con_list);
-}
-
-drizzle_return_t drizzle_con_wait(drizzle_st *drizzle)
-{
-  drizzle_con_st *con;
-
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  struct pollfd *pfds;
-  if (drizzle->pfds_size < drizzle->con_count)
+  if (!con->events == 0)
   {
-    pfds= (struct pollfd *)realloc(drizzle->pfds, drizzle->con_count * sizeof(struct pollfd));
-    if (pfds == NULL)
-    {
-      drizzle_set_error(drizzle, __func__, "Failed to realloc file descriptors.");
-      return DRIZZLE_RETURN_MEMORY;
-    }
-
-    drizzle->pfds= pfds;
-    drizzle->pfds_size= drizzle->con_count;
+    con->pfds[0].fd= con->fd;
+    con->pfds[0].events= con->events;
+    con->pfds[0].revents= 0;
   }
   else
   {
-    pfds= drizzle->pfds;
-  }
-
-  uint32_t x= 0;
-  for (con= drizzle->con_list; con != NULL; con= con->next)
-  {
-    if (con->events == 0)
-    {
-      continue;
-    }
-
-    pfds[x].fd= con->fd;
-    pfds[x].events= con->events;
-    pfds[x].revents= 0;
-    x++;
-  }
-
-  if (x == 0)
-  {
-    drizzle_set_error(drizzle, __func__, "no active file descriptors");
+    drizzle_con_set_error(con, __func__, "no active file descriptors");
     return DRIZZLE_RETURN_NO_ACTIVE_CONNECTIONS;
   }
 
   int ret;
   while (1)
   {
-    drizzle_log_crazy(drizzle, "poll count=%d timeout=%d", x,
-                      drizzle->timeout);
+    drizzle_log_crazy(con, "poll timeout=%d", con->timeout);
 
-    ret= poll(pfds, x, drizzle->timeout);
+    ret= poll(con->pfds, 1, con->timeout);
 
-    drizzle_log_crazy(drizzle, "poll return=%d errno=%d", ret, errno);
+    drizzle_log_crazy(con, "poll return=%d errno=%d", ret, errno);
 
     if (ret == -1)
     {
@@ -544,8 +295,8 @@ drizzle_return_t drizzle_con_wait(drizzle_st *drizzle)
         continue;
       }
 
-      drizzle_set_error(drizzle, "drizzle_con_wait", "poll:%d", errno);
-      drizzle->last_errno= errno;
+      drizzle_con_set_error(con, "drizzle_con_wait", "poll:%d", errno);
+      con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
 
@@ -554,49 +305,22 @@ drizzle_return_t drizzle_con_wait(drizzle_st *drizzle)
 
   if (ret == 0)
   {
-    drizzle_set_error(drizzle, "drizzle_con_wait", "timeout reached");
+    drizzle_con_set_error(con, "drizzle_con_wait", "timeout reached");
     return DRIZZLE_RETURN_TIMEOUT;
   }
 
-  x= 0;
-  for (con= drizzle->con_list; con != NULL; con= con->next)
-  {
-    if (con->events == 0)
-    {
-      continue;
-    }
-
-    drizzle_return_t dret= drizzle_con_set_revents(con, pfds[x].revents);
-    if (dret != DRIZZLE_RETURN_OK)
-    {
-      return dret;
-    }
-
-    x++;
-  }
-
-  return DRIZZLE_RETURN_OK;
+  return drizzle_con_set_revents(con, con->pfds[0].revents);
 }
 
-drizzle_con_st *drizzle_con_ready(drizzle_st *drizzle)
+drizzle_con_st *drizzle_con_ready(drizzle_con_st *con)
 {
-  drizzle_con_st *con;
-
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
   /* We can't keep state between calls since connections may be removed during
      processing. If this list ever gets big, we may want something faster. */
 
-  for (con= drizzle->con_list; con != NULL; con= con->next)
+  if (con->options & DRIZZLE_CON_IO_READY)
   {
-    if (con->options & DRIZZLE_CON_IO_READY)
-    {
-      con->options&= ~DRIZZLE_CON_IO_READY;
-      return con;
-    }
+    con->options = (drizzle_con_options_t)((int)con->options & (int)~DRIZZLE_CON_IO_READY);
+    return con;
   }
 
   return NULL;
@@ -606,20 +330,14 @@ drizzle_con_st *drizzle_con_ready(drizzle_st *drizzle)
  * Client Definitions
  */
 
-drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
-                                    const char *host, in_port_t port,
-                                    const char *user, const char *password,
-                                    const char *db,
-                                    drizzle_con_options_t options)
+drizzle_con_st *drizzle_con_create_tcp(const char *host, in_port_t port,
+                                       const char *user, const char *password,
+                                       const char *db,
+                                       drizzle_con_options_t options)
 {
   drizzle_con_st *con;
 
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  con= drizzle_con_create(drizzle);
+  con= drizzle_con_create();
   if (con == NULL)
   {
     return NULL;
@@ -633,19 +351,13 @@ drizzle_con_st *drizzle_con_add_tcp(drizzle_st *drizzle,
   return con;
 }
 
-drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle,
-                                    const char *uds, const char *user,
+drizzle_con_st *drizzle_con_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
                                     drizzle_con_options_t options)
 {
   drizzle_con_st *con;
 
-  if (drizzle == NULL)
-  {
-    return NULL;
-  }
-
-  con= drizzle_con_create(drizzle);
+  con= drizzle_con_create();
   if (con == NULL)
   {
     return NULL;
@@ -663,10 +375,10 @@ drizzle_con_st *drizzle_con_add_uds(drizzle_st *drizzle,
  * Local Definitions
  */
 
-void drizzle_set_error(drizzle_st *drizzle, const char *function,
-                       const char *format, ...)
+void drizzle_con_set_error(drizzle_con_st *con, const char *function,
+                           const char *format, ...)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return;
   }
@@ -702,27 +414,27 @@ void drizzle_set_error(drizzle_st *drizzle, const char *function,
   }
   log_buffer[size]= 0;
 
-  if (drizzle->log_fn == NULL)
+  if (con->log_fn == NULL)
   {
-    memcpy(drizzle->last_error, log_buffer, size + 1);
+    memcpy(con->last_error, log_buffer, size + 1);
   }
   else
   {
-    drizzle->log_fn(log_buffer, DRIZZLE_VERBOSE_ERROR, drizzle->log_context);
+    con->log_fn(log_buffer, DRIZZLE_VERBOSE_ERROR, con->log_context);
   }
 }
 
-void drizzle_log(drizzle_st *drizzle, drizzle_verbose_t verbose,
+void drizzle_con_log(drizzle_con_st *con, drizzle_verbose_t verbose,
                  const char *format, va_list args)
 {
-  if (drizzle == NULL)
+  if (con == NULL)
   {
     return;
   }
 
   char log_buffer[DRIZZLE_MAX_ERROR_SIZE];
 
-  if (drizzle->log_fn == NULL)
+  if (con->log_fn == NULL)
   {
     printf("%5s: ", drizzle_verbose_name(verbose));
     vprintf(format, args);
@@ -732,6 +444,6 @@ void drizzle_log(drizzle_st *drizzle, drizzle_verbose_t verbose,
   {
     vsnprintf(log_buffer, DRIZZLE_MAX_ERROR_SIZE, format, args);
     log_buffer[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
-    drizzle->log_fn(log_buffer, verbose, drizzle->log_context);
+    con->log_fn(log_buffer, verbose, con->log_context);
   }
 }

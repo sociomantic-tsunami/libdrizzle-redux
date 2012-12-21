@@ -135,7 +135,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     result->field_buffer= (drizzle_field_t)realloc(NULL, (*total) +1);
     if (result->field_buffer == NULL)
     {
-      drizzle_set_error(result->con->drizzle, __func__, "Failed to allocate.");
+      drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
       return NULL;
     }
@@ -179,7 +179,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_con_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con->drizzle, "drizzle_state_field_read");
+  drizzle_log_debug(con, "drizzle_state_field_read");
 
   if (con->buffer_size == 0)
   {
@@ -213,7 +213,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_con_st *con)
       return ret;
     }
 
-    drizzle_log_debug(con->drizzle,
+    drizzle_log_debug(con,
                       "field_offset= %zu, field_size= %zu, field_total= %zu",
                       con->result->field_offset, con->result->field_size,
                       con->result->field_total);
@@ -248,7 +248,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_con_st *con)
 
     if (con->options & DRIZZLE_CON_RAW_PACKET)
     {
-      con->result->options|= DRIZZLE_RESULT_ROW_BREAK;
+      con->result->options = (drizzle_result_options_t)((int)con->result->options | DRIZZLE_RESULT_ROW_BREAK);
     }
     else
     {
@@ -263,7 +263,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_con_st *con)
   con->buffer_size-= con->result->field_size;
   con->packet_size-= con->result->field_size;
 
-  drizzle_log_debug(con->drizzle,
+  drizzle_log_debug(con,
                     "field_offset= %zu, field_size= %zu, field_total= %zu",
                     con->result->field_offset, con->result->field_size,
                     con->result->field_total);

@@ -37,17 +37,14 @@
 
 #include "config.h"
 
-#include <libdrizzle-5.0/drizzle_client.h>
+#include <libdrizzle-5.0/libdrizzle.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
-int main(int argc, char* argv[])
+int main(void)
 {
-  (void) argc;
-  (void) argv;
-
   // @todo Don't use assert
   assert(drizzle_version());
   assert(strtol(LIBDRIZZLE_VERSION_STRING, (char **) NULL, 10));

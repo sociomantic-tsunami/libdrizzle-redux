@@ -54,40 +54,38 @@ extern "C" {
 /**
  * Set the error string.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle con structure
  * @param[in] function Name of function the error happened in. 
  * @param[in] format Format and variable argument list of message.
  */
 DRIZZLE_LOCAL
-void drizzle_set_error(drizzle_st *drizzle, const char *function,
+void drizzle_con_set_error(drizzle_con_st *con, const char *function,
                        const char *format, ...);
 
 /**
  * Log a message.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle con structure
  * @param[in] verbose Logging level of the message.
  * @param[in] format Format and variable argument list of message.
  * @param[in] args Variable argument list that has been initialized.
  */
 DRIZZLE_LOCAL
-void drizzle_log(drizzle_st *drizzle, drizzle_verbose_t verbose,
+void drizzle_con_log(drizzle_con_st *con, drizzle_verbose_t verbose,
                  const char *format, va_list args);
 
 /**
  * Log a fatal message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_fatal(drizzle_st *drizzle, const char *format,
+static inline void drizzle_log_fatal(drizzle_con_st *con, const char *format,
                                      ...)
 {
   va_list args;
 
-  if (drizzle->verbose >= DRIZZLE_VERBOSE_FATAL)
+  if (con->verbose >= DRIZZLE_VERBOSE_FATAL)
   {
     va_start(args, format);
-    drizzle_log(drizzle, DRIZZLE_VERBOSE_FATAL, format, args);
+    drizzle_con_log(con, DRIZZLE_VERBOSE_FATAL, format, args);
     va_end(args);
   }
 }
@@ -95,15 +93,15 @@ static inline void drizzle_log_fatal(drizzle_st *drizzle, const char *format,
 /**
  * Log an error message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_error(drizzle_st *drizzle, const char *format,
+static inline void drizzle_log_error(drizzle_con_st *con, const char *format,
                                      ...)
 {
   va_list args;
 
-  if (drizzle->verbose >= DRIZZLE_VERBOSE_ERROR)
+  if (con->verbose >= DRIZZLE_VERBOSE_ERROR)
   {
     va_start(args, format);
-    drizzle_log(drizzle, DRIZZLE_VERBOSE_ERROR, format, args);
+    drizzle_con_log(con, DRIZZLE_VERBOSE_ERROR, format, args);
     va_end(args);
   }
 }
@@ -111,15 +109,15 @@ static inline void drizzle_log_error(drizzle_st *drizzle, const char *format,
 /**
  * Log an info message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_info(drizzle_st *drizzle, const char *format,
+static inline void drizzle_log_info(drizzle_con_st *con, const char *format,
                                     ...)
 {
   va_list args;
 
-  if (drizzle->verbose >= DRIZZLE_VERBOSE_INFO)
+  if (con->verbose >= DRIZZLE_VERBOSE_INFO)
   {
     va_start(args, format);
-    drizzle_log(drizzle, DRIZZLE_VERBOSE_INFO, format, args);
+    drizzle_con_log(con, DRIZZLE_VERBOSE_INFO, format, args);
     va_end(args);
   }
 }
@@ -127,15 +125,15 @@ static inline void drizzle_log_info(drizzle_st *drizzle, const char *format,
 /**
  * Log a debug message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_debug(drizzle_st *drizzle, const char *format,
+static inline void drizzle_log_debug(drizzle_con_st *con, const char *format,
                                      ...)
 {
   va_list args;
 
-  if (drizzle->verbose >= DRIZZLE_VERBOSE_DEBUG)
+  if (con->verbose >= DRIZZLE_VERBOSE_DEBUG)
   {
     va_start(args, format);
-    drizzle_log(drizzle, DRIZZLE_VERBOSE_DEBUG, format, args);
+    drizzle_con_log(con, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }
@@ -143,15 +141,15 @@ static inline void drizzle_log_debug(drizzle_st *drizzle, const char *format,
 /**
  * Log a crazy message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_crazy(drizzle_st *drizzle, const char *format,
+static inline void drizzle_log_crazy(drizzle_con_st *con, const char *format,
                                      ...)
 {
   va_list args;
 
-  if (drizzle->verbose >= DRIZZLE_VERBOSE_CRAZY)
+  if (con->verbose >= DRIZZLE_VERBOSE_CRAZY)
   {
     va_start(args, format);
-    drizzle_log(drizzle, DRIZZLE_VERBOSE_CRAZY, format, args);
+    drizzle_con_log(con, DRIZZLE_VERBOSE_CRAZY, format, args);
     va_end(args);
   }
 }

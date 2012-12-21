@@ -125,6 +125,9 @@ extern "C" {
 DRIZZLE_API
 void drizzle_library_init(void);
 
+DRIZZLE_API
+void drizzle_library_deinit(void);
+
 /**
  * Get library version string.
  *
@@ -151,138 +154,6 @@ DRIZZLE_API
 const char *drizzle_verbose_name(drizzle_verbose_t verbose);
 
 /**
- * Initialize a drizzle structure. Always check the return value even if passing
- * in a pre-allocated structure. Some other initialization may have failed.
- *
- * @param[in] drizzle Caller allocated structure, or NULL to allocate one.
- * @return On success, a pointer to the (possibly allocated) structure. On
- * failure this will be NULL.
- */
-DRIZZLE_API
-drizzle_st *drizzle_create(void);
-
-/**
- * Free a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- */
-DRIZZLE_API
-void drizzle_free(drizzle_st *drizzle);
-
-/**
- * Return an error string for last error encountered.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return Pointer to static buffer in library that holds an error string.
- */
-DRIZZLE_API
-const char *drizzle_error(const drizzle_st *drizzle);
-
-/**
- * Value of errno in the case of a DRIZZLE_RETURN_ERRNO return value.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return An errno value as defined in your system errno.h file.
- */
-DRIZZLE_API
-int drizzle_errno(const drizzle_st *drizzle);
-
-/**
- * Get server defined error code for the last result read.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return An error code given back in the server response.
- */
-DRIZZLE_API
-uint16_t drizzle_error_code(const drizzle_st *drizzle);
-
-/**
- * Get SQL state code for the last result read.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return A SQLSTATE code given back in the server response.
- */
-DRIZZLE_API
-const char *drizzle_sqlstate(const drizzle_st *drizzle);
-
-/**
- * Get options for a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return Options set for the drizzle structure.
- */
-DRIZZLE_API
-drizzle_options_t drizzle_options(const drizzle_st *drizzle);
-
-/**
- * Set options for a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] options Available options for drizzle structure to set.
- */
-DRIZZLE_API
-void drizzle_set_options(drizzle_st *drizzle, drizzle_options_t options);
-
-/**
- * Add options for a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] options Available options for drizzle structure to add.
- */
-DRIZZLE_API
-void drizzle_add_options(drizzle_st *drizzle, drizzle_options_t options);
-
-/**
- * Remove options for a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] options Available options for drizzle structure to remove.
- */
-DRIZZLE_API
-void drizzle_remove_options(drizzle_st *drizzle, drizzle_options_t options);
-
-/**
- * Get application context pointer.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @return Application context that was previously set, or NULL.
- */
-DRIZZLE_API
-void *drizzle_context(const drizzle_st *drizzle);
-
-/**
- * Set application context pointer.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] context Application context to set.
- */
-DRIZZLE_API
-void drizzle_set_context(drizzle_st *drizzle, void *context);
-
-/**
- * Set function to call when the drizzle structure is being cleaned up so
- * the application can clean up the context pointer.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] function Function to call to clean up drizzle context.
- */
-DRIZZLE_API
-void drizzle_set_context_free_fn(drizzle_st *drizzle,
-                                 drizzle_context_free_fn *function);
-
-/**
  * Get current socket I/O activity timeout value.
  *
  * @param[in] drizzle Drizzle structure previously initialized with
@@ -291,7 +162,7 @@ void drizzle_set_context_free_fn(drizzle_st *drizzle,
  *  means an infinite timeout.
  */
 DRIZZLE_API
-int drizzle_timeout(const drizzle_st *drizzle);
+int drizzle_con_timeout(const drizzle_con_st *con);
 
 /**
  * Set socket I/O activity timeout for connections in a Drizzle structure.
@@ -302,7 +173,7 @@ int drizzle_timeout(const drizzle_st *drizzle);
  *  means an infinite timeout.
  */
 DRIZZLE_API
-void drizzle_set_timeout(drizzle_st *drizzle, int timeout);
+void drizzle_con_set_timeout(drizzle_con_st *con, int timeout);
 
 /**
  * Get current verbosity threshold for logging messages.
@@ -312,7 +183,7 @@ void drizzle_set_timeout(drizzle_st *drizzle, int timeout);
  * @return Current verbosity threshold.
  */
 DRIZZLE_API
-drizzle_verbose_t drizzle_verbose(const drizzle_st *drizzle);
+drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con);
 
 /**
  * Set verbosity threshold for logging messages. If this is set above
@@ -324,7 +195,7 @@ drizzle_verbose_t drizzle_verbose(const drizzle_st *drizzle);
  * @param[in] verbose Verbosity threshold of what to log.
  */
 DRIZZLE_API
-void drizzle_set_verbose(drizzle_st *drizzle, drizzle_verbose_t verbose);
+void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose);
 
 /**
  * Set logging function for a drizzle structure. This function is only called
@@ -337,28 +208,8 @@ void drizzle_set_verbose(drizzle_st *drizzle, drizzle_verbose_t verbose);
  * @param[in] context Argument to pass into the callback function.
  */
 DRIZZLE_API
-void drizzle_set_log_fn(drizzle_st *drizzle, drizzle_log_fn *function,
+void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
                         void *context);
-
-/**
- * Set a custom I/O event watcher function for a drizzle structure. Used to
- * integrate libdrizzle with a custom event loop. The callback will be invoked
- * to register or deregister interest in events for a connection. When the
- * events are triggered, drizzle_con_set_revents() should be called to
- * indicate which events are ready. The event loop should stop waiting for
- * these events, as libdrizzle will call the callback again if it is still
- * interested. To resume processing, the libdrizzle function that returned
- * DRIZZLE_RETURN_IO_WAIT should be called again. See drizzle_event_watch_fn().
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] function Function to call when there is an I/O event.
- * @param[in] context Argument to pass into the callback function.
- */
-DRIZZLE_API
-void drizzle_set_event_watch_fn(drizzle_st *drizzle,
-                                drizzle_event_watch_fn *function,
-                                void *context);
 
 /**
  * Initialize a connection structure. Always check the return value even if
@@ -372,7 +223,7 @@ void drizzle_set_event_watch_fn(drizzle_st *drizzle,
  *  failure this will be NULL.
  */
 DRIZZLE_LOCAL
-drizzle_con_st *drizzle_con_create(drizzle_st *drizzle);
+drizzle_con_st *drizzle_con_create(void);
 
 /**
  * Free a connection structure.
@@ -384,15 +235,6 @@ DRIZZLE_LOCAL
 void drizzle_con_free(drizzle_con_st *con);
 
 /**
- * Free all connections in a drizzle structure.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- */
-DRIZZLE_LOCAL
-void drizzle_con_free_all(drizzle_st *drizzle);
-
-/**
  * Wait for I/O on connections.
  *
  * @param[in] drizzle Drizzle structure previously initialized with
@@ -400,7 +242,7 @@ void drizzle_con_free_all(drizzle_st *drizzle);
  * @return Standard drizzle return value.
  */
 DRIZZLE_API
-drizzle_return_t drizzle_con_wait(drizzle_st *drizzle);
+drizzle_return_t drizzle_con_wait(drizzle_con_st *con);
 
 /**
  * Get next connection that is ready for I/O.
@@ -410,7 +252,7 @@ drizzle_return_t drizzle_con_wait(drizzle_st *drizzle);
  * @return Connection that is ready for I/O, or NULL if there are none.
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_ready(drizzle_st *drizzle);
+drizzle_con_st *drizzle_con_ready(drizzle_con_st *con);
 
 /** @} */
 

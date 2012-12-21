@@ -95,16 +95,6 @@ DRIZZLE_API
 drizzle_return_t drizzle_con_set_revents(drizzle_con_st *con, short revents);
 
 /**
- * Get the drizzle_st struct that the connection belongs to.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
- * @return Drizzle object that this connection is part of.
- */
-DRIZZLE_API
-drizzle_st *drizzle_con_drizzle(const drizzle_con_st *con);
-
-/**
  * Return an error string for last error encountered.
  *
  * @param[in] con Connection structure previously initialized with

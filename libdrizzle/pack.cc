@@ -191,7 +191,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_con_st *con, char *buffer,
   {
     if (ret == DRIZZLE_RETURN_NULL_SIZE)
     {
-      drizzle_set_error(con->drizzle, "drizzle_unpack_string",
+      drizzle_con_set_error(con, "drizzle_unpack_string",
                         "unexpected NULL length");
     }
 
@@ -302,7 +302,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_con_st *con,
 
   if (SHA1_DIGEST_LENGTH != DRIZZLE_MAX_SCRAMBLE_SIZE)
   {
-    drizzle_set_error(con->drizzle, "_pack_scramble_hash",
+    drizzle_con_set_error(con, "_pack_scramble_hash",
                       "SHA1 hash size mismatch:%u:%u", SHA1_DIGEST_LENGTH,
                       DRIZZLE_MAX_SCRAMBLE_SIZE);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
@@ -310,7 +310,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_con_st *con,
 
   if (con->scramble == NULL)
   {
-    drizzle_set_error(con->drizzle, "_pack_scramble_hash",
+    drizzle_con_set_error(con, "_pack_scramble_hash",
                       "no scramble buffer");
     return DRIZZLE_RETURN_NO_SCRAMBLE;
   }

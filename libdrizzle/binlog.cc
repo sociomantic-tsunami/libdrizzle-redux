@@ -243,7 +243,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
     if (con->packet_size != binlog_event->length)
     {
-        drizzle_set_error(con->drizzle, "drizzle_state_binlog_read",
+        drizzle_con_set_error(con, "drizzle_state_binlog_read",
                           "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
@@ -277,7 +277,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     }
     if (con->packet_size != 0)
     {
-      drizzle_set_error(con->drizzle, "drizzle_state_binlog_read",
+      drizzle_con_set_error(con, "drizzle_state_binlog_read",
                         "unexpected data after packet:%zu", con->buffer_size);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }

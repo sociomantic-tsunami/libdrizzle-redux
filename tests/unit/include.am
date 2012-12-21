@@ -27,6 +27,11 @@ tests_unit_version_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/version
 noinst_PROGRAMS+= tests/unit/version
 
+tests_unit_version_cxx_SOURCES= tests/unit/version_cxx.cc
+tests_unit_version_cxx_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/version_cxx
+noinst_PROGRAMS+= tests/unit/version_cxx
+
 tests_unit_connect_SOURCES= tests/unit/connect.c
 tests_unit_connect_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/connect
@@ -46,13 +51,3 @@ tests_unit_unbuffered_query_SOURCES= tests/unit/unbuffered_query.c
 tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/unbuffered_query
 noinst_PROGRAMS+= tests/unit/unbuffered_query
-
-tests_unit_main_c_SOURCES= tests/unit/main_c.c
-tests_unit_main_c_LDADD= libdrizzle/libdrizzle.la
-check_PROGRAMS+= tests/unit/main_c
-noinst_PROGRAMS+= tests/unit/main_c
-
-tests_unit_main_cxx_SOURCES= tests/unit/main_cxx.cc
-tests_unit_main_cxx_LDADD= libdrizzle/libdrizzle.la
-check_PROGRAMS+= tests/unit/main_cxx
-noinst_PROGRAMS+= tests/unit/main_cxx
