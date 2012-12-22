@@ -526,7 +526,7 @@ drizzle_charset_t drizzle_charset(const drizzle_st *con)
 {
   if (con == NULL)
   {
-    return 0;
+    return DRIZZLE_CHARSET_NONE;
   }
 
   return con->charset;

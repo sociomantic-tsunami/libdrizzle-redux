@@ -181,7 +181,7 @@ drizzle_st *drizzle_create(void)
   con->events= 0;
   con->revents= 0;
   con->capabilities= DRIZZLE_CAPABILITIES_NONE;
-  con->charset= 0;
+  con->charset= DRIZZLE_CHARSET_NONE;
   con->command= DRIZZLE_COMMAND_SLEEP;
   con->socket_type= DRIZZLE_CON_SOCKET_TCP;
   con->status= DRIZZLE_CON_STATUS_NONE;
