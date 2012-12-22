@@ -69,7 +69,7 @@ extern "C" {
  *         if the allocation failed.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_query(drizzle_con_st *con, 
+drizzle_result_st *drizzle_query(drizzle_st *con, 
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr);
 
@@ -77,7 +77,7 @@ drizzle_result_st *drizzle_query(drizzle_con_st *con,
  * Send query to server, using strlen to get the size of query buffer..
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
+drizzle_result_st *drizzle_query_str(drizzle_st *con,
                                      const char *query,
                                      drizzle_return_t *ret_ptr);
 

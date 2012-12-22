@@ -42,15 +42,15 @@
 
 #include <libdrizzle/common.h>
 
-drizzle_result_st *drizzle_query(drizzle_con_st *con,
+drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr)
 {
-  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
+  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
                                    (uint8_t *)query, size, size, ret_ptr);
 }
 
-drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
+drizzle_result_st *drizzle_query_str(drizzle_st *con,
                                      const char *query, 
                                      drizzle_return_t *ret_ptr)
 {
@@ -61,7 +61,7 @@ drizzle_result_st *drizzle_query_str(drizzle_con_st *con,
 
   size_t size= strlen(query);
 
-  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
+  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
                                    (uint8_t *)query, size, size, ret_ptr);
 }
 

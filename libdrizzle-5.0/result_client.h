@@ -57,7 +57,7 @@ extern "C" {
  * Read result packet.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_result_read(drizzle_con_st *con,
+drizzle_result_st *drizzle_result_read(drizzle_st *con,
                                        drizzle_return_t *ret_ptr);
 
 /**

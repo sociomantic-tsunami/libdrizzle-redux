@@ -72,9 +72,9 @@ static GOptionEntry binlog_options[]= {
 };
 
 gboolean get_system_user(char *dest, uint8_t len);
-drizzle_con_st *_connect(void);
+drizzle_st *_connect(void);
 FILE *create_binlog_file(char *binlog_file);
-void get_binlogs(drizzle_con_st *con);
+void get_binlogs(drizzle_st *con);
 void write_binlog(FILE* file, const uint8_t* data, uint32_t len);
 
 gboolean get_system_user(char *dest, uint8_t len)
@@ -98,21 +98,21 @@ gboolean get_system_user(char *dest, uint8_t len)
   return FALSE;
 }
 
-drizzle_con_st *_connect(void)
+drizzle_st *_connect(void)
 {
-  drizzle_con_st *con;
+  drizzle_st *con;
   drizzle_return_t ret;
 
-  con= drizzle_con_create_tcp(host, port, user, pass, "", 0);
+  con= drizzle_create_tcp(host, port, user, pass, "", 0);
   if (!con)
   {
     g_print("Drizzle connection object creation error\n");
     return NULL;
   }
-  ret= drizzle_con_connect(con);
+  ret= drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    g_print("Error connecting to server: %s\n", drizzle_con_error(con));
+    g_print("Error connecting to server: %s\n", drizzle_error(con));
     return NULL;
   }
   return con;
@@ -138,7 +138,7 @@ FILE *create_binlog_file(char *binlog_file)
   return outfile;
 }
 
-void get_binlogs(drizzle_con_st *con)
+void get_binlogs(drizzle_st *con)
 {
   drizzle_result_st *result;
   drizzle_return_t ret;
@@ -160,7 +160,7 @@ void get_binlogs(drizzle_con_st *con)
   result= drizzle_start_binlog(con, server_id, start_file, start_pos, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    g_print("Drizzle binlog start failure: %s\n", drizzle_con_error(con));
+    g_print("Drizzle binlog start failure: %s\n", drizzle_error(con));
     exit(EXIT_FAILURE);
   }
 
@@ -184,7 +184,7 @@ void get_binlogs(drizzle_con_st *con)
           // EOF
           if (ret != DRIZZLE_RETURN_EOF)
           {
-            g_print("Read error: %d - %s\n", ret, drizzle_con_error(con));
+            g_print("Read error: %d - %s\n", ret, drizzle_error(con));
           }
           read_end= TRUE;
           break;
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 {
   GError *error= NULL;
   GOptionContext *context;
-  drizzle_con_st *con;
+  drizzle_st *con;
   char sysuser[DRIZZLE_MAX_USER_SIZE];
 
   context= g_option_context_new(" - Drizzle binlog retriever");
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   get_binlogs(con);
-  drizzle_con_quit(con);
+  drizzle_quit(con);
   g_option_context_free(context);
   return EXIT_SUCCESS;
 }

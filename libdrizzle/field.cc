@@ -135,7 +135,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     result->field_buffer= (drizzle_field_t)realloc(NULL, (*total) +1);
     if (result->field_buffer == NULL)
     {
-      drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
+      drizzle_set_error(result->con, __func__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
       return NULL;
     }
@@ -173,7 +173,7 @@ void drizzle_field_free(drizzle_field_t field)
  * Internal state functions.
  */
 
-drizzle_return_t drizzle_state_field_read(drizzle_con_st *con)
+drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 {
   if (con == NULL)
   {

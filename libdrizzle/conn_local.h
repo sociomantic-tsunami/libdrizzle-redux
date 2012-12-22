@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup drizzle_con_local Local Connection Declarations
+ * @addtogroup drizzle_local Local Connection Declarations
  * @ingroup drizzle_con
  * @{
  */
@@ -56,19 +56,19 @@ extern "C" {
  * Clear address info, freeing structs if needed.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  */
 DRIZZLE_LOCAL
-void drizzle_con_reset_addrinfo(drizzle_con_st *con);
+void drizzle_reset_addrinfo(drizzle_st *con);
  
 /**
  * Check if state stack is empty.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @return True if empty, false if something is on the stack.
  */
-static inline bool drizzle_state_none(drizzle_con_st *con)
+static inline bool drizzle_state_none(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -82,10 +82,10 @@ static inline bool drizzle_state_none(drizzle_con_st *con)
  * Push a function onto the stack.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @param[in] function Function to push.
  */
-static inline void drizzle_state_push(drizzle_con_st *con,
+static inline void drizzle_state_push(drizzle_st *con,
                                       drizzle_state_fn *function)
 {
   /* The maximum stack depth can be determined at compile time, so bump this
@@ -99,9 +99,9 @@ static inline void drizzle_state_push(drizzle_con_st *con,
  * Pop a function off of the stack.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  */
-static inline void drizzle_state_pop(drizzle_con_st *con)
+static inline void drizzle_state_pop(drizzle_st *con)
 {
   con->state_current--;
 }
@@ -110,9 +110,9 @@ static inline void drizzle_state_pop(drizzle_con_st *con)
  * Reset the stack so it is empty.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  */
-static inline void drizzle_state_reset(drizzle_con_st *con)
+static inline void drizzle_state_reset(drizzle_st *con)
 {
   con->state_current= 0;
 }
