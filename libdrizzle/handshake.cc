@@ -170,7 +170,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
     return DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED;
   }
 
-  con->charset= con->buffer_ptr[0];
+  con->charset= (drizzle_charset_t)con->buffer_ptr[0];
   con->buffer_ptr+= 1;
 
   con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr);
@@ -364,7 +364,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   con->max_packet_size= (uint32_t)drizzle_get_byte4(con->buffer_ptr);
   con->buffer_ptr+= 4;
 
-  con->charset= con->buffer_ptr[0];
+  con->charset= (drizzle_charset_t)con->buffer_ptr[0];
   con->buffer_ptr+= 1;
 
   /* Skip unused. */
