@@ -39,9 +39,9 @@
 
 #ifdef __cplusplus
 struct drizzle_st;
-struct drizzle_con_tcp_st;
-struct drizzle_con_uds_st;
-struct drizzle_con_st;
+struct drizzle_tcp_st;
+struct drizzle_uds_st;
+struct drizzle_st;
 struct drizzle_result_st;
 struct drizzle_binlog_st;
 struct drizzle_column_st;

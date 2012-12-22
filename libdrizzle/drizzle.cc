@@ -112,7 +112,7 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose)
   return _verbose_name[verbose];
 }
 
-int drizzle_con_timeout(const drizzle_con_st *con)
+int drizzle_timeout(const drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -122,7 +122,7 @@ int drizzle_con_timeout(const drizzle_con_st *con)
   return con->timeout;
 }
 
-void drizzle_con_set_timeout(drizzle_con_st *con, int timeout)
+void drizzle_set_timeout(drizzle_st *con, int timeout)
 {
   if (con == NULL)
   {
@@ -132,7 +132,7 @@ void drizzle_con_set_timeout(drizzle_con_st *con, int timeout)
   con->timeout= timeout;
 }
 
-drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con)
+drizzle_verbose_t drizzle_verbose(const drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -142,7 +142,7 @@ drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con)
   return con->verbose;
 }
 
-void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose)
+void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose)
 {
   if (con == NULL)
   {
@@ -152,7 +152,7 @@ void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose)
   con->verbose= verbose;
 }
 
-void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
+void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
                             void *context)
 {
   if (con == NULL)
@@ -164,11 +164,11 @@ void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
   con->log_context= context;
 }
 
-drizzle_con_st *drizzle_con_create(void)
+drizzle_st *drizzle_create(void)
 {
-  drizzle_con_st *con;
+  drizzle_st *con;
 
-  con= (drizzle_con_st*)malloc(sizeof(drizzle_con_st));
+  con= (drizzle_st*)malloc(sizeof(drizzle_st));
   if (con == NULL)
   {
     return NULL;
@@ -228,7 +228,7 @@ drizzle_con_st *drizzle_con_create(void)
   return con;
 }
 
-void drizzle_con_free(drizzle_con_st *con)
+void drizzle_free(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -244,10 +244,10 @@ void drizzle_con_free(drizzle_con_st *con)
 
   if (con->fd != -1)
   {
-    drizzle_con_close(con);
+    drizzle_close(con);
   }
 
-  drizzle_con_reset_addrinfo(con);
+  drizzle_reset_addrinfo(con);
 
 #ifdef USE_OPENSSL
   if (con->ssl)
@@ -260,7 +260,7 @@ void drizzle_con_free(drizzle_con_st *con)
   free(con);
 }
 
-drizzle_return_t drizzle_con_wait(drizzle_con_st *con)
+drizzle_return_t drizzle_wait(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -275,7 +275,7 @@ drizzle_return_t drizzle_con_wait(drizzle_con_st *con)
   }
   else
   {
-    drizzle_con_set_error(con, __func__, "no active file descriptors");
+    drizzle_set_error(con, __func__, "no active file descriptors");
     return DRIZZLE_RETURN_NO_ACTIVE_CONNECTIONS;
   }
 
@@ -295,7 +295,7 @@ drizzle_return_t drizzle_con_wait(drizzle_con_st *con)
         continue;
       }
 
-      drizzle_con_set_error(con, "drizzle_con_wait", "poll:%d", errno);
+      drizzle_set_error(con, "drizzle_wait", "poll:%d", errno);
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
@@ -305,21 +305,21 @@ drizzle_return_t drizzle_con_wait(drizzle_con_st *con)
 
   if (ret == 0)
   {
-    drizzle_con_set_error(con, "drizzle_con_wait", "timeout reached");
+    drizzle_set_error(con, "drizzle_wait", "timeout reached");
     return DRIZZLE_RETURN_TIMEOUT;
   }
 
-  return drizzle_con_set_revents(con, con->pfds[0].revents);
+  return drizzle_set_revents(con, con->pfds[0].revents);
 }
 
-drizzle_con_st *drizzle_con_ready(drizzle_con_st *con)
+drizzle_st *drizzle_ready(drizzle_st *con)
 {
   /* We can't keep state between calls since connections may be removed during
      processing. If this list ever gets big, we may want something faster. */
 
   if (con->options & DRIZZLE_CON_IO_READY)
   {
-    con->options = (drizzle_con_options_t)((int)con->options & (int)~DRIZZLE_CON_IO_READY);
+    con->options = (drizzle_options_t)((int)con->options & (int)~DRIZZLE_CON_IO_READY);
     return con;
   }
 
@@ -330,43 +330,43 @@ drizzle_con_st *drizzle_con_ready(drizzle_con_st *con)
  * Client Definitions
  */
 
-drizzle_con_st *drizzle_con_create_tcp(const char *host, in_port_t port,
+drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
                                        const char *user, const char *password,
                                        const char *db,
-                                       drizzle_con_options_t options)
+                                       drizzle_options_t options)
 {
-  drizzle_con_st *con;
+  drizzle_st *con;
 
-  con= drizzle_con_create();
+  con= drizzle_create();
   if (con == NULL)
   {
     return NULL;
   }
 
-  drizzle_con_set_tcp(con, host, port);
-  drizzle_con_set_auth(con, user, password);
-  drizzle_con_set_db(con, db);
-  drizzle_con_add_options(con, options);
+  drizzle_set_tcp(con, host, port);
+  drizzle_set_auth(con, user, password);
+  drizzle_set_db(con, db);
+  drizzle_add_options(con, options);
 
   return con;
 }
 
-drizzle_con_st *drizzle_con_create_uds(const char *uds, const char *user,
+drizzle_st *drizzle_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
-                                    drizzle_con_options_t options)
+                                    drizzle_options_t options)
 {
-  drizzle_con_st *con;
+  drizzle_st *con;
 
-  con= drizzle_con_create();
+  con= drizzle_create();
   if (con == NULL)
   {
     return NULL;
   }
 
-  drizzle_con_set_uds(con, uds);
-  drizzle_con_set_auth(con, user, password);
-  drizzle_con_set_db(con, db);
-  drizzle_con_add_options(con, options);
+  drizzle_set_uds(con, uds);
+  drizzle_set_auth(con, user, password);
+  drizzle_set_db(con, db);
+  drizzle_add_options(con, options);
 
   return con;
 }
@@ -375,7 +375,7 @@ drizzle_con_st *drizzle_con_create_uds(const char *uds, const char *user,
  * Local Definitions
  */
 
-void drizzle_con_set_error(drizzle_con_st *con, const char *function,
+void drizzle_set_error(drizzle_st *con, const char *function,
                            const char *format, ...)
 {
   if (con == NULL)
@@ -424,7 +424,7 @@ void drizzle_con_set_error(drizzle_con_st *con, const char *function,
   }
 }
 
-void drizzle_con_log(drizzle_con_st *con, drizzle_verbose_t verbose,
+void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
                  const char *format, va_list args)
 {
   if (con == NULL)

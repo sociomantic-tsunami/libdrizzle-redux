@@ -162,7 +162,7 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose);
  *  means an infinite timeout.
  */
 DRIZZLE_API
-int drizzle_con_timeout(const drizzle_con_st *con);
+int drizzle_timeout(const drizzle_st *con);
 
 /**
  * Set socket I/O activity timeout for connections in a Drizzle structure.
@@ -173,7 +173,7 @@ int drizzle_con_timeout(const drizzle_con_st *con);
  *  means an infinite timeout.
  */
 DRIZZLE_API
-void drizzle_con_set_timeout(drizzle_con_st *con, int timeout);
+void drizzle_set_timeout(drizzle_st *con, int timeout);
 
 /**
  * Get current verbosity threshold for logging messages.
@@ -183,7 +183,7 @@ void drizzle_con_set_timeout(drizzle_con_st *con, int timeout);
  * @return Current verbosity threshold.
  */
 DRIZZLE_API
-drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con);
+drizzle_verbose_t drizzle_verbose(const drizzle_st *con);
 
 /**
  * Set verbosity threshold for logging messages. If this is set above
@@ -195,7 +195,7 @@ drizzle_verbose_t drizzle_con_verbose(const drizzle_con_st *con);
  * @param[in] verbose Verbosity threshold of what to log.
  */
 DRIZZLE_API
-void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose);
+void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose);
 
 /**
  * Set logging function for a drizzle structure. This function is only called
@@ -208,7 +208,7 @@ void drizzle_con_set_verbose(drizzle_con_st *con, drizzle_verbose_t verbose);
  * @param[in] context Argument to pass into the callback function.
  */
 DRIZZLE_API
-void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
+void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
                         void *context);
 
 /**
@@ -223,16 +223,16 @@ void drizzle_con_set_log_fn(drizzle_con_st *con, drizzle_log_fn *function,
  *  failure this will be NULL.
  */
 DRIZZLE_LOCAL
-drizzle_con_st *drizzle_con_create(void);
+drizzle_st *drizzle_create(void);
 
 /**
  * Free a connection structure.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  */
 DRIZZLE_LOCAL
-void drizzle_con_free(drizzle_con_st *con);
+void drizzle_free(drizzle_st *con);
 
 /**
  * Wait for I/O on connections.
@@ -242,7 +242,7 @@ void drizzle_con_free(drizzle_con_st *con);
  * @return Standard drizzle return value.
  */
 DRIZZLE_API
-drizzle_return_t drizzle_con_wait(drizzle_con_st *con);
+drizzle_return_t drizzle_wait(drizzle_st *con);
 
 /**
  * Get next connection that is ready for I/O.
@@ -252,7 +252,7 @@ drizzle_return_t drizzle_con_wait(drizzle_con_st *con);
  * @return Connection that is ready for I/O, or NULL if there are none.
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_ready(drizzle_con_st *con);
+drizzle_st *drizzle_ready(drizzle_st *con);
 
 /** @} */
 

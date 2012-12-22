@@ -64,7 +64,7 @@ uint8_t *drizzle_pack_length(uint64_t number, uint8_t *ptr);
  * Unpack length-encoded number.
  */
 DRIZZLE_API
-uint64_t drizzle_unpack_length(drizzle_con_st *con, drizzle_return_t *ret_ptr);
+uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr);
 
 /**
  * Pack length-encoded string.
@@ -76,14 +76,14 @@ uint8_t *drizzle_pack_string(char *string, uint8_t *ptr);
  * Unpack length-encoded string.
  */
 DRIZZLE_API
-drizzle_return_t drizzle_unpack_string(drizzle_con_st *con, char *buffer,
+drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
                                        uint64_t max_size);
 
 /**
  * Pack user, scramble, and db.
  */
 DRIZZLE_API
-uint8_t *drizzle_pack_auth(drizzle_con_st *con, uint8_t *ptr,
+uint8_t *drizzle_pack_auth(drizzle_st *con, uint8_t *ptr,
                            drizzle_return_t *ret_ptr);
 
 /** @} */

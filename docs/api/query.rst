@@ -9,7 +9,7 @@ This section outlines the query and result functions
 Functions
 ---------
 
-.. c:function:: drizzle_return_t drizzle_set_ssl(drizzle_con_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
+.. c:function:: drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 
    Sets the SSL data
 
@@ -21,7 +21,7 @@ Functions
    :param cipher: A list of allowed ciphers for SSL encryption
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
-.. c:function:: drizzle_result_st* drizzle_query(drizzle_con_st *con, const char *query, size_t size, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_result_st* drizzle_query(drizzle_st *con, const char *query, size_t size, drizzle_return_t *ret_ptr)
 
    Executes a query and returns a newly allocated result struct
 
@@ -31,7 +31,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
-.. c:function:: drizzle_result_st* drizzle_query_str(drizzle_con_st *con, const char *query, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_result_st* drizzle_query_str(drizzle_st *con, const char *query, drizzle_return_t *ret_ptr)
 
    Executes a query using :c:func:`strlen` to calculate the length of the query
    string and returns a newly allocated result struct
@@ -82,13 +82,13 @@ Functions
 
    :param result: the result set to free
 
-.. c:function:: void drizzle_result_free_all(drizzle_con_st *con)
+.. c:function:: void drizzle_result_free_all(drizzle_st *con)
 
    Frees all result objects for a given connection object
 
    :param con: A connection object
 
-.. c:function:: drizzle_con_st* drizzle_result_drizzle_con(drizzle_result_st *result)
+.. c:function:: drizzle_st* drizzle_result_drizzle_con(drizzle_result_st *result)
 
    Gets the connection object from a given result object
 
@@ -163,7 +163,7 @@ Functions
    :param result: A result object
    :returns: The row count
 
-.. c:function:: drizzle_result_st* drizzle_result_read(drizzle_con_st *con, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_result_st* drizzle_result_read(drizzle_st *con, drizzle_return_t *ret_ptr)
 
    Reads the next result in a multi-result return
 

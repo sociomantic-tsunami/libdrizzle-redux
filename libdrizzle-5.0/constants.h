@@ -90,9 +90,9 @@ extern "C" {
 
 /**
  * @ingroup drizzle_con
- * Options for drizzle_con_st.
+ * Options for drizzle_st.
  */
-enum drizzle_con_options_t
+enum drizzle_options_t
 {
   DRIZZLE_CON_NONE=                 0,
   DRIZZLE_CON_OPTIONS_NON_BLOCKING= (1 << 0),
@@ -108,28 +108,28 @@ enum drizzle_con_options_t
 };
 
 #ifndef __cplusplus
-typedef enum drizzle_con_options_t drizzle_con_options_t;
+typedef enum drizzle_options_t drizzle_options_t;
 #endif
 
 /**
  * @ingroup drizzle_con
- * Socket types for drizzle_con_st.
+ * Socket types for drizzle_st.
  */
-enum drizzle_con_socket_t
+enum drizzle_socket_t
 {
   DRIZZLE_CON_SOCKET_TCP= 0,
   DRIZZLE_CON_SOCKET_UDS= (1 << 0)
 };
 
 #ifndef __cplusplus
-typedef enum drizzle_con_socket_t drizzle_con_socket_t;
+typedef enum drizzle_socket_t drizzle_socket_t;
 #endif
 
 /**
  * @ingroup drizzle_con
- * Status flags for drizle_con_st.
+ * Status flags for drizle_st.
  */
-enum drizzle_con_status_t
+enum drizzle_status_t
 {
   DRIZZLE_CON_STATUS_NONE=                     0,
   DRIZZLE_CON_STATUS_IN_TRANS=                 (1 << 0),
@@ -145,12 +145,12 @@ enum drizzle_con_status_t
 };
 
 #ifndef __cplusplus
-typedef enum drizzle_con_status_t drizzle_con_status_t;
+typedef enum drizzle_status_t drizzle_status_t;
 #endif
 
 /**
  * @ingroup drizzle_con
- * Capabilities for drizzle_con_st.
+ * Capabilities for drizzle_st.
  */
 enum drizzle_capabilities_t
 {
@@ -399,9 +399,9 @@ typedef enum drizzle_column_flags_t drizzle_column_flags_t;
  */
 
 /* Types. */
-typedef struct drizzle_con_tcp_st drizzle_con_tcp_st;
-typedef struct drizzle_con_uds_st drizzle_con_uds_st;
-typedef struct drizzle_con_st drizzle_con_st;
+typedef struct drizzle_tcp_st drizzle_tcp_st;
+typedef struct drizzle_uds_st drizzle_uds_st;
+typedef struct drizzle_st drizzle_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
@@ -411,22 +411,22 @@ typedef uint8_t drizzle_charset_t;
 
 typedef void (drizzle_log_fn)(const char *line, drizzle_verbose_t verbose,
                               void *context);
-typedef drizzle_return_t (drizzle_state_fn)(drizzle_con_st *con);
-typedef void (drizzle_con_context_free_fn)(drizzle_con_st *con,
+typedef drizzle_return_t (drizzle_state_fn)(drizzle_st *con);
+typedef void (drizzle_context_free_fn)(drizzle_st *con,
                                            void *context);
 /**
  * Custom function to register or deregister interest in file descriptor
  * events. See drizzle_set_event_watch_fn().
  *
  * @param[in] con Connection that has changed the events it is interested in.
- *  Use drizzle_con_fd() to get the file descriptor.
+ *  Use drizzle_fd() to get the file descriptor.
  * @param[in] events A bit mask of POLLIN | POLLOUT, specifying if the
  *  connection is waiting for read or write events.
  * @param[in] context Application context pointer registered with
  *  drizzle_set_event_watch_fn().
  * @return DRIZZLE_RETURN_OK if successful.
  */
-typedef drizzle_return_t (drizzle_event_watch_fn)(drizzle_con_st *con,
+typedef drizzle_return_t (drizzle_event_watch_fn)(drizzle_st *con,
                                                   short events,
                                                   void *context);
 

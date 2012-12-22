@@ -59,7 +59,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
   column= (drizzle_column_st*)malloc(sizeof(drizzle_column_st));
   if (column == NULL)
   {
-    drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
+    drizzle_set_error(result->con, __func__, "Failed to allocate.");
     return NULL;
   }
 
@@ -343,7 +343,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
     result->column_buffer= (drizzle_column_st*)calloc(result->column_count, sizeof(drizzle_column_st));
     if (result->column_buffer == NULL)
     {
-      drizzle_con_set_error(result->con, __func__, "Failed to allocate.");
+      drizzle_set_error(result->con, __func__, "Failed to allocate.");
 
       return DRIZZLE_RETURN_MEMORY;
     }
@@ -475,7 +475,7 @@ void drizzle_column_set_default_value(drizzle_column_st *column,
  * Internal state functions.
  */
 
-drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
+drizzle_return_t drizzle_state_column_read(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -498,7 +498,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_con_st *con)
     /* EOF packet marking end of columns. */
     con->result->column= NULL;
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= drizzle_con_status_t(drizzle_get_byte2(con->buffer_ptr + 3));
+    con->status= drizzle_status_t(drizzle_get_byte2(con->buffer_ptr + 3));
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
 

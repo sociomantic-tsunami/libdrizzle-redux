@@ -48,7 +48,7 @@
  * State Definitions
  */
 
-drizzle_return_t drizzle_state_command_write(drizzle_con_st *con)
+drizzle_return_t drizzle_state_command_write(drizzle_st *con)
 {
   uint8_t *start;
   uint8_t *ptr;

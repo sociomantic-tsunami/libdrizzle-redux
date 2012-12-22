@@ -15,7 +15,7 @@ as a MySQL slave or a mysqlbinlog type client and retrieve the events.
 Functions
 ---------
 
-.. c:function:: drizzle_result_st* drizzle_start_binlog(drizzle_con_st *con, uint32_t server_id, const char *file, uint32_t start_position, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_result_st* drizzle_start_binlog(drizzle_st *con, uint32_t server_id, const char *file, uint32_t start_position, drizzle_return_t *ret_ptr)
 
    Start the binlog transaction.  Set the server_id to 0 to disconnect
    automatically at the end of the last log.

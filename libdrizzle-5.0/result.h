@@ -58,7 +58,7 @@ extern "C" {
  * Initialize a result structure.
  */
 DRIZZLE_LOCAL
-drizzle_result_st *drizzle_result_create(drizzle_con_st *con);
+drizzle_result_st *drizzle_result_create(drizzle_st *con);
 
 /**
  * Free a result structure.
@@ -70,13 +70,13 @@ void drizzle_result_free(drizzle_result_st *result);
  * Free all result structures.
  */
 DRIZZLE_API
-void drizzle_result_free_all(drizzle_con_st *con);
+void drizzle_result_free_all(drizzle_st *con);
 
 /**
- * Get the drizzle_con_st struct that the result belongs to.
+ * Get the drizzle_st struct that the result belongs to.
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_result_drizzle_con(drizzle_result_st *result);
+drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result);
 
 /**
  * Get EOF flag for a result.

@@ -43,7 +43,7 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
-const char *drizzle_con_uds(const drizzle_con_st *con)
+const char *drizzle_uds(const drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -63,14 +63,14 @@ const char *drizzle_con_uds(const drizzle_con_st *con)
   return NULL;
 }
 
-void drizzle_con_set_uds(drizzle_con_st *con, const char *uds)
+void drizzle_set_uds(drizzle_st *con, const char *uds)
 {
   if (con == NULL)
   {
     return;
   }
 
-  drizzle_con_reset_addrinfo(con);
+  drizzle_reset_addrinfo(con);
 
   con->socket_type= DRIZZLE_CON_SOCKET_UDS;
 

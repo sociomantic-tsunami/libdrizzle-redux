@@ -38,7 +38,7 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
-drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
+drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                             uint32_t server_id,
                                             const char *file,
                                             uint32_t start_position,
@@ -83,7 +83,7 @@ drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
     memcpy(ptr, file, fn_len);
   }
 
-  return drizzle_con_command_write(con, NULL, DRIZZLE_COMMAND_BINLOG_DUMP,
+  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_BINLOG_DUMP,
                                    data, len, len, ret_ptr);
 }
 
@@ -199,7 +199,7 @@ uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result)
   return result->binlog_event->raw_length;
 }
 
-drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
+drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 {
   drizzle_binlog_st *binlog_event;
 
@@ -225,7 +225,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
   {
     /* Got EOF packet, no more data. */
     con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->status= (drizzle_con_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
+    con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     drizzle_state_pop(con);
@@ -243,7 +243,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
     if (con->packet_size != binlog_event->length)
     {
-        drizzle_con_set_error(con, "drizzle_state_binlog_read",
+        drizzle_set_error(con, "drizzle_state_binlog_read",
                           "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
@@ -277,7 +277,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con)
     }
     if (con->packet_size != 0)
     {
-      drizzle_con_set_error(con, "drizzle_state_binlog_read",
+      drizzle_set_error(con, "drizzle_state_binlog_read",
                         "unexpected data after packet:%zu", con->buffer_size);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
