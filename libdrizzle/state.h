@@ -58,43 +58,43 @@ extern "C" {
  * Main state loop for connections.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @return Standard drizzle return value.
  */
-drizzle_return_t drizzle_state_loop(drizzle_con_st *con);
+drizzle_return_t drizzle_state_loop(drizzle_st *con);
 
 /* Functions in state.c */
-drizzle_return_t drizzle_state_packet_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_packet_read(drizzle_st *con);
 
 /* Functions in conn.c */
-drizzle_return_t drizzle_state_addrinfo(drizzle_con_st *con);
-drizzle_return_t drizzle_state_connect(drizzle_con_st *con);
-drizzle_return_t drizzle_state_connecting(drizzle_con_st *con);
-drizzle_return_t drizzle_state_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_write(drizzle_con_st *con);
+drizzle_return_t drizzle_state_addrinfo(drizzle_st *con);
+drizzle_return_t drizzle_state_connect(drizzle_st *con);
+drizzle_return_t drizzle_state_connecting(drizzle_st *con);
+drizzle_return_t drizzle_state_read(drizzle_st *con);
+drizzle_return_t drizzle_state_write(drizzle_st *con);
 
 /* Functions in handshake.c */
-drizzle_return_t drizzle_state_handshake_server_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_handshake_server_write(drizzle_con_st *con);
-drizzle_return_t drizzle_state_handshake_client_read(drizzle_con_st *con);
-drizzle_return_t drizzle_state_handshake_client_write(drizzle_con_st *con);
-drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_con_st *con);
-drizzle_return_t drizzle_state_handshake_result_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con);
+drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con);
+drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con);
+drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con);
+drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con);
+drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con);
 
 /* Functions in command.c */
-drizzle_return_t drizzle_state_command_write(drizzle_con_st *con);
+drizzle_return_t drizzle_state_command_write(drizzle_st *con);
 
 /* Functions in result.c */
-drizzle_return_t drizzle_state_result_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_result_read(drizzle_st *con);
 
 /* Functions in column.c */
-drizzle_return_t drizzle_state_column_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_column_read(drizzle_st *con);
 
 /* Functions in row.c */
-drizzle_return_t drizzle_state_row_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_row_read(drizzle_st *con);
 
 /* Functions in field.c */
-drizzle_return_t drizzle_state_field_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_field_read(drizzle_st *con);
 
 /** @} */
 

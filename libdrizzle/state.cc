@@ -43,7 +43,7 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
-drizzle_return_t drizzle_state_loop(drizzle_con_st *con)
+drizzle_return_t drizzle_state_loop(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -58,7 +58,7 @@ drizzle_return_t drizzle_state_loop(drizzle_con_st *con)
       if (ret != DRIZZLE_RETURN_IO_WAIT && ret != DRIZZLE_RETURN_PAUSE &&
           ret != DRIZZLE_RETURN_ERROR_CODE)
       {
-        drizzle_con_close(con);
+        drizzle_close(con);
       }
 
       return ret;
@@ -68,7 +68,7 @@ drizzle_return_t drizzle_state_loop(drizzle_con_st *con)
   return DRIZZLE_RETURN_OK;
 }
 
-drizzle_return_t drizzle_state_packet_read(drizzle_con_st *con)
+drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -87,7 +87,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_con_st *con)
 
   if (con->packet_number != con->buffer_ptr[3])
   {
-    drizzle_con_set_error(con, "drizzle_state_packet_read",
+    drizzle_set_error(con, "drizzle_state_packet_read",
                       "bad packet number:%u:%u", con->packet_number,
                       con->buffer_ptr[3]);
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;

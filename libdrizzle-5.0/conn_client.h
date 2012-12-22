@@ -46,7 +46,7 @@ extern "C" {
 #endif
 
 /**
- * @addtogroup drizzle_con_client Connection Declarations for Clients
+ * @addtogroup drizzle_client Connection Declarations for Clients
  * @ingroup drizzle_client_interface
  * @{
  */
@@ -55,27 +55,27 @@ extern "C" {
  * Connect to server.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @return Standard drizzle return value.
  */
 DRIZZLE_API
-drizzle_return_t drizzle_con_connect(drizzle_con_st *con);
+drizzle_return_t drizzle_connect(drizzle_st *con);
 
 /**
  * Send quit command to server for a connection.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @return ret_ptr Standard drizzle return value.
  */
 DRIZZLE_API
-drizzle_return_t drizzle_con_quit(drizzle_con_st *con);
+drizzle_return_t drizzle_quit(drizzle_st *con);
 
 /**
  * Select a new default database for a connection.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[in] db Default database to select.
  * @param[out] ret_ptr Standard drizzle return value.
@@ -83,7 +83,7 @@ drizzle_return_t drizzle_con_quit(drizzle_con_st *con);
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
+drizzle_result_st *drizzle_select_db(drizzle_st *con,
                                          const char *db,
                                          drizzle_return_t *ret_ptr);
 
@@ -91,18 +91,18 @@ drizzle_result_st *drizzle_con_select_db(drizzle_con_st *con,
  * Send a shutdown message to the server.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_con_shutdown(drizzle_con_st *con,
+drizzle_result_st *drizzle_shutdown(drizzle_st *con,
                                         drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-drizzle_result_st *drizzle_con_kill(drizzle_con_st *con,
+drizzle_result_st *drizzle_kill(drizzle_st *con,
                                 uint32_t connection_id,
                                 drizzle_return_t *ret_ptr);
 
@@ -110,21 +110,21 @@ drizzle_result_st *drizzle_con_kill(drizzle_con_st *con,
  * Send a ping request to the server.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_con_ping(drizzle_con_st *con,
+drizzle_result_st *drizzle_ping(drizzle_st *con,
                                     drizzle_return_t *ret_ptr);
 
 /**
  * Send raw command to server, possibly in parts.
  *
  * @param[in] con Connection structure previously initialized with
- *  drizzle_con_create(), drizzle_con_clone(), or related functions.
+ *  drizzle_create(), drizzle_clone(), or related functions.
  * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[in] command Command to run on server.
  * @param[in] data Data to send along with the command.
@@ -135,7 +135,7 @@ drizzle_result_st *drizzle_con_ping(drizzle_con_st *con,
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_con_command_write(drizzle_con_st *con,
+drizzle_result_st *drizzle_command_write(drizzle_st *con,
                                              drizzle_result_st *result,
                                              drizzle_command_t command,
                                              const void *data, size_t size,

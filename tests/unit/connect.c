@@ -49,22 +49,22 @@ int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_con_st *con;
+  drizzle_st *con;
   drizzle_return_t ret;
 
-  con = drizzle_con_create_tcp("localhost", 3306, "root", "", "", 0);
+  con = drizzle_create_tcp("localhost", 3306, "root", "", "", 0);
   if (con == NULL)
   {
     printf("Drizzle connection object creation error\n");
     return EXIT_FAILURE;
   }
-  ret = drizzle_con_connect(con);
+  ret = drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Drizzle connection failure\n");
     return EXIT_SKIP;
   }
 
-  drizzle_con_quit(con);
+  drizzle_quit(con);
   return EXIT_SUCCESS;
 }

@@ -159,7 +159,7 @@ Return
 Connection
 ----------
 
-.. c:type:: drizzle_con_options_t
+.. c:type:: drizzle_options_t
 
    An ENUM of connection options intended to be used in a bit field
 
@@ -215,7 +215,7 @@ Connection
 
    Character set ID, an alias for uint8_t
 
-.. c:type:: drizzle_con_status_t
+.. c:type:: drizzle_status_t
 
    An ENUM of connection statuses intended to be used in a bit field
 

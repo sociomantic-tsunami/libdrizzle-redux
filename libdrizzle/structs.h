@@ -63,7 +63,7 @@ extern "C" {
 /**
  * @ingroup drizzle_con
  */
-struct drizzle_con_tcp_st
+struct drizzle_tcp_st
 {
   in_port_t port;
   struct addrinfo *addrinfo;
@@ -74,7 +74,7 @@ struct drizzle_con_tcp_st
 /**
  * @ingroup drizzle_con
  */
-struct drizzle_con_uds_st
+struct drizzle_uds_st
 {
   char path_buffer[LIBDRIZZLE_NI_MAXHOST];
 };
@@ -82,7 +82,7 @@ struct drizzle_con_uds_st
 /**
  * @ingroup drizzle_con
  */
-struct drizzle_con_st
+struct drizzle_st
 {
   uint8_t packet_number;
   uint8_t protocol_version;
@@ -92,9 +92,9 @@ struct drizzle_con_st
   drizzle_capabilities_t capabilities;
   drizzle_charset_t charset;
   drizzle_command_t command;
-  drizzle_con_options_t options;
-  drizzle_con_socket_t socket_type;
-  drizzle_con_status_t status;
+  drizzle_options_t options;
+  drizzle_socket_t socket_type;
+  drizzle_status_t status;
   uint32_t max_packet_size;
   uint32_t result_count;
   uint32_t thread_id;
@@ -110,14 +110,14 @@ struct drizzle_con_st
   uint8_t *command_buffer;
   uint8_t *command_data;
   void *context;
-  drizzle_con_context_free_fn *context_free_fn;
+  drizzle_context_free_fn *context_free_fn;
   drizzle_result_st *result;
   drizzle_result_st *result_list;
   uint8_t *scramble;
   union
   {
-    drizzle_con_tcp_st tcp;
-    drizzle_con_uds_st uds;
+    drizzle_tcp_st tcp;
+    drizzle_uds_st uds;
   } socket;
   uint8_t buffer[DRIZZLE_MAX_BUFFER_SIZE];
   char db[DRIZZLE_MAX_DB_SIZE];
@@ -151,7 +151,7 @@ struct drizzle_con_st
  */
 struct drizzle_result_st
 {
-  drizzle_con_st *con;
+  drizzle_st *con;
   drizzle_result_st *next;
   drizzle_result_st *prev;
   drizzle_result_options_t options;

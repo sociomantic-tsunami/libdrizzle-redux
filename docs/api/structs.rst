@@ -35,6 +35,6 @@ Query
 Connection
 ----------
 
-.. c:type:: drizzle_con_st
+.. c:type:: drizzle_st
 
    The internal drizzle connection object struct

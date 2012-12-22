@@ -1,4 +1,5 @@
-/*
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ *
  * Drizzle Client & Protocol Library
  *
  * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
@@ -34,16 +35,20 @@
  *
  */
 
-#pragma once
+#include "config.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <libdrizzle-5.0/libdrizzle.h>
 
-DRIZZLE_API
-drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher);
+#include <cstddef>
+#include <cstdlib>
+#include <cassert>
 
-#ifdef __cplusplus
+int main(void)
+{
+  // @todo Don't use assert
+  assert(drizzle_version());
+  assert(strtol(LIBDRIZZLE_VERSION_STRING, (char **) NULL, 10));
+  assert(LIBDRIZZLE_VERSION_HEX > 0);
+
+  return EXIT_SUCCESS;
 }
-#endif
-

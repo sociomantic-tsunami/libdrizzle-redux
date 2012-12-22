@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 DRIZZLE_API
-drizzle_result_st *drizzle_start_binlog(drizzle_con_st *con,
+drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                         uint32_t server_id,
                                         const char *file,
                                         uint32_t start_position,
@@ -82,7 +82,7 @@ DRIZZLE_API
 uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result);
 
 DRIZZLE_LOCAL
-drizzle_return_t drizzle_state_binlog_read(drizzle_con_st *con);
+drizzle_return_t drizzle_state_binlog_read(drizzle_st *con);
 
 #ifdef __cplusplus
 }

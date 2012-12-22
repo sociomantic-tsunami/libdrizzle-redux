@@ -82,13 +82,13 @@ extern "C" {
  * @param[in] password Password to use while establishing the connection.
  * @param[in] db Initial database to connect to.
  * @param[in] options Drizzle connection options to add.
- * @return Same return as drizzle_con_create().
+ * @return Same return as drizzle_create().
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_create_tcp(const char *host, in_port_t port,
+drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
                                     const char *user, const char *password,
                                     const char *db,
-                                    drizzle_con_options_t options);
+                                    drizzle_options_t options);
 
 /**
  * Add unix domain socket connection with common arguments.
@@ -98,12 +98,12 @@ drizzle_con_st *drizzle_con_create_tcp(const char *host, in_port_t port,
  * @param[in] password Password to use while establishing the connection.
  * @param[in] db Initial database to connect to.
  * @param[in] options Drizzle connection options to add.
- * @return Same return as drizzle_con_create().
+ * @return Same return as drizzle_create().
  */
 DRIZZLE_API
-drizzle_con_st *drizzle_con_create_uds(const char *uds, const char *user,
+drizzle_st *drizzle_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
-                                    drizzle_con_options_t options);
+                                    drizzle_options_t options);
 
 /** @} */
 
