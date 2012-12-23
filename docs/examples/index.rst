@@ -5,4 +5,5 @@ Code Examples
 
    buffered
    unbuffered
+   statement
    binlog

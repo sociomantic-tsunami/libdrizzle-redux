@@ -56,6 +56,7 @@
 #include <libdrizzle-5.0/ssl.h>
 #endif
 #include <libdrizzle-5.0/binlog.h>
+#include <libdrizzle-5.0/statement.h>
 #include <libdrizzle-5.0/version.h>
 
 #ifdef __cplusplus

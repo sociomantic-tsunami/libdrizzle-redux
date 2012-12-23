@@ -64,6 +64,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
   }
 
   column->result = result;
+  column->options= DRIZZLE_COLUMN_UNUSED;
   /* SET BELOW: column->next */
   column->prev = NULL;
   column->catalog[0] = '\0';
@@ -515,11 +516,18 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
   }
   else
   {
-    column= drizzle_column_create(con->result);
-    if (column == NULL)
-      return DRIZZLE_RETURN_MEMORY;
+    if (con->result->column == NULL)
+    {
+      column= drizzle_column_create(con->result);
+      if (column == NULL)
+        return DRIZZLE_RETURN_MEMORY;
 
-    con->result->column= column;
+      con->result->column= column;
+    }
+    else
+    {
+      column= con->result->column;
+    }
 
     /* These functions can only fail if they need to read data, but we know we
        buffered the entire packet, so ignore returns. */

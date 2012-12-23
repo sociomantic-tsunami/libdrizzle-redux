@@ -69,6 +69,7 @@ enum drizzle_return_t
   DRIZZLE_RETURN_INVALID_ARGUMENT,
   DRIZZLE_RETURN_SSL_ERROR,
   DRIZZLE_RETURN_EOF,
+  DRIZZLE_RETURN_STMT_ERROR,
   DRIZZLE_RETURN_MAX /* Always add new codes to the end before this one. */
 };
 

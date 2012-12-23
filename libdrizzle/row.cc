@@ -185,6 +185,10 @@ drizzle_row_t drizzle_row_next(drizzle_result_st *result)
   }
 
   result->field_sizes= result->field_sizes_list[result->row_current];
+  if (result->binary_rows)
+  {
+    result->null_bitmap= result->null_bitmap_list[result->row_current];
+  }
   result->row_current++;
   return result->row_list[result->row_current - 1];
 }
@@ -201,6 +205,10 @@ drizzle_row_t drizzle_row_prev(drizzle_result_st *result)
 
   result->row_current--;
   result->field_sizes= result->field_sizes_list[result->row_current];
+  if (result->binary_rows)
+  {
+    result->null_bitmap= result->null_bitmap_list[result->row_current];
+  }
   return result->row_list[result->row_current];
 }
 

@@ -95,6 +95,8 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con);
 
 /* Functions in field.c */
 drizzle_return_t drizzle_state_field_read(drizzle_st *con);
+drizzle_return_t drizzle_state_binary_null_read(drizzle_st *con);
+drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con);
 
 /** @} */
 

@@ -220,13 +220,13 @@ enum drizzle_command_t
   DRIZZLE_COMMAND_TABLE_DUMP,          /* Not used currently. */
   DRIZZLE_COMMAND_CONNECT_OUT,         /* Not used currently. */
   DRIZZLE_COMMAND_REGISTER_SLAVE,      /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_PREPARE,        /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_EXECUTE,        /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_SEND_LONG_DATA, /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_CLOSE,          /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_RESET,          /* Not used currently. */
+  DRIZZLE_COMMAND_STMT_PREPARE,
+  DRIZZLE_COMMAND_STMT_EXECUTE,
+  DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
+  DRIZZLE_COMMAND_STMT_CLOSE,
+  DRIZZLE_COMMAND_STMT_RESET,
   DRIZZLE_COMMAND_SET_OPTION,          /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_FETCH,          /* Not used currently. */
+  DRIZZLE_COMMAND_STMT_FETCH,
   DRIZZLE_COMMAND_DAEMON,              /* Not used currently. */
   DRIZZLE_COMMAND_END                  /* Not used currently. */
 };
@@ -246,7 +246,8 @@ enum drizzle_result_options_t
   DRIZZLE_RESULT_BUFFER_COLUMN= (1 << 2),
   DRIZZLE_RESULT_BUFFER_ROW=    (1 << 3),
   DRIZZLE_RESULT_EOF_PACKET=    (1 << 4),
-  DRIZZLE_RESULT_ROW_BREAK=     (1 << 5)
+  DRIZZLE_RESULT_ROW_BREAK=     (1 << 5),
+  DRIZZLE_RESULT_BINARY_ROWS=   (1 << 6)
 };
 
 #ifndef __cplusplus
@@ -298,7 +299,8 @@ enum drizzle_column_type_t
   DRIZZLE_COLUMN_TYPE_BLOB=        252,
   DRIZZLE_COLUMN_TYPE_VAR_STRING=  253,
   DRIZZLE_COLUMN_TYPE_STRING=      254,
-  DRIZZLE_COLUMN_TYPE_GEOMETRY=    255
+  DRIZZLE_COLUMN_TYPE_GEOMETRY=    255,
+  DRIZZLE_COLUMN_TYPE_NONE= 0
 };
 
 #ifndef __cplusplus
@@ -591,6 +593,23 @@ typedef enum
   DRIZZLE_CHARSET_MAX
 } drizzle_charset_t;
 
+typedef enum
+{
+  DRIZZLE_STMT_NONE= 0,
+  DRIZZLE_STMT_PREPARED,
+  DRIZZLE_STMT_EXECUTED,
+  DRIZZLE_STMT_FETCHED
+} drizzle_stmt_state_t;
+
+typedef enum
+{
+  DRIZZLE_BIND_OPTION_NONE=         0,
+  DRIZZLE_BIND_OPTION_NULL=         (1 << 0),
+  DRIZZLE_BIND_OPTION_UNSIGNED=     (1 << 1),
+  DRIZZLE_BIND_OPTION_TRUNCATED=    (1 << 2),
+  DRIZZLE_BIND_OPTION_LONG_DATA=    (1 << 3)
+} drizzle_bind_options_t;
+
 #ifndef __cplusplus
 typedef enum drizzle_column_flags_t drizzle_column_flags_t;
 #endif
@@ -609,6 +628,9 @@ typedef struct drizzle_st drizzle_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
+typedef struct drizzle_stmt_st drizzle_stmt_st;
+typedef struct drizzle_bind_st drizzle_bind_st;
+typedef struct drizzle_datetime_st drizzle_datetime_st;
 typedef char *drizzle_field_t;
 typedef drizzle_field_t *drizzle_row_t;
 

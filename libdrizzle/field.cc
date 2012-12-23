@@ -70,8 +70,19 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset,
       *ret_ptr= DRIZZLE_RETURN_ROW_END;
       return NULL;
     }
+    if (result->binary_rows)
+    {
+      drizzle_state_push(result->con, drizzle_state_binary_field_read);
+    }
+    else
+    {
+      drizzle_state_push(result->con, drizzle_state_field_read);
+    }
+  }
 
-    drizzle_state_push(result->con, drizzle_state_field_read);
+  if (result->binary_rows && (result->field_current == 0))
+  {
+    drizzle_state_push(result->con, drizzle_state_binary_null_read);
   }
 
   *ret_ptr= drizzle_state_loop(result->con);
@@ -288,6 +299,85 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     drizzle_state_pop(con);
   }
 
+  return DRIZZLE_RETURN_OK;
+}
+
+drizzle_return_t drizzle_state_binary_null_read(drizzle_st *con)
+{
+  con->result->null_bitmap_length= (con->result->column_count+7+2)/8;
+  con->result->null_bitmap= (uint8_t*)malloc(con->result->null_bitmap_length);
+  con->buffer_ptr++;
+
+  memcpy(con->result->null_bitmap, con->buffer_ptr, con->result->null_bitmap_length);
+  con->buffer_ptr+= con->result->null_bitmap_length;
+  con->buffer_size-= con->result->null_bitmap_length+1;
+  con->packet_size-= con->result->null_bitmap_length+1;
+
+  drizzle_state_pop(con);
+  return DRIZZLE_RETURN_OK;
+}
+
+drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
+{
+  drizzle_return_t ret;
+
+  switch(con->result->column_buffer[con->result->field_current].type)
+  {
+    case DRIZZLE_COLUMN_TYPE_NULL:
+      break;
+    case DRIZZLE_COLUMN_TYPE_TINY:
+      con->result->field_size= 1;
+      break;
+    case DRIZZLE_COLUMN_TYPE_SHORT:
+    case DRIZZLE_COLUMN_TYPE_YEAR:
+      con->result->field_size= 2;
+      break;
+    case DRIZZLE_COLUMN_TYPE_INT24:
+    case DRIZZLE_COLUMN_TYPE_LONG:
+    case DRIZZLE_COLUMN_TYPE_FLOAT:
+      con->result->field_size= 4;
+      break;
+    case DRIZZLE_COLUMN_TYPE_LONGLONG:
+    case DRIZZLE_COLUMN_TYPE_DOUBLE:
+      con->result->field_size= 8;
+      break;
+    case DRIZZLE_COLUMN_TYPE_TIME:
+    case DRIZZLE_COLUMN_TYPE_DATE:
+    case DRIZZLE_COLUMN_TYPE_DATETIME:
+    case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
+    case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
+    case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:
+    case DRIZZLE_COLUMN_TYPE_LONG_BLOB:
+    case DRIZZLE_COLUMN_TYPE_BLOB:
+    case DRIZZLE_COLUMN_TYPE_BIT:
+    case DRIZZLE_COLUMN_TYPE_STRING:
+    case DRIZZLE_COLUMN_TYPE_VAR_STRING:
+    case DRIZZLE_COLUMN_TYPE_DECIMAL:
+    case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
+    case DRIZZLE_COLUMN_TYPE_NEWDATE:
+      con->result->field_size= (size_t)drizzle_unpack_length(con, &ret);
+      if (ret != DRIZZLE_RETURN_OK)
+      {
+        return ret;
+      }
+      break;
+    case DRIZZLE_COLUMN_TYPE_VARCHAR:
+    case DRIZZLE_COLUMN_TYPE_ENUM:
+    case DRIZZLE_COLUMN_TYPE_SET:
+    case DRIZZLE_COLUMN_TYPE_GEOMETRY:
+    default:
+      return DRIZZLE_RETURN_UNEXPECTED_DATA;
+      break;
+  }
+
+  con->result->field= (char*) con->buffer_ptr;
+  con->buffer_ptr+= con->result->field_size;
+  con->buffer_size-= con->result->field_size;
+  con->packet_size-= con->result->field_size;
+  con->result->field_total= con->result->field_size;
+
+  con->result->field_current++;
+  drizzle_state_pop(con);
   return DRIZZLE_RETURN_OK;
 }
 

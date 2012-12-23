@@ -37,5 +37,6 @@ libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/pack.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/result.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/sha1.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/state.cc
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/statement.cc
 
 libdrizzle_libdrizzle_la_LDFLAGS+= -version-info ${LIBDRIZZLE_LIBRARY_VERSION}
