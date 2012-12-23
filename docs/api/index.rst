@@ -9,4 +9,5 @@ Libdrizzle API
    library
    connection
    query
+   statement
    binlog
