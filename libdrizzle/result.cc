@@ -89,6 +89,7 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
   result->field_sizes_list= NULL;
   result->info[0]= '\0';
   result->sqlstate[0]= '\0';
+  result->null_bitmap_list= NULL;
 
   result->con= con;
   con->result= result;
@@ -347,6 +348,10 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
         drizzle_set_error(result->con, __func__, "Failed to realloc row_list.");
         return DRIZZLE_RETURN_MEMORY;
       }
+      if (result->binary_rows)
+      {
+        result->null_bitmap_list= (uint8_t**)realloc(result->null_bitmap_list, sizeof(uint8_t*) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+      }
 
       result->row_list= row_list;
 
@@ -361,6 +366,11 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       result->field_sizes_list= field_sizes_list;
 
       result->row_list_size+= DRIZZLE_ROW_GROW_SIZE;
+    }
+
+    if (result->binary_rows)
+    {
+      result->null_bitmap_list[result->row_current - 1]= result->null_bitmap;
     }
 
     result->row_list[result->row_current - 1]= row;
@@ -407,13 +417,26 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
   {
     con->buffer_ptr++;
     /* We can ignore the returns since we've buffered the entire packet. */
-    con->result->affected_rows= drizzle_unpack_length(con, &ret);
-    con->result->insert_id= drizzle_unpack_length(con, &ret);
-    con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr);
-    con->result->warning_count= drizzle_get_byte2(con->buffer_ptr +2);
-    con->buffer_ptr+= 4;
-    con->buffer_size-= 5;
-    con->packet_size-= 5;
+    if (con->command == DRIZZLE_COMMAND_STMT_PREPARE)
+    {
+      con->stmt->id= drizzle_get_byte4(con->buffer_ptr);
+      con->result->column_count= drizzle_get_byte2(con->buffer_ptr + 4);
+      con->stmt->param_count= drizzle_get_byte2(con->buffer_ptr + 6);
+      con->result->warning_count= drizzle_get_byte2(con->buffer_ptr + 9);
+      con->buffer_ptr+= 11;
+      con->buffer_size-= 12;
+      con->packet_size-= 12;
+    }
+    else
+    {
+      con->result->affected_rows= drizzle_unpack_length(con, &ret);
+      con->result->insert_id= drizzle_unpack_length(con, &ret);
+      con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr);
+      con->result->warning_count= drizzle_get_byte2(con->buffer_ptr +2);
+      con->buffer_ptr+= 4;
+      con->buffer_size-= 5;
+      con->packet_size-= 5;
+    }
     if (con->packet_size > 0)
     {
       /* Skip one byte for message size. */

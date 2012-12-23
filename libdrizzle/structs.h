@@ -144,6 +144,7 @@ struct drizzle_st
   struct pollfd pfds[1];
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
+  drizzle_stmt_st *stmt;
 };
 
 /**
@@ -185,6 +186,10 @@ struct drizzle_result_st
   size_t *field_sizes;
   size_t **field_sizes_list;
   drizzle_binlog_st *binlog_event;
+  uint8_t **null_bitmap_list;
+  uint8_t *null_bitmap;
+  uint8_t null_bitmap_length;
+  bool binary_rows;
 
 #ifdef __cplusplus
 
@@ -215,7 +220,11 @@ struct drizzle_result_st
     row_list(NULL),
     field_sizes(NULL),
     field_sizes_list(NULL),
-    binlog_event(NULL)
+    binlog_event(NULL),
+    null_bitmap_list(NULL),
+    null_bitmap(NULL),
+    null_bitmap_length(0),
+    binary_rows(false)
   {
     info[0]= 0;
     sqlstate[0]= 0;
@@ -261,6 +270,31 @@ struct drizzle_column_st
   uint8_t decimals;
   uint8_t default_value[DRIZZLE_MAX_DEFAULT_VALUE_SIZE];
   size_t default_value_size;
+};
+
+struct drizzle_stmt_st
+{
+  drizzle_st *con;
+  drizzle_stmt_state_t state;
+  uint32_t id;
+  uint16_t param_count;
+  drizzle_bind_st *query_params;
+  drizzle_bind_st *result_params;
+  uint8_t null_bitmap_length;
+  uint8_t *null_bitmap;
+  bool new_bind;
+  drizzle_result_st *prepare_result;
+  drizzle_result_st *execute_result;
+  drizzle_column_st *fields;
+};
+
+struct drizzle_bind_st
+{
+  drizzle_column_type_t type;
+  void *data;
+  uint32_t length;
+  bool is_bound;
+  drizzle_bind_options_t options;
 };
 
 #ifdef __cplusplus

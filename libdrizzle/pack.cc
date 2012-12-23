@@ -176,6 +176,120 @@ uint8_t *drizzle_pack_string(char *string, uint8_t *ptr)
   return ptr;
 }
 
+uint8_t *drizzle_pack_binary(uint8_t *data, size_t len, uint8_t *ptr)
+{
+  ptr= drizzle_pack_length(len, ptr);
+  if (len > 0)
+  {
+    memcpy(ptr, data, len);
+    ptr+= len;
+  }
+
+  return ptr;
+}
+
+uint8_t *drizzle_pack_time(drizzle_datetime_st *time, uint8_t *ptr)
+{
+  uint8_t length= 0;
+
+  /* If nothing is set then we are sending a 0 length time */
+  if (time->day || time->hour || time->minute || time->second)
+  {
+    ptr[0]= (time->negative) ? 1 : 0;
+    drizzle_set_byte4(&ptr[1], time->day);
+    ptr[5]= (uint8_t) time->hour;
+    ptr[6]= time->minute;
+    ptr[7]= time->second;
+    length= 8;
+  }
+  /* NOTE: MySQL has a bug here and doesn't follow this part of the protocol
+   * when packing, we will for now, no idea if it works
+   * */
+  if (time->microsecond)
+  {
+    drizzle_set_byte4(&ptr[8], time->microsecond);
+    length= 12;
+  }
+  return ptr+length;
+}
+
+uint8_t *drizzle_pack_datetime(drizzle_datetime_st *datetime, uint8_t *ptr)
+{
+  uint8_t length= 0;
+
+  /* If nothing is set then we are sending a 0 length datetime */
+
+  /* If only date is provided then we are packing 4 bytes */
+  if (datetime->year || datetime->month || datetime->day)
+  {
+    drizzle_set_byte2(ptr, datetime->year);
+    ptr[2]= datetime->month;
+    ptr[3]= datetime->day;
+    length= 4;
+  }
+
+  if (datetime->hour || datetime->minute || datetime->second)
+  {
+    ptr[4]= (uint8_t) datetime->hour;
+    ptr[5]= datetime->minute;
+    ptr[6]= datetime->second;
+    length= 7;
+  }
+
+  if (datetime->microsecond)
+  {
+    drizzle_set_byte4(&ptr[7], datetime->microsecond);
+    length= 11;
+  }
+
+  return ptr + length;
+}
+
+void drizzle_unpack_time(drizzle_field_t field, size_t length, uint8_t *data)
+{
+  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
+  memset(datetime, 0, length);
+
+  if (length)
+  {
+    datetime->negative= field[0];
+    datetime->day= drizzle_get_byte4(&field[1]);
+    datetime->hour= field[5];
+    datetime->hour= datetime->day * 24;
+    datetime->day= 0;
+    datetime->minute= field[6];
+    datetime->second= field[7];
+    if (length > 8)
+    {
+      datetime->microsecond= drizzle_get_byte4(&field[8]);
+    }
+  }
+}
+
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, uint8_t *data)
+{
+  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
+  memset(datetime, 0, length);
+
+  if (length)
+  {
+    datetime->negative= false;
+    datetime->year= drizzle_get_byte2(field);
+    datetime->month= field[2];
+    datetime->day= field[3];
+    if (length > 4)
+    {
+      datetime->hour= field[4];
+      datetime->minute= field[5];
+      datetime->second= field[6];
+      if (length > 7)
+      {
+        datetime->microsecond= drizzle_get_byte4(&field[7]);
+      }
+    }
+  }
+}
+
 drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
                                        uint64_t max_length)
 {

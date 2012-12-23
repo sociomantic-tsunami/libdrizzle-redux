@@ -1,7 +1,8 @@
-/*
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,73 +37,64 @@
 
 #pragma once
 
-/**
- * @file
- * @brief Packing Declarations
- */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @addtogroup drizzle_pack Packing Declarations
- *
- * These functions are used internally to pack various parts of the protocol.
- * Not all functions are defined in pack.c, they are in the most appropriate
- * source file (for example, handshake.c for drizzle_pack_client_handshake).
- * @{
- */
-
-/**
- * Pack length-encoded number.
- */
 DRIZZLE_API
-uint8_t *drizzle_pack_length(uint64_t number, uint8_t *ptr);
-
-/**
- * Unpack length-encoded number.
- */
-DRIZZLE_API
-uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr);
-
-/**
- * Pack length-encoded string.
- */
-DRIZZLE_API
-uint8_t *drizzle_pack_string(char *string, uint8_t *ptr);
+drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, size_t size, drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-uint8_t *drizzle_pack_binary(uint8_t *data, size_t len, uint8_t *ptr);
+drizzle_return_t drizzle_stmt_bind_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, drizzle_bind_options_t options);
 
 DRIZZLE_API
-uint8_t *drizzle_pack_time(drizzle_datetime_st *time, uint8_t *ptr);
+drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt);
 
 DRIZZLE_API
-uint8_t *drizzle_pack_datetime(drizzle_datetime_st *datetime, uint8_t *ptr);
+drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t *data, size_t len);
 
 DRIZZLE_API
-void drizzle_unpack_time(drizzle_field_t field, size_t length, uint8_t *data);
+drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt);
 
 DRIZZLE_API
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, uint8_t *data);
+drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt);
 
-/**
- * Unpack length-encoded string.
- */
 DRIZZLE_API
-drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
-                                       uint64_t max_size);
+drizzle_return_t drizzle_stmt_buffer(drizzle_stmt_st *stmt);
 
-/**
- * Pack user, scramble, and db.
- */
 DRIZZLE_API
-uint8_t *drizzle_pack_auth(drizzle_st *con, uint8_t *ptr,
-                           drizzle_return_t *ret_ptr);
+drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt);
 
-/** @} */
+DRIZZLE_API
+drizzle_column_type_t drizzle_stmt_item_type(drizzle_stmt_st *stmt, uint16_t column_number);
+
+DRIZZLE_API
+void *drizzle_stmt_item_data(drizzle_stmt_st *stmt, uint16_t column_number);
+
+DRIZZLE_API
+uint32_t drizzle_stmt_item_length(drizzle_stmt_st *stmt, uint16_t column_number);
+
+DRIZZLE_API
+drizzle_bind_options_t drizzle_stmt_item_options(drizzle_stmt_st *stmt, uint16_t column_number);
+
+DRIZZLE_API
+uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt);
+
+DRIZZLE_API
+uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt);
+
+DRIZZLE_API
+uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt);
+
+DRIZZLE_API
+uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt);
+
+DRIZZLE_API
+uint64_t drizzle_stmt_row_count(drizzle_stmt_st *stmt);
+
+
 
 #ifdef __cplusplus
 }
 #endif
+

@@ -45,4 +45,23 @@ struct drizzle_st;
 struct drizzle_result_st;
 struct drizzle_binlog_st;
 struct drizzle_column_st;
+struct drizzle_stmt_st;
+struct drizzle_bind_st;
+struct drizzle_datetime_st;
 #endif
+
+/* These types may seem strange but they are defined this way in the MySQL
+ *  * protocol
+ *   */
+struct drizzle_datetime_st
+{
+  uint16_t year;
+  uint8_t month;
+  uint32_t day;
+  uint16_t hour;
+  uint8_t minute;
+  uint8_t second;
+  uint32_t microsecond;
+  bool negative;
+};
+

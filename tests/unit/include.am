@@ -51,3 +51,9 @@ tests_unit_unbuffered_query_SOURCES= tests/unit/unbuffered_query.c
 tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/unbuffered_query
 noinst_PROGRAMS+= tests/unit/unbuffered_query
+
+tests_unit_statement_SOURCES= tests/unit/statement.c
+tests_unit_statement_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/statement
+noinst_PROGRAMS+= tests/unit/statement
+
