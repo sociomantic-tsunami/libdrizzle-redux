@@ -773,7 +773,7 @@ Query
 
    Row data (an array of :c:type:`drizzle_field_t`)
 
-.. c:type:: drizzle_column_t
+.. c:type:: drizzle_column_type_t
 
    An ENUM of column types
 
