@@ -459,6 +459,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
       }
 
       param->data= realloc(param->data, param->length);
+      param->type= column->type;
 
       switch(column->type)
       {

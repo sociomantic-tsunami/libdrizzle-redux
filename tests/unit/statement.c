@@ -103,18 +103,23 @@ int main(int argc, char *argv[])
     printf("Execute failure\n");
     return EXIT_FAILURE;
   }
-  drizzle_stmt_buffer(stmt);
+  ret = drizzle_stmt_buffer(stmt);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Buffer failure\n");
+    return EXIT_FAILURE;
+  }
   printf("Rows found: %" PRIu64 "\n", drizzle_stmt_row_count(stmt));
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
     uint32_t *res_val;
-    res_val= (uint32_t*)drizzle_stmt_item_data(stmt, 1);
+    res_val= (uint32_t*)drizzle_stmt_item_data(stmt, 0);
     printf("Got value: %" PRIu32 "\n", *res_val);
   }
   ret = drizzle_stmt_close(stmt);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Statement close failure\n");
+    printf("Statement close failure ret: %d, err: %d, msg: %s\n", ret, drizzle_errno(con), drizzle_error(con));
     return EXIT_FAILURE;
   }
 

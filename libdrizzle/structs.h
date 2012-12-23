@@ -255,7 +255,7 @@ struct drizzle_column_st
   drizzle_result_st *result;
   drizzle_column_st *next;
   drizzle_column_st *prev;
-  drizzle_column_type_t options;
+  drizzle_column_options_t options;
   char catalog[DRIZZLE_MAX_CATALOG_SIZE];
   char db[DRIZZLE_MAX_DB_SIZE];
   char table[DRIZZLE_MAX_TABLE_SIZE];
