@@ -16,7 +16,6 @@ rpm-build: rpm/spec dist
 	@rpmbuild -ba --clean rpm/spec
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
-	-cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-debuginfo-$(VERSION)*.rpm .
 	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
 
 rpm-sign: rpm-build

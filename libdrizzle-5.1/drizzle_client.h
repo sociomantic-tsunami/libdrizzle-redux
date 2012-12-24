@@ -42,22 +42,22 @@
 
 #pragma once
 
-#include <libdrizzle-5.0/drizzle.h>
-#include <libdrizzle-5.0/conn_client.h>
-#include <libdrizzle-5.0/handshake_client.h>
-#include <libdrizzle-5.0/command_client.h>
-#include <libdrizzle-5.0/query.h>
-#include <libdrizzle-5.0/result_client.h>
-#include <libdrizzle-5.0/column_client.h>
-#include <libdrizzle-5.0/row_client.h>
-#include <libdrizzle-5.0/field_client.h>
-#include <libdrizzle-5.0/error.h>
+#include <libdrizzle-5.1/drizzle.h>
+#include <libdrizzle-5.1/conn_client.h>
+#include <libdrizzle-5.1/handshake_client.h>
+#include <libdrizzle-5.1/command_client.h>
+#include <libdrizzle-5.1/query.h>
+#include <libdrizzle-5.1/result_client.h>
+#include <libdrizzle-5.1/column_client.h>
+#include <libdrizzle-5.1/row_client.h>
+#include <libdrizzle-5.1/field_client.h>
+#include <libdrizzle-5.1/error.h>
 #ifdef USE_OPENSSL
-#include <libdrizzle-5.0/ssl.h>
+#include <libdrizzle-5.1/ssl.h>
 #endif
-#include <libdrizzle-5.0/binlog.h>
-#include <libdrizzle-5.0/statement.h>
-#include <libdrizzle-5.0/version.h>
+#include <libdrizzle-5.1/binlog.h>
+#include <libdrizzle-5.1/statement.h>
+#include <libdrizzle-5.1/version.h>
 
 #ifdef __cplusplus
 extern "C" {

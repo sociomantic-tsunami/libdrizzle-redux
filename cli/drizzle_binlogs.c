@@ -35,7 +35,7 @@
  */
 
 #include "config.h"
-#include <libdrizzle-5.0/libdrizzle.h>
+#include <libdrizzle-5.1/libdrizzle.h>
 #include <stdlib.h>
 #include <glib.h>
 #include <glib/gstdio.h>

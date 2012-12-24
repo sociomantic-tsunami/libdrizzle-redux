@@ -4,12 +4,12 @@ Version: @VERSION@
 Release: 1
 License: BSD
 Group: System Environment/Libraries
-BuildRequires: 
+BuildRequires: glib2-devel openssl-devel
 URL: https://launchpad.net/libdrizzle
 
 Packager: Brian Aker <brian@tangent.org>
 
-Source: 
+Source: libdrizzle-%{version}.tar.gz 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -49,41 +49,43 @@ mkdir -p $RPM_BUILD_ROOT/
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING NEWS README HACKING THANKS
+%doc AUTHORS COPYING 
+%{_libdir}/libdrizzle.a
+%{_libdir}/libdrizzle.la
+%{_libdir}/libdrizzle.so
+%{_libdir}/libdrizzle.so.5
+%{_libdir}/libdrizzle.so.5.0.1
+%{_bindir}/drizzle_binlogs
+%{_bindir}/libdrizzle-config
 
 %files devel
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING NEWS README HACKING THANKS
-%{_includedir}/libdrizzle-5.0/gearman.h
-%{_includedir}/libdrizzle-5.0/binlog.h
-%{_includedir}/libdrizzle-5.0/column.h
-%{_includedir}/libdrizzle-5.0/column_client.h
-%{_includedir}/libdrizzle-5.0/command_client.h
-%{_includedir}/libdrizzle-5.0/common.h
-%{_includedir}/libdrizzle-5.0/conn.h
-%{_includedir}/libdrizzle-5.0/conn_client.h
-%{_includedir}/libdrizzle-5.0/conn_local.h
-%{_includedir}/libdrizzle-5.0/constants.h
-%{_includedir}/libdrizzle-5.0/drizzle.h
-%{_includedir}/libdrizzle-5.0/drizzle_client.h
-%{_includedir}/libdrizzle-5.0/drizzle_local.h
-%{_includedir}/libdrizzle-5.0/error.h
-%{_includedir}/libdrizzle-5.0/field_client.h
-%{_includedir}/libdrizzle-5.0/handshake_client.h
-%{_includedir}/libdrizzle-5.0/libdrizzle.h
-%{_includedir}/libdrizzle-5.0/pack.h
-%{_includedir}/libdrizzle-5.0/query.h
-%{_includedir}/libdrizzle-5.0/result.h
-%{_includedir}/libdrizzle-5.0/result_client.h
-%{_includedir}/libdrizzle-5.0/return.h
-%{_includedir}/libdrizzle-5.0/row_client.h
-%{_includedir}/libdrizzle-5.0/sha1.h
-%{_includedir}/libdrizzle-5.0/ssl.h
-%{_includedir}/libdrizzle-5.0/state.h
-%{_includedir}/libdrizzle-5.0/structs.h
-%{_includedir}/libdrizzle-5.0/verbose.h
-%{_includedir}/libdrizzle-5.0/visibility.h
-%{_libdir}/libdrizzle.so
+%doc AUTHORS COPYING 
+%{_includedir}/libdrizzle-5.1/binlog.h
+%{_includedir}/libdrizzle-5.1/column.h
+%{_includedir}/libdrizzle-5.1/column_client.h
+%{_includedir}/libdrizzle-5.1/command_client.h
+%{_includedir}/libdrizzle-5.1/conn.h
+%{_includedir}/libdrizzle-5.1/conn_client.h
+%{_includedir}/libdrizzle-5.1/constants.h
+%{_includedir}/libdrizzle-5.1/drizzle.h
+%{_includedir}/libdrizzle-5.1/drizzle_client.h
+%{_includedir}/libdrizzle-5.1/error.h
+%{_includedir}/libdrizzle-5.1/field_client.h
+%{_includedir}/libdrizzle-5.1/handshake_client.h
+%{_includedir}/libdrizzle-5.1/libdrizzle.h
+%{_includedir}/libdrizzle-5.1/pack.h
+%{_includedir}/libdrizzle-5.1/query.h
+%{_includedir}/libdrizzle-5.1/result.h
+%{_includedir}/libdrizzle-5.1/result_client.h
+%{_includedir}/libdrizzle-5.1/return.h
+%{_includedir}/libdrizzle-5.1/row_client.h
+%{_includedir}/libdrizzle-5.1/ssl.h
+%{_includedir}/libdrizzle-5.1/statement.h
+%{_includedir}/libdrizzle-5.1/structs.h
+%{_includedir}/libdrizzle-5.1/verbose.h
+%{_includedir}/libdrizzle-5.1/version.h
+%{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
 * Wed Oct 11 2012 Brian Aker <brian@tangent.org> - 0.1-1

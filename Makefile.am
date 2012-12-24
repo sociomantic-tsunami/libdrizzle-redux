@@ -33,9 +33,12 @@ include tests/include.am
 include m4/include.am
 include cli/include.am
 include libdrizzle/include.am
-include libdrizzle-5.0/include.am
+include libdrizzle-5.1/include.am
 include rpm/include.am
 include docs/include.am
+
+EXTRA_DIST+= AUTHORS
+EXTRA_DIST+= COPYING
 
 # Cleanup individual files in order to preserve uninstall/etc order
 maintainer-clean-local:

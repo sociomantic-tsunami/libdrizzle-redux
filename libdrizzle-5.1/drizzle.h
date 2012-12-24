@@ -92,12 +92,12 @@ typedef _Bool bool;
 #include <openssl/ssl.h>
 #endif
 
-#include <libdrizzle-5.0/visibility.h>
-#include <libdrizzle-5.0/constants.h>
-#include <libdrizzle-5.0/structs.h>
-#include <libdrizzle-5.0/conn.h>
-#include <libdrizzle-5.0/result.h>
-#include <libdrizzle-5.0/column.h>
+#include <libdrizzle-5.1/visibility.h>
+#include <libdrizzle-5.1/constants.h>
+#include <libdrizzle-5.1/structs.h>
+#include <libdrizzle-5.1/conn.h>
+#include <libdrizzle-5.1/result.h>
+#include <libdrizzle-5.1/column.h>
 
 #ifdef  __cplusplus
 extern "C" {

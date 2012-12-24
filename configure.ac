@@ -28,7 +28,7 @@ AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 
 #shared library versioning
-LIBDRIZZLE_LIBRARY_VERSION=5:0:0
+LIBDRIZZLE_LIBRARY_VERSION=5:1:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
@@ -88,7 +88,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 libdrizzle-5.0/version.h
+                 libdrizzle-5.1/version.h
                  ])
 
 AC_OUTPUT

@@ -43,7 +43,7 @@
 
 #include "config.h"
 
-#include <libdrizzle-5.0/drizzle_client.h>
+#include <libdrizzle-5.1/drizzle_client.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -65,7 +65,7 @@
 #include <libdrizzle/structs.h>
 #include <libdrizzle/drizzle_local.h>
 #include <libdrizzle/conn_local.h>
-#include <libdrizzle-5.0/pack.h>
+#include <libdrizzle-5.1/pack.h>
 #include <libdrizzle/state.h>
 #include <libdrizzle/sha1.h>
 

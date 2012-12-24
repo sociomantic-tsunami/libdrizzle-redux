@@ -43,8 +43,8 @@
  * @brief Defines, typedefs, enums, and macros
  */
 
-#include <libdrizzle-5.0/return.h>
-#include <libdrizzle-5.0/verbose.h>
+#include <libdrizzle-5.1/return.h>
+#include <libdrizzle-5.1/verbose.h>
 
 #ifdef __cplusplus
 extern "C" {
