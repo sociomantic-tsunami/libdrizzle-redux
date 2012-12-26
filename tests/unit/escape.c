@@ -35,11 +35,11 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 int main(int argc, char* argv[])
 {
@@ -56,6 +56,15 @@ int main(int argc, char* argv[])
     return EXIT_FAILURE;
 
   out_len= drizzle_escape_string(out, 255, in, strlen(in));
-  printf("%d\n%s\n", out_len, out);
+  if (out_len != 17)
+  {
+    printf("Bad hex length output\n");
+    return EXIT_FAILURE;
+  }
+  if (strcmp(out, "escape \\\"this\\\"\\n") != 0)
+  {
+    printf("Bad hex data output\n");
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }

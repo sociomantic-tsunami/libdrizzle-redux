@@ -35,11 +35,10 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #ifndef EXIT_SKIP
 # define EXIT_SKIP 77

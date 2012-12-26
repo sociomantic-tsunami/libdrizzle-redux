@@ -35,11 +35,11 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #ifndef EXIT_SKIP
 # define EXIT_SKIP 77
@@ -80,7 +80,11 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
+  if (drizzle_result_insert_id(result) != 1)
+  {
+    printf("Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
+    return EXIT_FAILURE;
+  }
   drizzle_result_free(result);
 
   result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (4),(5),(6)", &ret);
@@ -90,7 +94,11 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  printf("Insert id: %"PRIu64"\n", drizzle_result_insert_id(result));
+  if (drizzle_result_insert_id(result) != 4)
+  {
+    printf("Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
+    return EXIT_FAILURE;
+  }
   drizzle_result_free(result);
 
   drizzle_query_str(con, "drop table libdrizzle.t1", &ret);

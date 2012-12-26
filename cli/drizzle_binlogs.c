@@ -34,9 +34,10 @@
  *
  */
 
-#include "config.h"
+#define _GNU_SOURCE 1
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <pwd.h>

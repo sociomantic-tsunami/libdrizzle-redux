@@ -35,11 +35,11 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 int main(int argc, char* argv[])
 {
@@ -53,12 +53,22 @@ int main(int argc, char* argv[])
   // Test for bad usage
   result= drizzle_hex_string(out, in, 0);
   if (result)
+  {
+    printf("Bad usage failure\n");
     return EXIT_FAILURE;
+  }
 
   result= drizzle_hex_string(out, in, 6);
   if (!result)
+  {
+    printf("Failed to get result\n");
     return EXIT_FAILURE;
+  }
 
-  printf("%s\n", out);
+  if (strcmp(out, "00FF7F80B9C0") != 0)
+  {
+    printf("Bad result data\n");
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }
