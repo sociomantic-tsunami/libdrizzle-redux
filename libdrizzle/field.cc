@@ -283,10 +283,10 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
       con->result->field_total)
   {
     if (con->result->column_buffer != NULL &&
-        con->result->column_buffer[con->result->field_current].max_size <
+        con->result->column_buffer[con->result->field_current].size <
         con->result->field_total)
     {
-      con->result->column_buffer[con->result->field_current].max_size=
+      con->result->column_buffer[con->result->field_current].size=
                                                        con->result->field_total;
     }
 

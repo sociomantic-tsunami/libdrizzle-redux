@@ -543,7 +543,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
 
     /* Skip one filler byte. */
     column->charset= (drizzle_charset_t)drizzle_get_byte2(con->buffer_ptr + 1);
-    column->size= drizzle_get_byte4(con->buffer_ptr + 3);
+    column->max_size= drizzle_get_byte4(con->buffer_ptr + 3);
 
     column->type= drizzle_column_type_t(con->buffer_ptr[7]);
 
