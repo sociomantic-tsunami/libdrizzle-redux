@@ -2,8 +2,16 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+if HAVE_GLIB
+
 bin_PROGRAMS+= cli/drizzle_binlogs
 cli_drizzle_binlogs_SOURCES= cli/drizzle_binlogs.c
-cli_drizzle_binlogs_LDADD= libdrizzle/libdrizzle.la @GLIB_LIBS@
+cli_drizzle_binlogs_LDADD= libdrizzle/libdrizzle.la
+cli_drizzle_binlogs_LDADD+= @GLIB_LIBS@
 cli_drizzle_binlogs_CFLAGS= @GLIB_CFLAGS@
 cli_drizzle_binlogs_CXXFLAGS= @GLIB_CFLAGS@
+
+check_SCRIPTS+= cli/drizzle_binlogs_check.sh
+EXTRA_DIST+= ${check_SCRIPTS}
+
+endif

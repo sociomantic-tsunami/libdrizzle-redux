@@ -9,6 +9,7 @@ TESTS =
 CLEANFILES =
 DISTCLEANFILES =
 bin_PROGRAMS =
+dist_bin_SCRIPTS =
 noinst_HEADERS =
 lib_LTLIBRARIES =
 man_MANS =
@@ -17,17 +18,20 @@ noinst_PROGRAMS =
 include_HEADERS =
 nobase_include_HEADERS =
 check_PROGRAMS =
+check_SCRIPTS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST=
+EXTRA_SCRIPTS=
 CONFIGURE_DEPENDENCIES=
 PREFIX= @prefix@
 
 #includes additional rules from aminclude.am
 @INC_AMINCLUDE@
 DISTCLEANFILES+= aminclude.am
+CLEANFILES+= $(dist_bin_SCRIPTS)
 
-TESTS+= ${check_PROGRAMS}
+TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 
 include tests/include.am
 include m4/include.am
@@ -65,8 +69,4 @@ maintainer-clean-local:
 	-rm -f @PACKAGE@-*.rpm
 	-rm @GENERIC_CONFIG@
 
-install-exec-local:    install-generic-config
-
-install-generic-config:
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	$(INSTALL_SCRIPT) @GENERIC_CONFIG@ $(DESTDIR)$(bindir)
+dist_bin_SCRIPTS+= @GENERIC_CONFIG@ 
