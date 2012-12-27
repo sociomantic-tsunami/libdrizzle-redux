@@ -18,6 +18,7 @@ noinst_PROGRAMS =
 include_HEADERS =
 nobase_include_HEADERS =
 check_PROGRAMS =
+check_SCRIPTS =
 EXTRA_HEADERS =
 BUILT_SOURCES=
 EXTRA_DIST=
@@ -30,7 +31,7 @@ PREFIX= @prefix@
 DISTCLEANFILES+= aminclude.am
 CLEANFILES+= $(dist_bin_SCRIPTS)
 
-TESTS+= ${check_PROGRAMS}
+TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 
 include tests/include.am
 include m4/include.am

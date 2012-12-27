@@ -59,7 +59,9 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 AX_CHECK_OPENSSL
-AM_PATH_GLIB_2_0
+AM_PATH_GLIB_2_0(,[HAVE_GLIB=false],[HAVE_GLIB=true])
+
+AM_CONDITIONAL([HAVE_GLIB],[test "x$HAVE_GLIB"="xtrue"])
 
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],
