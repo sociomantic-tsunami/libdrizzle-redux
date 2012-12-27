@@ -12,5 +12,6 @@ cli_drizzle_binlogs_CFLAGS= @GLIB_CFLAGS@
 cli_drizzle_binlogs_CXXFLAGS= @GLIB_CFLAGS@
 
 check_SCRIPTS+= cli/drizzle_binlogs_check.sh
+EXTRA_DIST+= ${check_SCRIPTS}
 
 endif
