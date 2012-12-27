@@ -35,10 +35,9 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 #ifndef EXIT_SKIP
@@ -92,10 +91,28 @@ int main(int argc, char *argv[])
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
 
-  printf("%d fields\n", num_fields);
+  if (num_fields != 1)
+  {
+    printf("Retrieved bad number of fields\n");
+    return EXIT_FAILURE;
+  }
+  int i= 0;
+  char buf[10];
   while ((row = drizzle_row_next(result)))
   {
-    printf("Data: %s\n", row[0]);
+    i++;
+    snprintf(buf, 10, "%d", i);
+    if (strcmp(row[0], buf) != 0)
+    {
+      printf("Retrieved bad row value\n");
+      return EXIT_FAILURE;
+    }
+  }
+  /* Should have had 3 rows */
+  if (i != 3)
+  {
+    printf("Retrieved bad number of rows\n");
+    return EXIT_FAILURE;
   }
 
   drizzle_result_free(result);

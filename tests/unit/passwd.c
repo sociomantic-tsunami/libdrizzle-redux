@@ -35,11 +35,12 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 int main(int argc, char* argv[])
 {
@@ -53,12 +54,22 @@ int main(int argc, char* argv[])
   // Test for bad usage
   result= drizzle_mysql_password_hash(out, in, 0);
   if (result)
+  {
+    printf("Usage test failure\n");
     return EXIT_FAILURE;
+  }
 
   result= drizzle_mysql_password_hash(out, in, strlen(in));
   if (!result)
+  {
+    printf("Didn't get a result failure\n");
     return EXIT_FAILURE;
+  }
 
-  printf("%s\n", out);
+  if (strcmp(out, "597B78D6E0366308739CEBB0E221B246F117E111") != 0)
+  {
+    printf("Password output didn't match\n");
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }

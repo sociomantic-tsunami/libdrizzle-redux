@@ -37,8 +37,8 @@
 
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #ifndef EXIT_SKIP
 # define EXIT_SKIP 77
@@ -50,8 +50,11 @@ int main(int argc, char *argv[])
   (void) argv;
   drizzle_st *con;
   drizzle_return_t ret;
+  drizzle_result_st *result;
+  drizzle_row_t row;
+  int num_fields;
 
-  con = drizzle_create_tcp("localhost", 3306, "root", "", "", 0);
+  con = drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
   if (con == NULL)
   {
     printf("Drizzle connection object creation error\n");
@@ -61,9 +64,93 @@ int main(int argc, char *argv[])
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Drizzle connection failure\n");
-    drizzle_quit(con);
     return EXIT_SKIP;
   }
+
+  drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Create table failure\n");
+    return EXIT_FAILURE;
+  }
+
+  drizzle_query_str(con, "insert into libdrizzle.t1 values (1),(2),(3)", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Insert failure\n");
+    return EXIT_FAILURE;
+  }
+
+  result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Select failure\n");
+    return EXIT_FAILURE;
+  }
+  drizzle_result_buffer(result);
+  num_fields= drizzle_result_column_count(result);
+
+  if (num_fields != 1)
+  {
+    printf("Retrieved bad number of fields\n");
+    return EXIT_FAILURE;
+  }
+  row = drizzle_row_next(result);
+  if (row == NULL)
+  {
+    printf("Could not get the next row\n");
+    return EXIT_FAILURE;
+  }
+  
+  if (strcmp(row[0], "1") != 0)
+  {
+    printf("Retrieved bad next row value\n");
+    return EXIT_FAILURE;
+  }
+  drizzle_row_seek(result, 3);
+  row = drizzle_row_prev(result);
+  if (row == NULL)
+  {
+    printf("Could not get prev row\n");
+    return EXIT_FAILURE;
+  }
+  if (strcmp(row[0], "3") != 0)
+  {
+    printf("Retrieved bad prev row value: %s\n", row[0]);
+    return EXIT_FAILURE;
+  }
+  row = drizzle_row_index(result, 1);
+  if (row == NULL)
+  {
+    printf("Could not get indexed row\n");
+    return EXIT_FAILURE;
+  }
+  if (strcmp(row[0], "2") != 0)
+  {
+    printf("Retrieved bad indexed row value: %s\n", row[0]);
+    return EXIT_FAILURE;
+  }
+  if (drizzle_row_current(result) != 2)
+  {
+    printf("Index at wrong pos\n");
+    return EXIT_FAILURE;
+  }
+  size_t *sizes= drizzle_row_field_sizes(result);
+  if (sizes[0] != 1)
+  {
+    printf("Row size mismatch (4 != %lu)\n", sizes[0]);
+    return EXIT_FAILURE;
+  }
+
+  drizzle_result_free(result);
+
+  drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    printf("Drop table failure\n");
+    return EXIT_FAILURE;
+  }
+
 
   drizzle_quit(con);
   return EXIT_SUCCESS;

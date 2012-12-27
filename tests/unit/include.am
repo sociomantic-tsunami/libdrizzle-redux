@@ -22,6 +22,16 @@ tests_unit_query_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/query
 noinst_PROGRAMS+= tests/unit/query
 
+tests_unit_column_SOURCES= tests/unit/column.c
+tests_unit_column_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/column
+noinst_PROGRAMS+= tests/unit/column
+
+tests_unit_row_SOURCES= tests/unit/row.c
+tests_unit_row_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/row
+noinst_PROGRAMS+= tests/unit/row
+
 tests_unit_version_SOURCES= tests/unit/version.c
 tests_unit_version_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/version

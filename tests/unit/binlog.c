@@ -35,12 +35,12 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include "libdrizzle/structs.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #ifndef EXIT_SKIP
 # define EXIT_SKIP 77
@@ -77,22 +77,27 @@ int main(int argc, char *argv[])
 
   while (ret == DRIZZLE_RETURN_OK)
   {
-    uint32_t i, length;
-    const uint8_t *data;
+    uint32_t timestamp;
     ret= drizzle_binlog_get_next_event(result);
     if (ret != DRIZZLE_RETURN_OK)
       break;
-    printf("Timestamp: %" PRIu32 "\n", drizzle_binlog_event_timestamp(result));
-    printf("Type: %"PRIu8"\n", drizzle_binlog_event_type(result));
-    printf("Server-id: %"PRIu32"\n", drizzle_binlog_event_server_id(result));
-    printf("Next-pos: %"PRIu32"\n", drizzle_binlog_event_next_pos(result));
-    length= drizzle_binlog_event_length(result);
-    printf("Length: %"PRIu32"\n", length);
-    data= drizzle_binlog_event_data(result);
-    printf("Data: 0x");
-    for (i=0; i<length; i++)
-      printf("%02X ", data[i]);
-    printf("\n\n");
+    timestamp= drizzle_binlog_event_timestamp(result);
+    /* Test to see if timestamp is greater than 2012-01-01 00:00:00, corrupted
+     * timestamps will have weird values that shoud fail this after several
+     * events.  Also rotate event doesn't have a timestamp so need to add 0
+     * to this test */
+    if ((timestamp < 1325376000) && (timestamp != 0))
+    {
+      printf("Bad timestamp retrieved: %"PRIu32"\n", timestamp);
+      return EXIT_FAILURE;
+    }
+    /* An event higher than the max known is bad, either we don't know about
+     * new events or type is corrupted */
+    if (drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END)
+    {
+      printf("Bad event type: %d\n", drizzle_binlog_event_type(result));
+      return EXIT_FAILURE;
+    }
   }
 
   drizzle_quit(con);

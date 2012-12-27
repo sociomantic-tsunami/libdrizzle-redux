@@ -35,8 +35,6 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 
 #include <cstddef>

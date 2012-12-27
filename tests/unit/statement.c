@@ -35,11 +35,13 @@
  *
  */
 
-#include "config.h"
-
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <inttypes.h>
+#include <string.h>
 
 #ifndef EXIT_SKIP
 # define EXIT_SKIP 77
@@ -88,7 +90,12 @@ int main(int argc, char *argv[])
     printf("Prepare failure\n");
     return EXIT_FAILURE;
   }
-  printf("Params: %" PRIu16 "\n", drizzle_stmt_param_count(stmt));
+  /* Query should have 1 param */
+  if (drizzle_stmt_param_count(stmt) != 1)
+  {
+    printf("Retrieved bad param count\n");
+    return EXIT_FAILURE;
+  }
 
   uint32_t val= 1;
   ret = drizzle_stmt_bind_param(stmt, 0, DRIZZLE_COLUMN_TYPE_LONG, &val, 4, DRIZZLE_BIND_OPTION_NONE);
@@ -110,12 +117,29 @@ int main(int argc, char *argv[])
     printf("Buffer failure\n");
     return EXIT_FAILURE;
   }
-  printf("Rows found: %" PRIu64 "\n", drizzle_stmt_row_count(stmt));
+  /* Result should have 2 rows */
+  if (drizzle_stmt_row_count(stmt) != 2)
+  {
+    printf("Retrieved bad row count\n");
+    return EXIT_FAILURE;
+  }
+  uint32_t i= 1;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
     uint32_t *res_val;
     res_val= (uint32_t*)drizzle_stmt_item_data(stmt, 0);
-    printf("Got value: %" PRIu32 "\n", *res_val);
+    i++;
+    if (*res_val != i)
+    {
+      printf("Retrieved unexpected value\n");
+      return EXIT_FAILURE;
+    }
+  }
+  /* Should have cycled through 2 rows (values 2 and 3) */
+  if (i != 3)
+  {
+    printf("Retrieved bad number of rows\n");
+    return EXIT_FAILURE;
   }
   ret = drizzle_stmt_close(stmt);
   if (ret != DRIZZLE_RETURN_OK)
