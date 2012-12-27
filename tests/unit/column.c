@@ -128,6 +128,11 @@ int main(int argc, char *argv[])
         printf("Column max size wrong %lu != 255\n", drizzle_column_max_size(column));
         return EXIT_FAILURE;
       }
+      if ((j == 2) && (drizzle_column_charset(column) != DRIZZLE_CHARSET_LATIN1_SWEDISH_CI))
+      {
+        printf("Column type wrong, %d != %d\n", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
+        return EXIT_FAILURE;
+      }
       if ((j == 3) && (drizzle_column_type(column) != DRIZZLE_COLUMN_TYPE_TIMESTAMP))
       {
         printf("Column type wrong\n");
