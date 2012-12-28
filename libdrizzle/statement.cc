@@ -567,7 +567,11 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
 
   free(stmt->null_bitmap);
   free(stmt->query_params);
-  free(stmt->result_params);
+  if (stmt->result_params)
+  {
+    free(stmt->result_params->data);
+    free(stmt->result_params);
+  }
   if (stmt->execute_result)
   {
     drizzle_result_free(stmt->execute_result);

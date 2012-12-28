@@ -90,6 +90,8 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
   result->info[0]= '\0';
   result->sqlstate[0]= '\0';
   result->null_bitmap_list= NULL;
+  result->null_bitmap= NULL;
+  result->binary_rows= false;
 
   result->con= con;
   con->result= result;
@@ -131,8 +133,15 @@ void drizzle_result_free(drizzle_result_st *result)
     for (x= 0; x < result->row_count; x++)
     {
       drizzle_row_free(result, result->row_list[x]);
+      if (result->null_bitmap_list != NULL)
+      {
+        free(result->null_bitmap_list[x]);
+      }
     }
-
+    if (result->null_bitmap_list != NULL)
+    {
+      free(result->null_bitmap_list);
+    }
     free(result->row_list);
     free(result->field_sizes_list);
   }
