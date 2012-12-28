@@ -86,7 +86,6 @@ static struct argp_option options[]= {
 
 static char doc[]= "Drizzle binlog retriever";
 static char args_doc[]= "";
-const char *argp_program_version= LIBDRIZZLE_VERSION_STRING;
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
   (void)(state);
@@ -292,7 +291,9 @@ int main(int argc, char *argv[])
 {
   drizzle_st *con;
   char sysuser[DRIZZLE_MAX_USER_SIZE];
-
+  // Use the define here because we want it fixed at compile time
+  argp_program_version= LIBDRIZZLE_VERSION_STRING;
+  argp_program_bug_address= drizzle_bugreport();
   argp_parse(&argp, argc, argv, 0, 0, NULL);
   if (opt_count == 0)
   {
