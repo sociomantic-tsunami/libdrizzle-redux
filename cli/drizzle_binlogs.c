@@ -38,47 +38,110 @@
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <glib.h>
-#include <glib/gstdio.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <errno.h>
+#include <argp.h>
+#include <time.h>
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
-gchar *host= NULL;
-gint port= DRIZZLE_DEFAULT_TCP_PORT;
-gchar *user= NULL;
-gboolean user_alloced= FALSE;
-gchar *pass= NULL;
-gchar *outdir= NULL;
-gchar *start_file= NULL;
-gint start_pos= 0;
-gboolean continuous= FALSE;
+char *host= NULL;
+uint16_t port= DRIZZLE_DEFAULT_TCP_PORT;
+char *user= NULL;
+bool user_alloced= false;
+char *pass= NULL;
+char *outdir= NULL;
+char *start_file= NULL;
+uint32_t start_pos= 0;
+bool continuous= false;
+uint8_t opt_count= 0;
 
-static GOptionEntry main_options[]= {
-  { "host", 0, 0, G_OPTION_ARG_STRING, &host, "Hostname of server, default "DRIZZLE_DEFAULT_TCP_HOST, NULL },
-  { "port", 0, 0, G_OPTION_ARG_INT, &port, "Port number of server, default "STR(DRIZZLE_DEFAULT_TCP_PORT), NULL },
-  { "user", 0, 0, G_OPTION_ARG_STRING, &user, "Username for the server, default is current system user", NULL },
-  { "pass", 0, 0, G_OPTION_ARG_STRING, &pass, "Password for the server", NULL },
-  { "outdir", 0, 0, G_OPTION_ARG_FILENAME, &outdir, "Output directory", NULL },
-  { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL }
+typedef enum
+{
+  OPT_NONE,
+  OPT_HOST,
+  OPT_PORT,
+  OPT_USER,
+  OPT_PASS,
+  OPT_OUTDIR,
+  OPT_FILE,
+  OPT_START_POS,
+  OPT_CONTINUOUS
+} option_consts_t;
+
+static struct argp_option options[]= {
+  { "host", OPT_HOST, "HOST", 0, "Hostname of server, default "DRIZZLE_DEFAULT_TCP_HOST, 0 },
+  { "port", OPT_PORT, "PORT", 0, "Port number of server, default "STR(DRIZZLE_DEFAULT_TCP_PORT), 0 },
+  { "user", OPT_USER, "USER", 0, "Username for the server, default is current system user", 0 },
+  { "pass", OPT_PASS, "PASS", 0, "Password for the server", 0 },
+  { "outdir", OPT_OUTDIR, "OUTDIR", 0, "Output directory", 0 },
+  { 0, 0, 0, 0, "Binlog Options", 1 },
+  { "start-file", OPT_FILE, "FILENAME", 0, "Binlog file to start with", 1 },
+  { "start-pos", OPT_START_POS, "POS", 0, "Position to start with", 1 },
+  { "continuous", OPT_CONTINUOUS, 0, 0, "Continous download mode", 1 },
+  { 0 }
 };
 
-static GOptionEntry binlog_options[]= {
-  { "start-file", 0, 0, G_OPTION_ARG_FILENAME, &start_file, "Binlog file to start with", NULL },
-  { "start-pos", 0, 0, G_OPTION_ARG_INT, &start_pos, "Position to start with", NULL },
-  { "continuous", 0, 0, G_OPTION_ARG_NONE, &continuous, "Continous download mode", NULL }
-};
+static char doc[]= "Drizzle binlog retriever";
+static char args_doc[]= "";
+const char *argp_program_version= LIBDRIZZLE_VERSION_STRING;
+static error_t parse_opt(int key, char *arg, struct argp_state *state)
+{
+  (void)(state);
+  switch(key)
+  {
+    case OPT_HOST:
+      host= arg;
+      opt_count++;
+      break;
+    case OPT_PORT:
+      port= atoi(arg);
+      opt_count++;
+      break;
+    case OPT_USER:
+      user= arg;
+      opt_count++;
+      break;
+    case OPT_PASS:
+      pass= arg;
+      opt_count++;
+      break;
+    case OPT_OUTDIR:
+      outdir= arg;
+      opt_count++;
+      break;
+    case OPT_FILE:
+      start_file= arg;
+      opt_count++;
+      break;
+    case OPT_START_POS:
+      start_pos= atoi(arg);
+      opt_count++;
+      break;
+    case OPT_CONTINUOUS:
+      continuous= true;
+      opt_count++;
+      break;
+    case ARGP_KEY_NO_ARGS:
+      break;
+    default:
+      return ARGP_ERR_UNKNOWN;
+      break;
+  }
+  return 0;
+}
 
-gboolean get_system_user(char *dest, uint8_t len);
+static struct argp argp = { options, parse_opt, args_doc, doc, NULL, NULL, NULL };
+
+bool get_system_user(char *dest, uint8_t len);
 drizzle_st *_connect(void);
 FILE *create_binlog_file(char *binlog_file);
 void get_binlogs(drizzle_st *con);
 void write_binlog(FILE* file, const uint8_t* data, uint32_t len);
 
-gboolean get_system_user(char *dest, uint8_t len)
+bool get_system_user(char *dest, uint8_t len)
 {
   long pw_len= sysconf(_SC_GETPW_R_SIZE_MAX);
   struct passwd pw_struct;
@@ -87,16 +150,16 @@ gboolean get_system_user(char *dest, uint8_t len)
   {
     pw_len= 1024;
   }
-  char *pw_buffer= g_malloc(pw_len);
+  char *pw_buffer= malloc(pw_len);
 
   if (getpwuid_r(geteuid(), &pw_struct, pw_buffer, pw_len, &pw_tmp_struct) == 0)
   {
-    g_strlcpy(dest, pw_struct.pw_name, len);
-    g_free(pw_buffer);
-    return TRUE;
+    strncpy(dest, pw_struct.pw_name, len);
+    free(pw_buffer);
+    return true;
   }
-  g_free(pw_buffer);
-  return FALSE;
+  free(pw_buffer);
+  return false;
 }
 
 drizzle_st *_connect(void)
@@ -107,13 +170,13 @@ drizzle_st *_connect(void)
   con= drizzle_create_tcp(host, port, user, pass, "", 0);
   if (!con)
   {
-    g_print("Drizzle connection object creation error\n");
+    printf("Drizzle connection object creation error\n");
     return NULL;
   }
   ret= drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    g_print("Error connecting to server: %s\n", drizzle_error(con));
+    printf("Error connecting to server: %s\n", drizzle_error(con));
     return NULL;
   }
   return con;
@@ -122,20 +185,17 @@ drizzle_st *_connect(void)
 FILE *create_binlog_file(char *binlog_file)
 {
   FILE *outfile;
-  char *filename;
+  char filename[PATH_MAX];
   if (outdir)
   {
-    filename= g_strdup_printf("%s/%s", outdir, binlog_file);
+    snprintf(filename, PATH_MAX, "%s/%s", outdir, binlog_file);
+    outfile= fopen(filename, "w");
   }
   else
   {
-    filename= binlog_file;
+    outfile= fopen(binlog_file, "w");
   }
-  outfile= g_fopen(filename, "w");
-  if (outdir)
-  {
-    g_free(filename);
-  }
+
   return outfile;
 }
 
@@ -143,15 +203,17 @@ void get_binlogs(drizzle_st *con)
 {
   drizzle_result_st *result;
   drizzle_return_t ret;
-  int server_id;
+  uint16_t server_id;
   FILE *outfile;
-  gchar *binlog_file;
+  char binlog_file[PATH_MAX];
   uint32_t event_len;
-  gboolean read_end= FALSE;
+  bool read_end= false;
 
   if (continuous)
   {
-    server_id= g_random_int_range(32768, 65535);
+    srand(time(NULL));
+    // Random server ID from range 32767 - 65535
+    server_id= rand() % 32768 + 32767;
   }
   else
   {
@@ -161,15 +223,15 @@ void get_binlogs(drizzle_st *con)
   result= drizzle_start_binlog(con, server_id, start_file, start_pos, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    g_print("Drizzle binlog start failure: %s\n", drizzle_error(con));
+    printf("Drizzle binlog start failure: %s\n", drizzle_error(con));
     exit(EXIT_FAILURE);
   }
 
-  binlog_file= g_strdup(start_file);
+  snprintf(binlog_file, PATH_MAX, "%s", start_file);
   outfile= create_binlog_file(binlog_file);
   if (!outfile)
   {
-    g_print("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
+    printf("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
     exit(EXIT_FAILURE);
   }
 
@@ -185,20 +247,19 @@ void get_binlogs(drizzle_st *con)
           // EOF
           if (ret != DRIZZLE_RETURN_EOF)
           {
-            g_print("Read error: %d - %s\n", ret, drizzle_error(con));
+            printf("Read error: %d - %s\n", ret, drizzle_error(con));
           }
-          read_end= TRUE;
+          read_end= true;
           break;
       }
       if (drizzle_binlog_event_type(result) == DRIZZLE_EVENT_TYPE_ROTATE)
       {
         fclose(outfile);
-        g_free(binlog_file);
-        binlog_file= g_strndup((const gchar *)drizzle_binlog_event_data(result), drizzle_binlog_event_length(result));
+        snprintf(binlog_file, PATH_MAX, "%.*s", drizzle_binlog_event_length(result), drizzle_binlog_event_data(result));
         outfile= create_binlog_file(binlog_file);
         if (!outfile)
         {
-          g_print("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
+          printf("Could not create binlog file '%s', errno %d\n", binlog_file, errno);
           exit(EXIT_FAILURE);
         }
         break;
@@ -220,7 +281,7 @@ void write_binlog(FILE* file, const uint8_t* data, uint32_t len)
   {
     if (write(fileno(file), data, len) <= 0)
     {
-      g_print("Error: binlog: Error writing binary log: %s", strerror(errno));
+      printf("Error: binlog: Error writing binary log: %s", strerror(errno));
       exit(EXIT_FAILURE);
     }
   }
@@ -229,21 +290,13 @@ void write_binlog(FILE* file, const uint8_t* data, uint32_t len)
 
 int main(int argc, char *argv[])
 {
-  GError *error= NULL;
-  GOptionContext *context;
   drizzle_st *con;
   char sysuser[DRIZZLE_MAX_USER_SIZE];
 
-  context= g_option_context_new(" - Drizzle binlog retriever");
-  GOptionGroup *main_group= g_option_group_new("main", "Main Options", "Main Options", NULL, NULL);
-  GOptionGroup *binlog_group= g_option_group_new("binlog", "Binlog Options", "Binlog Options", NULL, NULL);
-  g_option_group_add_entries(main_group, main_options);
-  g_option_group_add_entries(binlog_group, binlog_options);
-  g_option_context_set_main_group(context, main_group);
-  g_option_context_add_group(context, binlog_group);
-  if (!g_option_context_parse(context, &argc, &argv, &error))
+  argp_parse(&argp, argc, argv, 0, 0, NULL);
+  if (opt_count == 0)
   {
-    g_print("Error parsing options: %s, try --help\n", error->message);
+    argp_help(&argp, stdout, ARGP_HELP_STD_USAGE, program_invocation_short_name);
     return EXIT_FAILURE;
   }
   if (!user)
@@ -251,13 +304,13 @@ int main(int argc, char *argv[])
     user= sysuser;
     if (!get_system_user(user, DRIZZLE_MAX_USER_SIZE))
     {
-      g_print("No user specified and could not determine current user\n");
+      printf("No user specified and could not determine current user\n");
       return EXIT_FAILURE;
     }
   }
   if (!host)
   {
-    host= g_strdup(DRIZZLE_DEFAULT_TCP_HOST);
+    host= (char*)DRIZZLE_DEFAULT_TCP_HOST;
   }
   if (!port)
   {
@@ -265,7 +318,7 @@ int main(int argc, char *argv[])
   }
   if (!start_file)
   {
-    g_print("Binlog start file required\n");
+    printf("Binlog start file required\n");
     return EXIT_FAILURE;
   }
   con = _connect();
@@ -275,6 +328,5 @@ int main(int argc, char *argv[])
   }
   get_binlogs(con);
   drizzle_quit(con);
-  g_option_context_free(context);
   return EXIT_SUCCESS;
 }
