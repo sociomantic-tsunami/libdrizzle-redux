@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Drizzle connection failure\n");
+    drizzle_quit(con);
     return EXIT_SKIP;
   }
 
