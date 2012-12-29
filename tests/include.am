@@ -3,5 +3,3 @@
 # All paths should be given relative to the root
 
 include tests/unit/include.am
-
-noinst_HEADERS+= tests/yatl_lite.h

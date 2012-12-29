@@ -48,6 +48,7 @@ int main(void)
   ASSERT_TRUE(strtol(LIBDRIZZLE_VERSION_STRING, (char **) NULL, 10));
   ASSERT_TRUE(LIBDRIZZLE_VERSION_HEX > 0);
   ASSERT_TRUE(drizzle_bugreport());
+  ASSERT_STREQ("http://bugs.launchpad.net/drizzle", drizzle_bugreport());
 
   return EXIT_SUCCESS;
 }
