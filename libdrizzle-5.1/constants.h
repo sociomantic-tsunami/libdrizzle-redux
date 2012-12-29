@@ -84,6 +84,9 @@ extern "C" {
 #define DRIZZLE_DEFAULT_SOCKET_SEND_SIZE 32768
 #define DRIZZLE_DEFAULT_SOCKET_RECV_SIZE 32768
 #define DRIZZLE_MYSQL_PASSWORD_HASH      41
+#define DRIZZLE_BINLOG_CRC32_LEN         4
+// If this version or higher then we are doing checksums
+#define DRIZZLE_BINLOG_CHECKSUM_VERSION  "5.6.1"
 
 #define DRIZZLE_BINLOG_MAGIC             "\xFE\x62\x69\x6E"
 

@@ -186,6 +186,7 @@ struct drizzle_result_st
   size_t *field_sizes;
   size_t **field_sizes_list;
   drizzle_binlog_st *binlog_event;
+  bool binlog_checksums;
   uint8_t **null_bitmap_list;
   uint8_t *null_bitmap;
   uint8_t null_bitmap_length;
@@ -221,6 +222,7 @@ struct drizzle_result_st
     field_sizes(NULL),
     field_sizes_list(NULL),
     binlog_event(NULL),
+    binlog_checksums(false),
     null_bitmap_list(NULL),
     null_bitmap(NULL),
     null_bitmap_length(0),
@@ -242,6 +244,7 @@ struct drizzle_binlog_st
   uint32_t next_pos;
   uint16_t flags;
   uint16_t extra_flags;
+  uint32_t checksum;
   uint8_t *data;
   uint8_t *raw_data;
   uint32_t raw_length;

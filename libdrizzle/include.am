@@ -18,8 +18,12 @@ libdrizzle_libdrizzle_la_CXXFLAGS= -DBUILDING_LIBDRIZZLE
 
 libdrizzle_libdrizzle_la_CFLAGS+= @OPENSSL_INCLUDES@
 libdrizzle_libdrizzle_la_CXXFLAGS+= @OPENSSL_INCLUDES@
+libdrizzle_libdrizzle_la_CFLAGS+= @ZLIB_CFLAGS@
+libdrizzle_libdrizzle_la_CXXFLAGS+= @ZLIB_CFLAGS@
 libdrizzle_libdrizzle_la_LIBADD+= @OPENSSL_LIBS@
+libdrizzle_libdrizzle_la_LIBADD+= @ZLIB_LIBS@
 libdrizzle_libdrizzle_la_LDFLAGS+= @OPENSSL_LDFLAGS@
+libdrizzle_libdrizzle_la_LDFLAGS+= @ZLIB_LDFLAGS@
 
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/binlog.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/command.cc

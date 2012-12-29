@@ -62,6 +62,7 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
     return NULL;
   }
 
+  result->binlog_checksums= false;
   result->binlog_event= NULL;
   result->column_list= NULL;
   result->options= DRIZZLE_RESULT_NONE;

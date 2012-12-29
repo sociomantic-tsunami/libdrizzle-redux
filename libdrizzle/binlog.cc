@@ -37,6 +37,7 @@
 
 #include "config.h"
 #include "libdrizzle/common.h"
+#include <zlib.h>
 
 drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                             uint32_t server_id,
@@ -47,6 +48,15 @@ drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
   uint8_t data[128];
   uint8_t *ptr;
   uint8_t len= 0, fn_len= 0;
+  drizzle_result_st *result;
+
+  // Hack in 5.6 to say that client support checksums
+  result= drizzle_query_str(con, "SET @master_binlog_checksum='NONE'", ret_ptr);
+  drizzle_result_free(result);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return NULL;
+  }
 
   ptr= data;
 
@@ -297,11 +307,49 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       con->buffer_size-= 27;
       con->packet_size-= 27;
       binlog_event->data= (uint8_t*)realloc(binlog_event->data, binlog_event->length);
-      memcpy(binlog_event->data, con->buffer_ptr, binlog_event->length);
+      /* 5.6.1 or higher is automatic checksums on */
+      if (binlog_event->type == DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION)
+      {
+        if (strncmp((const char*)con->buffer_ptr + 2, DRIZZLE_BINLOG_CHECKSUM_VERSION, strlen(DRIZZLE_BINLOG_CHECKSUM_VERSION)) <= 0)
+        {
+          con->result->binlog_checksums= true;
+        }
+      }
+      /* A checksum is basically a CRC32 at the end of the event data (4 bytes) */
+      if (con->result->binlog_checksums)
+      {
+        memcpy(binlog_event->data, con->buffer_ptr, binlog_event->length - DRIZZLE_BINLOG_CRC32_LEN);
+      }
+      else
+      {
+        memcpy(binlog_event->data, con->buffer_ptr, binlog_event->length);
+      }
       con->buffer_ptr+= binlog_event->length;
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
+      /* Remove the CRC32 from the event length */
+      if (con->result->binlog_checksums)
+      {
+        binlog_event->length-= DRIZZLE_BINLOG_CRC32_LEN;
+      }
     }
+
+    /* Check if checksum is correct
+     * each event is checksummed individually, the checksum is the last 4 bytes
+     * of the binary log event
+     * */
+    if (con->result->binlog_checksums)
+    {
+      uint32_t event_crc;
+      memcpy(&binlog_event->checksum, binlog_event->raw_data + (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
+      event_crc= crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
+      if (event_crc != binlog_event->checksum)
+      {
+        drizzle_set_error(con, __func__, "CRC doesn't match: 0x%lX, 0x%lX", event_crc, binlog_event->checksum);
+        return DRIZZLE_RETURN_BINLOG_CRC;
+      }
+    }
+
     if (con->packet_size != 0)
     {
       drizzle_set_error(con, "drizzle_state_binlog_read",
