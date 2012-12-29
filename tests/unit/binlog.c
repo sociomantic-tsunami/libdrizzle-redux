@@ -79,8 +79,15 @@ int main(int argc, char *argv[])
   {
     uint32_t timestamp;
     ret= drizzle_binlog_get_next_event(result);
-    if (ret != DRIZZLE_RETURN_OK)
+    if (ret == DRIZZLE_RETURN_EOF)
+    {
       break;
+    }
+    else if (ret != DRIZZLE_RETURN_OK)
+    {
+      printf("Binlog error %s\n", drizzle_error(con));
+      return EXIT_FAILURE;
+    }
     timestamp= drizzle_binlog_event_timestamp(result);
     /* Test to see if timestamp is greater than 2012-01-01 00:00:00, corrupted
      * timestamps will have weird values that shoud fail this after several
