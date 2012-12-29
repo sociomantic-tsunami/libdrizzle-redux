@@ -58,6 +58,7 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 AX_CHECK_OPENSSL
+AC_PATH_ZLIB
 
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],

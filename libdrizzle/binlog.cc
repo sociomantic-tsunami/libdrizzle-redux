@@ -37,6 +37,7 @@
 
 #include "config.h"
 #include "libdrizzle/common.h"
+#include <zlib.h>
 
 drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                             uint32_t server_id,
@@ -318,7 +319,6 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       if (con->result->binlog_checksums)
       {
         memcpy(binlog_event->data, con->buffer_ptr, binlog_event->length - DRIZZLE_BINLOG_CRC32_LEN);
-        memcpy(&binlog_event->checksum, con->buffer_ptr + (binlog_event->length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
       }
       else
       {
@@ -333,6 +333,23 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
         binlog_event->length-= DRIZZLE_BINLOG_CRC32_LEN;
       }
     }
+
+    /* Check if checksum is correct
+     * each event is checksummed individually, the checksum is the last 4 bytes
+     * of the binary log event
+     * */
+    if (con->result->binlog_checksums)
+    {
+      uint32_t event_crc;
+      memcpy(&binlog_event->checksum, binlog_event->raw_data + (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
+      event_crc= crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
+      if (event_crc != binlog_event->checksum)
+      {
+        drizzle_set_error(con, __func__, "CRC doesn't match: 0x%lX, 0x%lX", event_crc, binlog_event->checksum);
+        return DRIZZLE_RETURN_BINLOG_CRC;
+      }
+    }
+
     if (con->packet_size != 0)
     {
       drizzle_set_error(con, "drizzle_state_binlog_read",

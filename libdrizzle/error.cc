@@ -69,6 +69,7 @@ const char *drizzle_strerror(const drizzle_return_t arg)
   case DRIZZLE_RETURN_SSL_ERROR: return "DRIZZLE_RETURN_SSL_ERROR";
   case DRIZZLE_RETURN_EOF: return "DRIZZLE_RETURN_EOF";
   case DRIZZLE_RETURN_STMT_ERROR: return "DRIZZLE_RETURN_STMT_ERROR";
+  case DRIZZLE_RETURN_BINLOG_CRC: return "DRIZZLE_RETURN_BINLOG_CRC";
   case DRIZZLE_RETURN_MAX: return "DRIZZLE_RETURN_MAX";
   }
 
