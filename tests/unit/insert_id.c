@@ -35,80 +35,47 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
 
-#ifndef EXIT_SKIP
-# define EXIT_SKIP 77
-#endif
-
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_st *con;
-  drizzle_return_t ret;
-  drizzle_result_st *result;
 
-  con = drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
-  if (con == NULL)
-  {
-    printf("Drizzle connection object creation error\n");
-    return EXIT_FAILURE;
-  }
-  ret = drizzle_connect(con);
+  drizzle_st *con= drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
+  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
+
+  drizzle_return_t ret= drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Drizzle connection failure\n");
     drizzle_quit(con);
-    return EXIT_SKIP;
+    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
   }
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Create table failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b int)");
 
-  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Insert failure\n");
-    return EXIT_FAILURE;
-  }
+  drizzle_result_st *result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values (1),(2),(3)");
+  ASSERT_TRUE(result);
 
-  if (drizzle_result_insert_id(result) != 1)
-  {
-    printf("Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(drizzle_result_insert_id(result), 1, "Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (4),(5),(6)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Insert failure\n");
-    return EXIT_FAILURE;
-  }
+  result= drizzle_query_str(con, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)", &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)");
 
-  if (drizzle_result_insert_id(result) != 4)
-  {
-    printf("Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(drizzle_result_insert_id(result), 4, "Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drop table failure\n");
-    return EXIT_FAILURE;
-  }
-
+  drizzle_query_str(con, "DROP TABLE libdrizzle.t1", &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "dROP TABLE failure");
 
   drizzle_quit(con);
   return EXIT_SUCCESS;

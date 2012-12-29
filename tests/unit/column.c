@@ -35,133 +35,75 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef EXIT_SKIP
-# define EXIT_SKIP 77
-#endif
-
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_st *con;
   drizzle_return_t ret;
   drizzle_result_st *result;
   drizzle_row_t row;
   int num_fields;
 
-  con = drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
-  if (con == NULL)
-  {
-    printf("Drizzle connection object creation error\n");
-    return EXIT_FAILURE;
-  }
+  drizzle_st *con= drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
+  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
+
   ret = drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Drizzle connection failure\n");
     drizzle_quit(con);
-    return EXIT_SKIP;
+    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
   }
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Create table failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
 
   drizzle_query_str(con, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Insert failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
 
   result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Select failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "select * from libdrizzle.t1");
+
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
 
-  if (num_fields != 3)
-  {
-    printf("Retrieved bad number of fields\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_TRUE_(num_fields == 3, "Retrieved bad number of fields");
+
   int i= 0;
-  int j= 0;
-  char buf[10];
   drizzle_column_st *column;
   while ((row = drizzle_row_next(result)))
   {
     drizzle_column_seek(result, 0);
-    j= 0;
+    int j= 0;
     i++;
-    snprintf(buf, 10, "%d", i);
-    if (strcmp(row[0], buf) != 0)
-    {
-      printf("Retrieved bad row value\n");
-      return EXIT_FAILURE;
-    }
+    char buf[10];
+    snprintf(buf, sizeof(buf), "%d", i);
+    ASSERT_EQ_(strcmp(row[0], buf), 0, "Retrieved bad row value");
     while ((column= drizzle_column_next(result)))
     {
       j++;
-      if (strcmp(drizzle_column_db(column), "libdrizzle") != 0)
-      {
-        printf("Column has bad DB name\n");
-        return EXIT_FAILURE;
-      }
-      if (strcmp(drizzle_column_table(column), "t1") != 0)
-      {
-        printf("Column had bad table name\n");
-        return EXIT_FAILURE;
-      }
-      if ((j == 2) && (drizzle_column_max_size(column) != 255))
-      {
-        printf("Column max size wrong %lu != 255\n", drizzle_column_max_size(column));
-        return EXIT_FAILURE;
-      }
-      if ((j == 2) && (drizzle_column_charset(column) != DRIZZLE_CHARSET_LATIN1_SWEDISH_CI))
-      {
-        printf("Column type wrong, %d != %d\n", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
-        return EXIT_FAILURE;
-      }
-      if ((j == 3) && (drizzle_column_type(column) != DRIZZLE_COLUMN_TYPE_TIMESTAMP))
-      {
-        printf("Column type wrong\n");
-        return EXIT_FAILURE;
-      }
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "libdrizzle"), 0, "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
+      ASSERT_FALSE_((j == 2) && (drizzle_column_max_size(column) != 255), "Column max size wrong %lu != 255", drizzle_column_max_size(column));
+
+      ASSERT_FALSE_((j == 2) && (drizzle_column_charset(column) != DRIZZLE_CHARSET_LATIN1_SWEDISH_CI), "Column type wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
+      ASSERT_FALSE_((j == 3) && (drizzle_column_type(column) != DRIZZLE_COLUMN_TYPE_TIMESTAMP), "Column type wrong");
     }
-    if (j != 3)
-    {
-      printf("Wrong column count\n");
-      return EXIT_FAILURE;
-    }
+    ASSERT_EQ_(j, 3, "Wrong column count");
   }
   /* Should have had 3 rows */
-  if (i != 3)
-  {
-    printf("Retrieved bad number of rows\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(i, 3, "Retrieved bad number of rows");
 
   drizzle_result_free(result);
 
   drizzle_query_str(con, "drop table libdrizzle.t1", &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drop table failure\n");
-    return EXIT_FAILURE;
-  }
-
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drop table libdrizzle.t1");
 
   drizzle_quit(con);
   return EXIT_SUCCESS;

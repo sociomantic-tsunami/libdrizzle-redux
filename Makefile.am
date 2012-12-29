@@ -33,6 +33,7 @@ CLEANFILES+= $(dist_bin_SCRIPTS)
 
 TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 
+include yatl/include.am
 include tests/include.am
 include m4/include.am
 include cli/include.am
