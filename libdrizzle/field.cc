@@ -365,6 +365,10 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
     case DRIZZLE_COLUMN_TYPE_ENUM:
     case DRIZZLE_COLUMN_TYPE_SET:
     case DRIZZLE_COLUMN_TYPE_GEOMETRY:
+    /* TODO: Next 3 we really need to support */
+    case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
+    case DRIZZLE_COLUMN_TYPE_DATETIME2:
+    case DRIZZLE_COLUMN_TYPE_TIME2:
     default:
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
       break;
