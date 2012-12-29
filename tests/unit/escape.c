@@ -35,6 +35,8 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,19 +54,11 @@ int main(int argc, char* argv[])
 
   // Test for data too long
   out_len= drizzle_escape_string(out, 2, in, strlen(in));
-  if (out_len != -1)
-    return EXIT_FAILURE;
+  ASSERT_EQ(out_len, -1);
 
   out_len= drizzle_escape_string(out, 255, in, strlen(in));
-  if (out_len != 17)
-  {
-    printf("Bad hex length output\n");
-    return EXIT_FAILURE;
-  }
-  if (strcmp(out, "escape \\\"this\\\"\\n") != 0)
-  {
-    printf("Bad hex data output\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(out_len, 17, "Bad hex length output %d", out_len);
+  ASSERT_EQ_(strcmp(out, "escape \\\"this\\\"\\n"), 0, "Bad hex data output");
+
   return EXIT_SUCCESS;
 }

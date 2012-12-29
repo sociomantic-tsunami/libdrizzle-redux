@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle],[5.1.0])
+AC_INIT([libdrizzle],[5.1.0],[http://bugs.launchpad.net/drizzle],[libdrizzle],[http://drizzle.org/])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -21,7 +21,6 @@ AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
 AC_CONFIG_MACRO_DIR([m4])
-
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
