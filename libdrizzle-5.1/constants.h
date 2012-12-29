@@ -60,6 +60,9 @@ extern "C" {
 /* Defines. */
 #define DRIZZLE_DEFAULT_TCP_HOST         "localhost"
 #define DRIZZLE_DEFAULT_TCP_PORT         3306
+#define DRIZZLE_MYSQL_TCP_PORT           3306
+#define DRIZZLE_DRIZZLE_TCP_PORT         4427
+#define DRIZZLE_DEFAULT_TCP_SERVICE      "mysql"
 #define DRIZZLE_DEFAULT_UDS              "/tmp/mysql.sock"
 #define DRIZZLE_DEFAULT_BACKLOG          64
 #define DRIZZLE_MAX_ERROR_SIZE           2048
@@ -114,16 +117,6 @@ enum drizzle_options_t
 #ifndef __cplusplus
 typedef enum drizzle_options_t drizzle_options_t;
 #endif
-
-/**
- * @ingroup drizzle_con
- * Socket types for drizzle_st.
- */
-enum drizzle_socket_t
-{
-  DRIZZLE_CON_SOCKET_TCP= 0,
-  DRIZZLE_CON_SOCKET_UDS= (1 << 0)
-};
 
 #ifndef __cplusplus
 typedef enum drizzle_socket_t drizzle_socket_t;
@@ -193,50 +186,6 @@ enum drizzle_capabilities_t
 
 #ifndef __cplusplus
 typedef enum drizzle_capabilities_t drizzle_capabilities_t;
-#endif
-
-/**
- * @ingroup drizzle_command 
- * Commands for drizzle_command functions.
- */
-enum drizzle_command_t
-{
-  DRIZZLE_COMMAND_SLEEP,               /* Not used currently. */
-  DRIZZLE_COMMAND_QUIT,
-  DRIZZLE_COMMAND_INIT_DB,
-  DRIZZLE_COMMAND_QUERY,
-  DRIZZLE_COMMAND_FIELD_LIST,          /* Deprecated. */
-  DRIZZLE_COMMAND_CREATE_DB,           /* Deprecated. */
-  DRIZZLE_COMMAND_DROP_DB,             /* Deprecated. */
-  DRIZZLE_COMMAND_REFRESH,
-  DRIZZLE_COMMAND_SHUTDOWN,
-  DRIZZLE_COMMAND_STATISTICS,
-  DRIZZLE_COMMAND_PROCESS_INFO,        /* Deprecated. */
-  DRIZZLE_COMMAND_CONNECT,             /* Not used currently. */
-  DRIZZLE_COMMAND_PROCESS_KILL,        /* Deprecated. */
-  DRIZZLE_COMMAND_DEBUG,
-  DRIZZLE_COMMAND_PING,
-  DRIZZLE_COMMAND_TIME,                /* Not used currently. */
-  DRIZZLE_COMMAND_DELAYED_INSERT,      /* Not used currently. */
-  DRIZZLE_COMMAND_CHANGE_USER,
-  DRIZZLE_COMMAND_BINLOG_DUMP,         /* Not used currently. */
-  DRIZZLE_COMMAND_TABLE_DUMP,          /* Not used currently. */
-  DRIZZLE_COMMAND_CONNECT_OUT,         /* Not used currently. */
-  DRIZZLE_COMMAND_REGISTER_SLAVE,      /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_PREPARE,
-  DRIZZLE_COMMAND_STMT_EXECUTE,
-  DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
-  DRIZZLE_COMMAND_STMT_CLOSE,
-  DRIZZLE_COMMAND_STMT_RESET,
-  DRIZZLE_COMMAND_SET_OPTION,          /* Not used currently. */
-  DRIZZLE_COMMAND_STMT_FETCH,
-  DRIZZLE_COMMAND_DAEMON,              /* Not used currently. */
-  DRIZZLE_COMMAND_BINLOG_DUMP_GTID,
-  DRIZZLE_COMMAND_END                  /* Not used currently. */
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_command_t drizzle_command_t;
 #endif
 
 /**
