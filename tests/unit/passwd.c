@@ -35,6 +35,8 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <string.h>

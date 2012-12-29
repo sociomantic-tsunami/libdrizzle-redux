@@ -35,14 +35,12 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#ifndef EXIT_SKIP
-# define EXIT_SKIP 77
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -63,9 +61,8 @@ int main(int argc, char *argv[])
   ret = drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Drizzle connection failure\n");
     drizzle_quit(con);
-    return EXIT_SKIP;
+    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
   }
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);

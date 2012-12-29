@@ -35,6 +35,8 @@
  *
  */
 
+#include <yatl/lite.h>
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include "libdrizzle/structs.h"
 #include <stdio.h>
@@ -42,38 +44,24 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#ifndef EXIT_SKIP
-# define EXIT_SKIP 77
-#endif
-
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_st *con;
-  drizzle_return_t ret;
   drizzle_result_st *result;
 
-  con = drizzle_create_tcp("localhost", 3306, "root", "", "", 0);
-  if (con == NULL)
-  {
-    printf("Drizzle connection object creation error\n");
-    return EXIT_FAILURE;
-  }
-  ret = drizzle_connect(con);
+  drizzle_st *con= drizzle_create_tcp("localhost", 3306, "root", "", "", 0);
+  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
+
+  drizzle_return_t ret = drizzle_connect(con);
   if (ret != DRIZZLE_RETURN_OK)
   {
-    printf("Drizzle connection failure\n");
     drizzle_quit(con);
-    return EXIT_SKIP;
+    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
   }
 
   result= drizzle_start_binlog(con, 0, "", 0, &ret);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Drizzle binlog start failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Drizzle binlog start failure");
 
   while (ret == DRIZZLE_RETURN_OK)
   {
@@ -83,30 +71,20 @@ int main(int argc, char *argv[])
     {
       break;
     }
-    else if (ret != DRIZZLE_RETURN_OK)
-    {
-      printf("Binlog error %s\n", drizzle_error(con));
-      return EXIT_FAILURE;
-    }
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Binlog error %s\n", drizzle_error(con));
     timestamp= drizzle_binlog_event_timestamp(result);
     /* Test to see if timestamp is greater than 2012-01-01 00:00:00, corrupted
      * timestamps will have weird values that shoud fail this after several
      * events.  Also rotate event doesn't have a timestamp so need to add 0
      * to this test */
-    if ((timestamp < 1325376000) && (timestamp != 0))
-    {
-      printf("Bad timestamp retrieved: %"PRIu32"\n", timestamp);
-      return EXIT_FAILURE;
-    }
+    ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)), "Bad timestamp retrieved: %" PRIu32, timestamp);
+
     /* An event higher than the max known is bad, either we don't know about
      * new events or type is corrupted */
-    if (drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END)
-    {
-      printf("Bad event type: %d\n", drizzle_binlog_event_type(result));
-      return EXIT_FAILURE;
-    }
+    ASSERT_FALSE_((drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END), "Bad event type: %d", drizzle_binlog_event_type(result));
   }
 
   drizzle_quit(con);
+
   return EXIT_SUCCESS;
 }
