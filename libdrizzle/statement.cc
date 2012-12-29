@@ -289,6 +289,10 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       case DRIZZLE_COLUMN_TYPE_SET:
       case DRIZZLE_COLUMN_TYPE_GEOMETRY:
       case DRIZZLE_COLUMN_TYPE_BIT:
+      /* TODO: We need to support these three */
+      case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
+      case DRIZZLE_COLUMN_TYPE_DATETIME2:
+      case DRIZZLE_COLUMN_TYPE_TIME2:
       default:
         drizzle_set_error(stmt->con, __func__, "unknown type when filling buffer");
         free(buffer);
@@ -515,6 +519,10 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
         case DRIZZLE_COLUMN_TYPE_ENUM:
         case DRIZZLE_COLUMN_TYPE_SET:
         case DRIZZLE_COLUMN_TYPE_GEOMETRY:
+        /* TODO: We need to support these three */
+        case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
+        case DRIZZLE_COLUMN_TYPE_DATETIME2:
+        case DRIZZLE_COLUMN_TYPE_TIME2:
         default:
           drizzle_set_error(stmt->con, __func__, "Unknown data type found");
           ret= DRIZZLE_RETURN_UNEXPECTED_DATA;
