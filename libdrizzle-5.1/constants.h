@@ -61,8 +61,10 @@ extern "C" {
 #define DRIZZLE_DEFAULT_TCP_HOST         "localhost"
 #define DRIZZLE_DEFAULT_TCP_PORT         3306
 #define DRIZZLE_MYSQL_TCP_PORT           3306
+#define DRIZZLE_MYSQL_TCP_SERVICE        "mysql"
 #define DRIZZLE_DRIZZLE_TCP_PORT         4427
 #define DRIZZLE_DEFAULT_TCP_SERVICE      "mysql"
+#define DRIZZLE_DRIZZLE_TCP_SERVICE      "drizzle"
 #define DRIZZLE_DEFAULT_UDS              "/tmp/mysql.sock"
 #define DRIZZLE_DEFAULT_BACKLOG          64
 #define DRIZZLE_MAX_ERROR_SIZE           2048
@@ -594,7 +596,6 @@ typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
 typedef struct drizzle_stmt_st drizzle_stmt_st;
 typedef struct drizzle_bind_st drizzle_bind_st;
-typedef struct drizzle_datetime_st drizzle_datetime_st;
 typedef char *drizzle_field_t;
 typedef drizzle_field_t *drizzle_row_t;
 

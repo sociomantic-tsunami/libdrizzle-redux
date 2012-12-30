@@ -48,20 +48,23 @@ int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_result_st *result;
 
-  drizzle_st *con= drizzle_create_tcp("localhost", 3306, "root", "", "", 0);
+  drizzle_st *con= drizzle_create_tcp("localhost", DRIZZLE_DEFAULT_TCP_PORT, "root", NULL, NULL, 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret = drizzle_connect(con);
-  if (ret != DRIZZLE_RETURN_OK)
+  drizzle_return_t ret= drizzle_connect(con);
+  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
+    const char *error= drizzle_error(con);
     drizzle_quit(con);
-    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
   }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  result= drizzle_start_binlog(con, 0, "", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Drizzle binlog start failure");
+  drizzle_result_st *result= drizzle_start_binlog(con, 0, "", 0, &ret);
+  ASSERT_TRUE(result);
+  SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Drizzle binlog start failure: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
   while (ret == DRIZZLE_RETURN_OK)
   {
@@ -84,7 +87,8 @@ int main(int argc, char *argv[])
     ASSERT_FALSE_((drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END), "Bad event type: %d", drizzle_binlog_event_type(result));
   }
 
-  drizzle_quit(con);
+  ret= drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;
 }

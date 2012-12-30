@@ -1,7 +1,7 @@
 /*
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Brian Aker (brian@tangent.org)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

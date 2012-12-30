@@ -62,11 +62,11 @@
 #include <string.h>
 #include <signal.h>
 
-#include <libdrizzle/structs.h>
-#include <libdrizzle/drizzle_local.h>
-#include <libdrizzle/conn_local.h>
-#include <libdrizzle-5.1/pack.h>
-#include <libdrizzle/state.h>
-#include <libdrizzle/sha1.h>
+#include "libdrizzle/structs.h"
+#include "libdrizzle/drizzle_local.h"
+#include "libdrizzle/conn_local.h"
+#include "libdrizzle/pack.h"
+#include "libdrizzle/state.h"
+#include "libdrizzle/sha1.h"
 
 #include <memory.h>

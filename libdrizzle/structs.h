@@ -60,6 +60,8 @@
 extern "C" {
 #endif
 
+#include "libdrizzle/datetime.h"
+
 /**
  * @ingroup drizzle_command 
  * Commands for drizzle_command functions.
@@ -139,6 +141,9 @@ struct drizzle_uds_st
  */
 struct drizzle_st
 {
+  struct {
+    bool is_shutdown;
+  } flags;
   uint8_t packet_number;
   uint8_t protocol_version;
   uint8_t state_current;

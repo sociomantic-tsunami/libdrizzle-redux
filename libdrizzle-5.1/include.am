@@ -15,7 +15,6 @@ nobase_include_HEADERS+= libdrizzle-5.1/error.h
 nobase_include_HEADERS+= libdrizzle-5.1/field_client.h
 nobase_include_HEADERS+= libdrizzle-5.1/handshake_client.h
 nobase_include_HEADERS+= libdrizzle-5.1/libdrizzle.h
-nobase_include_HEADERS+= libdrizzle-5.1/pack.h
 nobase_include_HEADERS+= libdrizzle-5.1/query.h
 nobase_include_HEADERS+= libdrizzle-5.1/result.h
 nobase_include_HEADERS+= libdrizzle-5.1/result_client.h

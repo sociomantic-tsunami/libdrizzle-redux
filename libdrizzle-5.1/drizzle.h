@@ -256,6 +256,14 @@ drizzle_st *drizzle_ready(drizzle_st *con);
 
 /** @} */
 
+#include <stdio.h>
+static inline void drizzle_stderr_logger(const char *line, drizzle_verbose_t verbose, void *context)
+{
+  (void)context;
+  fprintf(stderr, "__LOG: %s: %s\n", drizzle_verbose_name(verbose), line);
+}
+
+
 #ifdef  __cplusplus
 }
 #endif

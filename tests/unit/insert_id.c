@@ -48,20 +48,31 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
+  drizzle_st *con= drizzle_create_tcp("localhost", DRIZZLE_DEFAULT_TCP_PORT, "root", NULL, NULL, 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
-  if (ret != DRIZZLE_RETURN_OK)
+  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
+    const char *error= drizzle_error(con);
     drizzle_quit(con);
-    SKIP_IF_(ret != DRIZZLE_RETURN_OK, "Drizzle connection failure");
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
   }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
+  drizzle_query_str(con, "DROP SCHEMA IF EXISTS libdrizzle", &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+
+  drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+
+  drizzle_result_st *result= drizzle_select_db(con, "libdrizzle", &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b int)");
 
-  drizzle_result_st *result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
+  result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values (1),(2),(3)");
   ASSERT_TRUE(result);
 
@@ -77,6 +88,11 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "DROP TABLE libdrizzle.t1", &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "dROP TABLE failure");
 
-  drizzle_quit(con);
+  drizzle_query_str(con, "DROP SCHEMA IF EXISTS libdrizzle", &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA libdrizzle (%s)", drizzle_error(con));
+
+  ret= drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
+
   return EXIT_SUCCESS;
 }
