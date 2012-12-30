@@ -174,6 +174,7 @@ drizzle_st *drizzle_create(void)
     return NULL;
   }
 
+  con->flags.is_shutdown= false;
   con->options= DRIZZLE_CON_NONE;
   con->packet_number= 0;
   con->protocol_version= 0;
@@ -331,13 +332,11 @@ drizzle_st *drizzle_ready(drizzle_st *con)
  */
 
 drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
-                                       const char *user, const char *password,
-                                       const char *db,
-                                       drizzle_options_t options)
+                               const char *user, const char *password,
+                               const char *db,
+                               drizzle_options_t options)
 {
-  drizzle_st *con;
-
-  con= drizzle_create();
+  drizzle_st *con= drizzle_create();
   if (con == NULL)
   {
     return NULL;
@@ -376,7 +375,7 @@ drizzle_st *drizzle_create_uds(const char *uds, const char *user,
  */
 
 void drizzle_set_error(drizzle_st *con, const char *function,
-                           const char *format, ...)
+                       const char *format, ...)
 {
   if (con == NULL)
   {
