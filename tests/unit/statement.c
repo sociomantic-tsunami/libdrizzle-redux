@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
   uint32_t val= 1;
-  ret = drizzle_stmt_bind_param(stmt, 0, DRIZZLE_COLUMN_TYPE_LONG, &val, 4, DRIZZLE_BIND_OPTION_NONE);
+  ret = drizzle_stmt_set_long(stmt, 0, val, false);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Bind failure\n");
@@ -115,12 +115,24 @@ int main(int argc, char *argv[])
   uint32_t i= 1;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
-    uint32_t *res_val;
-    res_val= (uint32_t*)drizzle_stmt_item_data(stmt, 0);
+    uint32_t res_val;
+    const char* char_val;
+    char comp_val[3];
+    size_t len;
+    res_val= drizzle_stmt_get_long(stmt, 0, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_long");
+    char_val= drizzle_stmt_get_string(stmt, 0, &len, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
     i++;
-    if (*res_val != i)
+    if (res_val != i)
     {
-      printf("Retrieved unexpected value\n");
+      printf("Retrieved unexpected long value\n");
+      return EXIT_FAILURE;
+    }
+    snprintf(comp_val, 3, "%"PRIu32, i);
+    if (strcmp(comp_val, char_val) != 0)
+    {
+      printf("Retrieved unexpected string value\n");
       return EXIT_FAILURE;
     }
   }

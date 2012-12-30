@@ -1,7 +1,8 @@
-/*
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Brian Aker (brian@tangent.org)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,46 +37,29 @@
 
 #pragma once
 
-/**
- * Return codes.
- */
-enum drizzle_return_t
-{
-  DRIZZLE_RETURN_OK,
-  DRIZZLE_RETURN_IO_WAIT,
-  DRIZZLE_RETURN_PAUSE,
-  DRIZZLE_RETURN_ROW_BREAK,
-  DRIZZLE_RETURN_MEMORY,
-  DRIZZLE_RETURN_ERRNO,
-  DRIZZLE_RETURN_INTERNAL_ERROR,
-  DRIZZLE_RETURN_GETADDRINFO,
-  DRIZZLE_RETURN_NOT_READY,
-  DRIZZLE_RETURN_BAD_PACKET_NUMBER,
-  DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET,
-  DRIZZLE_RETURN_BAD_PACKET,
-  DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED,
-  DRIZZLE_RETURN_UNEXPECTED_DATA,
-  DRIZZLE_RETURN_NO_SCRAMBLE,
-  DRIZZLE_RETURN_AUTH_FAILED,
-  DRIZZLE_RETURN_NULL_SIZE,
-  DRIZZLE_RETURN_ERROR_CODE,
-  DRIZZLE_RETURN_TOO_MANY_COLUMNS,
-  DRIZZLE_RETURN_ROW_END,
-  DRIZZLE_RETURN_LOST_CONNECTION,
-  DRIZZLE_RETURN_COULD_NOT_CONNECT,
-  DRIZZLE_RETURN_NO_ACTIVE_CONNECTIONS,
-  DRIZZLE_RETURN_HANDSHAKE_FAILED,
-  DRIZZLE_RETURN_TIMEOUT,
-  DRIZZLE_RETURN_INVALID_ARGUMENT,
-  DRIZZLE_RETURN_SSL_ERROR,
-  DRIZZLE_RETURN_EOF,
-  DRIZZLE_RETURN_STMT_ERROR,
-  DRIZZLE_RETURN_BINLOG_CRC,
-  DRIZZLE_RETURN_TRUNCATED,
-  DRIZZLE_RETURN_INVALID_CONVERSION,
-  DRIZZLE_RETURN_MAX /* Always add new codes to the end before this one. */
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_return_t drizzle_return_t;
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+DRIZZLE_LOCAL
+drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned, bool is_allocated);
+
+DRIZZLE_LOCAL
+char *long_to_string(drizzle_bind_st *param, uint32_t val);
+
+DRIZZLE_LOCAL
+char *longlong_to_string(drizzle_bind_st *param, uint64_t val);
+
+DRIZZLE_LOCAL
+char *double_to_string(drizzle_bind_st *param, double val);
+
+DRIZZLE_LOCAL
+char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time);
+
+DRIZZLE_LOCAL
+char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp);
+
+#ifdef __cplusplus
+}
+#endif
+

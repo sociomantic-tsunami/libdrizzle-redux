@@ -110,27 +110,6 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
   return stmt;
 }
 
-drizzle_return_t drizzle_stmt_bind_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, drizzle_bind_options_t options)
-{
-  if ((stmt == NULL) || (param_num >= stmt->param_count) || (data == NULL))
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-  if (stmt->state < DRIZZLE_STMT_PREPARED)
-  {
-    drizzle_set_error(stmt->con, __func__, "stmt object has bot been prepared");
-    return DRIZZLE_RETURN_STMT_ERROR;
-  }
-
-  stmt->query_params[param_num].type= type;
-  stmt->query_params[param_num].data= data;
-  stmt->query_params[param_num].length= length;
-  stmt->query_params[param_num].options= options;
-  stmt->query_params[param_num].is_bound= true;
-
-  return DRIZZLE_RETURN_OK;
-}
-
 drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
 {
   uint16_t current_param;
@@ -213,7 +192,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     if (stmt->new_bind)
     {
       uint16_t type= (uint16_t)param_ptr->type;
-      if (param_ptr->options & DRIZZLE_BIND_OPTION_UNSIGNED)
+      if (param_ptr->options.is_unsigned)
       {
         /* Set the unsigned bit flag on the type data */
         type |= 0x8000;
@@ -222,7 +201,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       buffer_pos+= 2;
     }
 
-    if (param_ptr->options & DRIZZLE_BIND_OPTION_LONG_DATA)
+    if (param_ptr->options.is_long_data)
     {
       /* Long data is sent separately, not in this buffer */
       continue;
@@ -367,7 +346,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
                         buffer, len+6, len+6, &ret);
   stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
-  stmt->query_params[param_num].options= (drizzle_bind_options_t)((uint8_t)stmt->query_params[param_num].options | (uint8_t)DRIZZLE_BIND_OPTION_LONG_DATA);
+  stmt->query_params[param_num].options.is_long_data= true;
 
   free(buffer);
   return ret;
@@ -386,7 +365,7 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
 
   for (current_param= 0; current_param < stmt->param_count; current_param++)
   {
-    stmt->query_params[current_param].options= (drizzle_bind_options_t)((uint8_t)stmt->query_params[current_param].options & (uint8_t)~DRIZZLE_BIND_OPTION_LONG_DATA);
+    stmt->query_params[current_param].options.is_long_data= false;
   }
 
   drizzle_set_byte4(buffer, stmt->id);
@@ -448,7 +427,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
     /* if this row is null in the result bitmap */
     if (*stmt->execute_result->null_bitmap & ((column_counter^2) << 2))
     {
-      param->options = (drizzle_bind_options_t)((uint8_t)param->options | (uint8_t) DRIZZLE_BIND_OPTION_NULL);
+      param->options.is_null= true;
       param->length= 0;
     }
     else
@@ -459,7 +438,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
       param->length= stmt->execute_result->field_sizes[column_counter];
       if (column->flags & DRIZZLE_COLUMN_FLAGS_UNSIGNED)
       {
-        param->options = (drizzle_bind_options_t)((uint8_t)param->options | (uint8_t) DRIZZLE_BIND_OPTION_UNSIGNED);
+        param->options.is_unsigned= true;
       }
 
       param->data= realloc(param->data, param->length);
@@ -574,14 +553,22 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   }
 
   free(stmt->null_bitmap);
-  free(stmt->query_params);
-  if (stmt->result_params)
+  for (uint16_t x= 0; x < stmt->param_count; x++)
   {
-    free(stmt->result_params->data);
-    free(stmt->result_params);
+    if (stmt->query_params[x].options.is_allocated)
+    {
+      free(stmt->query_params[x].data);
+    }
   }
+  free(stmt->query_params);
   if (stmt->execute_result)
   {
+    for (uint16_t x= 0; x < stmt->execute_result->column_count; x++)
+    {
+      free(stmt->result_params[x].data);
+      free(stmt->result_params[x].converted_data);
+    }
+    free(stmt->result_params);
     drizzle_result_free(stmt->execute_result);
   }
   if (stmt->prepare_result)
@@ -598,42 +585,6 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   return ret;
 }
 
-drizzle_column_type_t drizzle_stmt_item_type(drizzle_stmt_st *stmt, uint16_t column_number)
-{
-  if ((stmt == NULL) || (stmt->result_params == NULL))
-  {
-    return DRIZZLE_COLUMN_TYPE_NONE;
-  }
-  return stmt->result_params[column_number].type;
-}
-
-void *drizzle_stmt_item_data(drizzle_stmt_st *stmt, uint16_t column_number)
-{
-  if ((stmt == NULL) || (stmt->result_params == NULL))
-  {
-    return NULL;
-  }
-  return stmt->result_params[column_number].data;
-}
-
-uint32_t drizzle_stmt_item_length(drizzle_stmt_st *stmt, uint16_t column_number)
-{
-  if ((stmt == NULL) || (stmt->result_params == NULL))
-  { 
-    return 0;
-  }
-  return stmt->result_params[column_number].length;
-}
-
-drizzle_bind_options_t drizzle_stmt_item_options(drizzle_stmt_st *stmt, uint16_t column_number)
-{
-  if ((stmt == NULL) || (stmt->result_params == NULL))
-  { 
-    return DRIZZLE_BIND_OPTION_NONE;
-  }
-  return stmt->result_params[column_number].options;
-}
-
 uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
 {
   if ((stmt == NULL) || (stmt->prepare_result == NULL))
@@ -641,7 +592,7 @@ uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
     return 0;
   }
 
-  return stmt->prepare_result->column_count;
+  return stmt->execute_result->column_count;
 }
 
 uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
