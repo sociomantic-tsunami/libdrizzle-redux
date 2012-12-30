@@ -1,8 +1,8 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
  *
- *  Drizzle Client & Protocol Library
+ * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,51 +35,15 @@
  *
  */
 
-#include <yatl/lite.h>
+#pragma once
 
-#include <libdrizzle-5.1/libdrizzle.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+/**
+ * Initialize a column structure.
+ */
+drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 
-int main(int argc, char *argv[])
-{
-  (void) argc;
-  (void) argv;
+void drizzle_column_set_default_value(drizzle_column_st *column,
+                                      const uint8_t *default_value,
+                                      size_t size);
 
-  drizzle_st *con= drizzle_create_tcp("localhost", DRIZZLE_DEFAULT_TCP_PORT, "root", NULL, NULL, 0);
-  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret= drizzle_connect(con);
-  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
-  {
-    const char *error= drizzle_error(con);
-    drizzle_quit(con);
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
-  }
-  ASSERT_EQ(DRIZZLE_RETURN_OK, ret);
-
-  drizzle_query_str(con, "SELECT 1", &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
-
-  // Now that we know everything is good... lets push it.
-  drizzle_close(con);
-
-  int limit= 20;
-  while (--limit)
-  {
-    ret= drizzle_connect(con);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
-
-    drizzle_query_str(con, "SELECT 1", &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
-
-    // Now that we know everything is good... lets push it.
-    drizzle_close(con);
-  }
-
-  ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
-
-  return EXIT_SUCCESS;
-}

@@ -68,7 +68,7 @@ int drizzle_fd(const drizzle_st *con);
  * @param[in] con Connection structure previously initialized with
  *  drizzle_create(), drizzle_clone(), or related functions.
  */
-DRIZZLE_LOCAL
+DRIZZLE_API
 void drizzle_close(drizzle_st *con);
 
 /**
@@ -198,27 +198,6 @@ DRIZZLE_API
 in_port_t drizzle_port(const drizzle_st *con);
 
 /**
- * Set TCP host and port for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] host Host to use for this connection, NULL for default value.
- * @param[in] port Port to use for this connection, 0 for default value.
- */
-DRIZZLE_LOCAL
-void drizzle_set_tcp(drizzle_st *con, const char *host, in_port_t port);
-
-/**
- * Get unix domain socket for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @return Unix domain socket set for this connection, NULL if not set.
- */
-DRIZZLE_LOCAL
-const char *drizzle_uds(const drizzle_st *con);
-
-/**
  * Set unix domain socket for a connection.
  *
  * @param[in] con Connection structure previously initialized with
@@ -240,18 +219,6 @@ DRIZZLE_API
 const char *drizzle_user(const drizzle_st *con);
 
 /**
- * Set username and password for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] user Username to use for this connection.
- * @param[in] password Password to use for this connection.
- */
-DRIZZLE_LOCAL
-void drizzle_set_auth(drizzle_st *con, const char *user,
-                          const char *password);
-
-/**
  * Get database for a connection.
  *
  * @param[in] con Connection structure previously initialized with
@@ -260,16 +227,6 @@ void drizzle_set_auth(drizzle_st *con, const char *user,
  */
 DRIZZLE_API
 const char *drizzle_db(const drizzle_st *con);
-
-/**
- * Set database for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] db Database to use with this connection.
- */
-DRIZZLE_LOCAL
-void drizzle_set_db(drizzle_st *con, const char *db);
 
 /**
  * Get application context pointer for a connection.

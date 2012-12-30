@@ -68,5 +68,6 @@
 #include "libdrizzle/pack.h"
 #include "libdrizzle/state.h"
 #include "libdrizzle/sha1.h"
+#include "libdrizzle/column.h"
 
 #include <memory.h>

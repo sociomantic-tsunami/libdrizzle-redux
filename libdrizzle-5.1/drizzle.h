@@ -210,30 +210,6 @@ void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose);
 DRIZZLE_API
 void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
                         void *context);
-
-/**
- * Initialize a connection structure. Always check the return value even if
- * passing in a pre-allocated structure. Some other initialization may have
- * failed.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] con Caller allocated structure, or NULL to allocate one.
- * @return On success, a pointer to the (possibly allocated) structure. On
- *  failure this will be NULL.
- */
-DRIZZLE_LOCAL
-drizzle_st *drizzle_create(void);
-
-/**
- * Free a connection structure.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- */
-DRIZZLE_LOCAL
-void drizzle_free(drizzle_st *con);
-
 /**
  * Wait for I/O on connections.
  *

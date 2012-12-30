@@ -58,12 +58,6 @@ extern "C" {
  */
 
 /**
- * Initialize a column structure.
- */
-DRIZZLE_LOCAL
-drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
-
-/**
  * Free a column structure.
  */
 DRIZZLE_API
@@ -153,12 +147,6 @@ uint8_t drizzle_column_decimals(drizzle_column_st *column);
 DRIZZLE_API
 const uint8_t *drizzle_column_default_value(drizzle_column_st *column,
                                             size_t *size);
-
-DRIZZLE_LOCAL
-void drizzle_column_set_default_value(drizzle_column_st *column,
-                                      const uint8_t *default_value,
-                                      size_t size);
-
 
 /** @} */
 
