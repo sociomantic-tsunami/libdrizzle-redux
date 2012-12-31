@@ -81,7 +81,7 @@ drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_nu
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_SHORT, val, 2, is_unsigned, false);
 }
 
-drizzle_return_t drizzle_stmt_set_long(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
+drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
 {
   uint32_t *val;
   stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint32_t));
@@ -91,7 +91,7 @@ drizzle_return_t drizzle_stmt_set_long(drizzle_stmt_st *stmt, uint16_t param_num
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONG, val, 4, is_unsigned, true);
 }
 
-drizzle_return_t drizzle_stmt_set_big(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
+drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
 {
   uint64_t *val;
   stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint64_t));
@@ -276,7 +276,7 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
   return val;
 }
 
-uint32_t drizzle_stmt_get_long(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint32_t val;
   drizzle_bind_st *param;
@@ -350,7 +350,7 @@ uint32_t drizzle_stmt_get_long(drizzle_stmt_st *stmt, uint16_t column_number, dr
   return val;
 }
 
-uint64_t drizzle_stmt_get_longlong(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint32_t val;
   drizzle_bind_st *param;

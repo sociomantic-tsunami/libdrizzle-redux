@@ -84,10 +84,10 @@ DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t value, bool is_unsigned);
 
 DRIZZLE_API
-drizzle_return_t drizzle_stmt_set_long(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned);
+drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned);
 
 DRIZZLE_API
-drizzle_return_t drizzle_stmt_set_big(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned);
+drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned);
 
 DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_num, double value);
@@ -117,10 +117,10 @@ DRIZZLE_API
 const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-uint32_t drizzle_stmt_get_long(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);
+uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
-uint64_t drizzle_stmt_get_longlong(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);
+uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
 double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);

@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
   uint32_t val= 1;
-  ret = drizzle_stmt_set_long(stmt, 0, val, false);
+  ret = drizzle_stmt_set_int(stmt, 0, val, false);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Bind failure\n");
@@ -123,14 +123,14 @@ int main(int argc, char *argv[])
     const char* char_val;
     char comp_val[3];
     size_t len;
-    res_val= drizzle_stmt_get_long(stmt, 0, &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_long");
+    res_val= drizzle_stmt_get_int(stmt, 0, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int");
     char_val= drizzle_stmt_get_string(stmt, 0, &len, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
     i++;
     if (res_val != i)
     {
-      printf("Retrieved unexpected long value\n");
+      printf("Retrieved unexpected int value\n");
       return EXIT_FAILURE;
     }
     snprintf(comp_val, 3, "%"PRIu32, i);
