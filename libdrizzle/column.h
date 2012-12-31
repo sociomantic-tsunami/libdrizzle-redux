@@ -1,7 +1,8 @@
-/*
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+ *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,42 +35,15 @@
  *
  */
 
-/**
- * @file
- * @brief System Include Files
- */
-
 #pragma once
 
-#include "config.h"
+/**
+ * Initialize a column structure.
+ */
+drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 
-#include <libdrizzle-5.1/drizzle_client.h>
+void drizzle_column_set_default_value(drizzle_column_st *column,
+                                      const uint8_t *default_value,
+                                      size_t size);
 
-#include <assert.h>
-#include <errno.h>
 
-#include <fcntl.h>
-#ifndef _WIN32
-# include <netinet/tcp.h>
-# include <sys/uio.h>
-# include <unistd.h>
-#endif
-
-#include <stddef.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-
-#include "libdrizzle/structs.h"
-#include "libdrizzle/drizzle_local.h"
-#include "libdrizzle/conn_local.h"
-#include "libdrizzle/pack.h"
-#include "libdrizzle/state.h"
-#include "libdrizzle/sha1.h"
-#include "libdrizzle/statement_local.h"
-#include "libdrizzle/column.h"
-#include "libdrizzle/binlog.h"
-
-#include <memory.h>

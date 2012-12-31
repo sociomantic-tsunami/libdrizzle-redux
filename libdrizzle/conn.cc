@@ -799,8 +799,6 @@ void drizzle_reset_addrinfo(drizzle_st *con)
 drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
 {
   drizzle_tcp_st *tcp;
-  const char *host;
-  char port[NI_MAXSERV];
   struct addrinfo ai;
 
   if (con == NULL)
@@ -822,6 +820,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
         tcp->addrinfo= NULL;
       }
 
+      char port[NI_MAXSERV];
       if (tcp->port != 0)
       {
         snprintf(port, NI_MAXSERV, "%u", tcp->port);
@@ -837,6 +836,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
       ai.ai_protocol= IPPROTO_TCP;
       ai.ai_family= AF_UNSPEC;
 
+      const char *host;
       if (tcp->host == NULL)
       {
         host= DRIZZLE_DEFAULT_TCP_HOST;
