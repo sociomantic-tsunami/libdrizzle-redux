@@ -592,7 +592,7 @@ uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
     return 0;
   }
 
-  return stmt->execute_result->column_count;
+  return stmt->prepare_result->column_count;
 }
 
 uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
