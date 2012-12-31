@@ -67,3 +67,8 @@ tests_unit_statement_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/statement
 noinst_PROGRAMS+= tests/unit/statement
 
+tests_unit_statement_char_SOURCES= tests/unit/statement_char.c
+tests_unit_statement_char_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/statement_char
+noinst_PROGRAMS+= tests/unit/statement_char
+

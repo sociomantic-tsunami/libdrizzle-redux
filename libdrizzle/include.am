@@ -11,6 +11,7 @@ noinst_HEADERS+= libdrizzle/drizzle_local.h
 noinst_HEADERS+= libdrizzle/pack.h
 noinst_HEADERS+= libdrizzle/sha1.h
 noinst_HEADERS+= libdrizzle/state.h
+noinst_HEADERS+= libdrizzle/statement_local.h
 noinst_HEADERS+= libdrizzle/structs.h
 
 lib_LTLIBRARIES+= libdrizzle/libdrizzle.la
@@ -46,5 +47,6 @@ libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/result.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/sha1.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/state.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/statement.cc
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/statement_param.cc
 
 libdrizzle_libdrizzle_la_LDFLAGS+= -version-info ${LIBDRIZZLE_LIBRARY_VERSION}

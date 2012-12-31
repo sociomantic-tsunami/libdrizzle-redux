@@ -2,7 +2,7 @@
  *
  *  Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
                                       getenv("MYSQL_USER"),
                                       getenv("MYSQL_PASSWORD"),
                                       getenv("MYSQL_SCHEMA"), 0);
+
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
@@ -77,21 +78,21 @@ int main(int argc, char *argv[])
   ASSERT_TRUE(result);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
-  drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
+  drizzle_query_str(con, "create table libdrizzle.t1 (a varchar(50))", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "create table libdrizzle.t1 (a int): %s", drizzle_error(con));
 
-  drizzle_query_str(con, "insert into libdrizzle.t1 values (1),(2),(3)", &ret);
+  drizzle_query_str(con, "insert into libdrizzle.t1 values ('hello'),('drizzle'),('people')", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  const char *query= "select * from libdrizzle.t1 where a > ?";
+  const char *query= "select * from libdrizzle.t1 where a = ?";
   stmt= drizzle_stmt_prepare(con, query, strlen(query), &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   /* Query should have 1 param */
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
-  uint32_t val= 1;
-  ret = drizzle_stmt_set_int(stmt, 0, val, false);
+  char val[]= "hello";
+  ret = drizzle_stmt_set_string(stmt, 0, val, strlen(val));
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Bind failure\n");
@@ -110,38 +111,28 @@ int main(int argc, char *argv[])
     printf("Buffer failure\n");
     return EXIT_FAILURE;
   }
-  /* Result should have 2 rows */
-  if (drizzle_stmt_row_count(stmt) != 2)
+  /* Result should have 1 row */
+  if (drizzle_stmt_row_count(stmt) != 1)
   {
     printf("Retrieved bad row count\n");
     return EXIT_FAILURE;
   }
-  uint32_t i= 1;
+  uint32_t i= 0;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
-    uint32_t res_val;
     const char* char_val;
-    char comp_val[3];
     size_t len;
-    res_val= drizzle_stmt_get_int(stmt, 0, &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int");
     char_val= drizzle_stmt_get_string(stmt, 0, &len, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
     i++;
-    if (res_val != i)
-    {
-      printf("Retrieved unexpected int value\n");
-      return EXIT_FAILURE;
-    }
-    snprintf(comp_val, 3, "%"PRIu32, i);
-    if (strcmp(comp_val, char_val) != 0)
+    if (strncmp(val, char_val, len) != 0)
     {
       printf("Retrieved unexpected string value\n");
       return EXIT_FAILURE;
     }
   }
-  /* Should have cycled through 2 rows (values 2 and 3) */
-  if (i != 3)
+  /* Should have cycled through 1 row */
+  if (i != 1)
   {
     printf("Retrieved bad number of rows\n");
     return EXIT_FAILURE;

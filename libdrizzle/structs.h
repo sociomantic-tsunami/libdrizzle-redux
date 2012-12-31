@@ -357,7 +357,14 @@ struct drizzle_bind_st
   void *data;
   uint32_t length;
   bool is_bound;
-  drizzle_bind_options_t options;
+  char *converted_data;
+  struct
+  {
+    bool is_null;
+    bool is_unsigned;
+    bool is_long_data;
+    bool is_allocated;
+  } options;
 };
 
 #ifdef __cplusplus
