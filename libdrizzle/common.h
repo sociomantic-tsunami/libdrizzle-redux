@@ -69,5 +69,6 @@
 #include "libdrizzle/state.h"
 #include "libdrizzle/sha1.h"
 #include "libdrizzle/column.h"
+#include "libdrizzle/binlog.h"
 
 #include <memory.h>
