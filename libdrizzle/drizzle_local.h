@@ -58,9 +58,30 @@ extern "C" {
  * @param[in] function Name of function the error happened in. 
  * @param[in] format Format and variable argument list of message.
  */
-DRIZZLE_LOCAL
 void drizzle_set_error(drizzle_st *con, const char *function,
                        const char *format, ...);
+
+/**
+ * Initialize a connection structure. Always check the return value even if
+ * passing in a pre-allocated structure. Some other initialization may have
+ * failed.
+ *
+ * @param[in] drizzle Drizzle structure previously initialized with
+ *  drizzle_create() or drizzle_clone().
+ * @param[in] con Caller allocated structure, or NULL to allocate one.
+ * @return On success, a pointer to the (possibly allocated) structure. On
+ *  failure this will be NULL.
+ */
+drizzle_st *drizzle_create(void);
+
+/**
+ * Free a connection structure.
+ *
+ * @param[in] con Connection structure previously initialized with
+ *  drizzle_create(), drizzle_clone(), or related functions.
+ */
+void drizzle_free(drizzle_st *con);
+
 
 /**
  * Log a message.
@@ -70,15 +91,18 @@ void drizzle_set_error(drizzle_st *con, const char *function,
  * @param[in] format Format and variable argument list of message.
  * @param[in] args Variable argument list that has been initialized.
  */
-DRIZZLE_LOCAL
-void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
-                 const char *format, va_list args);
+void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose, const char *format, va_list args);
+
+/**
+ * Initialize a result structure.
+ */
+drizzle_result_st *drizzle_result_create(drizzle_st *con);
+
 
 /**
  * Log a fatal message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_fatal(drizzle_st *con, const char *format,
-                                     ...)
+static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
 {
   va_list args;
 

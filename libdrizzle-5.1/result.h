@@ -55,12 +55,6 @@ extern "C" {
  */
 
 /**
- * Initialize a result structure.
- */
-DRIZZLE_LOCAL
-drizzle_result_st *drizzle_result_create(drizzle_st *con);
-
-/**
  * Free a result structure.
  */
 DRIZZLE_API

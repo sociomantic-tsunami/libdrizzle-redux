@@ -1,8 +1,8 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
  *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Andrew Hutchings (andrew@linuxjedi.co.uk)
+ * Copyright (C) 2012 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,50 +37,13 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+ * Initialize a column structure.
+ */
+drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 
-DRIZZLE_API
-drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
-                                        uint32_t server_id,
-                                        const char *file,
-                                        uint32_t start_position,
-                                        drizzle_return_t *ret_ptr);
+void drizzle_column_set_default_value(drizzle_column_st *column,
+                                      const uint8_t *default_value,
+                                      size_t size);
 
-DRIZZLE_API
-drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result);
 
-DRIZZLE_API
-uint32_t drizzle_binlog_event_timestamp(drizzle_result_st *result);
-
-DRIZZLE_API
-drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result);
-
-DRIZZLE_API
-uint32_t drizzle_binlog_event_server_id(drizzle_result_st *result);
-
-DRIZZLE_API
-uint32_t drizzle_binlog_event_length(drizzle_result_st *result);
-
-DRIZZLE_API
-uint32_t drizzle_binlog_event_next_pos(drizzle_result_st *result);
-
-DRIZZLE_API
-uint16_t drizzle_binlog_event_flags(drizzle_result_st *result);
-
-DRIZZLE_API
-uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result);
-
-DRIZZLE_API
-const uint8_t *drizzle_binlog_event_data(drizzle_result_st *result);
-
-DRIZZLE_API
-const uint8_t *drizzle_binlog_event_raw_data(drizzle_result_st *result);
-
-DRIZZLE_API
-uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result);
-
-#ifdef __cplusplus
-}
-#endif
