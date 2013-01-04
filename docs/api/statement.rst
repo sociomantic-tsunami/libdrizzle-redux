@@ -19,17 +19,108 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated and prepared statement object (or NULL on error)
 
-.. c:function:: drizzle_return_t drizzle_stmt_bind_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, drizzle_bind_options_t options)
+.. c:function:: drizzle_return_t drizzle_stmt_set_tiny(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t value, bool is_unsigned)
 
-   Bind a parameter to send in statement.  This needs to be called before every
-   :c:func:`drizzle_stmt_execute` if the data changes.
+   Sets a parameter of a prepared statement to a tinyint value
 
-   :param stmt: The prepared statement object
-   :param param_num: The parameter number this bind is for
-   :param type: The column type this parameter uses
-   :param data: The data for this parameter
-   :param length: The length of the data
-   :param options: Options for the parameter
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :param is_unsigned: Set to true if the parameter is unsigned
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t value, bool is_unsigned)
+
+   Sets a parameter of a prepared statement to a short int value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :param is_unsigned: Set to true if the parameter is unsigned
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
+
+   Sets a parameter of a prepared statement to an int value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :param is_unsigned: Set to true if the parameter is unsigned
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
+
+   Sets a parameter of a prepared statement to a bigint value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :param is_unsigned: Set to true if the parameter is unsigned
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_num, double value)
+
+   Sets a parameter of a prepared statement to a double value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_float(drizzle_stmt_st *stmt, uint16_t param_num, float value)
+
+   Sets a parameter of a prepared statement to a float value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, char *value, size_t length)
+
+   Sets a parameter of a prepared statement to a string value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param value: The value to set the parameter
+   :param length: The length of the value data
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_null(drizzle_stmt_st *stmt, uint16_t param_num)
+
+   Sets a parameter of a prepared statement to a NULL value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t days, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds, bool is_negative)
+
+   Sets a parameter of a prepared statement to a time value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param days: The number of days for the time
+   :param hours: The number of hours for the time
+   :param minutes: The number of minutes for the time
+   :param seconds: The number of seconds for the time
+   :param microseconds: The number of microseconds for the time
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t year, uint8_t month, uint8_t day, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds)
+
+   Sets a parameter of a prepared statement to a datetime/timestamp value
+
+   :param stmt: A prepared statement object
+   :param param_num: The parameter number to set (starting at 0)
+   :param year: The year number for the timestamp
+   :param month: The month number for the timestamp
+   :param day: The day number for the timestamp
+   :param hours: The hour number for the timestamp
+   :param minutes: The minute number for the timestamp
+   :param seconds: The minute number for the timestamp
+   :param microseconds: The minute number for the timestamp
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
 .. c:function:: drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
@@ -71,44 +162,67 @@ Functions
    :param stmt: The prepared statement object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
+.. c:function:: bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+
+   Check if a column for a fetched row is set to NULL
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: True if NULL
+
+.. c:function:: bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+
+   Check if a column for a fetched row is unsigned
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: True if unsigned
+
+.. c:function:: const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
+
+   Get the string value for a column of a fetched row (int types are automatically converted)
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param len: A pointer to a :c:type:`size_t` to store the result length into
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
+   :returns: A pointer to the string value
+
+.. c:function:: uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+
+   Get the int value for a column of a fetched row
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
+   :returns: The int value
+
+.. c:function:: uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+
+   Get the bigint value for a column of a fetched row
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
+   :returns: The bigint value
+
+.. c:function:: double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+
+   Get the double value for a column of a fetched row
+
+   :param stmt: The prepared statement object
+   :param column_number: The column number to get (starting at 0)
+   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
+   :returns: The double value
+
 .. c:function:: drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
 
    Close and free a prepared statement
 
    :param stmt: The prepared statement object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
-
-.. c:function:: drizzle_column_type_t drizzle_stmt_item_type(drizzle_stmt_st *stmt, uint16_t column_number)
-
-   Gets the column type of an element from a row retrieved with :c:func:`drizzle_stmt_fetch`
-
-   :param stmt: The prepared statement object
-   :param column_number: The column number for the element
-   :returns: The column type
-
-.. c:function:: void* drizzle_stmt_item_data(drizzle_stmt_st *stmt, uint16_t column_number)
-
-   Gets the data of an element from a row retrieved with :c:func:`drizzle_stmt_fetch`
-
-   :param stmt: The prepared statement object
-   :param column_number: The column number for the element
-   :returns: The data for the element
-
-.. c:function:: uint32_t drizzle_stmt_item_length(drizzle_stmt_st *stmt, uint16_t column_number)
-
-   Gets the length of the data for an element from a row retrieved with :c:func:`drizzle_stmt_fetch`
-
-   :param stmt: The prepared statement object
-   :param column_number: The column number for the element
-   :returns: The length of data for the element
-
-.. c:function:: drizzle_bind_options_t drizzle_stmt_item_options(drizzle_stmt_st *stmt, uint16_t column_number)
-
-   Gets the options set for an element from a row retrieved with :c:func:`drizzle_stmt_fetch`
-
-   :param stmt: The prepared statement object
-   :param column_number: The column number for the element
-   :returns: The options for the element
 
 .. c:function:: uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
 

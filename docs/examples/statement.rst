@@ -12,8 +12,8 @@ replace using the '?' character.  The statement is prepared using
 :c:func:`drizzle_stmt_prepare` and we can get the number of parameters the
 server is expecting with :c:func:`drizzle_stmt_param_count`.  In this example
 we know that there is only one parameter required so we send one INT type
-parameter using :c:func:`drizzle_stmt_bind_param` stating that this is
-parameter 0 and it is 4 bytes long (standard for an INT type).
+parameter using :c:func:`drizzle_stmt_set_int` stating that this is
+parameter 0 and a signed value.
 
 Once the parameters have been provided the statement is executed using
 :c:func:`drizzle_stmt_execute` and the results buffered using
@@ -22,11 +22,9 @@ using :c:func:`drizzle_stmt_row_count`.
 
 Finally we get the result data.  A call to :c:func:`drizzle_stmt_fetch` gets
 the next row from either the network or the buffer (the buffer in this case).
-The data can be retreived using :c:func:`drizzle_stmt_item_data`, a call for
-each column in the row (in example the table only has one column).
-
-It is also possible to get the data type and length of data using the other
-``drizzle_stmt_item_`` functions.
+The int data is retreived using :c:func:`drizzle_stmt_get_int`, a call for
+each column in the row (in example the table only has one column) is made using
+the ``drizzle_stmt_get_`` functions.
 
 When we are done the statement is closed and cleaned up using
 :c:func:`drizzle_stmt_close`.  It can also be reused with
@@ -45,7 +43,7 @@ Code
   printf("Params: %" PRIu16 "\n", drizzle_stmt_param_count(stmt));
 
   uint32_t val= 1;
-  ret = drizzle_stmt_bind_param(stmt, 0, DRIZZLE_COLUMN_TYPE_LONG, &val, 4, DRIZZLE_BIND_OPTION_NONE);
+  ret = drizzle_stmt_set_int(stmt, 0, val, false);
 
   ret = drizzle_stmt_execute(stmt);
 
@@ -54,8 +52,8 @@ Code
   printf("Rows found: %" PRIu64 "\n", drizzle_stmt_row_count(stmt));
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
-    uint32_t *res_val;
-    res_val= (uint32_t*)drizzle_stmt_item_data(stmt, 0);
+    uint32_t res_val;
+    res_val= drizzle_stmt_get_int(stmt, 0, &ret);
     printf("Got value: %" PRIu32 "\n", *res_val);
   }
   ret = drizzle_stmt_close(stmt);
