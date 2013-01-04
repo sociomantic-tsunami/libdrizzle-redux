@@ -215,6 +215,13 @@ Functions
    :param con: A connection object
    :returns: A :c:type:`drizzle_return_t` status.  :py:const:`DRIZZLE_RETURN_OK` upon success
 
+.. c:function:: drizzle_return_t drizzle_close(drizzle_st *con)
+
+   Gracefully disconnect from a server (leaves the connection object available for a reconnect
+
+   :param con: A connection object
+   :returns: A :c:type:`drizzle_return_t` response for the quit command sent to the server
+
 .. c:function:: drizzle_return_t drizzle_quit(drizzle_st *con)
 
    Gracefully disconnect from a server and free the connection object
