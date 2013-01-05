@@ -229,14 +229,13 @@ Functions
    :param con: A connection object
    :returns: A :c:type:`drizzle_return_t` response for the quit command sent to the server
 
-.. c:function:: drizzle_result_st* drizzle_select_db(drizzle_st *con, const char *db, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_return_t drizzle_select_db(drizzle_st *con, const char *db)
 
    Change the current default database
 
    :param con: A connection object
    :param db: The new default database
-   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
-   :returns: A newly allocated result object
+   :returns: A :c:type:`drizzle_return_t` response
 
 .. c:function:: drizzle_result_st* drizzle_shutdown(drizzle_st *con, drizzle_return_t *ret_ptr)
 
