@@ -59,6 +59,9 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time);
 DRIZZLE_LOCAL
 char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp);
 
+DRIZZLE_LOCAL
+uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *column_name, drizzle_return_t *ret_ptr);
+
 #ifdef __cplusplus
 }
 #endif

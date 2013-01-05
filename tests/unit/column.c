@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
-  drizzle_result_st *result= drizzle_select_db(con, "libdrizzle", &ret);
+  ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)", &ret);
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')", &ret);
   ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
 
-  result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
+  drizzle_result_st *result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
   ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "select * from libdrizzle.t1");
 
   drizzle_result_buffer(result);

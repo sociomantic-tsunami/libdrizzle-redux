@@ -83,14 +83,14 @@ Functions
    :param result: The result set for the binlog stream
    :returns: The extra event flags
 
-.. c:function:: const uint8_t* drizzle_binlog_event_data(drizzle_result_st *result)
+.. c:function:: const unsigned char* drizzle_binlog_event_data(drizzle_result_st *result)
 
    Get the event data for the event received using :c:func:`drizzle_binlog_get_next_event`
 
    :param result: The result set for the binlog stream
    :returns: A pointer to the event data
 
-.. c:function:: const uint8_t *drizzle_binlog_event_raw_data(drizzle_result_st *result)
+.. c:function:: const unsigned char* drizzle_binlog_event_raw_data(drizzle_result_st *result)
 
    Get the raw event data (including header) for the event received using :c:func:`drizzle_binlog_get_next_event`
 

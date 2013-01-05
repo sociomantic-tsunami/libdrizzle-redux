@@ -51,7 +51,7 @@ Functions
    :param from_size: the length of the source string
    :returns: the length of the 'to' string or -1 upon error due to empty parameters or overflow
 
-.. c:function:: bool drizzle_hex_string(char *to, const uint8_t *from, const size_t from_size)
+.. c:function:: bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size)
 
    Convert data into a hexadecimal string of the data.
 
@@ -269,7 +269,7 @@ Functions
    :param column: A column object
    :returns: The number of decimal places
 
-.. c:function:: const uint8_t* drizzle_column_default_value(drizzle_column_st *column, size_t *size)
+.. c:function:: const unsigned char* drizzle_column_default_value(drizzle_column_st *column, size_t *size)
 
    Gets the default value for a given column
 

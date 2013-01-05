@@ -567,7 +567,7 @@ uint32_t drizzle_thread_id(const drizzle_st *con)
   return con->thread_id;
 }
 
-const uint8_t *drizzle_scramble(const drizzle_st *con)
+const unsigned char *drizzle_scramble(const drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -671,13 +671,16 @@ drizzle_return_t drizzle_quit(drizzle_st *con)
   return DRIZZLE_RETURN_INVALID_ARGUMENT;
 }
 
-drizzle_result_st *drizzle_select_db(drizzle_st *con,
-                                         const char *db,
-                                         drizzle_return_t *ret_ptr)
+drizzle_return_t drizzle_select_db(drizzle_st *con,
+                                         const char *db)
 {
+  drizzle_result_st *result;
+  drizzle_return_t ret;
   drizzle_set_db(con, db);
-  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
-                                   db, strlen(db), strlen(db), ret_ptr);
+  result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
+                                   db, strlen(db), strlen(db), &ret);
+  drizzle_result_free(result);
+  return ret;
 }
 
 drizzle_result_st *drizzle_shutdown(drizzle_st *con,
@@ -780,7 +783,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
     }
 
     con->command= command;
-    con->command_data= (uint8_t *)data;
+    con->command_data= (unsigned char *)data;
     con->command_size= size;
     con->command_offset= 0;
     con->command_total= total;
@@ -789,7 +792,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
   }
   else if (con->command_data == NULL)
   {
-    con->command_data= (uint8_t *)data;
+    con->command_data= (unsigned char *)data;
     con->command_size= size;
   }
 

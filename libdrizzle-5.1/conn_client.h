@@ -83,9 +83,8 @@ drizzle_return_t drizzle_quit(drizzle_st *con);
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_select_db(drizzle_st *con,
-                                         const char *db,
-                                         drizzle_return_t *ret_ptr);
+drizzle_return_t drizzle_select_db(drizzle_st *con,
+                                         const char *db);
 
 /**
  * Send a shutdown message to the server.

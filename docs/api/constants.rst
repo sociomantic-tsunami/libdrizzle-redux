@@ -156,6 +156,26 @@ Return
 
       No more data to retrieve
 
+   .. py:data:: DRIZZLE_RETURN_STMT_ERROR
+
+      A prepared statment error has occurred
+
+   .. py:data:: DRIZZLE_RETURN_BINLOG_CRC
+
+      A checksum error has occurred in a MySQL 5.6 binlog
+
+   .. py:data:: DRIZZLE_RETURN_TRUNCATED
+
+      The result has been truncated
+
+   .. py:data:: DRIZZLE_RETURN_INVALID_CONVERSION
+
+      The data type cannot be converted into the requested type
+
+   .. py:data:: DRIZZLE_RETURN_NOT_FOUND
+
+      The requested column was not found
+
 Connection
 ----------
 
@@ -1050,13 +1070,17 @@ Binlog
 
       RBR Delete rows event for MySQL 5.1 pre-release
 
-   .. py:data:: DRIZZLE_EVENT_TYPE_WRITE_ROWS
+   .. py:data:: DRIZZLE_EVENT_TYPE_V1_WRITE_ROWS
 
       RBR Write rows event
 
-   .. py:data:: DRIZZLE_EVENT_TYPE_UPDATE_ROWS
+   .. py:data:: DRIZZLE_EVENT_TYPE_V1_UPDATE_ROWS
 
       RBR Update rows event
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_V1_DELETE_ROWS
+
+      RBR Delete rows event
 
    .. py:data:: DRIZZLE_EVENT_TYPE_INCIDENT
 
@@ -1066,4 +1090,25 @@ Binlog
 
       Repliaction heartbeat event
 
+   .. py:data:: DRIZZLE_EVENT_TYPE_IGNORABLE
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_ROWS_QUERY
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_V2_WRITE_ROWS
+
+      A MySQL 5.6 RBR Write rows event
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_V2_UPDATE_ROWS
+
+      A MySQL 5.6 RBR Update rows event
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_V2_DELETE_ROWS
+
+      A MySQL 5.6 RBR Delete rows event
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_GTID
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_ANONYMOUS_GTID
+
+   .. py:data:: DRIZZLE_EVENT_TYPE_PREVIOUS_GTIDS
 

@@ -73,8 +73,7 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
-  drizzle_result_st *result= drizzle_select_db(con, "libdrizzle", &ret);
-  ASSERT_TRUE(result);
+  ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
@@ -131,6 +130,13 @@ int main(int argc, char *argv[])
     if (res_val != i)
     {
       printf("Retrieved unexpected int value\n");
+      return EXIT_FAILURE;
+    }
+    res_val= drizzle_stmt_get_int_from_name(stmt, "a", &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int (char col name)");
+    if (res_val != i)
+    {
+      printf("Rerieved unexpected int value with char col name\n");
       return EXIT_FAILURE;
     }
     snprintf(comp_val, 3, "%"PRIu32, i);

@@ -55,11 +55,10 @@
 static const char *_verbose_name[DRIZZLE_VERBOSE_MAX]=
 {
   "NEVER",
-  "FATAL",
+  "CRITICAL",
   "ERROR",
   "INFO",
   "DEBUG",
-  "CRAZY"
 };
 
 /** @} */

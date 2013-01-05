@@ -58,7 +58,7 @@ extern "C" {
  * Pack length-encoded number.
  */
 
-uint8_t *drizzle_pack_length(uint64_t number, uint8_t *ptr);
+unsigned char *drizzle_pack_length(uint64_t number, unsigned char *ptr);
 
 /**
  * Unpack length-encoded number.
@@ -70,17 +70,17 @@ uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr);
  * Pack length-encoded string.
  */
 
-uint8_t *drizzle_pack_string(char *string, uint8_t *ptr);
+unsigned char *drizzle_pack_string(char *string, unsigned char *ptr);
 
-uint8_t *drizzle_pack_binary(uint8_t *data, size_t len, uint8_t *ptr);
+unsigned char *drizzle_pack_binary(unsigned char *data, size_t len, unsigned char *ptr);
 
-uint8_t *drizzle_pack_time(drizzle_datetime_st *time, uint8_t *ptr);
+unsigned char *drizzle_pack_time(drizzle_datetime_st *time, unsigned char *ptr);
 
-uint8_t *drizzle_pack_datetime(drizzle_datetime_st *datetime, uint8_t *ptr);
+unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned char *ptr);
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, uint8_t *data);
+void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *data);
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, uint8_t *data);
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char *data);
 
 /**
  * Unpack length-encoded string.
@@ -91,7 +91,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
 /**
  * Pack user, scramble, and db.
  */
-uint8_t *drizzle_pack_auth(drizzle_st *con, uint8_t *ptr,
+unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
                            drizzle_return_t *ret_ptr);
 
 /** @} */

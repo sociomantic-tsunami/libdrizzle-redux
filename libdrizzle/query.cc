@@ -47,7 +47,7 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                  drizzle_return_t *ret_ptr)
 {
   return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
-                                   (uint8_t *)query, size, size, ret_ptr);
+                                   (unsigned char *)query, size, size, ret_ptr);
 }
 
 drizzle_result_st *drizzle_query_str(drizzle_st *con,
@@ -62,7 +62,7 @@ drizzle_result_st *drizzle_query_str(drizzle_st *con,
   size_t size= strlen(query);
 
   return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
-                                   (uint8_t *)query, size, size, ret_ptr);
+                                   (unsigned char *)query, size, size, ret_ptr);
 }
 
 
@@ -135,7 +135,7 @@ ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *fr
   return to_size;
 }
 
-bool drizzle_hex_string(char *to, const uint8_t *from, const size_t from_size)
+bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size)
 {
   if (to == NULL || from == NULL || from_size == 0)
   {
@@ -143,7 +143,7 @@ bool drizzle_hex_string(char *to, const uint8_t *from, const size_t from_size)
   }
 
   static const char hex_map[]= "0123456789ABCDEF";
-  const uint8_t *from_end;
+  const unsigned char *from_end;
 
   for (from_end= from + from_size; from != from_end; from++)
   {
@@ -164,11 +164,11 @@ bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_s
   }
   
   SHA1_CTX ctx;
-  uint8_t hash_tmp1[SHA1_DIGEST_LENGTH];
-  uint8_t hash_tmp2[SHA1_DIGEST_LENGTH];
+  unsigned char hash_tmp1[SHA1_DIGEST_LENGTH];
+  unsigned char hash_tmp2[SHA1_DIGEST_LENGTH];
 
   SHA1Init(&ctx);
-  SHA1Update(&ctx, (const uint8_t*)from, from_size);
+  SHA1Update(&ctx, (const unsigned char*)from, from_size);
   SHA1Final(hash_tmp1, &ctx);
 
   SHA1Init(&ctx);

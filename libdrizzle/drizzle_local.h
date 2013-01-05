@@ -106,10 +106,10 @@ static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
 {
   va_list args;
 
-  if (con->verbose >= DRIZZLE_VERBOSE_FATAL)
+  if (con->verbose >= DRIZZLE_VERBOSE_CRITICAL)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_FATAL, format, args);
+    drizzle_log(con, DRIZZLE_VERBOSE_CRITICAL, format, args);
     va_end(args);
   }
 }
@@ -170,10 +170,10 @@ static inline void drizzle_log_crazy(drizzle_st *con, const char *format,
 {
   va_list args;
 
-  if (con->verbose >= DRIZZLE_VERBOSE_CRAZY)
+  if (con->verbose >= DRIZZLE_VERBOSE_DEBUG)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_CRAZY, format, args);
+    drizzle_log(con, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }

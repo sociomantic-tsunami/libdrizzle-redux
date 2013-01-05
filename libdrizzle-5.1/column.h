@@ -145,7 +145,7 @@ uint8_t drizzle_column_decimals(drizzle_column_st *column);
  * Get default value for a column.
  */
 DRIZZLE_API
-const uint8_t *drizzle_column_default_value(drizzle_column_st *column,
+const unsigned char *drizzle_column_default_value(drizzle_column_st *column,
                                             size_t *size);
 
 /** @} */

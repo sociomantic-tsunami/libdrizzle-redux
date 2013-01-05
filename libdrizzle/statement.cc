@@ -116,9 +116,9 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   drizzle_bind_st *param_ptr;
   size_t param_lengths= 0;
   size_t buffer_size= 0;
-  uint8_t *buffer;
-  uint8_t *buffer_pos;
-  uint8_t *data_pos;
+  unsigned char *buffer;
+  unsigned char *buffer_pos;
+  unsigned char *data_pos;
   drizzle_return_t ret;
 
   /* Calculate param lengths */
@@ -141,7 +141,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
              + (stmt->param_count * 2) /* Parameter type data */
              + param_lengths; /* Parameter data */
 
-  buffer = (uint8_t*)malloc(buffer_size);
+  buffer = (unsigned char*)malloc(buffer_size);
   if (buffer == NULL)
   {
     drizzle_set_error(stmt->con, __func__, "malloc");
@@ -258,7 +258,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       case DRIZZLE_COLUMN_TYPE_STRING:
       case DRIZZLE_COLUMN_TYPE_DECIMAL:
       case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
-        data_pos= drizzle_pack_binary((uint8_t*)param_ptr->data, param_ptr->length, data_pos);
+        data_pos= drizzle_pack_binary((unsigned char*)param_ptr->data, param_ptr->length, data_pos);
         break;
       /* These types aren't handled yet, most are for older MySQL versions */
       case DRIZZLE_COLUMN_TYPE_INT24:
@@ -316,10 +316,10 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   return ret;
 }
 
-drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t *data, size_t len)
+drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t param_num, unsigned char *data, size_t len)
 {
   drizzle_return_t ret;
-  uint8_t *buffer;
+  unsigned char *buffer;
 
   if ((stmt == NULL) || (param_num >= stmt->param_count))
   {
@@ -336,7 +336,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   /* TODO: rework drizzle_command_write so we can send a header and we don't
    * need this copy
    * */
-  buffer= (uint8_t*)malloc(len + 6);
+  buffer= (unsigned char*)malloc(len + 6);
 
   drizzle_set_byte4(buffer, stmt->id);
   drizzle_set_byte2(&buffer[4], param_num);
@@ -355,7 +355,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
 drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
 {
   drizzle_return_t ret;
-  uint8_t buffer[4];
+  unsigned char buffer[4];
   uint16_t current_param;
 
   if (stmt == NULL)
@@ -474,12 +474,12 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
           memcpy(param->data, row[column_counter], 8);
           break;
         case DRIZZLE_COLUMN_TYPE_TIME:
-          drizzle_unpack_time(row[column_counter], param->length, (uint8_t*)param->data);
+          drizzle_unpack_time(row[column_counter], param->length, (unsigned char*)param->data);
           break;
         case DRIZZLE_COLUMN_TYPE_DATE:
         case DRIZZLE_COLUMN_TYPE_DATETIME:
         case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
-          drizzle_unpack_datetime(row[column_counter], param->length, (uint8_t*)param->data);
+          drizzle_unpack_datetime(row[column_counter], param->length, (unsigned char*)param->data);
           break;
         case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
         case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:
@@ -544,7 +544,7 @@ drizzle_return_t drizzle_stmt_buffer(drizzle_stmt_st *stmt)
 
 drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
 {
-  uint8_t buffer[4];
+  unsigned char buffer[4];
   drizzle_return_t ret;
 
   if (stmt == NULL)
