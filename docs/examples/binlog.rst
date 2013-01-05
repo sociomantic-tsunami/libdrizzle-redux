@@ -38,7 +38,7 @@ Binlog Retrieval
       while (ret == DRIZZLE_RETURN_OK)
       {
         uint32_t i, length;
-        const uint8_t *data;
+        const unsigned char *data;
         ret= drizzle_binlog_get_event(result);
         if (ret != DRIZZLE_RETURN_OK)
           break;

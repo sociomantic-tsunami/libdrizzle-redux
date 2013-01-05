@@ -81,7 +81,7 @@ drizzle_return_t drizzle_handshake_client_write(drizzle_st *con)
 
 drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 {
-  uint8_t *ptr;
+  unsigned char *ptr;
   int extra_length;
   unsigned char* packet_end;
 
@@ -128,7 +128,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   }
 
   /* Look for null-terminated server version string. */
-  ptr= (uint8_t*)memchr(con->buffer_ptr, 0, con->buffer_size - 1);
+  ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 1);
   if (ptr == NULL)
   {
     drizzle_set_error(con, "drizzle_state_handshake_server_read",
@@ -218,7 +218,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
 drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
 {
-  uint8_t *ptr;
+  unsigned char *ptr;
 
   if (con == NULL)
   {
@@ -371,7 +371,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   con->buffer_ptr+= 23;
 
   /* Look for null-terminated user string. */
-  uint8_t *ptr= (uint8_t*)memchr(con->buffer_ptr, 0, con->buffer_size - 32);
+  unsigned char *ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 32);
   if (ptr == NULL)
   {
     drizzle_set_error(con, "drizzle_state_handshake_client_read",
@@ -430,7 +430,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   }
   else
   {
-    ptr= (uint8_t*)memchr(con->buffer_ptr, 0, con->buffer_size -
+    ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size -
                                     (34 + strlen(con->user) + scramble_size));
     if (ptr == NULL)
     {
@@ -513,7 +513,7 @@ int drizzle_compile_capabilities(drizzle_st *con)
 
 drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
 {
-  uint8_t *ptr;
+  unsigned char *ptr;
   int capabilities;
 #ifdef USE_OPENSSL
   int ssl_ret;
@@ -600,7 +600,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
 
 drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con)
 {
-  uint8_t *ptr;
+  unsigned char *ptr;
   int capabilities;
 
   drizzle_log_debug(con, "drizzle_state_handshake_ssl_client_write");

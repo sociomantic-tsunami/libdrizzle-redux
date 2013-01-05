@@ -166,23 +166,23 @@ struct drizzle_st
   size_t command_total;
   size_t packet_size;
   struct addrinfo *addrinfo_next;
-  uint8_t *buffer_ptr;
-  uint8_t *command_buffer;
-  uint8_t *command_data;
+  unsigned char *buffer_ptr;
+  unsigned char *command_buffer;
+  unsigned char *command_data;
   void *context;
   drizzle_context_free_fn *context_free_fn;
   drizzle_result_st *result;
   drizzle_result_st *result_list;
-  uint8_t *scramble;
+  unsigned char *scramble;
   union
   {
     drizzle_tcp_st tcp;
     drizzle_uds_st uds;
   } socket;
-  uint8_t buffer[DRIZZLE_MAX_BUFFER_SIZE];
+  unsigned char buffer[DRIZZLE_MAX_BUFFER_SIZE];
   char db[DRIZZLE_MAX_DB_SIZE];
   char password[DRIZZLE_MAX_PASSWORD_SIZE];
-  uint8_t scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
+  unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
   char server_version[DRIZZLE_MAX_SERVER_VERSION_SIZE];
   char server_extra[DRIZZLE_MAX_SERVER_EXTRA_SIZE];
   drizzle_state_fn *state_stack[DRIZZLE_STATE_STACK_SIZE];
@@ -305,8 +305,8 @@ struct drizzle_binlog_st
   uint16_t flags;
   uint16_t extra_flags;
   uint32_t checksum;
-  uint8_t *data;
-  uint8_t *raw_data;
+  unsigned char *data;
+  unsigned char *raw_data;
   uint32_t raw_length;
 };
 
@@ -331,7 +331,7 @@ struct drizzle_column_st
   drizzle_column_type_t type;
   int flags;
   uint8_t decimals;
-  uint8_t default_value[DRIZZLE_MAX_DEFAULT_VALUE_SIZE];
+  unsigned char default_value[DRIZZLE_MAX_DEFAULT_VALUE_SIZE];
   size_t default_value_size;
 };
 

@@ -90,7 +90,7 @@ DRIZZLE_API
 ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *from, const size_t from_size);
 
 DRIZZLE_API
-bool drizzle_hex_string(char *to, const uint8_t *from, const size_t from_size);
+bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size);
 
 DRIZZLE_API
 bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);

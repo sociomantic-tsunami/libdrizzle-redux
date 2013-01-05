@@ -307,7 +307,7 @@ uint32_t drizzle_thread_id(const drizzle_st *con);
  * @return Scramble buffer for connection.
  */
 DRIZZLE_API
-const uint8_t *drizzle_scramble(const drizzle_st *con);
+const unsigned char *drizzle_scramble(const drizzle_st *con);
 
 /**
  * Get capabilities for a connection.

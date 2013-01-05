@@ -50,8 +50,8 @@
 
 drizzle_return_t drizzle_state_command_write(drizzle_st *con)
 {
-  uint8_t *start;
-  uint8_t *ptr;
+  unsigned char *start;
+  unsigned char *ptr;
   drizzle_return_t ret;
 
   if (con == NULL)
@@ -102,7 +102,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     con->packet_number= 1;
     ptr= start;
     ptr[3]= 0;
-    ptr[4]= (uint8_t)(con->command);
+    ptr[4]= (unsigned char)(con->command);
     ptr+= 5;
 
     if (con->command == DRIZZLE_COMMAND_CHANGE_USER)

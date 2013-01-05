@@ -48,7 +48,7 @@ DRIZZLE_API
 drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt);
 
 DRIZZLE_API
-drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t *data, size_t len);
+drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t param_num, unsigned char *data, size_t len);
 
 DRIZZLE_API
 drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt);

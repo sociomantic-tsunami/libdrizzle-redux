@@ -57,7 +57,7 @@
  * Compute hash from password and scramble.
  */
 static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
-                                            uint8_t *buffer);
+                                            unsigned char *buffer);
 
 /** @} */
 
@@ -65,7 +65,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
  * Public definitions
  */
 
-uint8_t *drizzle_pack_length(uint64_t number, uint8_t *ptr)
+unsigned char *drizzle_pack_length(uint64_t number, unsigned char *ptr)
 {
   if (number < 251)
   {
@@ -157,7 +157,7 @@ uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr)
   return length;
 }
 
-uint8_t *drizzle_pack_string(char *string, uint8_t *ptr)
+unsigned char *drizzle_pack_string(char *string, unsigned char *ptr)
 {
   if (string == NULL)
   {
@@ -176,7 +176,7 @@ uint8_t *drizzle_pack_string(char *string, uint8_t *ptr)
   return ptr;
 }
 
-uint8_t *drizzle_pack_binary(uint8_t *data, size_t len, uint8_t *ptr)
+unsigned char *drizzle_pack_binary(unsigned char *data, size_t len, unsigned char *ptr)
 {
   ptr= drizzle_pack_length(len, ptr);
   if (len > 0)
@@ -188,7 +188,7 @@ uint8_t *drizzle_pack_binary(uint8_t *data, size_t len, uint8_t *ptr)
   return ptr;
 }
 
-uint8_t *drizzle_pack_time(drizzle_datetime_st *time, uint8_t *ptr)
+unsigned char *drizzle_pack_time(drizzle_datetime_st *time, unsigned char *ptr)
 {
   uint8_t length= 0;
 
@@ -213,7 +213,7 @@ uint8_t *drizzle_pack_time(drizzle_datetime_st *time, uint8_t *ptr)
   return ptr+length;
 }
 
-uint8_t *drizzle_pack_datetime(drizzle_datetime_st *datetime, uint8_t *ptr)
+unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned char *ptr)
 {
   uint8_t length= 0;
 
@@ -245,7 +245,7 @@ uint8_t *drizzle_pack_datetime(drizzle_datetime_st *datetime, uint8_t *ptr)
   return ptr + length;
 }
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, uint8_t *data)
+void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *data)
 {
   drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
   memset(datetime, 0, length);
@@ -266,7 +266,7 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, uint8_t *data)
   }
 }
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, uint8_t *data)
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char *data)
 {
   drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
   memset(datetime, 0, length);
@@ -332,7 +332,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
   return DRIZZLE_RETURN_OK;
 }
 
-uint8_t *drizzle_pack_auth(drizzle_st *con, uint8_t *ptr,
+unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
                            drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
@@ -408,11 +408,11 @@ uint8_t *drizzle_pack_auth(drizzle_st *con, uint8_t *ptr,
  */
 
 static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
-                                            uint8_t *buffer)
+                                            unsigned char *buffer)
 {
   SHA1_CTX ctx;
-  uint8_t hash_tmp1[SHA1_DIGEST_LENGTH];
-  uint8_t hash_tmp2[SHA1_DIGEST_LENGTH];
+  unsigned char hash_tmp1[SHA1_DIGEST_LENGTH];
+  unsigned char hash_tmp2[SHA1_DIGEST_LENGTH];
 
   if (SHA1_DIGEST_LENGTH != DRIZZLE_MAX_SCRAMBLE_SIZE)
   {
@@ -431,7 +431,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
 
   /* First hash the password. */
   SHA1Init(&ctx);
-  SHA1Update(&ctx, (uint8_t *)(con->password), strlen(con->password));
+  SHA1Update(&ctx, (unsigned char *)(con->password), strlen(con->password));
   SHA1Final(hash_tmp1, &ctx);
 
   /* Second, hash the password hash. */

@@ -567,7 +567,7 @@ uint32_t drizzle_thread_id(const drizzle_st *con)
   return con->thread_id;
 }
 
-const uint8_t *drizzle_scramble(const drizzle_st *con)
+const unsigned char *drizzle_scramble(const drizzle_st *con)
 {
   if (con == NULL)
   {
@@ -780,7 +780,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
     }
 
     con->command= command;
-    con->command_data= (uint8_t *)data;
+    con->command_data= (unsigned char *)data;
     con->command_size= size;
     con->command_offset= 0;
     con->command_total= total;
@@ -789,7 +789,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
   }
   else if (con->command_data == NULL)
   {
-    con->command_data= (uint8_t *)data;
+    con->command_data= (unsigned char *)data;
     con->command_size= size;
   }
 

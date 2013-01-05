@@ -138,7 +138,7 @@ bool get_system_user(char *dest, uint8_t len);
 drizzle_st *_connect(void);
 FILE *create_binlog_file(char *binlog_file);
 void get_binlogs(drizzle_st *con);
-void write_binlog(FILE* file, const uint8_t* data, uint32_t len);
+void write_binlog(FILE* file, const unsigned char* data, uint32_t len);
 
 bool get_system_user(char *dest, uint8_t len)
 {
@@ -236,7 +236,7 @@ void get_binlogs(drizzle_st *con)
 
   while(1)
   {
-    write_binlog(outfile, (uint8_t *)DRIZZLE_BINLOG_MAGIC, 4);
+    write_binlog(outfile, (unsigned char *)DRIZZLE_BINLOG_MAGIC, 4);
     while(1)
     {
       ret= drizzle_binlog_get_next_event(result);
@@ -274,7 +274,7 @@ void get_binlogs(drizzle_st *con)
   drizzle_result_free(result);
 }
 
-void write_binlog(FILE* file, const uint8_t* data, uint32_t len)
+void write_binlog(FILE* file, const unsigned char* data, uint32_t len)
 {
   if (len)
   {

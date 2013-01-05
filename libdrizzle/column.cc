@@ -242,7 +242,7 @@ uint8_t drizzle_column_decimals(drizzle_column_st *column)
   return column->decimals;
 }
 
-const uint8_t *drizzle_column_default_value(drizzle_column_st *column,
+const unsigned char *drizzle_column_default_value(drizzle_column_st *column,
                                             size_t *size)
 {
   if (column == NULL)
@@ -442,7 +442,7 @@ uint16_t drizzle_column_current(drizzle_result_st *result)
  */
 
 void drizzle_column_set_default_value(drizzle_column_st *column,
-                                      const uint8_t *default_value,
+                                      const unsigned char *default_value,
                                       size_t size)
 {
   if (column == NULL)

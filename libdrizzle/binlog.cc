@@ -45,8 +45,8 @@ drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                             uint32_t start_position,
                                             drizzle_return_t *ret_ptr)
 { 
-  uint8_t data[128];
-  uint8_t *ptr;
+  unsigned char data[128];
+  unsigned char *ptr;
   uint8_t len= 0, fn_len= 0;
   drizzle_result_st *result;
 
@@ -179,7 +179,7 @@ uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result)
   return result->binlog_event->extra_flags;
 }
 
-const uint8_t *drizzle_binlog_event_data(drizzle_result_st *result)
+const unsigned char *drizzle_binlog_event_data(drizzle_result_st *result)
 {
   if ((result == NULL) || (result->binlog_event == NULL))
   {
@@ -189,7 +189,7 @@ const uint8_t *drizzle_binlog_event_data(drizzle_result_st *result)
   return result->binlog_event->data;
 }
 
-const uint8_t *drizzle_binlog_event_raw_data(drizzle_result_st *result)
+const unsigned char *drizzle_binlog_event_raw_data(drizzle_result_st *result)
 {
   if ((result == NULL) || (result->binlog_event == NULL))
   {
@@ -306,7 +306,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       con->buffer_ptr+= 27;
       con->buffer_size-= 27;
       con->packet_size-= 27;
-      binlog_event->data= (uint8_t*)realloc(binlog_event->data, binlog_event->length);
+      binlog_event->data= (unsigned char*)realloc(binlog_event->data, binlog_event->length);
       /* 5.6.1 or higher is automatic checksums on */
       if (binlog_event->type == DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION)
       {
