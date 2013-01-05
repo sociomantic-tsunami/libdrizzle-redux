@@ -41,18 +41,35 @@
 
 #pragma once
 
-#include "config.h"
-
 #include <libdrizzle-5.1/drizzle_client.h>
 
-#include <assert.h>
-#include <errno.h>
+#include <cassert>
 
-#include <fcntl.h>
-#ifndef _WIN32
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+
+#if defined(WIN32) || defined(__MINGW32__)
+# include "libdrizzle/windows.hpp"
+# define get_socket_errno() WSAGetLastError()
+
+#else
 # include <netinet/tcp.h>
 # include <sys/uio.h>
 # include <unistd.h>
+# include <cerrno>
+# define INVALID_SOCKET -1
+# define SOCKET_ERROR -1
+# define closesocket(a) close(a)
+# define get_socket_errno() errno
+
+#endif // defined(WIN32) || defined(__MINGW32__)
+
+#if defined(HAVE_POLL_H) && HAVE_POLL_H
+# include <poll.h>
+typedef struct pollfd pollfd_t;
+#else
+# include "libdrizzle/poll.h"
 #endif
 
 #include <stddef.h>
@@ -60,7 +77,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 
 #include "libdrizzle/structs.h"
 #include "libdrizzle/drizzle_local.h"

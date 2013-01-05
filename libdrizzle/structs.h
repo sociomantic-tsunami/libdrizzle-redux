@@ -43,9 +43,11 @@
 #pragma once
 
 #include <sys/types.h>
-#ifdef USE_OPENSSL
-#include <openssl/ssl.h>
+
+#if defined(HAVE_OPENSSL_SSL_H)
+# include <openssl/ssl.h>
 #endif
+
 #ifdef NI_MAXHOST
 # define LIBDRIZZLE_NI_MAXHOST NI_MAXHOST
 #else
@@ -53,7 +55,7 @@
 #endif
 
 #ifdef __cplusplus
-#include <cstddef>
+# include <cstddef>
 #endif
 
 #ifdef __cplusplus
@@ -61,6 +63,12 @@ extern "C" {
 #endif
 
 #include "libdrizzle/datetime.h"
+
+#if defined _WIN32 || defined __CYGWIN__
+typedef SOCKET socket_t;
+#else
+typedef int socket_t;
+#endif
 
 /**
  * @ingroup drizzle_command 
@@ -159,7 +167,7 @@ struct drizzle_st
   uint32_t result_count;
   uint32_t thread_id;
   int backlog;
-  int fd;
+  socket_t fd;
   size_t buffer_size;
   size_t command_offset;
   size_t command_size;
@@ -201,7 +209,7 @@ struct drizzle_st
   int timeout;
   drizzle_log_fn *log_fn;
   void *log_context;
-  struct pollfd pfds[1];
+  pollfd_t pfds[1];
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;

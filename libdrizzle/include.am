@@ -9,10 +9,12 @@ noinst_HEADERS+= libdrizzle/conn_local.h
 noinst_HEADERS+= libdrizzle/datetime.h
 noinst_HEADERS+= libdrizzle/drizzle_local.h
 noinst_HEADERS+= libdrizzle/pack.h
+noinst_HEADERS+= libdrizzle/poll.h
 noinst_HEADERS+= libdrizzle/sha1.h
 noinst_HEADERS+= libdrizzle/state.h
 noinst_HEADERS+= libdrizzle/statement_local.h
 noinst_HEADERS+= libdrizzle/structs.h
+noinst_HEADERS+= libdrizzle/windows.hpp
 
 lib_LTLIBRARIES+= libdrizzle/libdrizzle.la
 libdrizzle_libdrizzle_la_SOURCES=
@@ -23,12 +25,17 @@ libdrizzle_libdrizzle_la_CXXFLAGS= -DBUILDING_LIBDRIZZLE
 
 libdrizzle_libdrizzle_la_CFLAGS+= @OPENSSL_INCLUDES@
 libdrizzle_libdrizzle_la_CXXFLAGS+= @OPENSSL_INCLUDES@
+libdrizzle_libdrizzle_la_LDFLAGS+= @OPENSSL_LDFLAGS@
+libdrizzle_libdrizzle_la_LIBADD+= @OPENSSL_LIBS@
+
 libdrizzle_libdrizzle_la_CFLAGS+= @ZLIB_CFLAGS@
 libdrizzle_libdrizzle_la_CXXFLAGS+= @ZLIB_CFLAGS@
-libdrizzle_libdrizzle_la_LIBADD+= @OPENSSL_LIBS@
-libdrizzle_libdrizzle_la_LIBADD+= @ZLIB_LIBS@
-libdrizzle_libdrizzle_la_LDFLAGS+= @OPENSSL_LDFLAGS@
 libdrizzle_libdrizzle_la_LDFLAGS+= @ZLIB_LDFLAGS@
+libdrizzle_libdrizzle_la_LIBADD+= @ZLIB_LIBS@
+
+if BUILD_WIN32
+libdrizzle_libdrizzle_la_LIBADD+= -lmingw32 -lws2_32 -lgdi32
+endif
 
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/binlog.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/command.cc
@@ -43,6 +50,7 @@ libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/conn.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/drizzle.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/field.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/pack.cc
+libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/poll.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/result.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/sha1.cc
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/state.cc
