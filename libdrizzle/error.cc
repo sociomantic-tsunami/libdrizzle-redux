@@ -34,7 +34,9 @@
  *
  */
 
-#include <libdrizzle/common.h>
+#include "config.h"
+
+#include "libdrizzle/common.h"
 
 const char *drizzle_strerror(const drizzle_return_t arg)
 {

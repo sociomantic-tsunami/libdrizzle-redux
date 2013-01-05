@@ -36,10 +36,13 @@
  */
 
 #include "config.h"
+
 #include "libdrizzle/common.h"
 
 #include <libdrizzle-5.1/ssl.h>
-#include <openssl/ssl.h>
+
+#if defined(USE_OPENSSL)
+# include <openssl/ssl.h>
 
 drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 {
@@ -85,3 +88,12 @@ drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *c
 
   return DRIZZLE_RETURN_OK;
 }
+
+#else
+
+drizzle_return_t drizzle_set_ssl(drizzle_st*, const char*, const char*, const char*, const char*, const char*)
+{
+  return DRIZZLE_RETURN_INVALID_ARGUMENT;
+}
+
+#endif

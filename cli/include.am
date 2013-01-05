@@ -2,10 +2,12 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+if BUILD_WIN32
+else
 bin_PROGRAMS+= cli/drizzle_binlogs
 cli_drizzle_binlogs_SOURCES= cli/drizzle_binlogs.c
 cli_drizzle_binlogs_LDADD= libdrizzle/libdrizzle.la
 
 check_SCRIPTS+= cli/drizzle_binlogs_check.sh
 EXTRA_DIST+= ${check_SCRIPTS}
-
+endif

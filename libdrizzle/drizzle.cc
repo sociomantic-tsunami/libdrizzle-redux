@@ -43,6 +43,8 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#include <cerrno>
+
 /**
  * @addtogroup drizzle_static Static Drizzle Declarations
  * @ingroup drizzle
@@ -243,7 +245,7 @@ void drizzle_free(drizzle_st *con)
 
   drizzle_result_free_all(con);
 
-  if (con->fd != -1)
+  if (con->fd != INVALID_SOCKET)
   {
     drizzle_close(con);
   }

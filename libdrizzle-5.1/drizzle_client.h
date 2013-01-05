@@ -42,6 +42,17 @@
 
 #pragma once
 
+#ifndef DRIZZLE_CLIENT_INTERFACE
+# define DRIZZLE_CLIENT_INTERFACE 1
+#endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <sys/types.h>
+
+/* Visibility must come first */
+#include <libdrizzle-5.1/visibility.h>
+
 #include <libdrizzle-5.1/drizzle.h>
 #include <libdrizzle-5.1/conn_client.h>
 #include <libdrizzle-5.1/handshake_client.h>
@@ -52,9 +63,7 @@
 #include <libdrizzle-5.1/row_client.h>
 #include <libdrizzle-5.1/field_client.h>
 #include <libdrizzle-5.1/error.h>
-#ifdef USE_OPENSSL
 #include <libdrizzle-5.1/ssl.h>
-#endif
 #include <libdrizzle-5.1/binlog.h>
 #include <libdrizzle-5.1/statement.h>
 #include <libdrizzle-5.1/version.h>

@@ -34,15 +34,25 @@
  *
  */
 
-#define _GNU_SOURCE 1
+#include "config.h"
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <pwd.h>
+
+#ifdef HAVE_PWD_H
+# include <pwd.h>
+#endif
+
 #include <unistd.h>
 #include <errno.h>
-#include <argp.h>
 #include <time.h>
+
+#ifdef HAVE_ARGP_H
+# include <argp.h>
+#else
+# error "drizzle_binlogs requires <argp.h>"
+#endif
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)

@@ -57,23 +57,37 @@ AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
-AX_CHECK_OPENSSL
+
+AS_IF([test "x${target_os}" != "xmingw32"], [AX_CHECK_OPENSSL])
+
 AC_PATH_ZLIB
 
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],
          [AC_LANG_PUSH([C++])
          AC_CHECK_HEADERS([cxxabi.h])
-         AC_LANG_POP
-         ])
+         AC_LANG_POP])
+
 CHECK_FOR_CXXABI
-AC_CHECK_HEADERS_ONCE([errno.h])
-AC_CHECK_HEADERS_ONCE([sys/socket.h])
-AC_CHECK_HEADERS_ONCE([poll.h])
+AC_CHECK_HEADERS([argp.h])
+AC_CHECK_HEADERS([errno.h])
+AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_HEADERS([io.h])
+AC_CHECK_HEADERS([openssl/ssl.h])
+AC_CHECK_HEADERS([poll.h])
+AC_CHECK_HEADERS([pwd.h])
+AC_CHECK_HEADERS([sys/socket.h])
+AC_CHECK_HEADERS([windows.h])
+AC_CHECK_HEADERS([winsock2.h])
+AC_CHECK_HEADERS([ws2tcpip.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_TYPES([in_port_t])
+AC_TYPE_SSIZE_T
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
+AC_CHECK_FUNCS([fcntl])
 AC_CHECK_FUNCS([poll])
 AC_CHECK_FUNCS([ppoll])
 

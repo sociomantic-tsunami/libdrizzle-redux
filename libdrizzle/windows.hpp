@@ -1,7 +1,7 @@
 /*
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2012 Drizzle Developers (http://drizzle.org)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,58 +34,90 @@
  *
  */
 
-/**
- * @file
- * @brief System Include Files
- */
-
 #pragma once
 
-#include <libdrizzle-5.1/drizzle_client.h>
-
-#include <cassert>
-
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
-
-#if defined(WIN32) || defined(__MINGW32__)
-# include "libdrizzle/windows.hpp"
-# define get_socket_errno() WSAGetLastError()
-
-#else
-# include <netinet/tcp.h>
-# include <sys/uio.h>
-# include <unistd.h>
+#ifdef __cplusplus
 # include <cerrno>
-# define INVALID_SOCKET -1
-# define SOCKET_ERROR -1
-# define closesocket(a) close(a)
-# define get_socket_errno() errno
-
-#endif // defined(WIN32) || defined(__MINGW32__)
-
-#if defined(HAVE_POLL_H) && HAVE_POLL_H
-# include <poll.h>
-typedef struct pollfd pollfd_t;
 #else
-# include "libdrizzle/poll.h"
+# include <errno.h>
 #endif
 
-#include <stddef.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef WIN32_LEAN_AND_MEAN
+# define WIN32_LEAN_AND_MEAN
+#endif
 
-#include "libdrizzle/structs.h"
-#include "libdrizzle/drizzle_local.h"
-#include "libdrizzle/conn_local.h"
-#include "libdrizzle/pack.h"
-#include "libdrizzle/state.h"
-#include "libdrizzle/sha1.h"
-#include "libdrizzle/statement_local.h"
-#include "libdrizzle/column.h"
-#include "libdrizzle/binlog.h"
+#ifndef _WIN32_WINNT
+# define _WIN32_WINNT 0x0501
+#endif
 
-#include <memory.h>
+#ifdef __MINGW32__
+# if(_WIN32_WINNT >= 0x0501)
+# else
+#  undef _WIN32_WINNT
+#  define _WIN32_WINNT 0x0501
+# endif /* _WIN32_WINNT >= 0x0501 */
+#endif /* __MINGW32__ */
+
+#if defined(HAVE_WINSOCK2_H) && HAVE_WINSOCK2_H
+# include <winsock2.h>
+#endif
+
+#if defined(HAVE_WS2TCPIP_H) && HAVE_WS2TCPIP_H
+# include <ws2tcpip.h>
+#endif
+
+#if defined(HAVE_IO_H) && HAVE_IO_H
+# include <io.h>
+#endif
+
+struct sockaddr_un
+{
+  short int sun_family;
+  char sun_path[108];
+};
+
+static inline int translate_windows_error()
+{
+  int local_errno= WSAGetLastError();
+
+  switch(local_errno) {
+  case WSAEINVAL:
+  case WSAEALREADY:
+  case WSAEWOULDBLOCK:
+    local_errno= EINPROGRESS;
+    break;
+
+  case WSAECONNREFUSED:
+    local_errno= ECONNREFUSED;
+    break;
+
+  case WSAENETUNREACH:
+    local_errno= ENETUNREACH;
+    break;
+
+  case WSAETIMEDOUT:
+    local_errno= ETIMEDOUT;
+    break;
+
+  case WSAECONNRESET:
+    local_errno= ECONNRESET;
+    break;
+
+  case WSAEADDRINUSE:
+    local_errno= EADDRINUSE;
+    break;
+
+  case WSAEOPNOTSUPP:
+    local_errno= EOPNOTSUPP;
+    break;
+
+  case WSAENOPROTOOPT:
+    local_errno= ENOPROTOOPT;
+    break;
+
+  default:
+    break;
+  }
+
+  return local_errno;
+}
