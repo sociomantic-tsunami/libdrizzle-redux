@@ -37,6 +37,7 @@
 
 #include "config.h"
 #include "libdrizzle/common.h"
+
 #include <zlib.h>
 
 drizzle_result_st *drizzle_start_binlog(drizzle_st *con,

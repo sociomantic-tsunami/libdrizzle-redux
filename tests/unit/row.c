@@ -143,11 +143,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   size_t *sizes= drizzle_row_field_sizes(result);
-  if (sizes[0] != 1)
-  {
-    printf("Row size mismatch (4 != %lu)\n", sizes[0]);
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ(sizes[0], 1);
 
   drizzle_result_free(result);
 

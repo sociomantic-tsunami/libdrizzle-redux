@@ -1,8 +1,7 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
- *
+/*
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Drizzle Developer Group
+ * Copyright (C) 2012 Drizzle Developers (http://drizzle.org)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,24 +37,87 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+# include <cerrno>
+#else
+# include <errno.h>
 #endif
 
-drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned, bool is_allocated);
+#ifndef WIN32_LEAN_AND_MEAN
+# define WIN32_LEAN_AND_MEAN
+#endif
 
-char *long_to_string(drizzle_bind_st *param, uint32_t val);
+#ifndef _WIN32_WINNT
+# define _WIN32_WINNT 0x0501
+#endif
 
-char *longlong_to_string(drizzle_bind_st *param, uint64_t val);
+#ifdef __MINGW32__
+# if(_WIN32_WINNT >= 0x0501)
+# else
+#  undef _WIN32_WINNT
+#  define _WIN32_WINNT 0x0501
+# endif /* _WIN32_WINNT >= 0x0501 */
+#endif /* __MINGW32__ */
 
-char *double_to_string(drizzle_bind_st *param, double val);
+#if defined(HAVE_WINSOCK2_H) && HAVE_WINSOCK2_H
+# include <winsock2.h>
+#endif
 
-char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time);
+#if defined(HAVE_WS2TCPIP_H) && HAVE_WS2TCPIP_H
+# include <ws2tcpip.h>
+#endif
 
-char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp);
+#if defined(HAVE_IO_H) && HAVE_IO_H
+# include <io.h>
+#endif
 
-uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *column_name, drizzle_return_t *ret_ptr);
+struct sockaddr_un
+{
+  short int sun_family;
+  char sun_path[108];
+};
 
-#ifdef __cplusplus
+static inline int translate_windows_error()
+{
+  int local_errno= WSAGetLastError();
+
+  switch(local_errno) {
+  case WSAEINVAL:
+  case WSAEALREADY:
+  case WSAEWOULDBLOCK:
+    local_errno= EINPROGRESS;
+    break;
+
+  case WSAECONNREFUSED:
+    local_errno= ECONNREFUSED;
+    break;
+
+  case WSAENETUNREACH:
+    local_errno= ENETUNREACH;
+    break;
+
+  case WSAETIMEDOUT:
+    local_errno= ETIMEDOUT;
+    break;
+
+  case WSAECONNRESET:
+    local_errno= ECONNRESET;
+    break;
+
+  case WSAEADDRINUSE:
+    local_errno= EADDRINUSE;
+    break;
+
+  case WSAEOPNOTSUPP:
+    local_errno= EOPNOTSUPP;
+    break;
+
+  case WSAENOPROTOOPT:
+    local_errno= ENOPROTOOPT;
+    break;
+
+  default:
+    break;
+  }
+
+  return local_errno;
 }
-#endif
-

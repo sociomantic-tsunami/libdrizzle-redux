@@ -56,9 +56,23 @@
 # define FD_CLOEXEC 0
 #endif
 
+#ifndef F_GETFD
+# define F_GETFD 0
+#endif
+
 #ifndef MSG_DONTWAIT
 # define MSG_DONTWAIT 0
 #endif
+
+#ifndef MSG_NOSIGNAL
+# define MSG_NOSIGNAL 0
+#endif
+
+#ifndef EWOULDBLOCK
+# define EWOULDBLOCK EAGAIN
+#endif
+
+#include <cerrno>
 
 /**
  * @addtogroup drizzle_static Static Connection Declarations
@@ -75,52 +89,15 @@
  */
 static drizzle_return_t _setsockopt(drizzle_st *con);
 
-static void __closesocket(int& fd)
+static void __closesocket(socket_t& fd)
 {
-  if (fd != -1)
+  if (fd != INVALID_SOCKET)
   {
     (void)shutdown(fd, SHUT_RDWR);
     (void)closesocket(fd);
-    fd= -1;
+    fd= INVALID_SOCKET;
   }
 }
-
-#ifdef WIN32
-static void translate_windows_error()
-{
-  errno= WSAGetLastError();
-  switch(errno) {
-  case WSAEINVAL:
-  case WSAEALREADY:
-  case WSAEWOULDBLOCK:
-    errno= EINPROGRESS;
-    break;
-  case WSAECONNREFUSED:
-    errno= ECONNREFUSED;
-    break;
-  case WSAENETUNREACH:
-    errno= ENETUNREACH;
-    break;
-  case WSAETIMEDOUT:
-    errno= ETIMEDOUT;
-    break;
-  case WSAECONNRESET:
-    errno= ECONNRESET;
-    break;
-  case WSAEADDRINUSE:
-    errno= EADDRINUSE;
-    break;
-  case WSAEOPNOTSUPP:
-    errno= EOPNOTSUPP;
-    break;
-  case WSAENOPROTOOPT:
-    errno= ENOPROTOOPT;
-    break;
-  default:
-    break;
-  }
-}
-#endif
 
 static bool connect_poll(drizzle_st *con)
 {
@@ -148,7 +125,11 @@ static bool connect_poll(drizzle_st *con)
 
       if (fds[0].revents & (POLLERR | POLLHUP | POLLNVAL))
       {
+#ifdef __MINGW32__
+        char err;
+#else
         int err;
+#endif
         socklen_t len= sizeof (err);
         // We replace errno with err if getsockopt() passes, but err has been
         // set.
@@ -232,7 +213,7 @@ void drizzle_close(drizzle_st *con)
     return;
   }
 
-  if (con->fd == -1)
+  if (con->fd == INVALID_SOCKET)
   {
     return;
   }
@@ -935,7 +916,9 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 
   if (con->socket_type == DRIZZLE_CON_SOCKET_UDS)
   {
-#ifndef WIN32
+#if defined _WIN32 || defined __CYGWIN__
+    return DRIZZLE_RETURN_COULD_NOT_CONNECT;
+#else // defined _WIN32 || defined __CYGWIN__
     if ((con->fd= socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
       con->last_errno= errno;
@@ -971,9 +954,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     } while (0);
 
     return DRIZZLE_RETURN_OK;
-#else
-    return DRIZZLE_RETURN_COULD_NOT_CONNECT;
-#endif
+#endif // defined _WIN32 || defined __CYGWIN__
   }
   else
   {
@@ -1020,7 +1001,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     {
       int ret= connect(con->fd, con->addrinfo_next->ai_addr, con->addrinfo_next->ai_addrlen);
 
-#ifdef _WIN32
+#if defined _WIN32 || defined __CYGWIN__
       translate_windows_error();
 #endif /* _WIN32 */
 
@@ -1086,7 +1067,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
       drizzle_state_pop(con);
       socklen_t error_length= sizeof(error);
       int getsockopt_error;
-      if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (void*)&error, &error_length)) < 1)
+      if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (char*)&error, &error_length)) < 1)
       {
         drizzle_set_error(con, __func__, strerror(getsockopt_error));
         return DRIZZLE_RETURN_COULD_NOT_CONNECT;
@@ -1177,46 +1158,10 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     {
       read_size= recv(con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer, MSG_NOSIGNAL);
     }
-#ifdef _WIN32
-    if (_WIN32)
-    {
-      errno= WSAGetLastError();
-      switch (errno)
-      {
-      case WSAENOTCONN:
-      case WSAEWOULDBLOCK:
-        errno= EAGAIN;
-        break;
-      case WSAEINVAL:
-      case WSAEALREADY:
-        errno= EINPROGRESS;
-        break;
-      case WSAECONNREFUSED:
-        errno= ECONNREFUSED;
-        break;
-      case WSAENETUNREACH:
-        errno= ENETUNREACH;
-        break;
-      case WSAETIMEDOUT:
-        errno= ETIMEDOUT;
-        break;
-      case WSAECONNRESET:
-        errno= ECONNRESET;
-        break;
-      case WSAEADDRINUSE:
-        errno= EADDRINUSE;
-        break;
-      case WSAEOPNOTSUPP:
-        errno= EOPNOTSUPP;
-        break;
-      case WSAENOPROTOOPT:
-        errno= ENOPROTOOPT;
-        break;
-      default:
-        break;
-      }
-    }
-#endif /* _WIN32 */	
+
+#if defined _WIN32 || defined __CYGWIN__
+    errno= translate_windows_error();
+#endif // defined _WIN32 || defined __CYGWIN__
 
     drizzle_log_crazy(con, "read fd=%d recv=%zd ssl= %d errno=%s",
                       con->fd, read_size, 
@@ -1337,42 +1282,9 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       write_size= send(con->fd,(char *) con->buffer_ptr, con->buffer_size, MSG_NOSIGNAL);
     }
 
-#ifdef _WIN32
-    errno = WSAGetLastError();
-    switch(errno) {
-    case WSAENOTCONN:
-    case WSAEWOULDBLOCK:
-      errno= EAGAIN;
-      break;
-    case WSAEINVAL:
-    case WSAEALREADY:
-      errno= EINPROGRESS;
-      break;
-    case WSAECONNREFUSED:
-      errno= ECONNREFUSED;
-      break;
-    case WSAENETUNREACH:
-      errno= ENETUNREACH;
-      break;
-    case WSAETIMEDOUT:
-      errno= ETIMEDOUT;
-      break;
-    case WSAECONNRESET:
-      errno= ECONNRESET;
-      break;
-    case WSAEADDRINUSE:
-      errno= EADDRINUSE;
-      break;
-    case WSAEOPNOTSUPP:
-      errno= EOPNOTSUPP;
-      break;
-    case WSAENOPROTOOPT:
-      errno= ENOPROTOOPT;
-      break;
-    default:
-      break;
-    }
-#endif /* _WIN32 */	
+#if defined _WIN32 || defined __CYGWIN__
+    errno= translate_windows_error();
+#endif // defined _WIN32 || defined __CYGWIN__
 
     drizzle_log_crazy(con, "write fd=%d return=%zd ssl=%d errno=%s",
                       con->fd, write_size,
@@ -1448,27 +1360,32 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  if (SOCK_CLOEXEC == 0)
+#ifdef HAVE_FCNTL
+  if (HAVE_FCNTL)
   {
-    if (FD_CLOEXEC)
+    if (SOCK_CLOEXEC == 0)
     {
-      int flags;
-      do
+      if (FD_CLOEXEC and F_GETFD)
       {
-        flags= fcntl(con->fd, F_GETFD, 0);
-      } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
-
-      if (flags != -1)
-      { 
-        int rval;
+        int flags;
         do
+        {
+          flags= fcntl(con->fd, F_GETFD, 0);
+        } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
+
+        if (flags != -1)
         { 
-          rval= fcntl (con->fd, F_SETFD, flags | FD_CLOEXEC);
-        } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
-        // we currently ignore the case where rval is -1
+          int rval;
+          do
+          { 
+            rval= fcntl (con->fd, F_SETFD, flags | FD_CLOEXEC);
+          } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+          // we currently ignore the case where rval is -1
+        }
       }
     }
   }
+#endif // HAVE_FCNTL
                                                                           
 
   int ret= 1;

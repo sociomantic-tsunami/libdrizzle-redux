@@ -40,6 +40,8 @@
  * @brief Query definitions
  */
 
+#include "config.h"
+
 #include <libdrizzle/common.h>
 
 drizzle_result_st *drizzle_query(drizzle_st *con,

@@ -36,63 +36,27 @@
 
 #pragma once
 
+#ifndef DRIZZLE_CLIENT_INTERFACE
+# error "You need to include libdrizzle-5.1/drizzle_client.h in your application"
+#endif
+
 /**
  * @file
  * @brief Drizzle Declarations
  */
 
-#include <sys/types.h>
-
 #ifdef _WIN32
-# define WIN32_LEAN_AND_MEAN
 
-# include <Windows.h>
-# include <winsock2.h>
-# include <ws2tcpip.h>
-# include <io.h>
-
-# undef close
-# define close _close
-typedef unsigned int in_port_t;
-typedef long ssize_t;
-
-# define snprintf _snprintf
-# define inline __inline
-
-struct sockaddr_un
-{
-  short int sun_family;
-  char sun_path[108];
-};
-
-# define poll WSAPoll
-//# define pollfd WSAPOLLFD
-
-#if defined(__GNUC__)
-# include <stdbool.h>
-#else
-# if !defined(__cplusplus)
-typedef enum { false = 0, true = 1 } _Bool;
-typedef _Bool bool;
-#endif 
-#endif
+typedef int in_port_t;
 
 #else
-# if !defined(__cplusplus)
-#  include <stdbool.h>
-# endif
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <sys/un.h>
 # include <netdb.h>
-# include <poll.h>
-#endif
-#ifdef USE_OPENSSL
-#include <openssl/ssl.h>
 #endif
 
-#include <libdrizzle-5.1/visibility.h>
 #include <libdrizzle-5.1/constants.h>
 #include <libdrizzle-5.1/structs.h>
 #include <libdrizzle-5.1/conn.h>
