@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
-  drizzle_result_st *result= drizzle_select_db(con, "libdrizzle", &ret);
+  ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
+  drizzle_result_st *result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Select failure\n");

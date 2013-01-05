@@ -671,13 +671,16 @@ drizzle_return_t drizzle_quit(drizzle_st *con)
   return DRIZZLE_RETURN_INVALID_ARGUMENT;
 }
 
-drizzle_result_st *drizzle_select_db(drizzle_st *con,
-                                         const char *db,
-                                         drizzle_return_t *ret_ptr)
+drizzle_return_t drizzle_select_db(drizzle_st *con,
+                                         const char *db)
 {
+  drizzle_result_st *result;
+  drizzle_return_t ret;
   drizzle_set_db(con, db);
-  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
-                                   db, strlen(db), strlen(db), ret_ptr);
+  result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
+                                   db, strlen(db), strlen(db), &ret);
+  drizzle_result_free(result);
+  return ret;
 }
 
 drizzle_result_st *drizzle_shutdown(drizzle_st *con,

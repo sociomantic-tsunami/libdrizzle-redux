@@ -73,8 +73,7 @@ int main(int argc, char *argv[])
   drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
-  drizzle_result_st *result= drizzle_select_db(con, "libdrizzle", &ret);
-  ASSERT_TRUE(result);
+  ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
   drizzle_query_str(con, "create table libdrizzle.t1 (a int)", &ret);
