@@ -168,6 +168,21 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, timestamp, 0, false, true);
 }
 
+bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_is_null(stmt, column_number, ret_ptr);
+}
+
 bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
@@ -180,6 +195,21 @@ bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, dri
   return stmt->result_params[column_number].options.is_null;
 }
 
+bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_is_unsigned(stmt, column_number, ret_ptr);
+}
+
 bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
@@ -190,6 +220,21 @@ bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number,
 
   *ret_ptr= DRIZZLE_RETURN_OK;
   return stmt->result_params[column_number].options.is_unsigned;
+}
+
+const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_string(stmt, column_number, len, ret_ptr);
 }
 
 const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
@@ -276,6 +321,21 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
   return val;
 }
 
+uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_int(stmt, column_number, ret_ptr);
+}
+
 uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint32_t val;
@@ -350,6 +410,21 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
   return val;
 }
 
+uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_bigint(stmt, column_number, ret_ptr);
+}
+
 uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint32_t val;
@@ -418,6 +493,21 @@ uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, 
   }
 
   return val;
+}
+
+double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_double(stmt, column_number, ret_ptr);
 }
 
 double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
@@ -556,4 +646,19 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
     snprintf(param->converted_data, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
   }
   return param->converted_data;
+}
+
+uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t current_column;
+  for (current_column= 0; current_column < result->column_count; current_column++)
+  {
+    if (strncmp(column_name, result->column_buffer[current_column].name, DRIZZLE_MAX_COLUMN_NAME_SIZE) == 0)
+    {
+      *ret_ptr= DRIZZLE_RETURN_OK;
+      return current_column;
+    }
+  }
+  *ret_ptr= DRIZZLE_RETURN_NOT_FOUND;
+  return 0;
 }

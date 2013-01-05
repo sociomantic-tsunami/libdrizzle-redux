@@ -133,6 +133,13 @@ int main(int argc, char *argv[])
       printf("Retrieved unexpected int value\n");
       return EXIT_FAILURE;
     }
+    res_val= drizzle_stmt_get_int_from_name(stmt, "a", &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int (char col name)");
+    if (res_val != i)
+    {
+      printf("Rerieved unexpected int value with char col name\n");
+      return EXIT_FAILURE;
+    }
     snprintf(comp_val, 3, "%"PRIu32, i);
     if (strcmp(comp_val, char_val) != 0)
     {
