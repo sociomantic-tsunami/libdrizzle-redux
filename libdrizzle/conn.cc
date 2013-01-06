@@ -1002,7 +1002,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       int ret= connect(con->fd, con->addrinfo_next->ai_addr, con->addrinfo_next->ai_addrlen);
 
 #if defined _WIN32 || defined __CYGWIN__
-      translate_windows_error();
+      errno= translate_windows_error();
 #endif /* _WIN32 */
 
       drizzle_log_crazy(con, "connect return=%d errno=%s", ret, strerror(errno));
