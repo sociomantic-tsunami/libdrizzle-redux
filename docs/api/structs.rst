@@ -20,6 +20,7 @@ Statement
 .. c:type:: drizzle_datetime_st
 
    The internal struct for passing a date/time to/from the prepared statement API
+
 Binlog
 ------
 
