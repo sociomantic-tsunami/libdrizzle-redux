@@ -82,9 +82,11 @@ static inline int translate_windows_error()
 
   switch(local_errno) {
   case WSAEINVAL:
+    local_errno= EINPROGRESS;
+    break;
   case WSAEALREADY:
   case WSAEWOULDBLOCK:
-    local_errno= EINPROGRESS;
+    local_errno= EAGAIN;
     break;
 
   case WSAECONNREFUSED:
