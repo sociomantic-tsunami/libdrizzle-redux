@@ -34,7 +34,8 @@ libdrizzle_libdrizzle_la_LDFLAGS+= @ZLIB_LDFLAGS@
 libdrizzle_libdrizzle_la_LIBADD+= @ZLIB_LIBS@
 
 if BUILD_WIN32
-libdrizzle_libdrizzle_la_LIBADD+= -lmingw32 -lws2_32 -lgdi32
+libdrizzle_libdrizzle_la_LIBADD+= -lmingw32
+libdrizzle_libdrizzle_la_LIBADD+= -lws2_32
 endif
 
 libdrizzle_libdrizzle_la_SOURCES+= libdrizzle/binlog.cc
