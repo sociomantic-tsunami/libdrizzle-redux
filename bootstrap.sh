@@ -93,6 +93,14 @@ assert_no_file ()
   fi
 }
 
+assert_no_directory ()
+{
+  if [ -d "$1" ]; then
+    echo "$BASH_SOURCE:$BASH_LINENO: assert($1) directory exists: $2" >&2
+    exit 1;
+  fi
+}
+
 assert_exec_file ()
 {
   if [ ! -f "$1" ]; then
@@ -108,6 +116,14 @@ assert_exec_file ()
 
 command_exists ()
 {
+  # ret=0
+  # $1 --version >/dev/null 2>&1
+  #if [ 126 -le $? ]; then
+  #echo "$me: Error: '$app' not found" >&2
+  #ret=1
+  #fi
+  #return $ret
+
   type "$1" &> /dev/null ;
 }
 
@@ -500,21 +516,28 @@ function make_for_snapshot ()
 
 function make_for_mingw32 ()
 {
+  if ! command_exists mingw32-configure; then
+    die 'mingw32-configure was not found, do you have mingw installed?'
+  fi
+
+  if ! command_exists mingw32-make; then
+    die 'mingw32-make was not found, do you have mingw installed?'
+  fi
+
   # Make sure it is clean
   if [ -f Makefile -o -f configure ]; then
     make_maintainer_clean
   fi
-  assert_no_file 'Makefile'
 
-  if command_exists mingw32-configure; then
-    run_autoreconf
+  run_autoreconf
 
-    mingw32-configure || die 'mingw32-configure failed'
-    assert_file 'Makefile'
+  mingw32-configure '--enable-static' || die 'mingw32-configure failed'
+  assert_file 'Makefile'
 
-    if command_exists mingw32-make; then
-      mingw32-make || die 'mingw32-make failed'
-    fi
+  mingw32-make || die 'mingw32-make failed'
+  if command_exists wineconsole; then
+    TESTS_ENVIRONMENT='wineconsole --backend=curses'
+    mingw32-make 'check' || die 'mingw32-make check failed'
   fi
 }
 
@@ -631,6 +654,14 @@ function self_test ()
   eval "./bootstrap.sh maintainer-clean" || die "failed 'maintainer-clean'"
 }
 
+function make_install_html ()
+{
+  run_configure_if_required
+  assert_file 'configure'
+
+  make_target 'install-html'
+}
+
 function make_gdb ()
 {
   run_configure_if_required
@@ -716,6 +747,11 @@ function make_maintainer_clean ()
 {
   run_configure_if_required
   make_target 'maintainer-clean' 'no_error'
+
+  # Lets make sure we really cleaned up the environment
+  assert_no_file 'Makefile'
+  assert_no_file 'configure'
+  assert_no_directory 'autom4te.cache'
 }
 
 function make_check ()
@@ -1189,6 +1225,9 @@ function bootstrap ()
         ;;
       'gdb')
         make_gdb
+        ;;
+      'install-html')
+        make_install_html
         ;;
       'clean_op')
         make_clean_option
