@@ -15,6 +15,7 @@ lib_LTLIBRARIES =
 man_MANS =
 noinst_LTLIBRARIES =
 noinst_PROGRAMS =
+noinst_SCRIPTS=
 include_HEADERS =
 nobase_include_HEADERS =
 check_PROGRAMS =
@@ -68,6 +69,5 @@ maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f @PACKAGE@-*.rpm
-	-rm @GENERIC_CONFIG@
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@ 
