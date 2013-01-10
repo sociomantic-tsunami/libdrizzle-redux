@@ -34,7 +34,7 @@
       AC_DEFINE_UNQUOTED([TARGET_CPU],["$target_cpu"], [CPU of Target System])
 
       AS_CASE([$target_os],
-        [*mingw32*],
+        [*mingw*],
         [TARGET_WINDOWS="true"
         AC_DEFINE([TARGET_OS_WINDOWS], [1], [Whether we are building for Windows])
         AC_DEFINE([EAI_SYSTEM], [11], [Another magical number])

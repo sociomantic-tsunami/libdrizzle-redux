@@ -58,7 +58,7 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 
-AS_IF([test "x${target_os}" != "xmingw32"], [AX_CHECK_OPENSSL])
+AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 

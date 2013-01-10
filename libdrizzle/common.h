@@ -49,7 +49,7 @@
 # include <fcntl.h>
 #endif
 
-#if defined(WIN32) || defined(__MINGW32__)
+#if defined(_WIN32) || defined(__MINGW32__)
 # include "libdrizzle/windows.hpp"
 # define get_socket_errno() WSAGetLastError()
 
@@ -63,7 +63,7 @@
 # define closesocket(a) close(a)
 # define get_socket_errno() errno
 
-#endif // defined(WIN32) || defined(__MINGW32__)
+#endif // defined(_WIN32) || defined(__MINGW32__)
 
 #if defined(HAVE_POLL_H) && HAVE_POLL_H
 # include <poll.h>

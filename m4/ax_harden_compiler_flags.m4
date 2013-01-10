@@ -61,9 +61,10 @@ AC_DEFUN([_WARNINGS_AS_ERRORS],
       ])
     ])
 
+# Note: Should this be LIBS or LDFLAGS?
 AC_DEFUN([_APPEND_LINK_FLAGS_ERROR],
          [AC_REQUIRE([AX_APPEND_LINK_FLAGS])
-         AX_APPEND_LINK_FLAGS([$1],[LIB],[-Werror])
+         AX_APPEND_LINK_FLAGS([$1],[LDFLAGS],[-Werror])
          ])
 
 AC_DEFUN([_APPEND_COMPILE_FLAGS_ERROR],
@@ -75,7 +76,7 @@ AC_DEFUN([_APPEND_COMPILE_FLAGS_ERROR],
 
 AC_DEFUN([_HARDEN_LINKER_FLAGS],
          [_APPEND_LINK_FLAGS_ERROR([-z relro -z now])
-         _APPEND_LINK_FLAGS_ERROR([-pie])
+         #_APPEND_LINK_FLAGS_ERROR([-pie])
          AS_IF([test "x$ac_cv_warnings_as_errors" = xyes],
                [AX_APPEND_LINK_FLAGS([-Werror])])
          ])
@@ -151,7 +152,7 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
 
           AS_IF([test "x$ax_enable_debug" = xno],
             [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-              [AS_IF([test "x${target_os}" != "xmingw32"],
+              [AS_IF([test "x${target_os}" != "xmingw"],
                 [AS_IF([test "x$ac_c_gcc_recent" = xyes],
                   [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
                   #_APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
@@ -230,7 +231,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
 
           AS_IF([test "x$ax_enable_debug" = xno],
           [AS_IF([test "x$ac_cv_vcs_checkout" = xyes],
-            [AS_IF([test "x${target_os}" != "xmingw32"],
+            [AS_IF([test "x${target_os}" != "xmingw"],
               [AS_IF([test "x$ac_c_gcc_recent" = xyes],
                 [_APPEND_COMPILE_FLAGS_ERROR([-D_FORTIFY_SOURCE=2])
                 #_APPEND_COMPILE_FLAGS_ERROR([-Wstack-protector])
