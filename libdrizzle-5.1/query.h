@@ -73,14 +73,6 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr);
 
-/**
- * Send query to server, using strlen to get the size of query buffer..
- */
-DRIZZLE_API
-drizzle_result_st *drizzle_query_str(drizzle_st *con,
-                                     const char *query,
-                                     drizzle_return_t *ret_ptr);
-
 /*
  * Escape a string or encode a string in hexadecimal. The return value is the
  * size of the output string in to.

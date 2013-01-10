@@ -27,17 +27,7 @@ Functions
 
    :param con: A connection object
    :param query: The query to execute
-   :param size: The length of the query string
-   :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
-   :returns: A newly allocated result object
-
-.. c:function:: drizzle_result_st* drizzle_query_str(drizzle_st *con, const char *query, drizzle_return_t *ret_ptr)
-
-   Executes a query using :c:func:`strlen` to calculate the length of the query
-   string and returns a newly allocated result struct
-
-   :param con: A connection object
-   :param query: The query to execute
+   :param size: The length of the query string, if set to 0 then :c:func:`strlen` is used to calculate the length
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 

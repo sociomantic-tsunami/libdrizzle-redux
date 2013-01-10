@@ -52,7 +52,7 @@ drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
   drizzle_result_st *result;
 
   // Hack in 5.6 to say that client support checksums
-  result= drizzle_query_str(con, "SET @master_binlog_checksum='NONE'", ret_ptr);
+  result= drizzle_query(con, "SET @master_binlog_checksum='NONE'", 0, ret_ptr);
   drizzle_result_free(result);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
   {

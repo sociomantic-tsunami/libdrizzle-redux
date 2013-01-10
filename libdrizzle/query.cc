@@ -48,25 +48,13 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr)
 {
-  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
-                                   (unsigned char *)query, size, size, ret_ptr);
-}
-
-drizzle_result_st *drizzle_query_str(drizzle_st *con,
-                                     const char *query, 
-                                     drizzle_return_t *ret_ptr)
-{
-  if (query == NULL)
+  if (size == 0)
   {
-    return NULL;
+    size= strlen(query);
   }
-
-  size_t size= strlen(query);
-
   return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
                                    (unsigned char *)query, size, size, ret_ptr);
 }
-
 
 ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *from, const size_t from_size)
 {
