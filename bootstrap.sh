@@ -45,14 +45,36 @@
 
 command_not_found_handle ()
 {
-  echo "Command not found: '$@'"
-  exit 127
+  warn "$@: command not found"
+
+  #if $DEBUG; then 
+    echo ""
+    echo "Stack trace:"
+    local frame=0
+    while caller $frame; do
+      ((frame++));
+    done
+    echo ""
+  #fi
+
+  return 127
+}
+
+function error ()
+{ 
+  echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
 }
 
 function die ()
 { 
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
   exit 1; 
+}
+
+function warn ()
+{ 
+  echo "$BASH_SOURCE:$BASH_LINENO: $@"
+  #echo "$BASH_SOURCE:$BASH_LINENO: $@" >&1
 }
 
 function nassert ()
@@ -77,7 +99,7 @@ function assert ()
   fi
 }
 
-assert_file ()
+function assert_file ()
 {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
@@ -85,7 +107,7 @@ assert_file ()
   fi
 }
 
-assert_no_file ()
+function assert_no_file ()
 {
   if [ -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) file exists: $2" >&2
@@ -93,7 +115,7 @@ assert_no_file ()
   fi
 }
 
-assert_no_directory ()
+function assert_no_directory ()
 {
   if [ -d "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) directory exists: $2" >&2
@@ -101,7 +123,7 @@ assert_no_directory ()
   fi
 }
 
-assert_exec_file ()
+function assert_exec_file ()
 {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
@@ -114,20 +136,12 @@ assert_exec_file ()
   fi
 }
 
-command_exists ()
+function command_exists ()
 {
-  # ret=0
-  # $1 --version >/dev/null 2>&1
-  #if [ 126 -le $? ]; then
-  #echo "$me: Error: '$app' not found" >&2
-  #ret=1
-  #fi
-  #return $ret
-
   type "$1" &> /dev/null ;
 }
 
-rebuild_host_os ()
+function rebuild_host_os ()
 {
   HOST_OS="${UNAME_MACHINE_ARCH}-${VENDOR}-${VENDOR_DISTRIBUTION}-${VENDOR_RELEASE}-${UNAME_KERNEL}-${UNAME_KERNEL_RELEASE}"
   if [ -z "$1" ]; then
@@ -138,7 +152,7 @@ rebuild_host_os ()
 }
 
 #  Valid values are: darwin,fedora,rhel,ubuntu
-set_VENDOR_DISTRIBUTION ()
+function set_VENDOR_DISTRIBUTION ()
 {
   local dist=`echo "$1" | tr '[A-Z]' '[a-z]'`
   case "$dist" in
@@ -163,7 +177,7 @@ set_VENDOR_DISTRIBUTION ()
   esac
 }
 
-set_VENDOR_RELEASE ()
+function set_VENDOR_RELEASE ()
 {
   local release=`echo "$1" | tr '[A-Z]' '[a-z]'`
   case "$VENDOR_DISTRIBUTION" in
@@ -193,7 +207,7 @@ set_VENDOR_RELEASE ()
 
 
 #  Valid values are: apple, redhat, centos, canonical
-set_VENDOR ()
+function set_VENDOR ()
 {
   local vendor=`echo "$1" | tr '[A-Z]' '[a-z]'`
 
@@ -222,7 +236,7 @@ set_VENDOR ()
   set_VENDOR_RELEASE $3
 }
 
-determine_target_platform ()
+function determine_target_platform ()
 {
   UNAME_MACHINE_ARCH=`(uname -m) 2>/dev/null` || UNAME_MACHINE_ARCH=unknown
   UNAME_KERNEL=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
@@ -258,7 +272,7 @@ determine_target_platform ()
   rebuild_host_os
 }
 
-run_configure ()
+function run_configure ()
 {
   # We will run autoreconf if we are required
   run_autoreconf_if_required
@@ -266,6 +280,10 @@ run_configure ()
   # We always begin at the root of our build
   if [ ! popd ]; then
     die "Programmer error, we entered run_configure with a stacked directory"
+  fi
+
+  if ! command_exists "$CONFIGURE"; then
+    die "$CONFIGURE does not exist"
   fi
 
   local BUILD_DIR="$1"
@@ -276,40 +294,52 @@ run_configure ()
   fi
 
   # Arguments for configure
-  local CONFIGURE_ARG= 
+  local BUILD_CONFIGURE_ARG= 
 
   # Set ENV DEBUG in order to enable debugging
   if $DEBUG; then 
-    CONFIGURE_ARG='--enable-debug'
+    BUILD_CONFIGURE_ARG='--enable-debug'
   fi
 
   # Set ENV ASSERT in order to enable assert
   if [[ -n "$ASSERT" ]]; then 
     local ASSERT_ARG=
     ASSERT_ARG='--enable-assert'
-    CONFIGURE_ARG="$ASSERT_ARG $CONFIGURE_ARG"
+    BUILD_CONFIGURE_ARG="$ASSERT_ARG $BUILD_CONFIGURE_ARG"
   fi
 
+  if [[ -n "$CONFIGURE_ARG" ]]; then 
+    BUILD_CONFIGURE_ARG= "$BUILD_CONFIGURE_ARG $CONFIGURE_ARG"
+  fi
+
+  ret=1;
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      CC=clang CXX=clang++ $top_srcdir/configure $CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $CONFIGURE_ARG $PREFIX_ARG"
+      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      ret=$?
       ;;
     rhel-5*)
-      command_exists gcc44 || die "Could not locate gcc44"
-      CC=gcc44 CXX=gcc44 $top_srcdir/configure $CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $CONFIGURE_ARG $PREFIX_ARG"
+      command_exists 'gcc44' || die "Could not locate gcc44"
+      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      ret=$?
       ;;
     *)
-      $top_srcdir/configure $CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute configure $CONFIGURE_ARG $PREFIX_ARG"
+      $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG
+      ret=$?
       ;;
   esac
 
+  if [ $ret -ne 0 ]; then
+    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+  fi
+
   if [ ! -f 'Makefile' ]; then
-    die "Programmer error, configure was run but no Makefile existed afterward"
+    die "Programmer error, configure was run but no Makefile existed after $CONFIGURE was run"
   fi
 }
 
-setup_gdb_command () {
+function setup_gdb_command () {
   GDB_TMPFILE=$(mktemp /tmp/gdb.XXXXXXXXXX)
   echo 'set logging overwrite on' > $GDB_TMPFILE
   echo 'set logging on' >> $GDB_TMPFILE
@@ -320,15 +350,79 @@ setup_gdb_command () {
   GDB_COMMAND="gdb -f -batch -x $GDB_TMPFILE"
 }
 
-setup_valgrind_command () {
+function setup_valgrind_command () {
   VALGRIND_PROGRAM=`type -p valgrind`
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
     VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE"
   fi
 }
 
-push_PREFIX_ARG ()
+function save_BUILD ()
 {
+  if [[ -n "$OLD_CONFIGURE" ]]; then
+    die "OLD_CONFIGURE($OLD_CONFIGURE) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_CONFIGURE_ARG" ]]; then
+    die "OLD_CONFIGURE_ARG($OLD_CONFIGURE_ARG) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_MAKE" ]]; then
+    die "OLD_MAKE($OLD_MAKE) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
+    die "OLD_TESTS_ENVIRONMENT($OLD_TESTS_ENVIRONMENT) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$CONFIGURE" ]]; then
+    OLD_CONFIGURE=$CONFIGURE
+  fi
+
+  if [[ -n "$CONFIGURE_ARG" ]]; then
+    OLD_CONFIGURE_ARG=$CONFIGURE_ARG
+  fi
+
+  if [[ -n "$MAKE" ]]; then
+    OLD_MAKE=$MAKE
+  fi
+
+  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
+    OLD_TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT
+  fi
+}
+
+function restore_BUILD ()
+{
+  if [[ -n "$OLD_CONFIGURE" ]]; then
+    CONFIGURE=$OLD_CONFIGURE
+  fi
+
+  if [[ -n "$OLD_CONFIGURE_ARG" ]]; then
+    CONFIGURE_ARG=$OLD_CONFIGURE_ARG
+  fi
+
+  if [[ -n "$OLD_MAKE" ]]; then
+    MAKE=$OLD_MAKE
+  fi
+
+  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
+    TESTS_ENVIRONMENT=$OLD_TESTS_ENVIRONMENT
+  fi
+
+  OLD_CONFIGURE=
+  OLD_CONFIGURE_ARG=
+  OLD_MAKE=
+  OLD_TESTS_ENVIRONMENT=
+  echo "reset happened"
+}
+
+function push_PREFIX_ARG ()
+{
+  if [[ -n "$OLD_PREFIX_ARG" ]]; then
+    die "OLD_PREFIX_ARG was set on push, programmer error!"
+  fi
+
   if [[ -n "$PREFIX_ARG" ]]; then
     OLD_PREFIX_ARG=$PREFIX_ARG
     PREFIX_ARG=
@@ -339,17 +433,17 @@ push_PREFIX_ARG ()
   fi
 }
 
-pop_PREFIX_ARG ()
+function pop_PREFIX_ARG ()
 {
   if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    PREFIX_ARG=$OLD_TESTS_ENVIRONMENT
+    PREFIX_ARG=$OLD_PREFIX_ARG
     OLD_PREFIX_ARG=
   else
     PREFIX_ARG=
   fi
 }
 
-push_TESTS_ENVIRONMENT ()
+function push_TESTS_ENVIRONMENT ()
 {
   if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
     die "OLD_TESTS_ENVIRONMENT was set on push, programmer error!"
@@ -361,7 +455,7 @@ push_TESTS_ENVIRONMENT ()
   fi
 }
 
-pop_TESTS_ENVIRONMENT ()
+function pop_TESTS_ENVIRONMENT ()
 {
   TESTS_ENVIRONMENT=
   if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
@@ -514,14 +608,63 @@ function make_for_snapshot ()
   snapshot_check
 }
 
-function make_for_mingw32 ()
+function check_mingw ()
 {
-  if ! command_exists mingw32-configure; then
-    die 'mingw32-configure was not found, do you have mingw installed?'
+  command_exists 'mingw64-configure'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
   fi
 
-  if ! command_exists mingw32-make; then
-    die 'mingw32-make was not found, do you have mingw installed?'
+  command_exists 'mingw64-make'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+function make_skeleton_mingw ()
+{
+  run_configure
+  ret=$?
+
+  if [ $ret -eq 0 ]; then
+    assert_file 'Makefile'
+
+    make_target 'all' 'warn'
+    ret=$?
+    if [ $ret -ne 0 ]; then
+      warn "$MAKE failed"
+    else
+      if [[ -n "$DISPLAY" ]]; then
+        if command_exists 'wine'; then
+          TESTS_ENVIRONMENT='wine'
+        fi
+      elif command_exists 'wineconsole'; then
+        TESTS_ENVIRONMENT='wineconsole --backend=curses'
+      fi
+
+      if [[ -n "$TESTS_ENVIRONMENT" ]]; then
+        make_target 'check' 'warn' || warn "$MAKE check failed"
+        ret=$?
+      fi
+    fi
+
+    if $jenkins_build_environment; then
+      make_target 'clean' 'warn'
+    fi
+  fi
+
+  return $ret
+}
+
+function make_for_mingw ()
+{
+  check_mingw
+  if ! check_mingw; then
+    die 'mingw64 tools were not found'
   fi
 
   # Make sure it is clean
@@ -531,14 +674,18 @@ function make_for_mingw32 ()
 
   run_autoreconf
 
-  mingw32-configure '--enable-static' || die 'mingw32-configure failed'
-  assert_file 'Makefile'
+  save_BUILD
 
-  mingw32-make || die 'mingw32-make failed'
-  if command_exists wineconsole; then
-    TESTS_ENVIRONMENT='wineconsole --backend=curses'
-    mingw32-make 'check' || die 'mingw32-make check failed'
-  fi
+  CONFIGURE='mingw64-configure'
+  MAKE='mingw64-make'
+  CONFIGURE_ARGS='--enable-static'
+
+  make_skeleton_mingw
+  ret=$?
+
+  restore_BUILD
+
+  return $ret
 }
 
 # If we are locally testing, we should make sure the environment is setup correctly
@@ -563,7 +710,11 @@ function make_universe ()
   make_valgrind
   make_gdb
   make_rpm
-  make_for_mingw32
+
+  if [ check_mingw -eq 0 ]; then
+    make_for_mingw
+  fi
+
   make_distcheck
   make_install_system
 }
@@ -664,9 +815,8 @@ function make_install_html ()
 
 function make_gdb ()
 {
-  run_configure_if_required
-
-  if command_exists gdb; then
+  if command_exists 'gdb'; then
+    run_configure_if_required
 
     push_TESTS_ENVIRONMENT
 
@@ -683,7 +833,7 @@ function make_gdb ()
       TESTS_ENVIRONMENT="$GDB_COMMAND"
     fi
 
-    make_target check
+    make_target 'check'
 
     if [ -f 'gdb.txt' ]; then
       rm 'gdb.txt'
@@ -693,6 +843,10 @@ function make_gdb ()
 
     if [ -f '.gdb_history' ]; then
       rm '.gdb_history'
+    fi
+
+    if $jenkins_build_environment; then
+      make_target 'clean'
     fi
   else
     echo 'gdb was not present'
@@ -723,11 +877,19 @@ function make_target ()
     die "MAKE was not set"
   fi
 
-  if [ -n "$2" ]; then
-    run $MAKE $1 || return 1
-  else
-    run $MAKE $1 || die "Cannot execute $MAKE $1"
+  # $2 represents error or warn
+  run $MAKE $1
+  ret=$?
+
+  if [ $ret -ne 0 ]; then
+    if [ -n "$2" ]; then
+      warn "Cannot execute $MAKE $1: $ret"
+    else
+      die "Cannot execute $MAKE $1: $ret"
+    fi
   fi
+
+  return $ret
 }
 
 function make_distcheck ()
@@ -737,9 +899,16 @@ function make_distcheck ()
 
 function make_rpm ()
 {
-  if [ -f 'rpm.am' -o -d 'rpm' ]; then
-    run_configure_if_required
-    make_target 'rpm'
+  if command_exists 'rpmbuild'; then
+    if [ -f 'rpm.am' -o -d 'rpm' ]; then
+      run_configure_if_required
+      make_target 'rpm'
+
+      if $jenkins_build_environment; then
+        make_target 'clean'
+      fi
+
+    fi
   fi
 }
 
@@ -813,10 +982,14 @@ function run ()
     echo "\`$@' $ARGS"
   fi
 
+  if [ -z "$1" ]; then
+    return 127;
+  fi
+
   eval $@ $ARGS
 } 
 
-parse_command_line_options ()
+function parse_command_line_options ()
 {
   local SHORTOPTS=':apcmt:dvh'
 
@@ -874,7 +1047,7 @@ parse_command_line_options ()
   fi
 }
 
-determine_vcs ()
+function determine_vcs ()
 {
   if [[ -d '.git' ]]; then
     VCS_CHECKOUT=git
@@ -904,10 +1077,10 @@ function autoreconf_setup ()
 {
   # Set ENV MAKE in order to override "make"
   if [[ -z "$MAKE" ]]; then 
-    if command_exists gmake; then
+    if command_exists 'gmake'; then
       MAKE=`type -p gmake`
     else
-      if command_exists make; then
+      if command_exists 'make'; then
         MAKE=`type -p make`
       fi
     fi
@@ -1016,7 +1189,7 @@ function autoreconf_setup ()
   run $AUTORECONF '--help'  &> /dev/null    || die "Failed to run AUTORECONF:$AUTORECONF"
 }
 
-print_setup ()
+function print_setup ()
 {
   saved_debug_status=$DEBUG
   if $DEBUG; then
@@ -1095,7 +1268,7 @@ print_setup ()
   fi
 }
 
-make_clean_option ()
+function make_clean_option ()
 {
   run_configure_if_required
 
@@ -1108,7 +1281,7 @@ make_clean_option ()
   fi
 }
 
-make_for_autoreconf ()
+function make_for_autoreconf ()
 {
   if [ -f 'Makefile' ]; then
     make_maintainer_clean
@@ -1119,7 +1292,7 @@ make_for_autoreconf ()
   assert_no_file 'Makefile'
 }
 
-check_make_target()
+function check_make_target()
 {
   case $1 in
     'self')
@@ -1245,7 +1418,17 @@ function bootstrap ()
         make_default
         ;;
       'mingw')
-        make_for_mingw32
+        check_mingw
+        if ! check_mingw; then
+          die "mingw was not found"
+        fi
+
+        make_for_mingw
+        check_ret=$?
+
+        if ! make_for_mingw; then
+          die "Failed to build mingw: $?"
+        fi
         ;;
       'snapshot')
         make_for_snapshot
@@ -1270,13 +1453,14 @@ function bootstrap ()
   done
 }
 
-main ()
+function main ()
 {
   # Variables we export
   declare -x VCS_CHECKOUT=
 
   # Variables we control globally
   local MAKE_TARGET=
+  local CONFIGURE=
 
   # Options for getopt
   local AUTORECONF_OPTION=false
@@ -1288,11 +1472,22 @@ main ()
   local TARGET_OPTION_ARG=
   local VERBOSE_OPTION=false
 
+  local OLD_CONFIGURE=
+  local OLD_CONFIGURE_ARG=
+  local OLD_MAKE=
+  local OLD_TESTS_ENVIRONMENT=
+
   # If we call autoreconf on the platform or not
   local AUTORECONF_REBUILD_HOST=false
   local AUTORECONF_REBUILD=false
 
   local -r top_srcdir=`pwd`
+
+  # Default configure
+  if [ -z "$CONFIGURE" ]; then
+    CONFIGURE="$top_srcdir/configure"
+  fi
+
 
   # Variables for determine_target_platform () and rebuild_host_os ()
   #   UNAME_MACHINE_ARCH= uname -m
@@ -1376,7 +1571,7 @@ function merge ()
   fi
 }
 
-enable_debug ()
+function enable_debug ()
 {
   if ! $DEBUG; then
     local caller_loc=`caller`
@@ -1402,7 +1597,7 @@ function usage ()
 EOF
 }
 
-disable_debug ()
+function disable_debug ()
 {
   set +x
   DEBUG=true

@@ -58,7 +58,7 @@ AX_PROG_SPHINX_BUILD
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
 
-AS_IF([test "x${target_os}" != "xmingw32"], [AX_CHECK_OPENSSL])
+AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 
@@ -98,6 +98,7 @@ AX_HARDEN_COMPILER_FLAGS
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
 
+AC_CONFIG_FILES([cli/drizzle_binlogs_check.sh],[chmod +x cli/drizzle_binlogs_check.sh])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
