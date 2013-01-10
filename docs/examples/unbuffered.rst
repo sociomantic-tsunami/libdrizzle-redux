@@ -4,7 +4,7 @@ Unbuffered Results
 Introduction
 ------------
 
-In this example :c:func:`drizzle_query_str` is used to send a select query to a
+In this example :c:func:`drizzle_query` is used to send a select query to a
 MySQL server.  The first thing that is sent back in the results is a list of
 columns, so this list needs to be retieved.  The simplist way of doing this is
 to buffer the column data using :c:func:`drizzle_column_buffer`.
@@ -51,7 +51,7 @@ Code
         return EXIT_FAILURE;
       }
 
-      result= drizzle_query_str(con, "select * from libdrizzle.t1", &ret);
+      result= drizzle_query(con, "select * from libdrizzle.t1", 0, &ret);
       if (ret != DRIZZLE_RETURN_OK)
       {
         printf("Select failure\n");

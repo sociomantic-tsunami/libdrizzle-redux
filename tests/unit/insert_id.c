@@ -64,35 +64,35 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  drizzle_query_str(con, "DROP SCHEMA IF EXISTS libdrizzle", &ret);
+  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
-  drizzle_query_str(con, "CREATE SCHEMA libdrizzle", &ret);
+  drizzle_query(con, "CREATE SCHEMA libdrizzle", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
 
   ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
-  drizzle_query_str(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", &ret);
+  drizzle_query(con, "create table libdrizzle.t1 (a int primary key auto_increment, b int)", 0, &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b int)");
 
-  drizzle_result_st *result= drizzle_query_str(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", &ret);
+  drizzle_result_st *result= drizzle_query(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", 0, &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values (1),(2),(3)");
   ASSERT_TRUE(result);
 
   ASSERT_EQ_(drizzle_result_insert_id(result), 1, "Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  result= drizzle_query_str(con, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)", &ret);
+  result= drizzle_query(con, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)", 0, &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)");
 
   ASSERT_EQ_(drizzle_result_insert_id(result), 4, "Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  drizzle_query_str(con, "DROP TABLE libdrizzle.t1", &ret);
+  drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "dROP TABLE failure");
 
-  drizzle_query_str(con, "DROP SCHEMA IF EXISTS libdrizzle", &ret);
+  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA libdrizzle (%s)", drizzle_error(con));
 
   ret= drizzle_quit(con);

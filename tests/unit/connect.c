@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ(DRIZZLE_RETURN_OK, ret);
 
-  drizzle_query_str(con, "SELECT 1", &ret);
+  drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
 
   // Now that we know everything is good... lets push it.
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     ret= drizzle_connect(con);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-    drizzle_query_str(con, "SELECT 1", &ret);
+    drizzle_query(con, "SELECT 1", 0, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
 
     // Now that we know everything is good... lets push it.
