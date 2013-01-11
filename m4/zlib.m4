@@ -1,6 +1,6 @@
  AC_DEFUN([AC_PATH_ZLIB], [
 	AC_ARG_WITH(zlib,
-                    AC_HELP_STRING([--with-zlib=DIR],
+                    AS_HELP_STRING([--with-zlib=DIR],
                                  [search for ZLIB in DIR/include and DIR/lib]),
                     [for dir in `echo "$withval" | tr : ' '`; do
     if test -d $dir/include; then
@@ -12,7 +12,7 @@
   done[]])
 
         AC_ARG_WITH(zlib-includes,
-                    AC_HELP_STRING([--with-zlib-includes=DIR],
+                    AS_HELP_STRING([--with-zlib-includes=DIR],
 	                           [search for ZLIB includes in DIR]),
 	            [for dir in `echo "$withval" | tr : ' '`; do
     if test -d $dir; then
