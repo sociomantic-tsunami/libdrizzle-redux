@@ -383,12 +383,13 @@ void drizzle_set_tcp(drizzle_st *con, const char *host, in_port_t port)
     return;
   }
 
-  drizzle_reset_addrinfo(con);
-
   con->socket_type= DRIZZLE_CON_SOCKET_TCP;
+  con->socket.tcp.addrinfo= NULL;
+  drizzle_reset_addrinfo(con);
 
   if (host == NULL)
   {
+    con->socket.tcp.port= 0;
     con->socket.tcp.host= NULL;
   }
   else
@@ -631,7 +632,7 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
 
 drizzle_return_t drizzle_quit(drizzle_st *con)
 {
-  if (con)
+  if (con != NULL)
   {
     drizzle_log_crazy(con, "shutting down the connection");
     con->flags.is_shutdown= true;
@@ -952,6 +953,8 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
         }
       }
     } while (0);
+
+    drizzle_state_pop(con);
 
     return DRIZZLE_RETURN_OK;
 #endif // defined _WIN32 || defined __CYGWIN__

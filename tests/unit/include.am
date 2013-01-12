@@ -47,6 +47,11 @@ tests_unit_connect_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/connect
 noinst_PROGRAMS+= tests/unit/connect
 
+tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c
+tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/connect_uds
+noinst_PROGRAMS+= tests/unit/connect_uds
+
 tests_unit_hex_SOURCES= tests/unit/hex.c
 tests_unit_hex_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/hex

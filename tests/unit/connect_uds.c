@@ -41,19 +41,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <inttypes.h>
 
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create_tcp(getenv("MYSQL_SERVER"),
-                                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
+  drizzle_st *con= drizzle_create_uds(getenv("MYSQL_SOCK"),
                                       getenv("MYSQL_USER"),
                                       getenv("MYSQL_PASSWORD"),
                                       getenv("MYSQL_SCHEMA"), 0);
-
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
@@ -61,36 +58,29 @@ int main(int argc, char *argv[])
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
-
     drizzle_quit(con);
+
     SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
   }
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ(DRIZZLE_RETURN_OK, ret);
 
-  drizzle_result_st *result= drizzle_start_binlog(con, 0, "", 0, &ret);
-  ASSERT_TRUE(result);
-  SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Drizzle binlog start failure: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  drizzle_query(con, "SELECT 1", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
 
-  while (ret == DRIZZLE_RETURN_OK)
+  // Now that we know everything is good... lets push it.
+  drizzle_close(con);
+
+  int limit= 20;
+  while (--limit)
   {
-    uint32_t timestamp;
-    ret= drizzle_binlog_get_next_event(result);
-    if (ret == DRIZZLE_RETURN_EOF)
-    {
-      break;
-    }
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Binlog error %s\n", drizzle_error(con));
-    timestamp= drizzle_binlog_event_timestamp(result);
-    /* Test to see if timestamp is greater than 2012-01-01 00:00:00, corrupted
-     * timestamps will have weird values that shoud fail this after several
-     * events.  Also rotate event doesn't have a timestamp so need to add 0
-     * to this test */
-    ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)), "Bad timestamp retrieved: %" PRIu32, timestamp);
+    ret= drizzle_connect(con);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-    /* An event higher than the max known is bad, either we don't know about
-     * new events or type is corrupted */
-    ASSERT_FALSE_((drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END), "Bad event type: %d", drizzle_binlog_event_type(result));
+    drizzle_query(con, "SELECT 1", 0, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
+
+    // Now that we know everything is good... lets push it.
+    drizzle_close(con);
   }
 
   ret= drizzle_quit(con);

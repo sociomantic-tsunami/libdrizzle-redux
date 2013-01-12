@@ -70,9 +70,9 @@ void drizzle_set_uds(drizzle_st *con, const char *uds)
     return;
   }
 
-  drizzle_reset_addrinfo(con);
-
   con->socket_type= DRIZZLE_CON_SOCKET_UDS;
+
+  drizzle_reset_addrinfo(con);
 
   if (uds == NULL)
   {

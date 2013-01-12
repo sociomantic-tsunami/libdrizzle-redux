@@ -205,9 +205,6 @@ drizzle_st *drizzle_create(void)
   con->context_free_fn= NULL;
   con->result_list= NULL;
   con->scramble= NULL;
-  con->socket.tcp.addrinfo= NULL;
-  con->socket.tcp.host= NULL;
-  con->socket.tcp.port= 0;
   /* con->buffer doesn't need to be set */
   con->db[0]= 0;
   con->password[0]= 0;
