@@ -953,6 +953,8 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       }
     } while (0);
 
+    drizzle_state_pop(con);
+
     return DRIZZLE_RETURN_OK;
 #endif // defined _WIN32 || defined __CYGWIN__
   }
