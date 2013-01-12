@@ -58,8 +58,10 @@ int main(int argc, char *argv[])
   drizzle_return_t ret= drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
-    const char *error= drizzle_error(con);
+    char error[DRIZZLE_MAX_ERROR_SIZE];
+    strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
+
     SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
