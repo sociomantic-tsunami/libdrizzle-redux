@@ -66,6 +66,7 @@ char *outdir= NULL;
 char *start_file= NULL;
 uint32_t start_pos= 0;
 bool continuous= false;
+bool verify_checksums= false;
 uint8_t opt_count= 0;
 
 typedef enum
@@ -78,7 +79,8 @@ typedef enum
   OPT_OUTDIR,
   OPT_FILE,
   OPT_START_POS,
-  OPT_CONTINUOUS
+  OPT_CONTINUOUS,
+  OPT_VERIFY_CHECKSUMS
 } option_consts_t;
 
 static struct argp_option options[]= {
@@ -91,6 +93,7 @@ static struct argp_option options[]= {
   { "start-file", OPT_FILE, "FILENAME", 0, "Binlog file to start with", 1 },
   { "start-pos", OPT_START_POS, "POS", 0, "Position to start with", 1 },
   { "continuous", OPT_CONTINUOUS, 0, 0, "Continous download mode", 1 },
+  { "verify-checksums", OPT_VERIFY_CHECKSUMS, 0, 0, "Verify binlog checkums", 1 },
   { 0 }
 };
 
@@ -131,6 +134,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
       break;
     case OPT_CONTINUOUS:
       continuous= true;
+      opt_count++;
+      break;
+    case OPT_VERIFY_CHECKSUMS:
+      verify_checksums= true;
       opt_count++;
       break;
     case ARGP_KEY_NO_ARGS:
@@ -229,7 +236,7 @@ void get_binlogs(drizzle_st *con)
     server_id= 0;
   }
 
-  result= drizzle_start_binlog(con, server_id, start_file, start_pos, &ret);
+  result= drizzle_start_binlog(con, server_id, start_file, start_pos, verify_checksums, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Drizzle binlog start failure: %s\n", drizzle_error(con));

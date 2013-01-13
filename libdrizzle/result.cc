@@ -85,7 +85,6 @@ void drizzle_result_free(drizzle_result_st *result)
 
   if (result->binlog_event != NULL)
   {
-    free(result->binlog_event->data);
     delete result->binlog_event;
   }
 
