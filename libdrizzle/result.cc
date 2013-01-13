@@ -62,38 +62,6 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
     return NULL;
   }
 
-  result->binlog_checksums= false;
-  result->binlog_event= NULL;
-  result->column_list= NULL;
-  result->options= DRIZZLE_RESULT_NONE;
-  result->prev= NULL;
-  result->column_buffer= NULL;
-  result->row= NULL;
-  result->error_code= 0;
-  result->insert_id= 0;
-  result->warning_count= 0;
-  result->affected_rows= 0;
-  result->column_count= 0;
-  result->column_current= 0;
-  result->column= NULL;
-  result->row_count= 0;
-  result->row_current= 0;
-  result->field_current= 0;
-  result->field_total= 0;
-  result->field_offset= 0;
-  result->field_size= 0;
-  result->field= NULL;
-  result->field_buffer= NULL;
-  result->row_list_size= 0;
-  result->row_list= NULL;
-  result->field_sizes= NULL;
-  result->field_sizes_list= NULL;
-  result->info[0]= '\0';
-  result->sqlstate[0]= '\0';
-  result->null_bitmap_list= NULL;
-  result->null_bitmap= NULL;
-  result->binary_rows= false;
-
   result->con= con;
   con->result= result;
 

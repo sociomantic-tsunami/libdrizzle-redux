@@ -47,14 +47,6 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
     drizzle_set_error(con, __func__, "new");
     return NULL;
   }
-  stmt->execute_result= NULL;
-  stmt->param_count= 0;
-  stmt->id= 0;
-  stmt->query_params= NULL;
-  stmt->result_params= NULL;
-  stmt->null_bitmap_length= 0;
-  stmt->null_bitmap= NULL;
-  stmt->new_bind= true;
   con->stmt= stmt;
   stmt->con= con;
 

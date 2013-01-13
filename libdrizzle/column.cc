@@ -63,25 +63,6 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
     return NULL;
   }
 
-  column->result = result;
-  column->options= DRIZZLE_COLUMN_UNUSED;
-  /* SET BELOW: column->next */
-  column->prev = NULL;
-  column->catalog[0] = '\0';
-  column->db[0] = '\0';
-  column->table[0] = '\0';
-  column->orig_table[0] = '\0';
-  column->name[0] = '\0';
-  column->orig_name[0] = '\0';
-  column->charset = DRIZZLE_CHARSET_NONE;
-  column->size = 0;
-  column->max_size = 0;
-  column->type= (drizzle_column_type_t)0;
-  column->flags = 0;
-  column->decimals = 0;
-  /* UNSET: column->default_value */
-  column->default_value_size = 0;
-
   column->result= result;
 
   if (result->column_list)
