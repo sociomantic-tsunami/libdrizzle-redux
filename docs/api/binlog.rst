@@ -15,7 +15,7 @@ as a MySQL slave or a mysqlbinlog type client and retrieve the events.
 Functions
 ---------
 
-.. c:function:: drizzle_result_st* drizzle_start_binlog(drizzle_st *con, uint32_t server_id, const char *file, uint32_t start_position, drizzle_return_t *ret_ptr)
+.. c:function:: drizzle_result_st* drizzle_start_binlog(drizzle_st *con, uint32_t server_id, const char *file, uint32_t start_position, bool verify_checksums, drizzle_return_t *ret_ptr)
 
    Start the binlog transaction.  Set the server_id to 0 to disconnect
    automatically at the end of the last log.
@@ -24,6 +24,7 @@ Functions
    :param server_id: A unique server ID (or 0) to connect to the MySQL server with
    :param file: The start binlog file, can be empty to start at the first known file
    :param start_position: The position of the binlog file to start at, a value of less than 4 is set to 4 due to the binlog header taking the first 4 bytes
+   :param verify_checksums: Verify the binary log checksums (if applicable)
    :param ret_ptr: A pointer to a Drizzle return type.  :py:const:`DRIZZLE_RETURN_OK` upon success.
    :returns: A Drizzle result object or NULL on error
 

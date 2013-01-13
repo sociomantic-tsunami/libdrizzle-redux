@@ -373,6 +373,7 @@ struct drizzle_binlog_st
   unsigned char *data;
   unsigned char *raw_data;
   uint32_t raw_length;
+  bool verify_checksums;
 };
 
 /**

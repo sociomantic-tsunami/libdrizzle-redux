@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  drizzle_result_st *result= drizzle_start_binlog(con, 0, "", 0, &ret);
+  drizzle_result_st *result= drizzle_start_binlog(con, 0, "", 0, true, &ret);
   ASSERT_TRUE(result);
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Drizzle binlog start failure: %s(%s)", drizzle_error(con), drizzle_strerror(ret));

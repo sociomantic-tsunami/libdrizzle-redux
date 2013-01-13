@@ -46,6 +46,7 @@ drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
                                         uint32_t server_id,
                                         const char *file,
                                         uint32_t start_position,
+                                        bool verify_checksums,
                                         drizzle_return_t *ret_ptr);
 
 DRIZZLE_API
