@@ -196,7 +196,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
 
-  con->buffer_ptr= &con->buffer[0];
+  con->buffer_ptr= con->buffer;
 
   drizzle_state_pop(con);
 
@@ -240,7 +240,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
                   + 1;  /* NULL */
 
   /* Assume the entire handshake packet will fit in the buffer. */
-  if ((con->packet_size + 4) > con->buffer.size())
+  if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, "drizzle_state_handshake_server_write",
                       "buffer too small:%zu", con->packet_size + 4);
@@ -468,7 +468,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
 
-  con->buffer_ptr= &con->buffer[0];
+  con->buffer_ptr= con->buffer;
 
   drizzle_state_pop(con);
   return DRIZZLE_RETURN_OK;
@@ -548,7 +548,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
                   + strlen(con->db) + 1;
 
   /* Assume the entire handshake packet will fit in the buffer. */
-  if ((con->packet_size + 4) > con->buffer.size())
+  if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, "drizzle_state_handshake_client_write",
                       "buffer too small:%zu", con->packet_size + 4);

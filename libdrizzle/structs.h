@@ -187,7 +187,8 @@ struct drizzle_st
     drizzle_tcp_st tcp;
     drizzle_uds_st uds;
   } socket;
-  std::vector<unsigned char> buffer;
+  unsigned char *buffer;
+  size_t buffer_allocation;
   char db[DRIZZLE_MAX_DB_SIZE];
   char password[DRIZZLE_MAX_PASSWORD_SIZE];
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
@@ -214,9 +215,10 @@ struct drizzle_st
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
 
-  drizzle_st()
+  drizzle_st() :
+    buffer_allocation(DRIZZLE_DEFAULT_BUFFER_SIZE)
   { 
-    buffer.resize(DRIZZLE_DEFAULT_BUFFER_SIZE);
+    buffer= (unsigned char*)malloc(DRIZZLE_DEFAULT_BUFFER_SIZE);
   }
 };
 

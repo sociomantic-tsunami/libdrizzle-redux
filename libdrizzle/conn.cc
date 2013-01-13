@@ -222,7 +222,7 @@ void drizzle_close(drizzle_st *con)
 
   con->options = (drizzle_options_t)((int)con->options & (int)~DRIZZLE_CON_READY);
   con->packet_number= 0;
-  con->buffer_ptr= &con->buffer[0];
+  con->buffer_ptr= con->buffer;
   con->buffer_size= 0;
   con->events= 0;
   con->revents= 0;
@@ -1124,12 +1124,12 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
   if (con->buffer_size == 0)
   {
-    con->buffer_ptr= &con->buffer[0];
+    con->buffer_ptr= con->buffer;
   }
-  else if ((size_t)(con->buffer_ptr - &con->buffer[0]) > (con->buffer.size() / 2))
+  else if ((size_t)(con->buffer_ptr - con->buffer) > (con->buffer_allocation / 2))
   {
-    memmove(&con->buffer[0], con->buffer_ptr, con->buffer_size);
-    con->buffer_ptr= &con->buffer[0];
+    memmove(con->buffer, con->buffer_ptr, con->buffer_size);
+    con->buffer_ptr= con->buffer;
   }
 
   if ((con->revents & POLLIN) == 0 &&
@@ -1149,25 +1149,26 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
   while (1)
   {
-    size_t available_buffer= con->buffer.size() - ((size_t)(con->buffer_ptr - &con->buffer[0]) + con->buffer_size);
+    size_t available_buffer= con->buffer_allocation - ((size_t)(con->buffer_ptr - con->buffer) + con->buffer_size);
     if (available_buffer == 0)
     {
-      if (con->buffer.size() >= DRIZZLE_MAX_BUFFER_SIZE)
+      if (con->buffer_allocation >= DRIZZLE_MAX_BUFFER_SIZE)
       {
         drizzle_set_error(con, __func__,
                           "buffer too small:%zu", con->packet_size + 4);
         return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
       // Shift data to beginning of the buffer then resize
-      // This means that buffer_ptr isn't screwed up
-      if (con->buffer_ptr != &con->buffer[0])
+      // This means that buffer_ptr isn't screwed up by realloc pointer move
+      if (con->buffer_ptr != con->buffer)
       {
-        memmove(&con->buffer[0], con->buffer_ptr, con->buffer_size);
+        memmove(con->buffer, con->buffer_ptr, con->buffer_size);
       }
-      con->buffer.resize(con->buffer.size() * 2);
-      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer.size());
-      con->buffer_ptr= &con->buffer[0];
-      available_buffer= con->buffer.size() - ((size_t)(con->buffer_ptr - &con->buffer[0]) + con->buffer_size);
+      con->buffer_allocation= con->buffer_allocation * 2;
+      con->buffer= (unsigned char*)realloc(con->buffer, con->buffer_allocation);
+      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer_allocation);
+      con->buffer_ptr= con->buffer;
+      available_buffer= con->buffer_allocation - con->buffer_size;
     }
 
 #ifdef USE_OPENSSL
@@ -1360,7 +1361,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       break;
   }
 
-  con->buffer_ptr= &con->buffer[0];
+  con->buffer_ptr= con->buffer;
 
   drizzle_state_pop(con);
 

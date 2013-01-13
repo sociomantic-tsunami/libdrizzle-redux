@@ -198,7 +198,7 @@ drizzle_st *drizzle_create(void)
   con->command_total= 0;
   con->packet_size= 0;
   con->addrinfo_next= NULL;
-  con->buffer_ptr= &con->buffer[0];
+  con->buffer_ptr= con->buffer;
   con->command_buffer= NULL;
   con->command_data= NULL;
   con->context= NULL;
@@ -256,6 +256,7 @@ void drizzle_free(drizzle_st *con)
     SSL_CTX_free(con->ssl_context);
 #endif
 
+  free(con->buffer);
   delete con;
 }
 
