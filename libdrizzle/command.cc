@@ -69,8 +69,8 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
 
   if (con->buffer_size == 0)
   {
-    con->buffer_ptr= con->buffer;
-    start= con->buffer;
+    con->buffer_ptr= &con->buffer[0];
+    start= &con->buffer[0];
   }
   else
   {
@@ -91,7 +91,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
                     + strlen(con->db) + 1;
 
     /* Flush buffer if there is not enough room. */
-    free_size= (size_t)DRIZZLE_MAX_BUFFER_SIZE - (size_t)(start - con->buffer);
+    free_size= con->buffer.size() - (size_t)(start - &con->buffer[0]);
     if (free_size < con->packet_size)
     {
       drizzle_state_push(con, drizzle_state_write);

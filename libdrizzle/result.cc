@@ -55,7 +55,7 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
     return NULL;
   }
 
-  result= (drizzle_result_st*)malloc(sizeof(drizzle_result_st));
+  result= new (std::nothrow) drizzle_result_st;
   if (result == NULL)
   {
     drizzle_set_error(con, __func__, "Failed to allocate.");
@@ -118,7 +118,7 @@ void drizzle_result_free(drizzle_result_st *result)
   if (result->binlog_event != NULL)
   {
     free(result->binlog_event->data);
-    free(result->binlog_event);
+    delete result->binlog_event;
   }
 
   for (column= result->column_list; column != NULL; column= result->column_list)
@@ -126,7 +126,7 @@ void drizzle_result_free(drizzle_result_st *result)
     drizzle_column_free(column);
   }
 
-  free(result->column_buffer);
+  delete[] result->column_buffer;
 
   if (result->options & DRIZZLE_RESULT_BUFFER_ROW)
   {
@@ -136,7 +136,7 @@ void drizzle_result_free(drizzle_result_st *result)
       drizzle_row_free(result, result->row_list[x]);
       if (result->null_bitmap_list != NULL)
       {
-        free(result->null_bitmap_list[x]);
+        delete[] result->null_bitmap_list[x];
       }
     }
     if (result->null_bitmap_list != NULL)
@@ -163,7 +163,7 @@ void drizzle_result_free(drizzle_result_st *result)
     result->next->prev= result->prev;
   }
 
-  free(result);
+  delete result;
 }
 
 void drizzle_result_free_all(drizzle_st *con)

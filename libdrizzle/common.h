@@ -44,6 +44,8 @@
 #include <libdrizzle-5.1/drizzle_client.h>
 
 #include <cassert>
+#include <new>
+#include <vector>
 
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>

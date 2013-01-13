@@ -222,7 +222,7 @@ void drizzle_close(drizzle_st *con)
 
   con->options = (drizzle_options_t)((int)con->options & (int)~DRIZZLE_CON_READY);
   con->packet_number= 0;
-  con->buffer_ptr= con->buffer;
+  con->buffer_ptr= &con->buffer[0];
   con->buffer_size= 0;
   con->events= 0;
   con->revents= 0;
@@ -1124,12 +1124,12 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
   if (con->buffer_size == 0)
   {
-    con->buffer_ptr= con->buffer;
+    con->buffer_ptr= &con->buffer[0];
   }
-  else if ((con->buffer_ptr - con->buffer) > (DRIZZLE_MAX_BUFFER_SIZE / 2))
+  else if ((size_t)(con->buffer_ptr - &con->buffer[0]) > (con->buffer.size() / 2))
   {
-    memmove(con->buffer, con->buffer_ptr, con->buffer_size);
-    con->buffer_ptr= con->buffer;
+    memmove(&con->buffer[0], con->buffer_ptr, con->buffer_size);
+    con->buffer_ptr= &con->buffer[0];
   }
 
   if ((con->revents & POLLIN) == 0 &&
@@ -1149,7 +1149,26 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
   while (1)
   {
-    size_t available_buffer= (size_t)DRIZZLE_MAX_BUFFER_SIZE - ((size_t)(con->buffer_ptr - con->buffer) + con->buffer_size);
+    size_t available_buffer= con->buffer.size() - ((size_t)(con->buffer_ptr - &con->buffer[0]) + con->buffer_size);
+    if (available_buffer == 0)
+    {
+      if (con->buffer.size() >= DRIZZLE_MAX_BUFFER_SIZE)
+      {
+        drizzle_set_error(con, __func__,
+                          "buffer too small:%zu", con->packet_size + 4);
+        return DRIZZLE_RETURN_INTERNAL_ERROR;
+      }
+      // Shift data to beginning of the buffer then resize
+      // This means that buffer_ptr isn't screwed up
+      if (con->buffer_ptr != &con->buffer[0])
+      {
+        memmove(&con->buffer[0], con->buffer_ptr, con->buffer_size);
+      }
+      con->buffer.resize(con->buffer.size() * 2);
+      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer.size());
+      con->buffer_ptr= &con->buffer[0];
+      available_buffer= con->buffer.size() - ((size_t)(con->buffer_ptr - &con->buffer[0]) + con->buffer_size);
+    }
 
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
@@ -1166,8 +1185,8 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_crazy(con, "read fd=%d recv=%zd ssl= %d errno=%s",
-                      con->fd, read_size, 
+    drizzle_log_crazy(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
+                      con->fd, available_buffer, read_size, 
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
 
@@ -1341,7 +1360,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       break;
   }
 
-  con->buffer_ptr= con->buffer;
+  con->buffer_ptr= &con->buffer[0];
 
   drizzle_state_pop(con);
 

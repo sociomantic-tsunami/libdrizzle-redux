@@ -40,11 +40,11 @@
 
 drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, size_t size, drizzle_return_t *ret_ptr)
 {
-  drizzle_stmt_st *stmt= (drizzle_stmt_st*)malloc(sizeof(drizzle_stmt_st));
+  drizzle_stmt_st *stmt= new (std::nothrow) drizzle_stmt_st;
   if (stmt == NULL)
   {
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    drizzle_set_error(con, __func__, "malloc");
+    drizzle_set_error(con, __func__, "new");
     return NULL;
   }
   stmt->execute_result= NULL;
@@ -62,7 +62,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
                                       statement, size, size, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
   {
-    free(stmt);
+    delete stmt;
     con->stmt= NULL;
     return NULL;
   }
@@ -77,7 +77,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
       *ret_ptr= drizzle_column_skip(stmt->prepare_result);
       if ((*ret_ptr != DRIZZLE_RETURN_OK) && (*ret_ptr != DRIZZLE_RETURN_EOF))
       {
-        free(stmt);
+        delete stmt;
         return NULL;
       }
     }
@@ -93,17 +93,17 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
    * bitmap mask */
 
   stmt->null_bitmap_length= (stmt->param_count + 7) / 8;
-  stmt->null_bitmap= (uint8_t*)calloc(stmt->null_bitmap_length, 1);
+  stmt->null_bitmap= new (std::nothrow) uint8_t[stmt->null_bitmap_length]();
   if (stmt->null_bitmap == NULL)
   {
-    free(stmt);
+    delete stmt;
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    drizzle_set_error(con, __func__, "malloc");
+    drizzle_set_error(con, __func__, "new");
     return NULL;
   }
 
   /* Also use the parameter count to allocate the parameters */
-  stmt->query_params= (drizzle_bind_st*)calloc(stmt->param_count, sizeof(drizzle_bind_st));
+  stmt->query_params= new (std::nothrow) drizzle_bind_st[stmt->param_count];
   stmt->state= DRIZZLE_STMT_PREPARED;
   stmt->fields= stmt->prepare_result->column_buffer;
 
@@ -141,10 +141,10 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
              + (stmt->param_count * 2) /* Parameter type data */
              + param_lengths; /* Parameter data */
 
-  buffer = (unsigned char*)malloc(buffer_size);
+  buffer = new (std::nothrow) unsigned char[buffer_size];
   if (buffer == NULL)
   {
-    drizzle_set_error(stmt->con, __func__, "malloc");
+    drizzle_set_error(stmt->con, __func__, "new");
     return DRIZZLE_RETURN_MEMORY;
   }
   buffer_pos= buffer;
@@ -274,7 +274,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       case DRIZZLE_COLUMN_TYPE_TIME2:
       default:
         drizzle_set_error(stmt->con, __func__, "unknown type when filling buffer");
-        free(buffer);
+        delete[] buffer;
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
         break;
     }
@@ -296,7 +296,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   }
   else
   {
-    free(buffer);
+    delete[] buffer;
     return ret;
   }
 
@@ -309,10 +309,10 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   if (stmt->execute_result->column_count > 0)
   {
     ret= drizzle_column_buffer(stmt->execute_result);
-    stmt->result_params= (drizzle_bind_st*)calloc(stmt->execute_result->column_count, sizeof(drizzle_bind_st));
+    stmt->result_params= new (std::nothrow) drizzle_bind_st[stmt->execute_result->column_count];
   }
 
-  free(buffer);
+  delete[] buffer;
   return ret;
 }
 
@@ -336,7 +336,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   /* TODO: rework drizzle_command_write so we can send a header and we don't
    * need this copy
    * */
-  buffer= (unsigned char*)malloc(len + 6);
+  buffer= new (std::nothrow) unsigned char[len + 6];
 
   drizzle_set_byte4(buffer, stmt->id);
   drizzle_set_byte2(&buffer[4], param_num);
@@ -348,7 +348,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
   stmt->query_params[param_num].options.is_long_data= true;
 
-  free(buffer);
+  delete[] buffer;
   return ret;
 }
 
@@ -379,7 +379,7 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
     stmt->execute_result= NULL;
   }
   stmt->state= DRIZZLE_STMT_PREPARED;
-  free(stmt->result_params);
+  delete[] stmt->result_params;
 
   return ret;
 }
@@ -552,7 +552,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  free(stmt->null_bitmap);
+  delete[] stmt->null_bitmap;
   for (uint16_t x= 0; x < stmt->param_count; x++)
   {
     if (stmt->query_params[x].options.is_allocated)
@@ -560,7 +560,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
       free(stmt->query_params[x].data);
     }
   }
-  free(stmt->query_params);
+  delete[] stmt->query_params;
   if (stmt->execute_result)
   {
     for (uint16_t x= 0; x < stmt->execute_result->column_count; x++)
@@ -568,7 +568,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
       free(stmt->result_params[x].data);
       free(stmt->result_params[x].converted_data);
     }
-    free(stmt->result_params);
+    delete[] stmt->result_params;
     drizzle_result_free(stmt->execute_result);
   }
   if (stmt->prepare_result)
@@ -581,7 +581,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_CLOSE, buffer, 4,
                         4, &ret);
   stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
-  free(stmt);
+  delete stmt;
   return ret;
 }
 

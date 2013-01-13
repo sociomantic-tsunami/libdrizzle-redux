@@ -187,7 +187,7 @@ struct drizzle_st
     drizzle_tcp_st tcp;
     drizzle_uds_st uds;
   } socket;
-  unsigned char buffer[DRIZZLE_MAX_BUFFER_SIZE];
+  std::vector<unsigned char> buffer;
   char db[DRIZZLE_MAX_DB_SIZE];
   char password[DRIZZLE_MAX_PASSWORD_SIZE];
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
@@ -213,6 +213,11 @@ struct drizzle_st
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
+
+  drizzle_st()
+  { 
+    buffer.resize(DRIZZLE_DEFAULT_BUFFER_SIZE);
+  }
 };
 
 /**
@@ -341,6 +346,19 @@ struct drizzle_column_st
   uint8_t decimals;
   unsigned char default_value[DRIZZLE_MAX_DEFAULT_VALUE_SIZE];
   size_t default_value_size;
+
+  drizzle_column_st() :
+    result(NULL),
+    next(NULL),
+    prev(NULL),
+    options(DRIZZLE_COLUMN_UNUSED),
+    charset(DRIZZLE_CHARSET_NONE),
+    size(0),
+    max_size(0),
+    flags(DRIZZLE_COLUMN_FLAGS_NONE),
+    decimals(0),
+    default_value_size(0)
+  { }
 };
 
 struct drizzle_stmt_st
@@ -366,13 +384,27 @@ struct drizzle_bind_st
   uint32_t length;
   bool is_bound;
   char *converted_data;
-  struct
+  struct options_t
   {
     bool is_null;
     bool is_unsigned;
     bool is_long_data;
     bool is_allocated;
+
+    options_t() :
+      is_null(false),
+      is_unsigned(false),
+      is_long_data(false),
+      is_allocated(false)
+    { }
   } options;
+  drizzle_bind_st() :
+    type(DRIZZLE_COLUMN_TYPE_NONE),
+    data(NULL),
+    length(0),
+    is_bound(false),
+    converted_data(NULL)
+  { }
 };
 
 #ifdef __cplusplus
