@@ -56,31 +56,12 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
     return NULL;
   }
 
-  column= (drizzle_column_st*)malloc(sizeof(drizzle_column_st));
+  column= new (std::nothrow) drizzle_column_st;
   if (column == NULL)
   {
     drizzle_set_error(result->con, __func__, "Failed to allocate.");
     return NULL;
   }
-
-  column->result = result;
-  column->options= DRIZZLE_COLUMN_UNUSED;
-  /* SET BELOW: column->next */
-  column->prev = NULL;
-  column->catalog[0] = '\0';
-  column->db[0] = '\0';
-  column->table[0] = '\0';
-  column->orig_table[0] = '\0';
-  column->name[0] = '\0';
-  column->orig_name[0] = '\0';
-  column->charset = DRIZZLE_CHARSET_NONE;
-  column->size = 0;
-  column->max_size = 0;
-  column->type= (drizzle_column_type_t)0;
-  column->flags = 0;
-  column->decimals = 0;
-  /* UNSET: column->default_value */
-  column->default_value_size = 0;
 
   column->result= result;
 
@@ -109,7 +90,7 @@ void drizzle_column_free(drizzle_column_st *column)
   if (column->next)
     column->next->prev= column->prev;
 
-  free(column);
+  delete column;
 }
 
 drizzle_result_st *drizzle_column_drizzle_result(drizzle_column_st *column)
@@ -341,7 +322,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
       return DRIZZLE_RETURN_OK;
     }
 
-    result->column_buffer= (drizzle_column_st*)calloc(result->column_count, sizeof(drizzle_column_st));
+    result->column_buffer= new (std::nothrow) drizzle_column_st[result->column_count];
     if (result->column_buffer == NULL)
     {
       drizzle_set_error(result->con, __func__, "Failed to allocate.");

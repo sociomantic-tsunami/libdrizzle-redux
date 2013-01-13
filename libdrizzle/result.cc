@@ -55,44 +55,12 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
     return NULL;
   }
 
-  result= (drizzle_result_st*)malloc(sizeof(drizzle_result_st));
+  result= new (std::nothrow) drizzle_result_st;
   if (result == NULL)
   {
     drizzle_set_error(con, __func__, "Failed to allocate.");
     return NULL;
   }
-
-  result->binlog_checksums= false;
-  result->binlog_event= NULL;
-  result->column_list= NULL;
-  result->options= DRIZZLE_RESULT_NONE;
-  result->prev= NULL;
-  result->column_buffer= NULL;
-  result->row= NULL;
-  result->error_code= 0;
-  result->insert_id= 0;
-  result->warning_count= 0;
-  result->affected_rows= 0;
-  result->column_count= 0;
-  result->column_current= 0;
-  result->column= NULL;
-  result->row_count= 0;
-  result->row_current= 0;
-  result->field_current= 0;
-  result->field_total= 0;
-  result->field_offset= 0;
-  result->field_size= 0;
-  result->field= NULL;
-  result->field_buffer= NULL;
-  result->row_list_size= 0;
-  result->row_list= NULL;
-  result->field_sizes= NULL;
-  result->field_sizes_list= NULL;
-  result->info[0]= '\0';
-  result->sqlstate[0]= '\0';
-  result->null_bitmap_list= NULL;
-  result->null_bitmap= NULL;
-  result->binary_rows= false;
 
   result->con= con;
   con->result= result;
@@ -118,7 +86,7 @@ void drizzle_result_free(drizzle_result_st *result)
   if (result->binlog_event != NULL)
   {
     free(result->binlog_event->data);
-    free(result->binlog_event);
+    delete result->binlog_event;
   }
 
   for (column= result->column_list; column != NULL; column= result->column_list)
@@ -126,7 +94,7 @@ void drizzle_result_free(drizzle_result_st *result)
     drizzle_column_free(column);
   }
 
-  free(result->column_buffer);
+  delete[] result->column_buffer;
 
   if (result->options & DRIZZLE_RESULT_BUFFER_ROW)
   {
@@ -136,7 +104,7 @@ void drizzle_result_free(drizzle_result_st *result)
       drizzle_row_free(result, result->row_list[x]);
       if (result->null_bitmap_list != NULL)
       {
-        free(result->null_bitmap_list[x]);
+        delete[] result->null_bitmap_list[x];
       }
     }
     if (result->null_bitmap_list != NULL)
@@ -163,7 +131,7 @@ void drizzle_result_free(drizzle_result_st *result)
     result->next->prev= result->prev;
   }
 
-  free(result);
+  delete result;
 }
 
 void drizzle_result_free_all(drizzle_st *con)

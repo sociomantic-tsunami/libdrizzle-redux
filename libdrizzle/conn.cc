@@ -1126,7 +1126,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
   {
     con->buffer_ptr= con->buffer;
   }
-  else if ((con->buffer_ptr - con->buffer) > (DRIZZLE_MAX_BUFFER_SIZE / 2))
+  else if ((size_t)(con->buffer_ptr - con->buffer) > (con->buffer_allocation / 2))
   {
     memmove(con->buffer, con->buffer_ptr, con->buffer_size);
     con->buffer_ptr= con->buffer;
@@ -1149,7 +1149,27 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
   while (1)
   {
-    size_t available_buffer= (size_t)DRIZZLE_MAX_BUFFER_SIZE - ((size_t)(con->buffer_ptr - con->buffer) + con->buffer_size);
+    size_t available_buffer= con->buffer_allocation - ((size_t)(con->buffer_ptr - con->buffer) + con->buffer_size);
+    if (available_buffer == 0)
+    {
+      if (con->buffer_allocation >= DRIZZLE_MAX_BUFFER_SIZE)
+      {
+        drizzle_set_error(con, __func__,
+                          "buffer too small:%zu", con->packet_size + 4);
+        return DRIZZLE_RETURN_INTERNAL_ERROR;
+      }
+      // Shift data to beginning of the buffer then resize
+      // This means that buffer_ptr isn't screwed up by realloc pointer move
+      if (con->buffer_ptr != con->buffer)
+      {
+        memmove(con->buffer, con->buffer_ptr, con->buffer_size);
+      }
+      con->buffer_allocation= con->buffer_allocation * 2;
+      con->buffer= (unsigned char*)realloc(con->buffer, con->buffer_allocation);
+      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer_allocation);
+      con->buffer_ptr= con->buffer;
+      available_buffer= con->buffer_allocation - con->buffer_size;
+    }
 
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
@@ -1166,8 +1186,8 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_crazy(con, "read fd=%d recv=%zd ssl= %d errno=%s",
-                      con->fd, read_size, 
+    drizzle_log_crazy(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
+                      con->fd, available_buffer, read_size, 
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
 

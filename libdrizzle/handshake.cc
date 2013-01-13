@@ -240,7 +240,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
                   + 1;  /* NULL */
 
   /* Assume the entire handshake packet will fit in the buffer. */
-  if ((con->packet_size + 4) > DRIZZLE_MAX_BUFFER_SIZE)
+  if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, "drizzle_state_handshake_server_write",
                       "buffer too small:%zu", con->packet_size + 4);
@@ -548,7 +548,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
                   + strlen(con->db) + 1;
 
   /* Assume the entire handshake packet will fit in the buffer. */
-  if ((con->packet_size + 4) > DRIZZLE_MAX_BUFFER_SIZE)
+  if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, "drizzle_state_handshake_client_write",
                       "buffer too small:%zu", con->packet_size + 4);

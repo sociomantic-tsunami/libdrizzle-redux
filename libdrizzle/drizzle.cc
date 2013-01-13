@@ -169,60 +169,11 @@ drizzle_st *drizzle_create(void)
 {
   drizzle_st *con;
 
-  con= (drizzle_st*)malloc(sizeof(drizzle_st));
+  con= new (std::nothrow) drizzle_st;
   if (con == NULL)
   {
     return NULL;
   }
-
-  con->flags.is_shutdown= false;
-  con->options= DRIZZLE_CON_NONE;
-  con->packet_number= 0;
-  con->protocol_version= 0;
-  con->state_current= 0;
-  con->events= 0;
-  con->revents= 0;
-  con->capabilities= DRIZZLE_CAPABILITIES_NONE;
-  con->charset= DRIZZLE_CHARSET_NONE;
-  con->command= DRIZZLE_COMMAND_SLEEP;
-  con->socket_type= DRIZZLE_CON_SOCKET_TCP;
-  con->status= DRIZZLE_CON_STATUS_NONE;
-  con->max_packet_size= DRIZZLE_MAX_PACKET_SIZE;
-  con->result_count= 0;
-  con->thread_id= 0;
-  con->backlog= DRIZZLE_DEFAULT_BACKLOG;
-  con->fd= -1;
-  con->buffer_size= 0;
-  con->command_offset= 0;
-  con->command_size= 0;
-  con->command_total= 0;
-  con->packet_size= 0;
-  con->addrinfo_next= NULL;
-  con->buffer_ptr= con->buffer;
-  con->command_buffer= NULL;
-  con->command_data= NULL;
-  con->context= NULL;
-  con->context_free_fn= NULL;
-  con->result_list= NULL;
-  con->scramble= NULL;
-  /* con->buffer doesn't need to be set */
-  con->db[0]= 0;
-  con->password[0]= 0;
-  /* con->scramble_buffer doesn't need to be set */
-  con->server_version[0]= 0;
-  /* con->state_stack doesn't need to be set */
-  con->user[0]= 0;
-  con->ssl_context= NULL;
-  con->ssl= NULL;
-  con->ssl_state= DRIZZLE_SSL_STATE_NONE;
-  con->error_code= 0;
-  con->verbose= DRIZZLE_VERBOSE_NEVER;
-  con->last_errno= 0;
-  con->timeout= -1;
-  con->log_fn= NULL;
-  con->log_context= NULL;
-  con->sqlstate[0]= '\0';
-  con->last_error[0]= '\0';
 
   return con;
 }
@@ -256,7 +207,8 @@ void drizzle_free(drizzle_st *con)
     SSL_CTX_free(con->ssl_context);
 #endif
 
-  free(con);
+  free(con->buffer);
+  delete con;
 }
 
 drizzle_return_t drizzle_wait(drizzle_st *con)

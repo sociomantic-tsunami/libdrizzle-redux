@@ -305,7 +305,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 drizzle_return_t drizzle_state_binary_null_read(drizzle_st *con)
 {
   con->result->null_bitmap_length= (con->result->column_count+7+2)/8;
-  con->result->null_bitmap= (uint8_t*)malloc(con->result->null_bitmap_length);
+  con->result->null_bitmap= new uint8_t[con->result->null_bitmap_length];
   con->buffer_ptr++;
 
   memcpy(con->result->null_bitmap, con->buffer_ptr, con->result->null_bitmap_length);

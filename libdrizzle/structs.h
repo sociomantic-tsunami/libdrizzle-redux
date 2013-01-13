@@ -149,8 +149,12 @@ struct drizzle_uds_st
  */
 struct drizzle_st
 {
-  struct {
+  struct flags_t{
     bool is_shutdown;
+
+    flags_t() :
+      is_shutdown(false)
+    { }
   } flags;
   uint8_t packet_number;
   uint8_t protocol_version;
@@ -187,7 +191,8 @@ struct drizzle_st
     drizzle_tcp_st tcp;
     drizzle_uds_st uds;
   } socket;
-  unsigned char buffer[DRIZZLE_MAX_BUFFER_SIZE];
+  unsigned char *buffer;
+  size_t buffer_allocation;
   char db[DRIZZLE_MAX_DB_SIZE];
   char password[DRIZZLE_MAX_PASSWORD_SIZE];
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
@@ -213,6 +218,58 @@ struct drizzle_st
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
+
+  drizzle_st() :
+    packet_number(0),
+    protocol_version(0),
+    state_current(0),
+    events(0),
+    revents(0),
+    capabilities(DRIZZLE_CAPABILITIES_NONE),
+    charset(DRIZZLE_CHARSET_NONE),
+    command(DRIZZLE_COMMAND_SLEEP),
+    options(DRIZZLE_CON_NONE),
+    socket_type(DRIZZLE_CON_SOCKET_TCP),
+    status(DRIZZLE_CON_STATUS_NONE),
+    max_packet_size(DRIZZLE_MAX_PACKET_SIZE),
+    result_count(0),
+    thread_id(0),
+    backlog(DRIZZLE_DEFAULT_BACKLOG),
+    fd(-1),
+    buffer_size(0),
+    command_offset(0),
+    command_size(0),
+    command_total(0),
+    packet_size(0),
+    addrinfo_next(NULL),
+    command_buffer(NULL),
+    command_data(NULL),
+    context(NULL),
+    context_free_fn(NULL),
+    result(NULL),
+    result_list(NULL),
+    scramble(NULL),
+    buffer_allocation(DRIZZLE_DEFAULT_BUFFER_SIZE),
+    ssl_context(NULL),
+    ssl(NULL),
+    ssl_state(DRIZZLE_SSL_STATE_NONE),
+    error_code(0),
+    verbose(DRIZZLE_VERBOSE_NEVER),
+    last_errno(0),
+    timeout(-1),
+    log_fn(NULL),
+    log_context(NULL),
+    stmt(NULL)
+  {
+    db[0]= '\0';
+    password[0]= '\0';
+    server_version[0]= '\0';
+    user[0]= '\0';
+    sqlstate[0]= '\0';
+    last_error[0]= '\0';
+    buffer= (unsigned char*)malloc(DRIZZLE_DEFAULT_BUFFER_SIZE);
+    buffer_ptr= buffer;
+  }
 };
 
 /**
@@ -282,10 +339,10 @@ struct drizzle_result_st
     field_total(0),
     field_offset(0),
     field_size(0),
-    field(),
-    field_buffer(),
+    field(NULL),
+    field_buffer(NULL),
     row_list_size(0),
-    row(),
+    row(NULL),
     row_list(NULL),
     field_sizes(NULL),
     field_sizes_list(NULL),
@@ -296,8 +353,8 @@ struct drizzle_result_st
     null_bitmap_length(0),
     binary_rows(false)
   {
-    info[0]= 0;
-    sqlstate[0]= 0;
+    info[0]= '\0';
+    sqlstate[0]= '\0';
   }
 
 #endif
@@ -341,6 +398,26 @@ struct drizzle_column_st
   uint8_t decimals;
   unsigned char default_value[DRIZZLE_MAX_DEFAULT_VALUE_SIZE];
   size_t default_value_size;
+
+  drizzle_column_st() :
+    result(NULL),
+    next(NULL),
+    prev(NULL),
+    options(DRIZZLE_COLUMN_UNUSED),
+    charset(DRIZZLE_CHARSET_NONE),
+    size(0),
+    max_size(0),
+    type(DRIZZLE_COLUMN_TYPE_NONE),
+    flags(DRIZZLE_COLUMN_FLAGS_NONE),
+    decimals(0),
+    default_value_size(0)
+  { 
+    catalog[0]= '\0';
+    db[0]= '\0';
+    table[0]= '\0';
+    orig_table[0] ='\0';
+    name[0]= '\0';
+  }
 };
 
 struct drizzle_stmt_st
@@ -357,6 +434,21 @@ struct drizzle_stmt_st
   drizzle_result_st *prepare_result;
   drizzle_result_st *execute_result;
   drizzle_column_st *fields;
+
+  drizzle_stmt_st() :
+    con(NULL),
+    state(DRIZZLE_STMT_NONE),
+    id(0),
+    param_count(0),
+    query_params(NULL),
+    result_params(NULL),
+    null_bitmap_length(0),
+    null_bitmap(NULL),
+    new_bind(true),
+    prepare_result(NULL),
+    execute_result(NULL),
+    fields(NULL)
+  { }
 };
 
 struct drizzle_bind_st
@@ -366,13 +458,27 @@ struct drizzle_bind_st
   uint32_t length;
   bool is_bound;
   char *converted_data;
-  struct
+  struct options_t
   {
     bool is_null;
     bool is_unsigned;
     bool is_long_data;
     bool is_allocated;
+
+    options_t() :
+      is_null(false),
+      is_unsigned(false),
+      is_long_data(false),
+      is_allocated(false)
+    { }
   } options;
+  drizzle_bind_st() :
+    type(DRIZZLE_COLUMN_TYPE_NONE),
+    data(NULL),
+    length(0),
+    is_bound(false),
+    converted_data(NULL)
+  { }
 };
 
 #ifdef __cplusplus
