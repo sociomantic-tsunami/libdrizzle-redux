@@ -45,7 +45,6 @@
 
 #include <cassert>
 #include <new>
-#include <vector>
 
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
