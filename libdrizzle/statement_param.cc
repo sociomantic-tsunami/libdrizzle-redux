@@ -39,7 +39,7 @@
 #include "libdrizzle/common.h"
 
 /* Internal function */
-drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned, bool is_allocated)
+drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned)
 {
   if ((stmt == NULL) || (param_num >= stmt->param_count) || (data == NULL))
   {
@@ -55,7 +55,6 @@ drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_nu
   stmt->query_params[param_num].data= data;
   stmt->query_params[param_num].length= length;
   stmt->query_params[param_num].options.is_unsigned= is_unsigned;
-  stmt->query_params[param_num].options.is_allocated= is_allocated;
   stmt->query_params[param_num].is_bound= true;
 
   return DRIZZLE_RETURN_OK;
@@ -65,77 +64,70 @@ drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_nu
 drizzle_return_t drizzle_stmt_set_tiny(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t value, bool is_unsigned)
 {
   uint8_t *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint8_t));
-  val= (uint8_t*) stmt->query_params[param_num].data;
+  val= (uint8_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TINY, val, 1, is_unsigned, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TINY, val, 1, is_unsigned);
 }
 drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t value, bool is_unsigned)
 {
   uint16_t *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint16_t));
-  val= (uint16_t*) stmt->query_params[param_num].data;
+  val= (uint16_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_SHORT, val, 2, is_unsigned, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_SHORT, val, 2, is_unsigned);
 }
 
 drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
 {
   uint32_t *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint32_t));
-  val= (uint32_t*) stmt->query_params[param_num].data;
+  val= (uint32_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONG, val, 4, is_unsigned, true);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONG, val, 4, is_unsigned);
 }
 
 drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
 {
   uint64_t *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(uint64_t));
-  val= (uint64_t*) stmt->query_params[param_num].data;
+  val= (uint64_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONGLONG, val, 8, is_unsigned, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONGLONG, val, 8, is_unsigned);
 }
 
 drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_num, double value)
 {
   double *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(double));
-  val= (double*) stmt->query_params[param_num].data;
+  val= (double*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_DOUBLE, val, 8, false, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_DOUBLE, val, 8, false);
 }
 
 drizzle_return_t drizzle_stmt_set_float(drizzle_stmt_st *stmt, uint16_t param_num, float value)
 {
   float *val;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(float));
-  val= (float*) stmt->query_params[param_num].data;
+  val= (float*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_FLOAT, val, 4, false, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_FLOAT, val, 4, false);
 }
 
 drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, char *value, size_t length)
 {
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_STRING, value, length, false, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_STRING, value, length, false);
 }
 
 drizzle_return_t drizzle_stmt_set_null(drizzle_stmt_st *stmt, uint16_t param_num)
 {
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_NULL, NULL, 0, false, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_NULL, NULL, 0, false);
 }
 
 drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t days, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds, bool is_negative)
 {
   drizzle_datetime_st *time;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(drizzle_datetime_st));
-  time= (drizzle_datetime_st*) stmt->query_params[param_num].data;
+  time= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
   time->negative= is_negative;
   time->day= days;
@@ -145,14 +137,13 @@ drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num
   time->microsecond= microseconds;
 
   /* Length not important because we will figure that out when packing */
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, time, 0, false, true);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, time, 0, false);
 }
 
 drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t year, uint8_t month, uint8_t day, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds)
 {
   drizzle_datetime_st *timestamp;
-  stmt->query_params[param_num].data = realloc(stmt->query_params[param_num].data, sizeof(drizzle_datetime_st));
-  timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data;
+  timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
   timestamp->negative= false;
   timestamp->year= year;
@@ -165,7 +156,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   timestamp->microsecond= microseconds;
 
   /* Length not important because we will figure that out when packing */ 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, timestamp, 0, false, true);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, timestamp, 0, false);
 }
 
 bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
@@ -583,69 +574,64 @@ double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, dr
 char *long_to_string(drizzle_bind_st *param, uint32_t val)
 {
   /* Max length is -INT32_MAX + NUL = 12 */
-  param->converted_data= (char*)realloc(param->converted_data, 12);
   if (param->options.is_unsigned)
   {
-    snprintf(param->converted_data, 12, "%"PRIu32, val);
+    snprintf(param->data_buffer, 12, "%"PRIu32, val);
   }
   else
   {
-    snprintf(param->converted_data, 12, "%"PRId32, (int32_t)val);
+    snprintf(param->data_buffer, 12, "%"PRId32, (int32_t)val);
   }
-  return param->converted_data;
+  return (char*)param->data_buffer;
 }
 
 char *longlong_to_string(drizzle_bind_st *param, uint64_t val)
 { 
   /* Max length is -INT64_MAX + NUL = 21 */
-  param->converted_data= (char*)realloc(param->converted_data, 21);
   if (param->options.is_unsigned)
   { 
-    snprintf(param->converted_data, 21, "%"PRIu64, val);
+    snprintf(param->data_buffer, 21, "%"PRIu64, val);
   }
   else
   {
-    snprintf(param->converted_data, 21, "%"PRId64, (int64_t)val);
+    snprintf(param->data_buffer, 21, "%"PRId64, (int64_t)val);
   }
-  return param->converted_data;
+  return (char*)param->data_buffer;
 }
 
 char *double_to_string(drizzle_bind_st *param, double val)
 { 
   /* Max length is 23 */
-  param->converted_data= (char*)realloc(param->converted_data, 23);
-  snprintf(param->converted_data, 23, "%f", val);
-  return param->converted_data;
+  snprintf(param->data_buffer, 23, "%f", val);
+  return (char*)param->data_buffer;
 }
 
 char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
 {
   /* Max time is -HHH:MM:SS.ssssss + NUL = 17 */
-  param->converted_data= (char*)realloc(param->converted_data, 17);
   if (time->microsecond == 0)
   {
-    snprintf(param->converted_data, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
+    snprintf(param->data_buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
   }
   else
   {
-    snprintf(param->converted_data, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
+    snprintf(param->data_buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
   }
-  return param->converted_data;
+  return (char*)param->data_buffer;
 }
 
 char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp)
 {
   /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 26 */
-  param->converted_data= (char*)realloc(param->converted_data, 26);
   if (timestamp->microsecond == 0)
   {
-    snprintf(param->converted_data, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
+    snprintf(param->data_buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
   }
   else
   {
-    snprintf(param->converted_data, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
+    snprintf(param->data_buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
   }
-  return param->converted_data;
+  return (char*)param->data_buffer;
 }
 
 uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *column_name, drizzle_return_t *ret_ptr)

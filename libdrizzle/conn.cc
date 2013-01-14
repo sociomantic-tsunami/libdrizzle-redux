@@ -1165,7 +1165,13 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
         memmove(con->buffer, con->buffer_ptr, con->buffer_size);
       }
       con->buffer_allocation= con->buffer_allocation * 2;
-      con->buffer= (unsigned char*)realloc(con->buffer, con->buffer_allocation);
+      unsigned char *realloc_buffer= (unsigned char*)realloc(con->buffer, con->buffer_allocation);
+      if (realloc_buffer == NULL)
+      {
+        drizzle_set_error(con, __func__, "realloc failure");
+        return DRIZZLE_RETURN_MEMORY;
+      }
+      con->buffer= realloc_buffer;
       drizzle_log_debug(con, "buffer resized to: %zu", con->buffer_allocation);
       con->buffer_ptr= con->buffer;
       available_buffer= con->buffer_allocation - con->buffer_size;

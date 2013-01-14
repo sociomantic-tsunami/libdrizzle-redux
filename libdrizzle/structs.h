@@ -456,6 +456,7 @@ struct drizzle_bind_st
 {
   drizzle_column_type_t type;
   void *data;
+  char data_buffer[128];
   uint32_t length;
   bool is_bound;
   char *converted_data;
@@ -464,13 +465,11 @@ struct drizzle_bind_st
     bool is_null;
     bool is_unsigned;
     bool is_long_data;
-    bool is_allocated;
 
     options_t() :
       is_null(false),
       is_unsigned(false),
-      is_long_data(false),
-      is_allocated(false)
+      is_long_data(false)
     { }
   } options;
   drizzle_bind_st() :
@@ -479,7 +478,9 @@ struct drizzle_bind_st
     length(0),
     is_bound(false),
     converted_data(NULL)
-  { }
+  { 
+    data_buffer[0]= '\0';
+  }
 };
 
 #ifdef __cplusplus

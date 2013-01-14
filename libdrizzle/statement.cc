@@ -545,13 +545,6 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   }
 
   delete[] stmt->null_bitmap;
-  for (uint16_t x= 0; x < stmt->param_count; x++)
-  {
-    if (stmt->query_params[x].options.is_allocated)
-    {
-      free(stmt->query_params[x].data);
-    }
-  }
   delete[] stmt->query_params;
   if (stmt->execute_result)
   {
