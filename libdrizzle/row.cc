@@ -105,7 +105,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
       return NULL;
     }
 
-    result->row= (drizzle_row_t)realloc(NULL, (sizeof(drizzle_field_t) + sizeof(size_t)) * result->column_count);
+    result->row= new (std::nothrow) drizzle_field_t[sizeof(size_t) * result->column_count];
     if (result->row == NULL)
     {
       drizzle_set_error(result->con, __func__, "Failed to allocate.");
@@ -126,7 +126,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
     {
       if (*ret_ptr != DRIZZLE_RETURN_IO_WAIT)
       {
-        free(result->row);
+        delete[] result->row;
         result->row= NULL;
         result->field_sizes= NULL;
       }
@@ -159,7 +159,7 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
     drizzle_field_free(row[x]);
   }
 
-  free(row);
+  delete[] row;
 }
 
 size_t *drizzle_row_field_sizes(drizzle_result_st *result)

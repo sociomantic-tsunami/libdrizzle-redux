@@ -459,7 +459,6 @@ struct drizzle_bind_st
   char *data_buffer;
   uint32_t length;
   bool is_bound;
-  char *converted_data;
   struct options_t
   {
     bool is_null;
@@ -476,8 +475,7 @@ struct drizzle_bind_st
     type(DRIZZLE_COLUMN_TYPE_NONE),
     data(NULL),
     length(0),
-    is_bound(false),
-    converted_data(NULL)
+    is_bound(false)
   { 
     data_buffer= new (std::nothrow) char[128];
   }

@@ -327,9 +327,15 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       }
       if (result->binary_rows)
       {
-        result->null_bitmap_list= (uint8_t**)realloc(result->null_bitmap_list, sizeof(uint8_t*) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+        uint8_t **null_bitmap_list= (uint8_t**)realloc(result->null_bitmap_list, sizeof(uint8_t*) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+        if (null_bitmap_list == NULL)
+        {
+          drizzle_row_free(result, row);
+          drizzle_set_error(result->con, __func__, "Failed to realloc null_bitmap_list.");
+          return DRIZZLE_RETURN_MEMORY;
+        }
+        result->null_bitmap_list= null_bitmap_list;
       }
-
       result->row_list= row_list;
 
       field_sizes_list= (size_t **)realloc(result->field_sizes_list, sizeof(size_t *) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));

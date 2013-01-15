@@ -573,65 +573,70 @@ double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, dr
 
 char *long_to_string(drizzle_bind_st *param, uint32_t val)
 {
-  /* Max length is -INT32_MAX + NUL = 12 */
+  /* Pick an empty point in the buffer to make the str */
+  char* buffer= param->data_buffer + 50;
   if (param->options.is_unsigned)
   {
-    snprintf(param->data_buffer, 12, "%"PRIu32, val);
+    snprintf(buffer, 12, "%"PRIu32, val);
   }
   else
   {
-    snprintf(param->data_buffer, 12, "%"PRId32, (int32_t)val);
+    snprintf(buffer, 12, "%"PRId32, (int32_t)val);
   }
-  return (char*)param->data_buffer;
+  return buffer;
 }
 
 char *longlong_to_string(drizzle_bind_st *param, uint64_t val)
 { 
   /* Max length is -INT64_MAX + NUL = 21 */
+  char* buffer= param->data_buffer + 50;
   if (param->options.is_unsigned)
   { 
-    snprintf(param->data_buffer, 21, "%"PRIu64, val);
+    snprintf(buffer, 21, "%"PRIu64, val);
   }
   else
   {
-    snprintf(param->data_buffer, 21, "%"PRId64, (int64_t)val);
+    snprintf(buffer, 21, "%"PRId64, (int64_t)val);
   }
-  return (char*)param->data_buffer;
+  return buffer;
 }
 
 char *double_to_string(drizzle_bind_st *param, double val)
 { 
   /* Max length is 23 */
-  snprintf(param->data_buffer, 23, "%f", val);
-  return (char*)param->data_buffer;
+  char* buffer= param->data_buffer + 50;
+  snprintf(buffer, 23, "%f", val);
+  return buffer;
 }
 
 char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
 {
   /* Max time is -HHH:MM:SS.ssssss + NUL = 17 */
+  char* buffer= param->data_buffer + 50;
   if (time->microsecond == 0)
   {
-    snprintf(param->data_buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
+    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
   }
   else
   {
-    snprintf(param->data_buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
+    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
   }
-  return (char*)param->data_buffer;
+  return buffer;
 }
 
 char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp)
 {
   /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 26 */
+  char* buffer= param->data_buffer + 50;
   if (timestamp->microsecond == 0)
   {
-    snprintf(param->data_buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
+    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
   }
   else
   {
-    snprintf(param->data_buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
+    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
   }
-  return (char*)param->data_buffer;
+  return buffer;
 }
 
 uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *column_name, drizzle_return_t *ret_ptr)
