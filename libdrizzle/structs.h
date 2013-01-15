@@ -456,7 +456,7 @@ struct drizzle_bind_st
 {
   drizzle_column_type_t type;
   void *data;
-  char data_buffer[128];
+  char *data_buffer;
   uint32_t length;
   bool is_bound;
   char *converted_data;
@@ -479,7 +479,7 @@ struct drizzle_bind_st
     is_bound(false),
     converted_data(NULL)
   { 
-    data_buffer[0]= '\0';
+    data_buffer= new (std::nothrow) char[128];
   }
 };
 
