@@ -456,30 +456,29 @@ struct drizzle_bind_st
 {
   drizzle_column_type_t type;
   void *data;
+  char *data_buffer;
   uint32_t length;
   bool is_bound;
-  char *converted_data;
   struct options_t
   {
     bool is_null;
     bool is_unsigned;
     bool is_long_data;
-    bool is_allocated;
 
     options_t() :
       is_null(false),
       is_unsigned(false),
-      is_long_data(false),
-      is_allocated(false)
+      is_long_data(false)
     { }
   } options;
   drizzle_bind_st() :
     type(DRIZZLE_COLUMN_TYPE_NONE),
     data(NULL),
     length(0),
-    is_bound(false),
-    converted_data(NULL)
-  { }
+    is_bound(false)
+  { 
+    data_buffer= new (std::nothrow) char[128];
+  }
 };
 
 #ifdef __cplusplus
