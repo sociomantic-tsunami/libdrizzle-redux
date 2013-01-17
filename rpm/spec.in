@@ -4,7 +4,7 @@ Version: @VERSION@
 Release: 1
 License: BSD
 Group: System Environment/Libraries
-BuildRequires: glib2-devel openssl-devel
+BuildRequires: zlib-devel openssl-devel
 URL: https://launchpad.net/libdrizzle
 
 Packager: Brian Aker <brian@tangent.org>

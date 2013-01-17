@@ -295,7 +295,7 @@ void write_binlog(FILE* file, const unsigned char* data, uint32_t len)
 {
   if (len)
   {
-    if (write(fileno(file), data, len) <= 0)
+    if (fwrite(data, 1, len, file) != len)
     {
       printf("Error: binlog: Error writing binary log: %s", strerror(errno));
       exit(EXIT_FAILURE);
