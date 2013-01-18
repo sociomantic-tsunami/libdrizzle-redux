@@ -37,7 +37,6 @@ TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 include yatl/include.am
 include tests/include.am
 include m4/include.am
-include cli/include.am
 include libdrizzle/include.am
 include libdrizzle-5.1/include.am
 include rpm/include.am

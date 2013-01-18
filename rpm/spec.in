@@ -54,7 +54,6 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_libdir}/libdrizzle.la
 %{_libdir}/libdrizzle.so
 %{_libdir}/libdrizzle.so.*
-%{_bindir}/drizzle_binlogs
 %{_bindir}/libdrizzle-config
 
 %files devel

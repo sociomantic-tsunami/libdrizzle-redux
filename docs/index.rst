@@ -8,5 +8,4 @@ Welcome to libdrizzle-redux documentation
    license
    compiling
    api/index
-   cli/index
    examples/index

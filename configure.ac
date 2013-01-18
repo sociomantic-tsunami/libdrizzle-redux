@@ -98,7 +98,6 @@ AX_HARDEN_COMPILER_FLAGS
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
 
-AC_CONFIG_FILES([cli/drizzle_binlogs_check.sh],[chmod +x cli/drizzle_binlogs_check.sh])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
