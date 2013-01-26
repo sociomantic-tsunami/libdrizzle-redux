@@ -334,10 +334,10 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   drizzle_set_byte2(&buffer[4], param_num);
   memcpy(&buffer[6], data, len);
 
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options | (uint8_t)DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= true;
   drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
                         buffer, len+6, len+6, &ret);
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= false;
   stmt->query_params[param_num].options.is_long_data= true;
 
   delete[] buffer;
@@ -361,10 +361,10 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
   }
 
   drizzle_set_byte4(buffer, stmt->id);
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options | (uint8_t)DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= true;
   drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_RESET, buffer, 4,
                         4, &ret);
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= false;
   if (stmt->execute_result)
   {
     drizzle_result_free(stmt->execute_result);
@@ -570,10 +570,10 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   }
 
   drizzle_set_byte4(buffer, stmt->id);
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options | (uint8_t)DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= true;
   drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_CLOSE, buffer, 4,
                         4, &ret);
-  stmt->con->options= (drizzle_options_t)((uint8_t)stmt->con->options & (uint8_t)~DRIZZLE_CON_NO_RESULT_READ);
+  stmt->con->state.no_result_read= false;
   delete stmt;
   return ret;
 }

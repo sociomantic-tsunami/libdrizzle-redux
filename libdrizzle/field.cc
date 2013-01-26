@@ -257,7 +257,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   {
     con->result->field_size= con->packet_size;
 
-    if (con->options & DRIZZLE_CON_RAW_PACKET)
+    if (con->state.raw_packet)
     {
       con->result->options = (drizzle_result_options_t)((int)con->result->options | DRIZZLE_RESULT_ROW_BREAK);
     }

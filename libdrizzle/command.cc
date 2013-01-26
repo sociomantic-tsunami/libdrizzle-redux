@@ -157,8 +157,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
   {
     drizzle_state_pop(con);
 
-    if (!(con->options & (DRIZZLE_CON_RAW_PACKET |
-                          DRIZZLE_CON_NO_RESULT_READ)) &&
+    if (!(con->state.raw_packet || con->state.no_result_read) &&
         con->command != DRIZZLE_COMMAND_FIELD_LIST)
     {
       drizzle_state_push(con, drizzle_state_result_read);
