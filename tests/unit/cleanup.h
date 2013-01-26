@@ -1,7 +1,8 @@
-/*
- * Drizzle Client & Protocol Library
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
  *
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ *  Drizzle Client & Protocol Library
+ *
+ * Copyright (C) 2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,28 +35,24 @@
  *
  */
 
-/**
- * @file
- * @brief Command Declarations for Clients
- */
-
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef  __cplusplus
+# include <cstdlib>
+# include <cstdio>
+#else
+# include <stdlib.h>
+# include <stdio.h>
 #endif
 
-/**
- * @addtogroup drizzle_command_client Command Declarations for Clients
- * @ingroup drizzle_client_interface
- *
- * These functions are used to issue commands on a connection. Normal SQL
- * queries are issued using the drizzle_query* functions defined in query.h.
- * @{
- */
+#include <libdrizzle-5.1/libdrizzle.h>
 
-/** @} */
-
-#ifdef __cplusplus
+static drizzle_st *con= NULL;
+static void close_connection_on_exit(void)
+{
+  drizzle_return_t ret= drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", strerror(ret));
 }
-#endif
+
+#define CLOSE_ON_EXIT(__connection) atexit(close_connection_on_exit);
+

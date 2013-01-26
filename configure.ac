@@ -88,6 +88,7 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_CHECK_FUNCS([fcntl])
+AC_CHECK_FUNCS([on_exit])
 AC_CHECK_FUNCS([poll])
 AC_CHECK_FUNCS([ppoll])
 

@@ -2,10 +2,21 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-tests_unit_binlog_SOURCES= tests/unit/binlog.c
+noinst_HEADERS+= tests/unit/cleanup.h
+
+tests_unit_binlog_SOURCES= tests/unit/binlog.cc
 tests_unit_binlog_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/binlog
 noinst_PROGRAMS+= tests/unit/binlog
+
+gdb-binlog: tests/unit/binlog
+	@$(GDB_COMMAND) tests/unit/binlog
+
+valgrind-binlog: tests/unit/binlog
+	@$(VALGRIND_COMMAND) tests/unit/binlog
+
+check-binlog: tests/unit/binlog
+	tests/unit/binlog
 
 tests_unit_escape_SOURCES= tests/unit/escape.c
 tests_unit_escape_LDADD= libdrizzle/libdrizzle.la
@@ -27,6 +38,16 @@ tests_unit_column_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/column
 noinst_PROGRAMS+= tests/unit/column
 
+gdb-column: tests/unit/column
+	@$(GDB_COMMAND) tests/unit/column
+
+valgrind-column: tests/unit/column
+	@$(VALGRIND_COMMAND) tests/unit/column
+
+check-column: tests/unit/column
+	tests/unit/column
+
+
 tests_unit_row_SOURCES= tests/unit/row.c
 tests_unit_row_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/row
@@ -46,6 +67,15 @@ tests_unit_connect_SOURCES= tests/unit/connect.c
 tests_unit_connect_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/connect
 noinst_PROGRAMS+= tests/unit/connect
+
+gdb-connect: tests/unit/connect
+	@$(GDB_COMMAND) tests/unit/connect
+
+valgrind-connect: tests/unit/connect
+	@$(VALGRIND_COMMAND) tests/unit/connect
+
+check-connect: tests/unit/connect
+	tests/unit/connect
 
 tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c
 tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle.la

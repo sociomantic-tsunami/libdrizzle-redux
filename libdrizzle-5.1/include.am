@@ -5,7 +5,6 @@
 nobase_include_HEADERS+= libdrizzle-5.1/binlog.h
 nobase_include_HEADERS+= libdrizzle-5.1/column.h
 nobase_include_HEADERS+= libdrizzle-5.1/column_client.h
-nobase_include_HEADERS+= libdrizzle-5.1/command_client.h
 nobase_include_HEADERS+= libdrizzle-5.1/conn.h
 nobase_include_HEADERS+= libdrizzle-5.1/conn_client.h
 nobase_include_HEADERS+= libdrizzle-5.1/constants.h
