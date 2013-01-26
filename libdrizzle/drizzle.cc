@@ -295,7 +295,10 @@ drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
   drizzle_set_tcp(con, host, port);
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
-  con->options= options;
+  if (options != NULL)
+  {
+    con->options= *options;
+  }
 
   return con;
 }
@@ -315,7 +318,10 @@ drizzle_st *drizzle_create_uds(const char *uds, const char *user,
   drizzle_set_uds(con, uds);
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
-  con->options= options;
+  if (options != NULL)
+  {
+    con->options= *options;
+  }
 
   return con;
 }

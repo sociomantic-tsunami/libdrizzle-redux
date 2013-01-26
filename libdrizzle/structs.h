@@ -199,7 +199,7 @@ struct drizzle_st
     { }
   } state;
   
-  drizzle_options_st *options;
+  drizzle_options_st options;
   drizzle_socket_t socket_type;
   drizzle_status_t status;
   uint32_t max_packet_size;
@@ -263,7 +263,6 @@ struct drizzle_st
     capabilities(DRIZZLE_CAPABILITIES_NONE),
     charset(DRIZZLE_CHARSET_NONE),
     command(DRIZZLE_COMMAND_SLEEP),
-    options(NULL),
     socket_type(DRIZZLE_CON_SOCKET_TCP),
     status(DRIZZLE_CON_STATUS_NONE),
     max_packet_size(DRIZZLE_MAX_PACKET_SIZE),

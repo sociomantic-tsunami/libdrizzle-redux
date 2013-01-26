@@ -1172,7 +1172,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     }
 
     ret= drizzle_set_events(con, POLLOUT);
-    if (con->options && con->options->non_blocking)
+    if (con->options.non_blocking)
     {
       return DRIZZLE_RETURN_IO_WAIT;
     }
@@ -1208,7 +1208,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
   }
 
   if ((con->revents & POLLIN) == 0 &&
-      (con->options && con->options->non_blocking))
+      (con->options.non_blocking))
   {
     /* non-blocking mode: return IO_WAIT instead of attempting to read. This
      * avoids reading immediately after writing a command, which typically
@@ -1300,7 +1300,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
             return ret;
           }
 
-          if (con->options && con->options->non_blocking)
+          if (con->options.non_blocking)
           {
             return DRIZZLE_RETURN_IO_WAIT;
           }
@@ -1407,7 +1407,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
           return ret;
         }
 
-        if (con->options && con->options->non_blocking)
+        if (con->options.non_blocking)
         {
           return DRIZZLE_RETURN_IO_WAIT;
         }

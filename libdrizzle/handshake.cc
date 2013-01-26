@@ -481,25 +481,24 @@ int drizzle_compile_capabilities(drizzle_st *con)
   con->capabilities = (drizzle_capabilities_t)((int)con->capabilities | (int)DRIZZLE_CAPABILITIES_PROTOCOL_41);
 
   capabilities= con->capabilities & DRIZZLE_CAPABILITIES_CLIENT;
-  if (con->options != NULL)
+  if (con->options.found_rows == false)
   {
-    if (con->options->found_rows == false)
-      capabilities&= ~DRIZZLE_CAPABILITIES_FOUND_ROWS;
+    capabilities&= ~DRIZZLE_CAPABILITIES_FOUND_ROWS;
+  }
 
-    if (con->options->interactive)
-    {
-      capabilities|= DRIZZLE_CAPABILITIES_INTERACTIVE;
-    }
+  if (con->options.interactive)
+  {
+    capabilities|= DRIZZLE_CAPABILITIES_INTERACTIVE;
+  }
 
-    if (con->options->multi_statements)
-    {
-      capabilities|= DRIZZLE_CAPABILITIES_MULTI_STATEMENTS;
-    }
+  if (con->options.multi_statements)
+  {
+    capabilities|= DRIZZLE_CAPABILITIES_MULTI_STATEMENTS;
+  }
 
-    if (con->options->auth_plugin)
-    {
-      capabilities|= DRIZZLE_CAPABILITIES_PLUGIN_AUTH;
-    }
+  if (con->options.auth_plugin)
+  {
+    capabilities|= DRIZZLE_CAPABILITIES_PLUGIN_AUTH;
   }
 #ifdef USE_OPENSSL
   if (con->ssl)
