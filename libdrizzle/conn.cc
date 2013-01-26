@@ -220,7 +220,7 @@ void drizzle_close(drizzle_st *con)
 
   __closesocket(con->fd);
 
-  con->options = (drizzle_options_t)((int)con->options & (int)~DRIZZLE_CON_READY);
+  con->state.ready= false;
   con->packet_number= 0;
   con->buffer_ptr= con->buffer;
   con->buffer_size= 0;
@@ -250,7 +250,7 @@ drizzle_return_t drizzle_set_revents(drizzle_st *con, short revents)
   }
 
   if (revents != 0)
-    con->options = (drizzle_options_t)((int)con->options | (int)DRIZZLE_CON_IO_READY);
+    con->state.io_ready= true;
 
   con->revents= revents;
 
@@ -300,47 +300,122 @@ const char *drizzle_sqlstate(const drizzle_st *con)
   return con->sqlstate;
 }
 
-drizzle_options_t drizzle_options(const drizzle_st *con)
+drizzle_options_st *drizzle_options_create(void)
 {
-  if (con == NULL)
-  {
-    return DRIZZLE_CON_NONE;
-  }
-
-  return drizzle_options_t(con->options);
+  return new (std::nothrow) drizzle_options_st;
 }
 
-void drizzle_set_options(drizzle_st *con,
-                             drizzle_options_t options)
+void drizzle_options_destroy(drizzle_options_st *options)
 {
-  if (con == NULL)
+  delete options;
+}
+
+void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
   {
     return;
   }
-
-  con->options= options;
+  options->non_blocking= state;
 }
 
-void drizzle_add_options(drizzle_st *con,
-                             drizzle_options_t options)
+bool drizzle_options_get_non_blocking(drizzle_options_st *options)
 {
-  if (con == NULL)
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->non_blocking;
+}
+
+void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
   {
     return;
   }
-
-  con->options = (drizzle_options_t)((int)con->options | (int)options);
+  options->raw_scramble= state;
 }
 
-void drizzle_remove_options(drizzle_st *con,
-                                drizzle_options_t options)
+bool drizzle_options_get_raw_scramble(drizzle_options_st *options)
 {
-  if (con == NULL)
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->raw_scramble;
+}
+
+void drizzle_options_set_found_rows(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
   {
     return;
   }
+  options->found_rows= state;
+}
 
-  con->options = (drizzle_options_t)((int) con->options & (int)~options);
+bool drizzle_options_get_found_rows(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->found_rows;
+}
+
+void drizzle_options_set_interactive(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->interactive= state;
+}
+
+bool drizzle_options_get_interactive(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->interactive;
+}
+
+void drizzle_options_set_multi_statements(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->multi_statements= state;
+}
+
+bool drizzle_options_get_multi_statements(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->multi_statements;
+}
+
+void drizzle_options_set_auth_plugin(drizzle_options_st *options, bool state)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->auth_plugin= state;
+}
+
+bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return false;
+  }
+  return options->auth_plugin;
 }
 
 const char *drizzle_host(const drizzle_st *con)
@@ -610,14 +685,14 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  if (con->options & DRIZZLE_CON_READY)
+  if (con->state.ready)
   {
     return DRIZZLE_RETURN_OK;
   }
 
   if (drizzle_state_none(con))
   {
-    if (!(con->options & DRIZZLE_CON_RAW_PACKET))
+    if (con->state.raw_packet == false)
     {
       drizzle_state_push(con, drizzle_state_handshake_server_read);
       drizzle_state_push(con, drizzle_state_packet_read);
@@ -721,9 +796,9 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
 
   drizzle_result_st *old_result;
 
-  if (!(con->options & DRIZZLE_CON_READY))
+  if (con->state.ready == false)
   {
-    if (con->options & DRIZZLE_CON_RAW_PACKET)
+    if (con->state.raw_packet)
     {
       drizzle_set_error(con, "drizzle_command_write",
                         "connection not ready");
@@ -740,7 +815,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
 
   if (drizzle_state_none(con))
   {
-    if (con->options & (DRIZZLE_CON_RAW_PACKET | DRIZZLE_CON_NO_RESULT_READ))
+    if (con->state.raw_packet || con->state.no_result_read)
     {
       con->result= NULL;
     }
@@ -1097,7 +1172,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     }
 
     ret= drizzle_set_events(con, POLLOUT);
-    if (con->options & DRIZZLE_CON_OPTIONS_NON_BLOCKING)
+    if (con->options && con->options->non_blocking)
     {
       return DRIZZLE_RETURN_IO_WAIT;
     }
@@ -1133,7 +1208,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
   }
 
   if ((con->revents & POLLIN) == 0 &&
-      (con->options & DRIZZLE_CON_OPTIONS_NON_BLOCKING))
+      (con->options && con->options->non_blocking))
   {
     /* non-blocking mode: return IO_WAIT instead of attempting to read. This
      * avoids reading immediately after writing a command, which typically
@@ -1225,7 +1300,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
             return ret;
           }
 
-          if (con->options & DRIZZLE_CON_OPTIONS_NON_BLOCKING)
+          if (con->options && con->options->non_blocking)
           {
             return DRIZZLE_RETURN_IO_WAIT;
           }
@@ -1332,7 +1407,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
           return ret;
         }
 
-        if (con->options & DRIZZLE_CON_OPTIONS_NON_BLOCKING)
+        if (con->options && con->options->non_blocking)
         {
           return DRIZZLE_RETURN_IO_WAIT;
         }

@@ -147,6 +147,26 @@ struct drizzle_uds_st
 /**
  * @ingroup drizzle_con
  */
+
+struct drizzle_options_st
+{
+  bool non_blocking;
+  bool raw_scramble;
+  bool found_rows;
+  bool interactive;
+  bool multi_statements;
+  bool auth_plugin;
+
+  drizzle_options_st() :
+    non_blocking(false),
+    raw_scramble(false),
+    found_rows(false),
+    interactive(false),
+    multi_statements(false),
+    auth_plugin(false)
+  { }
+};
+
 struct drizzle_st
 {
   struct flags_t{
@@ -164,7 +184,22 @@ struct drizzle_st
   drizzle_capabilities_t capabilities;
   drizzle_charset_t charset;
   drizzle_command_t command;
-  drizzle_options_t options;
+  struct state_t
+  {
+    bool ready;
+    bool no_result_read;
+    bool io_ready;
+    bool raw_packet;
+
+    state_t() :
+      ready(false),
+      no_result_read(false),
+      io_ready(false),
+      raw_packet(false)
+    { }
+  } state;
+  
+  drizzle_options_st *options;
   drizzle_socket_t socket_type;
   drizzle_status_t status;
   uint32_t max_packet_size;
@@ -228,7 +263,7 @@ struct drizzle_st
     capabilities(DRIZZLE_CAPABILITIES_NONE),
     charset(DRIZZLE_CHARSET_NONE),
     command(DRIZZLE_COMMAND_SLEEP),
-    options(DRIZZLE_CON_NONE),
+    options(NULL),
     socket_type(DRIZZLE_CON_SOCKET_TCP),
     status(DRIZZLE_CON_STATUS_NONE),
     max_packet_size(DRIZZLE_MAX_PACKET_SIZE),

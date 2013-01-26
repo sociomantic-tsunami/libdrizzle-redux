@@ -98,7 +98,7 @@ DRIZZLE_API
 drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
                                     const char *user, const char *password,
                                     const char *db,
-                                    drizzle_options_t options);
+                                    drizzle_options_st *options);
 
 /**
  * Add unix domain socket connection with common arguments.
@@ -113,7 +113,7 @@ drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
 DRIZZLE_API
 drizzle_st *drizzle_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
-                                    drizzle_options_t options);
+                                    drizzle_options_st *options);
 
 /** @} */
 

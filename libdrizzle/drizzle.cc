@@ -268,9 +268,9 @@ drizzle_st *drizzle_ready(drizzle_st *con)
   /* We can't keep state between calls since connections may be removed during
      processing. If this list ever gets big, we may want something faster. */
 
-  if (con->options & DRIZZLE_CON_IO_READY)
+  if (con->state.io_ready)
   {
-    con->options = (drizzle_options_t)((int)con->options & (int)~DRIZZLE_CON_IO_READY);
+    con->state.io_ready= false;
     return con;
   }
 
@@ -284,7 +284,7 @@ drizzle_st *drizzle_ready(drizzle_st *con)
 drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
                                const char *user, const char *password,
                                const char *db,
-                               drizzle_options_t options)
+                               drizzle_options_st *options)
 {
   drizzle_st *con= drizzle_create();
   if (con == NULL)
@@ -295,14 +295,14 @@ drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
   drizzle_set_tcp(con, host, port);
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
-  drizzle_add_options(con, options);
+  con->options= options;
 
   return con;
 }
 
 drizzle_st *drizzle_create_uds(const char *uds, const char *user,
                                     const char *password, const char *db,
-                                    drizzle_options_t options)
+                                    drizzle_options_st *options)
 {
   drizzle_st *con;
 
@@ -315,7 +315,7 @@ drizzle_st *drizzle_create_uds(const char *uds, const char *user,
   drizzle_set_uds(con, uds);
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
-  drizzle_add_options(con, options);
+  con->options= options;
 
   return con;
 }

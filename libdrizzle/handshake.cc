@@ -200,7 +200,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
   drizzle_state_pop(con);
 
-  if (!(con->options & DRIZZLE_CON_RAW_PACKET))
+  if (con->state.raw_packet == false)
   {
     drizzle_state_push(con, drizzle_state_handshake_result_read);
     drizzle_state_push(con, drizzle_state_packet_read);
@@ -481,22 +481,25 @@ int drizzle_compile_capabilities(drizzle_st *con)
   con->capabilities = (drizzle_capabilities_t)((int)con->capabilities | (int)DRIZZLE_CAPABILITIES_PROTOCOL_41);
 
   capabilities= con->capabilities & DRIZZLE_CAPABILITIES_CLIENT;
-  if (!(con->options & DRIZZLE_CON_FOUND_ROWS))
-    capabilities&= ~DRIZZLE_CAPABILITIES_FOUND_ROWS;
-
-  if (con->options & DRIZZLE_CON_INTERACTIVE)
+  if (con->options != NULL)
   {
-    capabilities|= DRIZZLE_CAPABILITIES_INTERACTIVE;
-  }
+    if (con->options->found_rows == false)
+      capabilities&= ~DRIZZLE_CAPABILITIES_FOUND_ROWS;
 
-  if (con->options & DRIZZLE_CON_MULTI_STATEMENTS)
-  {
-    capabilities|= DRIZZLE_CAPABILITIES_MULTI_STATEMENTS;
-  }
+    if (con->options->interactive)
+    {
+      capabilities|= DRIZZLE_CAPABILITIES_INTERACTIVE;
+    }
 
-  if (con->options & DRIZZLE_CON_AUTH_PLUGIN)
-  {
-    capabilities|= DRIZZLE_CAPABILITIES_PLUGIN_AUTH;
+    if (con->options->multi_statements)
+    {
+      capabilities|= DRIZZLE_CAPABILITIES_MULTI_STATEMENTS;
+    }
+
+    if (con->options->auth_plugin)
+    {
+      capabilities|= DRIZZLE_CAPABILITIES_PLUGIN_AUTH;
+    }
   }
 #ifdef USE_OPENSSL
   if (con->ssl)
@@ -664,7 +667,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
       }
       else
       {
-        con->options = (drizzle_options_t)((int)con->options | (int)DRIZZLE_CON_READY);
+        con->state.ready= true;
       }
     }
   }

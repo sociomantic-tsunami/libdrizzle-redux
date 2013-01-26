@@ -98,29 +98,6 @@ extern "C" {
 
 /** @} */
 
-/**
- * @ingroup drizzle_con
- * Options for drizzle_st.
- */
-enum drizzle_options_t
-{
-  DRIZZLE_CON_NONE=                 0,
-  DRIZZLE_CON_OPTIONS_NON_BLOCKING= (1 << 0),
-  DRIZZLE_CON_RAW_PACKET=           (1 << 2),
-  DRIZZLE_CON_RAW_SCRAMBLE=         (1 << 3),
-  DRIZZLE_CON_READY=                (1 << 4),
-  DRIZZLE_CON_NO_RESULT_READ=       (1 << 5),
-  DRIZZLE_CON_IO_READY=             (1 << 6),
-  DRIZZLE_CON_FOUND_ROWS=           (1 << 9),
-  DRIZZLE_CON_INTERACTIVE=          (1 << 11),
-  DRIZZLE_CON_MULTI_STATEMENTS=     (1 << 12),
-  DRIZZLE_CON_AUTH_PLUGIN=          (1 << 13)
-};
-
-#ifndef __cplusplus
-typedef enum drizzle_options_t drizzle_options_t;
-#endif
-
 #ifndef __cplusplus
 typedef enum drizzle_socket_t drizzle_socket_t;
 #endif
@@ -583,6 +560,7 @@ typedef enum drizzle_column_flags_t drizzle_column_flags_t;
 typedef struct drizzle_tcp_st drizzle_tcp_st;
 typedef struct drizzle_uds_st drizzle_uds_st;
 typedef struct drizzle_st drizzle_st;
+typedef struct drizzle_options_st drizzle_options_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
