@@ -256,6 +256,9 @@ struct drizzle_st
 private:
   size_t _state_stack_count;
   Packet *_state_stack_list;
+  Packet _stack_packets[DRIZZLE_STATE_STACK_SIZE];
+  size_t _free_packet_count;
+  Packet *_free_packet_list;
 public:
 
   drizzle_st() :
@@ -299,7 +302,9 @@ public:
     stmt(NULL),
     binlog(NULL),
     _state_stack_count(0),
-    _state_stack_list(NULL)
+    _state_stack_list(NULL),
+    _free_packet_count(0),
+    _free_packet_list(NULL)
   {
     db[0]= '\0';
     password[0]= '\0';
@@ -309,6 +314,15 @@ public:
     last_error[0]= '\0';
     buffer= (unsigned char*)malloc(DRIZZLE_DEFAULT_BUFFER_SIZE);
     buffer_ptr= buffer;
+
+    assert(DRIZZLE_STATE_STACK_SIZE);
+    for (size_t x= 0; x < DRIZZLE_STATE_STACK_SIZE; ++x)
+    {
+      Packet *packet= &(_stack_packets[x]);
+      packet->init(this);
+      LIBDRIZZLE_LIST_ADD(_free_packet, packet);
+      assert(_free_packet_list);
+    }
   }
 
   ~drizzle_st()
@@ -318,7 +332,18 @@ public:
 
   bool push_state(drizzle_state_fn* func_)
   {
-    Packet *tmp= new (std::nothrow) Packet(func_);
+    Packet *tmp;
+    if (_free_packet_count)
+    {
+      tmp= _free_packet_list;
+      LIBDRIZZLE_LIST_DEL(_free_packet, tmp);
+      tmp->func(func_);
+    }
+    else
+    {
+      tmp= new (std::nothrow) Packet(this, func_);
+    }
+
     if (tmp)
     {
       LIBDRIZZLE_LIST_ADD(_state_stack, tmp);
@@ -335,7 +360,7 @@ public:
 
   drizzle_return_t current_state()
   {
-    return _state_stack_list->func(this);
+    return _state_stack_list->func();
   }
 
   void pop_state()
@@ -344,7 +369,16 @@ public:
     if (tmp)
     {
       LIBDRIZZLE_LIST_DEL(_state_stack, tmp);
-      delete tmp;
+
+      if (tmp->stack())
+      {
+        tmp->clear();
+        LIBDRIZZLE_LIST_ADD(_free_packet, tmp);
+      }
+      else
+      {
+        delete tmp;
+      }
     }
   }
 
