@@ -63,26 +63,27 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset,
     return 0;
   }
 
-  if (drizzle_state_none(result->con))
+  if (result->has_state())
   {
     if (result->field_current == result->column_count)
     {
       *ret_ptr= DRIZZLE_RETURN_ROW_END;
       return NULL;
     }
+
     if (result->binary_rows)
     {
-      drizzle_state_push(result->con, drizzle_state_binary_field_read);
+      result->push_state(drizzle_state_binary_field_read);
     }
     else
     {
-      drizzle_state_push(result->con, drizzle_state_field_read);
+      result->push_state(drizzle_state_field_read);
     }
   }
 
   if (result->binary_rows && (result->field_current == 0))
   {
-    drizzle_state_push(result->con, drizzle_state_binary_null_read);
+    result->push_state(drizzle_state_binary_null_read);
   }
 
   *ret_ptr= drizzle_state_loop(result->con);
@@ -194,7 +195,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 
   if (con->buffer_size == 0)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 
@@ -217,7 +218,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     {
       if (ret == DRIZZLE_RETURN_IO_WAIT)
       {
-        drizzle_state_push(con, drizzle_state_read);
+        con->push_state(drizzle_state_read);
         return DRIZZLE_RETURN_OK;
       }
 
@@ -264,8 +265,8 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     else
     {
       con->pop_state();
-      drizzle_state_push(con, drizzle_state_packet_read);
-      drizzle_state_push(con, drizzle_state_field_read);
+      con->push_state(drizzle_state_packet_read);
+      con->push_state(drizzle_state_field_read);
     }
   }
 

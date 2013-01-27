@@ -109,8 +109,9 @@ drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_state_push(result->con, drizzle_state_binlog_read);
-  drizzle_state_push(result->con, drizzle_state_packet_read);
+  result->push_state(drizzle_state_binlog_read);
+  result->push_state(drizzle_state_packet_read);
+
   return drizzle_state_loop(result->con);
 }
 
@@ -227,7 +228,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 

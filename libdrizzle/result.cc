@@ -265,7 +265,7 @@ drizzle_result_st *drizzle_result_read(drizzle_st *con,
     return NULL;
   }
 
-  if (drizzle_state_none(con))
+  if (con->has_state())
   {
     con->result= drizzle_result_create(con);
     if (con->result == NULL)
@@ -274,8 +274,8 @@ drizzle_result_st *drizzle_result_read(drizzle_st *con,
       return NULL;
     }
 
-    drizzle_state_push(con, drizzle_state_result_read);
-    drizzle_state_push(con, drizzle_state_packet_read);
+    con->push_state(drizzle_state_result_read);
+    con->push_state(drizzle_state_packet_read);
   }
 
   *ret_ptr= drizzle_state_loop(con);
@@ -392,7 +392,7 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
   /* Assume the entire result packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 

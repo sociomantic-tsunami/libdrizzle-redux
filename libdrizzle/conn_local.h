@@ -127,49 +127,7 @@ void drizzle_set_db(drizzle_st *con, const char *db);
  * @param[in] uds Unix domain socket to use for this connection, NULL for
  *  defailt value.
  */
-DRIZZLE_API
 void drizzle_set_uds(drizzle_st *con, const char *uds);
- 
-/**
- * Check if state stack is empty.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @return True if empty, false if something is on the stack.
- */
-static inline bool drizzle_state_none(drizzle_st *drizzle)
-{
-  if (drizzle)
-  {
-    return drizzle->_state_stack_count == 0;
-  }
-
-  return false;
-}
-
-/**
- * Push a function onto the stack.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] function Function to push.
- */
-static inline void drizzle_state_push(drizzle_st *con,
-                                      drizzle_state_fn *function)
-{
-  con->push_state(function);
-}
-
-/**
- * Reset the stack so it is empty.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- */
-static inline void drizzle_state_reset(drizzle_st *con)
-{
-  con->clear_state();
-}
 
 /** @} */
 

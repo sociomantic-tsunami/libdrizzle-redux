@@ -324,6 +324,11 @@ struct drizzle_st
     return false;
   }
 
+  bool has_state() const
+  {
+    return _state_stack_count == 0;
+  }
+
   drizzle_return_t current_state()
   {
     return _state_stack_list->func(this);
@@ -393,8 +398,6 @@ struct drizzle_result_st
   uint8_t null_bitmap_length;
   bool binary_rows;
 
-#ifdef __cplusplus
-
   drizzle_result_st() :
     con(NULL),
     next(NULL),
@@ -433,7 +436,25 @@ struct drizzle_result_st
     sqlstate[0]= '\0';
   }
 
-#endif
+  bool push_state(drizzle_state_fn* func_)
+  {
+    if (con)
+    {
+      return con->push_state(func_);
+    }
+
+    return false;
+  }
+
+  bool has_state() const
+  {
+    if (con)
+    {
+      return con->has_state();
+    }
+
+    return false;
+  }
 };
 
 struct drizzle_binlog_st

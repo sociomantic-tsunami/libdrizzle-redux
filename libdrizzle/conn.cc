@@ -227,7 +227,7 @@ void drizzle_close(drizzle_st *con)
   con->events= 0;
   con->revents= 0;
 
-  drizzle_state_reset(con);
+  con->clear_state();
 }
 
 drizzle_return_t drizzle_set_events(drizzle_st *con, short events)
@@ -680,16 +680,16 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
     return DRIZZLE_RETURN_OK;
   }
 
-  if (drizzle_state_none(con))
+  if (con->has_state())
   {
     if (con->state.raw_packet == false)
     {
-      drizzle_state_push(con, drizzle_state_handshake_server_read);
-      drizzle_state_push(con, drizzle_state_packet_read);
+      con->push_state(drizzle_state_handshake_server_read);
+      con->push_state(drizzle_state_packet_read);
     }
 
-    drizzle_state_push(con, drizzle_state_connect);
-    drizzle_state_push(con, drizzle_state_addrinfo);
+    con->push_state(drizzle_state_connect);
+    con->push_state(drizzle_state_addrinfo);
   }
 
   return drizzle_state_loop(con);
@@ -803,7 +803,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
     }
   }
 
-  if (drizzle_state_none(con))
+  if (con->has_state())
   {
     if (con->state.raw_packet || con->state.no_result_read)
     {
@@ -835,7 +835,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
     con->command_offset= 0;
     con->command_total= total;
 
-    drizzle_state_push(con, drizzle_state_command_write);
+    con->push_state(drizzle_state_command_write);
   }
   else if (con->command_data == NULL)
   {
@@ -1031,7 +1031,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     if (con->addrinfo_next == NULL)
     {
       drizzle_set_error(con, __func__, "could not connect");
-      drizzle_state_reset(con);
+      con->clear_state();
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
 
@@ -1157,8 +1157,9 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     {
       con->revents= 0;
       con->pop_state();
-      drizzle_state_push(con, drizzle_state_connect);
+      con->push_state(drizzle_state_connect);
       con->addrinfo_next= con->addrinfo_next->ai_next;
+
       return DRIZZLE_RETURN_OK;
     }
 
@@ -1308,7 +1309,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
         {
           con->revents= 0;
           con->pop_state();
-          drizzle_state_push(con, drizzle_state_connect);
+          con->push_state(drizzle_state_connect);
           con->addrinfo_next= con->addrinfo_next->ai_next;
           return DRIZZLE_RETURN_OK;
         }

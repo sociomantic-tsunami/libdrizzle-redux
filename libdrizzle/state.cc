@@ -50,7 +50,7 @@ drizzle_return_t drizzle_state_loop(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  while (drizzle_state_none(con) == false)
+  while (con->has_state() == false)
   {
     drizzle_return_t ret= con->current_state();
     if (ret != DRIZZLE_RETURN_OK)
@@ -79,7 +79,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 
   if (con->buffer_size < 4)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 

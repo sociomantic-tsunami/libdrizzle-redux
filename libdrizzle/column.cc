@@ -247,12 +247,12 @@ drizzle_return_t drizzle_column_skip(drizzle_result_st *result)
   }
 
   drizzle_return_t ret;
-  if (drizzle_state_none(result->con))
+  if (result->has_state())
   {
     result->options = (drizzle_result_options_t)((int)result->options | (int)DRIZZLE_RESULT_SKIP_COLUMN);
 
-    drizzle_state_push(result->con, drizzle_state_column_read);
-    drizzle_state_push(result->con, drizzle_state_packet_read);
+    result->push_state(drizzle_state_column_read);
+    result->push_state(drizzle_state_packet_read);
   }
   ret= drizzle_state_loop(result->con);
   result->options = (drizzle_result_options_t)((int)result->options & (int)~DRIZZLE_RESULT_SKIP_COLUMN);
@@ -294,10 +294,10 @@ drizzle_column_st *drizzle_column_read(drizzle_result_st *result,
     return NULL;
   }
 
-  if (drizzle_state_none(result->con))
+  if (result->has_state())
   {
-    drizzle_state_push(result->con, drizzle_state_column_read);
-    drizzle_state_push(result->con, drizzle_state_packet_read);
+    result->push_state(drizzle_state_column_read);
+    result->push_state(drizzle_state_packet_read);
   }
 
   *ret_ptr= drizzle_state_loop(result->con);
@@ -471,7 +471,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
   /* Assume the entire column packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 
