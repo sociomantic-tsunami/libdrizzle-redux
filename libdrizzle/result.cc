@@ -83,11 +83,6 @@ void drizzle_result_free(drizzle_result_st *result)
     return;
   }
 
-  if (result->binlog_event != NULL)
-  {
-    delete result->binlog_event;
-  }
-
   for (column= result->column_list; column != NULL; column= result->column_list)
   {
     drizzle_column_free(column);
