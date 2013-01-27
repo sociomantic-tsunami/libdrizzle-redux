@@ -311,5 +311,7 @@ Functions
 
    Gets the row count for a statement buffered with :c:func:`drizzle_stmt_buffer`
 
+   On error it returns UINT64_MAX;
+
    :param stmt: The prepared statement object
    :returns: The row count

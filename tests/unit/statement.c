@@ -49,7 +49,9 @@ int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
-  drizzle_stmt_st *stmt;
+  drizzle_stmt_st *stmt= NULL;
+
+  ASSERT_EQ(UINT64_MAX, drizzle_stmt_row_count(stmt));
 
   drizzle_st *con= drizzle_create_tcp(getenv("MYSQL_SERVER"),
                                       getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
@@ -92,30 +94,18 @@ int main(int argc, char *argv[])
 
   uint32_t val= 1;
   ret = drizzle_stmt_set_int(stmt, 0, val, false);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Bind failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   ret = drizzle_stmt_execute(stmt);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Execute failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
   ret = drizzle_stmt_buffer(stmt);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Buffer failure\n");
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
   /* Result should have 2 rows */
-  if (drizzle_stmt_row_count(stmt) != 2)
-  {
-    printf("Retrieved bad row count\n");
-    return EXIT_FAILURE;
-  }
+  int count= drizzle_stmt_row_count(stmt);
+  ASSERT_EQ_(2, count, "%s", drizzle_error(con));
+
   uint32_t i= 1;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
@@ -154,11 +144,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   ret = drizzle_stmt_close(stmt);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Statement close failure ret: %d, err: %d, msg: %s\n", ret, drizzle_errno(con), drizzle_error(con));
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE libdrizzle.t1");
