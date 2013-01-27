@@ -62,7 +62,6 @@ extern "C" {
  *  drizzle_create(), drizzle_clone(), or related functions.
  * @return Standard drizzle return value.
  */
-DRIZZLE_API
 drizzle_return_t drizzle_handshake_server_read(drizzle_st *con);
 
 /**
@@ -72,7 +71,6 @@ drizzle_return_t drizzle_handshake_server_read(drizzle_st *con);
  *  drizzle_create(), drizzle_clone(), or related functions.
  * @return Standard drizzle return value.
  */
-DRIZZLE_API
 drizzle_return_t drizzle_handshake_client_write(drizzle_st *con);
 
 /**
@@ -82,10 +80,8 @@ drizzle_return_t drizzle_handshake_client_write(drizzle_st *con);
  *  drizzle_create(), drizzle_clone(), or related functions.
  * @return Standard drizzle return value.
  */
-DRIZZLE_API
 drizzle_return_t drizzle_handshake_ssl_client_write(drizzle_st *con);
 
-DRIZZLE_API
 int drizzle_compile_capabilities(drizzle_st *con);
 
 /** @} */

@@ -69,7 +69,6 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/drizzle_client.h
 %{_includedir}/libdrizzle-5.1/error.h
 %{_includedir}/libdrizzle-5.1/field_client.h
-%{_includedir}/libdrizzle-5.1/handshake_client.h
 %{_includedir}/libdrizzle-5.1/libdrizzle.h
 %{_includedir}/libdrizzle-5.1/query.h
 %{_includedir}/libdrizzle-5.1/result.h

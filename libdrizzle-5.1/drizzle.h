@@ -82,17 +82,6 @@ extern "C" {
  */
 
 /**
- * Intialize the Drizzle library
- *
- * Currently only initalizes the SSL library
- */
-DRIZZLE_API
-void drizzle_library_init(void);
-
-DRIZZLE_API
-void drizzle_library_deinit(void);
-
-/**
  * Get library version string.
  *
  * @return Pointer to static buffer in library that holds the version string.

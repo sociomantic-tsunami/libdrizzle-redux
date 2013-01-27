@@ -58,21 +58,7 @@ extern "C" {
  * @param[in] function Name of function the error happened in. 
  * @param[in] format Format and variable argument list of message.
  */
-void drizzle_set_error(drizzle_st *con, const char *function,
-                       const char *format, ...);
-
-/**
- * Initialize a connection structure. Always check the return value even if
- * passing in a pre-allocated structure. Some other initialization may have
- * failed.
- *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
- * @param[in] con Caller allocated structure, or NULL to allocate one.
- * @return On success, a pointer to the (possibly allocated) structure. On
- *  failure this will be NULL.
- */
-drizzle_st *drizzle_create(void);
+void drizzle_set_error(drizzle_st *con, const char *function, const char *format, ...);
 
 /**
  * Free a connection structure.
@@ -83,6 +69,8 @@ drizzle_st *drizzle_create(void);
 void drizzle_free(drizzle_st *con);
 
 drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from);
+
+bool drizzle_library_init(drizzle_st*);
 
 /**
  * Log a message.
@@ -123,8 +111,7 @@ bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_s
 /**
  * Log an error message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_error(drizzle_st *con, const char *format,
-                                     ...)
+static inline void drizzle_log_error(drizzle_st *con, const char *format, ...)
 {
   va_list args;
 
@@ -139,8 +126,7 @@ static inline void drizzle_log_error(drizzle_st *con, const char *format,
 /**
  * Log an info message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_info(drizzle_st *con, const char *format,
-                                    ...)
+static inline void drizzle_log_info(drizzle_st *con, const char *format, ...)
 {
   va_list args;
 
@@ -155,24 +141,7 @@ static inline void drizzle_log_info(drizzle_st *con, const char *format,
 /**
  * Log a debug message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_debug(drizzle_st *con, const char *format,
-                                     ...)
-{
-  va_list args;
-
-  if (con->verbose >= DRIZZLE_VERBOSE_DEBUG)
-  {
-    va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_DEBUG, format, args);
-    va_end(args);
-  }
-}
-
-/**
- * Log a crazy message, see drizzle_log() for argument details.
- */
-static inline void drizzle_log_crazy(drizzle_st *con, const char *format,
-                                     ...)
+static inline void drizzle_log_debug(drizzle_st *con, const char *format, ...)
 {
   va_list args;
 

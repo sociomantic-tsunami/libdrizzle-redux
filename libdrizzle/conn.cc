@@ -113,13 +113,13 @@ static bool connect_poll(drizzle_st *con)
     {
       if (fds[0].revents & (POLLIN))
       {
-        drizzle_log_crazy(con, "poll(POLLIN)");
+        drizzle_log_debug(con, "poll(POLLIN)");
         return true;
       }
 
       if (fds[0].revents & (POLLOUT))
       {
-        drizzle_log_crazy(con, "poll(POLLOUT)");
+        drizzle_log_debug(con, "poll(POLLOUT)");
         return true;
       }
 
@@ -155,7 +155,7 @@ static bool connect_poll(drizzle_st *con)
     else if (error == 0)
     {
       // "timeout occurred while trying to connect"
-      drizzle_log_crazy(con, "poll(TIMEOUT) %d", con->timeout);
+      drizzle_log_debug(con, "poll(TIMEOUT) %d", con->timeout);
       return false;
     }
 
@@ -699,7 +699,7 @@ drizzle_return_t drizzle_quit(drizzle_st *con)
 {
   if (con != NULL)
   {
-    drizzle_log_crazy(con, "shutting down the connection");
+    drizzle_log_debug(con, "shutting down the connection");
     con->flags.is_shutdown= true;
     drizzle_return_t ret;
     drizzle_result_st *result;
@@ -945,7 +945,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
         host= tcp->host;
       }
 
-      drizzle_log_crazy(con, "host=%s port=%s", host, port);
+      drizzle_log_debug(con, "host=%s port=%s", host, port);
       int ret= getaddrinfo(host, port, &ai, &(tcp->addrinfo));
       if (ret != 0)
       {
@@ -1074,7 +1074,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       errno= translate_windows_error();
 #endif /* _WIN32 */
 
-      drizzle_log_crazy(con, "connect return=%d errno=%s", ret, strerror(errno));
+      drizzle_log_debug(con, "connect return=%d errno=%s", ret, strerror(errno));
 
       if (ret == 0)
       {
@@ -1259,7 +1259,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_crazy(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
+    drizzle_log_debug(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
                       con->fd, available_buffer, read_size, 
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1319,7 +1319,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
       case EINVAL:
         {
-          drizzle_log_crazy(con, "EINVAL fd=%d buffer=%p available_buffer=%zd",
+          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%zd",
                             con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer);
         }
         break;
@@ -1382,7 +1382,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_crazy(con, "write fd=%d return=%zd ssl=%d errno=%s",
+    drizzle_log_debug(con, "write fd=%d return=%zd ssl=%d errno=%s",
                       con->fd, write_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));

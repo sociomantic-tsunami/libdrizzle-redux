@@ -48,11 +48,11 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create_tcp(getenv("MYSQL_SERVER"),
-                                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                      getenv("MYSQL_USER"),
-                                      getenv("MYSQL_PASSWORD"),
-                                      getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
+                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
+                                  getenv("MYSQL_USER"),
+                                  getenv("MYSQL_PASSWORD"),
+                                  getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);

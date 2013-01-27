@@ -8,6 +8,7 @@ noinst_HEADERS+= libdrizzle/common.h
 noinst_HEADERS+= libdrizzle/conn_local.h
 noinst_HEADERS+= libdrizzle/datetime.h
 noinst_HEADERS+= libdrizzle/drizzle_local.h
+noinst_HEADERS+= libdrizzle/handshake_client.h
 noinst_HEADERS+= libdrizzle/pack.h
 noinst_HEADERS+= libdrizzle/packet.h
 noinst_HEADERS+= libdrizzle/poll.h
@@ -28,6 +29,10 @@ libdrizzle_libdrizzle_la_CFLAGS+= @OPENSSL_INCLUDES@
 libdrizzle_libdrizzle_la_CXXFLAGS+= @OPENSSL_INCLUDES@
 libdrizzle_libdrizzle_la_LDFLAGS+= @OPENSSL_LDFLAGS@
 libdrizzle_libdrizzle_la_LIBADD+= @OPENSSL_LIBS@
+
+libdrizzle_libdrizzle_la_CFLAGS+= @PTHREAD_CFLAGS@
+libdrizzle_libdrizzle_la_CXXFLAGS+= @PTHREAD_CFLAGS@
+libdrizzle_libdrizzle_la_LIBADD+= @PTHREAD_LIBS@
 
 libdrizzle_libdrizzle_la_CFLAGS+= @ZLIB_CFLAGS@
 libdrizzle_libdrizzle_la_CXXFLAGS+= @ZLIB_CFLAGS@
