@@ -139,11 +139,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   ret = drizzle_stmt_close(stmt);
-  if (ret != DRIZZLE_RETURN_OK)
-  {
-    printf("Statement close failure ret: %d, err: %d, msg: %s\n", ret, drizzle_errno(con), drizzle_error(con));
-    return EXIT_FAILURE;
-  }
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_close() %s", drizzle_error(con));
 
   drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE libdrizzle.t1");

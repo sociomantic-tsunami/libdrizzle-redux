@@ -46,19 +46,22 @@
 int main(int argc, char* argv[])
 {
   const char* in= "escape \"this\"\n";
-  char out[255];
-  int out_len;
 
   (void) argc;
   (void) argv;
 
   // Test for data too long
-  out_len= drizzle_escape_string(out, 2, in, strlen(in));
-  ASSERT_EQ(out_len, -1);
+  char *out;
+  uint64_t out_len= drizzle_escape_string(NULL, &out, in, strlen(in));
+  ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17, (unsigned int)(out_len));
 
-  out_len= drizzle_escape_string(out, 255, in, strlen(in));
-  ASSERT_EQ_(out_len, 17, "Bad hex length output %d", out_len);
-  ASSERT_EQ_(strcmp(out, "escape \\\"this\\\"\\n"), 0, "Bad hex data output");
+  free(out);
+
+  out_len= drizzle_escape_string(NULL, &out, in, strlen(in));
+  ASSERT_EQ_(out_len, 17, "Bad hex length output %u", (unsigned int)(out_len));
+  ASSERT_EQ_(0, strcmp(out, "escape \\\"this\\\"\\n"), "Bad hex data output");
+
+  free(out);
 
   return EXIT_SUCCESS;
 }

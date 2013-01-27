@@ -56,14 +56,26 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                    (unsigned char *)query, size, size, ret_ptr);
 }
 
-ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *from, const size_t from_size)
+ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *from, const size_t from_size)
 {
+  (void)con;
   const char *end;
 
-  if (to == NULL || max_to_size == 0 || from == NULL || from_size == 0)
+  if (from == NULL || from_size == 0)
   {
     return -1;
   }
+
+  size_t max_to_size= from_size * 2;
+  *destination= (char*) malloc(max_to_size);
+
+  if (destination == NULL)
+  {
+    return -1;
+  }
+
+  char *to= *destination;
+
 
   ssize_t to_size= 0;
   char newchar;
@@ -104,7 +116,11 @@ ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *fr
     if (newchar != '\0')
     {
       if ((size_t)to_size + 2 > max_to_size)
+      {
+        free(to);
+        *destination= NULL;
         return -1;
+      }
 
       *to++= '\\';
       *to++= newchar;
@@ -113,7 +129,11 @@ ssize_t drizzle_escape_string(char *to, const size_t max_to_size, const char *fr
     else
     {
       if ((size_t)to_size + 1 > max_to_size)
+      {
+        free(to);
+        *destination= NULL;
         return -1;
+      }
 
       *to++= *from;
     }

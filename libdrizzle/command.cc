@@ -94,7 +94,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     free_size= con->buffer_allocation - (size_t)(start - con->buffer);
     if (free_size < con->packet_size)
     {
-      drizzle_state_push(con, drizzle_state_write);
+      con->push_state(drizzle_state_write);
       return DRIZZLE_RETURN_OK;
     }
 
@@ -155,17 +155,17 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
 
   if (con->command_offset == con->command_total)
   {
-    drizzle_state_pop(con);
+    con->pop_state();
 
     if (!(con->state.raw_packet || con->state.no_result_read) &&
         con->command != DRIZZLE_COMMAND_FIELD_LIST)
     {
-      drizzle_state_push(con, drizzle_state_result_read);
-      drizzle_state_push(con, drizzle_state_packet_read);
+      con->push_state(drizzle_state_result_read);
+      con->push_state(drizzle_state_packet_read);
     }
   }
 
-  drizzle_state_push(con, drizzle_state_write);
+  con->push_state(drizzle_state_write);
 
   return DRIZZLE_RETURN_OK;
 }

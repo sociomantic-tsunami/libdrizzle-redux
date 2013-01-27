@@ -141,8 +141,8 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
   {
     return ret;
   }
-  drizzle_state_push(con, drizzle_state_binlog_read);
-  drizzle_state_push(con, drizzle_state_packet_read);
+  result->push_state(drizzle_state_binlog_read);
+  result->push_state(drizzle_state_packet_read);
   return drizzle_state_loop(con);
 }
 
@@ -259,7 +259,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 
@@ -270,7 +270,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
-    drizzle_state_pop(con);
+    con->pop_state();
     con->binlog->error_fn(DRIZZLE_RETURN_EOF, con->binlog->binlog_context);
     return DRIZZLE_RETURN_EOF;
   }
@@ -298,7 +298,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_size-= con->packet_size;
     con->packet_size= 0;
 
-    drizzle_state_pop(con);
+    con->pop_state();
     con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con->binlog->binlog_context);
     return DRIZZLE_RETURN_ERROR_CODE;
   }
@@ -387,12 +387,12 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con->binlog->binlog_context);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
-    drizzle_state_pop(con);
+    con->pop_state();
   }
 
   con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
-  drizzle_state_push(con, drizzle_state_binlog_read);
-  drizzle_state_push(con, drizzle_state_packet_read);
+  con->push_state(drizzle_state_binlog_read);
+  con->push_state(drizzle_state_packet_read);
 
   return DRIZZLE_RETURN_OK;
 }
