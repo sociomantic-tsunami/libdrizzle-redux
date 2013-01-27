@@ -2,7 +2,7 @@
  *
  *  Drizzle Client & Protocol Library
  *
- * Copyright (C) 2012 Drizzle Developer Group
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,36 +35,32 @@
  *
  */
 
+
 #include <yatl/lite.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
+
+#include "tests/unit/cleanup.h"
+
+#include <cstdio>
+#include <cstdlib>
 
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create_tcp(getenv("MYSQL_SERVER"),
-                                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                      getenv("MYSQL_USER"),
-                                      getenv("MYSQL_PASSWORD"),
-                                      getenv("MYSQL_SCHEMA"), 0);
+  con= drizzle_create_tcp(getenv("MYSQL_SERVER"),
+                          getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
+                          getenv("MYSQL_USER"),
+                          getenv("MYSQL_PASSWORD"),
+                          getenv("MYSQL_SCHEMA"), NULL);
 
+  CLOSE_ON_EXIT(con);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
-  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
-  {
-    char error[DRIZZLE_MAX_ERROR_SIZE];
-    strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
-
-    drizzle_quit(con);
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
-  }
+  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
   drizzle_result_st *result= drizzle_start_binlog(con, 0, "", 0, true, &ret);
@@ -86,15 +82,12 @@ int main(int argc, char *argv[])
      * timestamps will have weird values that shoud fail this after several
      * events.  Also rotate event doesn't have a timestamp so need to add 0
      * to this test */
-    ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)), "Bad timestamp retrieved: %" PRIu32, timestamp);
+    ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)), "Bad timestamp retrieved: %u", timestamp);
 
     /* An event higher than the max known is bad, either we don't know about
      * new events or type is corrupted */
     ASSERT_FALSE_((drizzle_binlog_event_type(result) >= DRIZZLE_EVENT_TYPE_END), "Bad event type: %d", drizzle_binlog_event_type(result));
   }
-
-  ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;
 }

@@ -56,7 +56,6 @@
 #include <libdrizzle-5.1/drizzle.h>
 #include <libdrizzle-5.1/conn_client.h>
 #include <libdrizzle-5.1/handshake_client.h>
-#include <libdrizzle-5.1/command_client.h>
 #include <libdrizzle-5.1/query.h>
 #include <libdrizzle-5.1/result_client.h>
 #include <libdrizzle-5.1/column_client.h>

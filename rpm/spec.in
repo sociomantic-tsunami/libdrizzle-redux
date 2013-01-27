@@ -62,7 +62,6 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/binlog.h
 %{_includedir}/libdrizzle-5.1/column.h
 %{_includedir}/libdrizzle-5.1/column_client.h
-%{_includedir}/libdrizzle-5.1/command_client.h
 %{_includedir}/libdrizzle-5.1/conn.h
 %{_includedir}/libdrizzle-5.1/conn_client.h
 %{_includedir}/libdrizzle-5.1/constants.h

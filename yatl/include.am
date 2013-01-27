@@ -2,5 +2,43 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
+LIBTOOL_COMMAND= ${abs_top_builddir}/libtool --mode=execute
+VALGRIND_EXEC_COMMAND= $(LIBTOOL_COMMAND) valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE
+VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
+HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
+DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
+MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
+GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x yatl/run.gdb
+PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
+PAHOLE_COMMAND= $(LIBTOOL_COMMAND) --mode=execute pahole
+VALGRIND_SUPRESSION= $(LIBTOOL_COMMAND) valgrind --leak-check=full --show-reachable=yes --error-limit=no --gen-suppressions=all --log-file=minimalraw.log
+
+export LIBTOOL_COMMAND
+export VALGRIND_COMMAND
+export HELGRIND_COMMAND
+export DRD_COMMAND
+export GDB_COMMAND 
+  
+valgrind:
+	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_EXEC_COMMAND)\""
+
+valgrind-supressions:
+	@echo make check TESTS_ENVIRONMENT="\"$(VALGRIND_SUPRESSION)\""
+
+gdb:
+	@echo make check TESTS_ENVIRONMENT="\"$(GDB_COMMAND)\""
+
+helgrind:
+	@echo make check TESTS_ENVIRONMENT="\"$(HELGRIND_COMMAND)\""
+
+drd:
+	@echo make check TESTS_ENVIRONMENT="\"$(DRD_COMMAND)\""
+
 noinst_HEADERS+= yatl/lite.h
+
+EXTRA_DIST+= yatl/run.gdb
+
+.PHONY: clean-yatl-check
+	clean-yatl-check:
+	-rm -rf tmp_chroot
 

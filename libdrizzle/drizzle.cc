@@ -178,6 +178,39 @@ drizzle_st *drizzle_create(void)
   return con;
 }
 
+drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
+{
+  drizzle= drizzle_create();
+  if (drizzle == NULL)
+  {
+    return NULL;
+  }
+
+  drizzle->capabilities= from->capabilities;
+  drizzle->options= from->options;
+
+  drizzle->backlog= from->backlog;
+  strcpy(drizzle->db, from->db);
+  strcpy(drizzle->password, from->password);
+  strcpy(drizzle->user, from->user);
+
+  switch (from->socket_type)
+  {
+  case DRIZZLE_CON_SOCKET_TCP:
+    drizzle_set_tcp(drizzle, from->socket.tcp.host, from->socket.tcp.port);
+    break;
+
+  case DRIZZLE_CON_SOCKET_UDS:
+    drizzle_set_uds(drizzle, from->socket.uds.path_buffer);
+    break;
+
+  default:
+    break;
+  }
+
+  return drizzle;
+}
+
 void drizzle_free(drizzle_st *con)
 {
   if (con == NULL)

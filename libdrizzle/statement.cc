@@ -620,10 +620,10 @@ uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt)
 
 uint64_t drizzle_stmt_row_count(drizzle_stmt_st *stmt)
 {
-  if ((stmt == NULL) || (stmt->execute_result == NULL))
+  if (stmt and stmt->execute_result)
   {
-    return 0;
+    return stmt->execute_result->row_count;
   }
 
-  return stmt->execute_result->row_count;
+  return UINT64_MAX;
 }

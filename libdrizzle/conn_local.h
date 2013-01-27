@@ -118,6 +118,17 @@ void drizzle_set_auth(drizzle_st *con, const char *user, const char *password);
  * @param[in] db Database to use with this connection.
  */
 void drizzle_set_db(drizzle_st *con, const char *db);
+
+/**
+ * Set unix domain socket for a connection.
+ *
+ * @param[in] con Connection structure previously initialized with
+ *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] uds Unix domain socket to use for this connection, NULL for
+ *  defailt value.
+ */
+DRIZZLE_API
+void drizzle_set_uds(drizzle_st *con, const char *uds);
  
 /**
  * Check if state stack is empty.

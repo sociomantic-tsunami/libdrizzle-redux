@@ -197,17 +197,6 @@ DRIZZLE_API
 in_port_t drizzle_port(const drizzle_st *con);
 
 /**
- * Set unix domain socket for a connection.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] uds Unix domain socket to use for this connection, NULL for
- *  defailt value.
- */
-DRIZZLE_API
-void drizzle_set_uds(drizzle_st *con, const char *uds);
-
-/**
  * Get username for a connection.
  *
  * @param[in] con Connection structure previously initialized with
