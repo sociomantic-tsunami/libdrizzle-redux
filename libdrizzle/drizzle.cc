@@ -189,11 +189,6 @@ drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
   drizzle->capabilities= from->capabilities;
   drizzle->options= from->options;
 
-#if 0
-  /* Clear "operational" options such as IO status. */
-  drizzle->options|= (from->options & int(~(DRIZZLE_CON_READY|DRIZZLE_CON_NO_RESULT_READ|DRIZZLE_CON_IO_READY)));
-#endif
-
   drizzle->backlog= from->backlog;
   strcpy(drizzle->db, from->db);
   strcpy(drizzle->password, from->password);
