@@ -89,5 +89,6 @@ typedef struct pollfd pollfd_t;
 #include "libdrizzle/column.h"
 #include "libdrizzle/binlog.h"
 #include "libdrizzle/handshake_client.h"
+#include "libdrizzle/result.h"
 
 #include <memory.h>

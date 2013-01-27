@@ -12,6 +12,7 @@ noinst_HEADERS+= libdrizzle/handshake_client.h
 noinst_HEADERS+= libdrizzle/pack.h
 noinst_HEADERS+= libdrizzle/packet.h
 noinst_HEADERS+= libdrizzle/poll.h
+noinst_HEADERS+= libdrizzle/result.h
 noinst_HEADERS+= libdrizzle/sha1.h
 noinst_HEADERS+= libdrizzle/state.h
 noinst_HEADERS+= libdrizzle/statement_local.h

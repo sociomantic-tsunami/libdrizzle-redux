@@ -1,5 +1,5 @@
 /* Drizzle Client Library
- * Copyright (C) 2011 Olaf van der Spek
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
