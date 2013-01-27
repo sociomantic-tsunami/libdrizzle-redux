@@ -42,45 +42,52 @@ extern "C" {
 #endif
 
 DRIZZLE_API
-drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
+drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
+                                       drizzle_binlog_fn *binlog_fn,
+                                       drizzle_binlog_error_fn *error_fn,
+                                       void *context,
+                                       bool verify_checksums);
+
+
+DRIZZLE_API
+void drizzle_binlog_free(drizzle_binlog_st *binlog);
+
+DRIZZLE_API
+drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
                                         uint32_t server_id,
                                         const char *file,
-                                        uint32_t start_position,
-                                        bool verify_checksums,
-                                        drizzle_return_t *ret_ptr);
+                                        uint32_t start_position);
+
 
 DRIZZLE_API
-drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result);
+uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint32_t drizzle_binlog_event_timestamp(drizzle_result_st *result);
+drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result);
+uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint32_t drizzle_binlog_event_server_id(drizzle_result_st *result);
+uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint32_t drizzle_binlog_event_length(drizzle_result_st *result);
+uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint32_t drizzle_binlog_event_next_pos(drizzle_result_st *result);
+uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint16_t drizzle_binlog_event_flags(drizzle_result_st *result);
+uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result);
+const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-const unsigned char *drizzle_binlog_event_data(drizzle_result_st *result);
+const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event);
 
 DRIZZLE_API
-const unsigned char *drizzle_binlog_event_raw_data(drizzle_result_st *result);
-
-DRIZZLE_API
-uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result);
+uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event);
 
 #ifdef __cplusplus
 }
