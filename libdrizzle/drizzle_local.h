@@ -82,6 +82,7 @@ drizzle_st *drizzle_create(void);
  */
 void drizzle_free(drizzle_st *con);
 
+drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from);
 
 /**
  * Log a message.
