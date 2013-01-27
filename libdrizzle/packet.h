@@ -2,7 +2,7 @@
  *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,73 +35,47 @@
  *
  */
 
-/**
- * @file
- * @brief State machine definitions
- */
+#pragma once
 
-#include "config.h"
-#include "libdrizzle/common.h"
-
-drizzle_return_t drizzle_state_loop(drizzle_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  while (con->has_state() == false)
-  {
-    drizzle_return_t ret= con->current_state();
-    if (ret != DRIZZLE_RETURN_OK)
-    {
-      if (ret != DRIZZLE_RETURN_IO_WAIT && ret != DRIZZLE_RETURN_PAUSE &&
-          ret != DRIZZLE_RETURN_ERROR_CODE)
-      {
-        drizzle_close(con);
-      }
-
-      return ret;
-    }
-  }
-
-  return DRIZZLE_RETURN_OK;
+#define LIBDRIZZLE_LIST_ADD(__list, __obj) { \
+  if (__list ## _list != NULL) \
+    __list ## _list->prev= __obj; \
+  __obj->next= __list ## _list; \
+  __obj->prev= NULL; \
+  __list ## _list= __obj; \
+  __list ## _count++; \
 }
 
-drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
-{
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  drizzle_log_debug(con, "drizzle_state_packet_read");
-
-  if (con->buffer_size < 4)
-  {
-    con->push_state(drizzle_state_read);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  con->packet_size= drizzle_get_byte3(con->buffer_ptr);
-
-  if (con->packet_number != con->buffer_ptr[3])
-  {
-    drizzle_set_error(con, "drizzle_state_packet_read",
-                      "bad packet number:%u:%u", con->packet_number,
-                      con->buffer_ptr[3]);
-    return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
-  }
-
-  drizzle_log_debug(con, "buffer_size= %zu, packet_size= %zu, packet_number= %u",
-                    con->buffer_size, con->packet_size, con->packet_number);
-
-  con->packet_number++;
-
-  con->buffer_ptr+= 4;
-  con->buffer_size-= 4;
-
-  con->pop_state();
-
-  return DRIZZLE_RETURN_OK;
+#define LIBDRIZZLE_LIST_DEL(__list, __obj) { \
+  if (__list ## _list == __obj) \
+    __list ## _list= __obj->next; \
+  if (__obj->prev != NULL) \
+    __obj->prev->next= __obj->next; \
+  if (__obj->next != NULL) \
+    __obj->next->prev= __obj->prev; \
+  __list ## _count--; \
 }
+
+class Packet {
+public:
+  Packet(drizzle_state_fn *func_):
+    _func(func_),
+    next(NULL),
+    prev(NULL)
+  {
+  }
+
+  ~Packet()
+  {
+  }
+
+  drizzle_return_t func(drizzle_st* drizzle)
+  {
+    return _func(drizzle);
+  }
+
+public:
+  drizzle_state_fn *_func;
+  Packet *next;
+  Packet *prev;
+};

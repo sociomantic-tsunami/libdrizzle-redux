@@ -109,8 +109,9 @@ drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_state_push(result->con, drizzle_state_binlog_read);
-  drizzle_state_push(result->con, drizzle_state_packet_read);
+  result->push_state(drizzle_state_binlog_read);
+  result->push_state(drizzle_state_packet_read);
+
   return drizzle_state_loop(result->con);
 }
 
@@ -227,7 +228,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size)
   {
-    drizzle_state_push(con, drizzle_state_read);
+    con->push_state(drizzle_state_read);
     return DRIZZLE_RETURN_OK;
   }
 
@@ -238,7 +239,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->status= (drizzle_status_t)drizzle_get_byte2(con->buffer_ptr + 3);
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
-    drizzle_state_pop(con);
+    con->pop_state();
     return DRIZZLE_RETURN_EOF;
   }
   else if (con->buffer_ptr[0] == 255)
@@ -265,7 +266,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_size-= con->packet_size;
     con->packet_size= 0;
 
-    drizzle_state_pop(con);
+    con->pop_state();
     return DRIZZLE_RETURN_ERROR_CODE;
   }
   else
@@ -350,7 +351,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
                         "unexpected data after packet:%zu", con->buffer_size);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
-    drizzle_state_pop(con);
+    con->pop_state();
   }
   return DRIZZLE_RETURN_OK;
 }
