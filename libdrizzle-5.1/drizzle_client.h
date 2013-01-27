@@ -55,7 +55,6 @@
 
 #include <libdrizzle-5.1/drizzle.h>
 #include <libdrizzle-5.1/conn_client.h>
-#include <libdrizzle-5.1/handshake_client.h>
 #include <libdrizzle-5.1/query.h>
 #include <libdrizzle-5.1/result_client.h>
 #include <libdrizzle-5.1/column_client.h>
@@ -94,25 +93,10 @@ extern "C" {
  * @return Same return as drizzle_create().
  */
 DRIZZLE_API
-drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
-                                    const char *user, const char *password,
-                                    const char *db,
-                                    drizzle_options_st *options);
-
-/**
- * Add unix domain socket connection with common arguments.
- *
- * @param[in] uds Path to unix domain socket to use for connection.
- * @param[in] user User to use while establishing the connection.
- * @param[in] password Password to use while establishing the connection.
- * @param[in] db Initial database to connect to.
- * @param[in] options Drizzle connection options to add.
- * @return Same return as drizzle_create().
- */
-DRIZZLE_API
-drizzle_st *drizzle_create_uds(const char *uds, const char *user,
-                                    const char *password, const char *db,
-                                    drizzle_options_st *options);
+  drizzle_st *drizzle_create(const char *host, in_port_t port,
+                             const char *user, const char *password,
+                             const char *db,
+                             drizzle_options_st *options);
 
 /** @} */
 

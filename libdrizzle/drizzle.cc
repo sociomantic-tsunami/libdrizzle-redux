@@ -44,6 +44,7 @@
 #include "libdrizzle/common.h"
 
 #include <cerrno>
+#include <pthread.h>
 
 /**
  * @addtogroup drizzle_static Static Drizzle Declarations
@@ -69,28 +70,46 @@ static const char *_verbose_name[DRIZZLE_VERBOSE_MAX]=
  * Common Definitions
  */
 
-void drizzle_library_init(void)
+static pthread_once_t ssl_startup_once= PTHREAD_ONCE_INIT;
+
+static void drizzle_library_deinit(void)
+{ 
+#if defined(_WIN32)
+  /* if it is MS windows, invoke WSACleanup() at the end*/
+  WSACleanup();
+#endif
+}
+
+static void ssl_startup_function(void)
 {
 #ifdef USE_OPENSSL
   SSL_library_init();
+  ERR_load_crypto_strings();
+  SSL_load_error_strings();
+  OpenSSL_add_all_algorithms();
 #endif
 #if defined(_WIN32)
   /* if it is MS windows, invoke WSAStartup */
   WSADATA wsaData;
   if ( WSAStartup( MAKEWORD(2,2), &wsaData ) != 0 )
   {
-    printf("Error at WSAStartup()\n");
+    fprintf(stderr, "Error at WSAStartup()\n");
   }
 #endif
 
+  (void)atexit(drizzle_library_deinit);
 }
 
-void drizzle_library_deinit(void)
+bool drizzle_library_init(drizzle_st* connection)
 {
-#if defined(_WIN32)
-  /* if it is MS windows, invoke WSACleanup() at the end*/
-  WSACleanup();
-#endif
+  int pthread_error;
+  if ((pthread_error= pthread_once(&ssl_startup_once, ssl_startup_function)) == -1)
+  {
+    drizzle_set_error(connection, "pthread_once", "error:%s", strerror(errno));
+    return false;
+  }
+
+  return true;
 }
 
 const char *drizzle_version(void)
@@ -153,8 +172,7 @@ void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose)
   con->verbose= verbose;
 }
 
-void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
-                            void *context)
+void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function, void *context)
 {
   if (con == NULL)
   {
@@ -165,22 +183,9 @@ void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
   con->log_context= context;
 }
 
-drizzle_st *drizzle_create(void)
-{
-  drizzle_st *con;
-
-  con= new (std::nothrow) drizzle_st;
-  if (con == NULL)
-  {
-    return NULL;
-  }
-
-  return con;
-}
-
 drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
 {
-  drizzle= drizzle_create();
+  drizzle= new (std::nothrow) drizzle_st;
   if (drizzle == NULL)
   {
     return NULL;
@@ -266,11 +271,11 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   int ret;
   while (1)
   {
-    drizzle_log_crazy(con, "poll timeout=%d", con->timeout);
+    drizzle_log_debug(con, "poll timeout=%d", con->timeout);
 
     ret= poll(con->pfds, 1, con->timeout);
 
-    drizzle_log_crazy(con, "poll return=%d errno=%d", ret, errno);
+    drizzle_log_debug(con, "poll return=%d errno=%d", ret, errno);
 
     if (ret == -1)
     {
@@ -314,41 +319,31 @@ drizzle_st *drizzle_ready(drizzle_st *con)
  * Client Definitions
  */
 
-drizzle_st *drizzle_create_tcp(const char *host, in_port_t port,
-                               const char *user, const char *password,
-                               const char *db,
-                               drizzle_options_st *options)
+drizzle_st *drizzle_create(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db,
+                           drizzle_options_st *options)
 {
-  drizzle_st *con= drizzle_create();
+  drizzle_st *con= new (std::nothrow) drizzle_st;
   if (con == NULL)
   {
     return NULL;
   }
 
-  drizzle_set_tcp(con, host, port);
-  drizzle_set_auth(con, user, password);
-  drizzle_set_db(con, db);
-  if (options != NULL)
+  if (drizzle_library_init(con) == false)
   {
-    con->options= *options;
-  }
-
-  return con;
-}
-
-drizzle_st *drizzle_create_uds(const char *uds, const char *user,
-                                    const char *password, const char *db,
-                                    drizzle_options_st *options)
-{
-  drizzle_st *con;
-
-  con= drizzle_create();
-  if (con == NULL)
-  {
+    delete con;
     return NULL;
   }
 
-  drizzle_set_uds(con, uds);
+  if (host and host[0] == '/')
+  {
+    drizzle_set_uds(con, host);
+  }
+  else
+  {
+    drizzle_set_tcp(con, host, port);
+  }
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
   if (options != NULL)

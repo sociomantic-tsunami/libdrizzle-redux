@@ -47,10 +47,11 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create_uds(getenv("MYSQL_SOCK"),
-                                      getenv("MYSQL_USER"),
-                                      getenv("MYSQL_PASSWORD"),
-                                      getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con= drizzle_create(getenv("MYSQL_SOCK"),
+                                  0,
+                                  getenv("MYSQL_USER"),
+                                  getenv("MYSQL_PASSWORD"),
+                                  getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
