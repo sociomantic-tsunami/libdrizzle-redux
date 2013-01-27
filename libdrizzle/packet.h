@@ -58,7 +58,18 @@
 
 class Packet {
 public:
-  Packet(drizzle_state_fn *func_):
+  Packet():
+    _stack(true),
+    _drizzle(NULL),
+    _func(NULL),
+    next(NULL),
+    prev(NULL)
+  {
+  }
+
+  Packet(drizzle_st* drizzle_, drizzle_state_fn *func_):
+    _stack(false),
+    _drizzle(drizzle_),
     _func(func_),
     next(NULL),
     prev(NULL)
@@ -69,12 +80,40 @@ public:
   {
   }
 
-  drizzle_return_t func(drizzle_st* drizzle)
+  void init(drizzle_st* drizzle_)
   {
-    return _func(drizzle);
+    _drizzle= drizzle_;
+  }
+
+  void clear()
+  {
+    _func= NULL;
+  }
+
+  bool stack() const
+  {
+    return _stack;
+  }
+
+  void func(drizzle_state_fn* func_)
+  {
+    _func= func_;
+  }
+
+  drizzle_return_t func()
+  {
+    assert(_drizzle);
+    if (_func)
+    {
+      return _func(_drizzle);
+    }
+
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
 public:
+  const bool _stack;
+  drizzle_st* _drizzle;
   drizzle_state_fn *_func;
   Packet *next;
   Packet *prev;

@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     drizzle_quit(con);
     SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
   }
-  ASSERT_EQ(DRIZZLE_RETURN_OK, ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect() : %s", drizzle_error(con));
 
   drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
