@@ -105,16 +105,6 @@ DRIZZLE_API
 const char *drizzle_error(const drizzle_st *con);
 
 /**
- * Value of errno in the case of a DRIZZLE_RETURN_ERRNO return value.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- * @return An errno value as defined in your system errno.h file.
- */
-DRIZZLE_API
-int drizzle_errno(const drizzle_st *con);
-
-/**
  * Get server defined error code for the last result read.
  *
  * @param[in] con Connection structure previously initialized with

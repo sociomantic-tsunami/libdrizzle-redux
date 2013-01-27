@@ -115,6 +115,11 @@ static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
   }
 }
 
+bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size);
+
+bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);
+
+
 /**
  * Log an error message, see drizzle_log() for argument details.
  */

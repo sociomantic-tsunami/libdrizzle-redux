@@ -270,16 +270,6 @@ const char *drizzle_error(const drizzle_st *con)
   return (const char *)con->last_error;
 }
 
-int drizzle_errno(const drizzle_st *con)
-{
-  if (con == NULL)
-  {
-    return 0;
-  }
-
-  return con->last_errno;
-}
-
 uint16_t drizzle_error_code(const drizzle_st *con)
 {
   if (con == NULL)

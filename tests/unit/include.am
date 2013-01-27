@@ -82,16 +82,6 @@ tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/connect_uds
 noinst_PROGRAMS+= tests/unit/connect_uds
 
-tests_unit_hex_SOURCES= tests/unit/hex.c
-tests_unit_hex_LDADD= libdrizzle/libdrizzle.la
-check_PROGRAMS+= tests/unit/hex
-noinst_PROGRAMS+= tests/unit/hex
-
-tests_unit_passwd_SOURCES= tests/unit/passwd.c
-tests_unit_passwd_LDADD= libdrizzle/libdrizzle.la
-check_PROGRAMS+= tests/unit/passwd
-noinst_PROGRAMS+= tests/unit/passwd
-
 tests_unit_unbuffered_query_SOURCES= tests/unit/unbuffered_query.c
 tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/unbuffered_query
