@@ -253,6 +253,7 @@ struct drizzle_st
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
+  drizzle_binlog_st *binlog;
 private:
   size_t _state_stack_count;
   Packet *_state_stack_list;
@@ -300,6 +301,7 @@ public:
     log_fn(NULL),
     log_context(NULL),
     stmt(NULL),
+    binlog(NULL),
     _state_stack_count(0),
     _state_stack_list(NULL),
     _free_packet_count(0),
@@ -390,7 +392,7 @@ public:
   }
 };
 
-struct drizzle_binlog_st
+struct drizzle_binlog_event_st
 {
   uint32_t timestamp;
   drizzle_binlog_event_types_t type;
@@ -403,7 +405,38 @@ struct drizzle_binlog_st
   unsigned char *data;
   unsigned char *raw_data;
   uint32_t raw_length;
+  drizzle_binlog_event_st() :
+    timestamp(0),
+    type(DRIZZLE_EVENT_TYPE_UNKNOWN),
+    server_id(0),
+    length(0),
+    next_pos(0),
+    flags(0),
+    extra_flags(0),
+    checksum(0),
+    data(NULL),
+    raw_data(NULL),
+    raw_length(0)
+  { }
+};
+
+struct drizzle_binlog_st
+{
+  drizzle_binlog_fn *binlog_fn;
+  drizzle_binlog_error_fn *error_fn;
+  void *binlog_context;
+  drizzle_binlog_event_st event;
   bool verify_checksums;
+  bool has_checksums;
+  drizzle_st *con;
+  drizzle_binlog_st() :
+    binlog_fn(NULL),
+    error_fn(NULL),
+    binlog_context(NULL),
+    verify_checksums(false),
+    has_checksums(false),
+    con(NULL)
+  { }
 };
 
 /**

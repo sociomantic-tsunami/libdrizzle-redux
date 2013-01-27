@@ -40,24 +40,62 @@
 
 #include <zlib.h>
 
-drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
-                                            uint32_t server_id,
-                                            const char *file,
-                                            uint32_t start_position,
-                                            bool verify_checksums,
-                                            drizzle_return_t *ret_ptr)
+drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
+                                       drizzle_binlog_fn *binlog_fn,
+                                       drizzle_binlog_error_fn *error_fn,
+                                       void *context,
+                                       bool verify_checksums)
+{
+  if (con == NULL)
+  {
+    return NULL;
+  }
+
+  drizzle_binlog_st *binlog= new (std::nothrow) drizzle_binlog_st;
+  if (binlog == NULL)
+  {
+    drizzle_set_error(con, __func__, "error allocating binlog struct");
+    return NULL;
+  }
+  binlog->con= con;
+  binlog->binlog_fn= binlog_fn;
+  binlog->error_fn= error_fn;
+  binlog->binlog_context= context;
+  binlog->verify_checksums= verify_checksums;
+
+  return binlog;
+}
+
+void drizzle_binlog_free(drizzle_binlog_st *binlog)
+{
+  delete binlog;
+}
+
+drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
+                                          uint32_t server_id,
+                                          const char *file,
+                                          uint32_t start_position)
 { 
   unsigned char data[128];
   unsigned char *ptr;
   uint8_t len= 0, fn_len= 0;
   drizzle_result_st *result;
+  drizzle_st *con;
+  drizzle_return_t ret;
+
+  if (binlog == NULL)
+  {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
+  con= binlog->con;
 
   // Hack in 5.6 to say that client support checksums
-  result= drizzle_query(con, "SET @master_binlog_checksum='NONE'", 0, ret_ptr);
+  result= drizzle_query(con, "SET @master_binlog_checksum='NONE'", 0, &ret);
   drizzle_result_free(result);
-  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  if (ret != DRIZZLE_RETURN_OK)
   {
-    return NULL;
+    return ret;
   }
 
   ptr= data;
@@ -96,135 +134,128 @@ drizzle_result_st *drizzle_start_binlog(drizzle_st *con,
   }
 
   result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_BINLOG_DUMP,
-                                   data, len, len, ret_ptr);
-  result->binlog_event= new (std::nothrow) drizzle_binlog_st;
-  result->binlog_event->verify_checksums= verify_checksums;
-  return result;
-}
+                                   data, len, len, &ret);
 
-drizzle_return_t drizzle_binlog_get_next_event(drizzle_result_st *result)
-{
-  if (result == NULL)
+  con->binlog= binlog;
+  if (ret != DRIZZLE_RETURN_OK)
   {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return ret;
   }
-
   result->push_state(drizzle_state_binlog_read);
   result->push_state(drizzle_state_packet_read);
-
-  return drizzle_state_loop(result->con);
+  return drizzle_state_loop(con);
 }
 
-uint32_t drizzle_binlog_event_timestamp(drizzle_result_st *result)
+uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->timestamp;
+  return event->timestamp;
 }
 
-drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_result_st *result)
+drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return drizzle_binlog_event_types_t();
   }
 
-  return result->binlog_event->type;
+  return event->type;
 }
 
-uint32_t drizzle_binlog_event_server_id(drizzle_result_st *result)
+uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->server_id;
+  return event->server_id;
 }
 
-uint32_t drizzle_binlog_event_length(drizzle_result_st *result)
+uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->length;
+  return event->length;
 }
 
-uint32_t drizzle_binlog_event_next_pos(drizzle_result_st *result)
+uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->next_pos;
+  return event->next_pos;
 }
 
-uint16_t drizzle_binlog_event_flags(drizzle_result_st *result)
+uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->flags;
+  return event->flags;
 }
 
-uint16_t drizzle_binlog_event_extra_flags(drizzle_result_st *result)
+uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->extra_flags;
+  return event->extra_flags;
 }
 
-const unsigned char *drizzle_binlog_event_data(drizzle_result_st *result)
+const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return NULL;
   }
 
-  return result->binlog_event->data;
+  return event->data;
 }
 
-const unsigned char *drizzle_binlog_event_raw_data(drizzle_result_st *result)
+const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return NULL;
   }
 
-  return result->binlog_event->raw_data;
+  return event->raw_data;
 }
 
-uint32_t drizzle_binlog_event_raw_length(drizzle_result_st *result)
+uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event)
 {
-  if ((result == NULL) || (result->binlog_event == NULL))
+  if (event == NULL)
   {
     return 0;
   }
 
-  return result->binlog_event->raw_length;
+  return event->raw_length;
 }
 
 drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 {
-  drizzle_binlog_st *binlog_event;
+  drizzle_binlog_event_st *binlog_event;
 
   if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  binlog_event= con->result->binlog_event;
+  binlog_event= &con->binlog->event;
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size)
   {
@@ -240,6 +271,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->pop_state();
+    con->binlog->error_fn(DRIZZLE_RETURN_EOF, con->binlog->binlog_context);
     return DRIZZLE_RETURN_EOF;
   }
   else if (con->buffer_ptr[0] == 255)
@@ -267,6 +299,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->packet_size= 0;
 
     con->pop_state();
+    con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con->binlog->binlog_context);
     return DRIZZLE_RETURN_ERROR_CODE;
   }
   else
@@ -283,6 +316,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
         drizzle_set_error(con, "drizzle_state_binlog_read",
                           "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
+        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con->binlog->binlog_context);
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     if (binlog_event->length <= 27)
@@ -311,7 +345,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       {
         if (strncmp((const char*)con->buffer_ptr + 2, DRIZZLE_BINLOG_CHECKSUM_VERSION, strlen(DRIZZLE_BINLOG_CHECKSUM_VERSION)) <= 0)
         {
-          con->result->binlog_checksums= true;
+          con->binlog->has_checksums= true;
         }
       }
       /* A checksum is basically a CRC32 at the end of the event data (4 bytes) */
@@ -320,7 +354,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
       /* Remove the CRC32 from the event length */
-      if (con->result->binlog_checksums)
+      if (con->binlog->has_checksums)
       {
         binlog_event->length-= DRIZZLE_BINLOG_CRC32_LEN;
       }
@@ -330,16 +364,17 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
      * each event is checksummed individually, the checksum is the last 4 bytes
      * of the binary log event
      * */
-    if (con->result->binlog_checksums)
+    if (con->binlog->has_checksums)
     {
       uint32_t event_crc;
       memcpy(&binlog_event->checksum, binlog_event->raw_data + (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
-      if (binlog_event->verify_checksums)
+      if (con->binlog->verify_checksums)
       {
         event_crc= crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
         if (event_crc != binlog_event->checksum)
         {
           drizzle_set_error(con, __func__, "CRC doesn't match: 0x%lX, 0x%lX", event_crc, binlog_event->checksum);
+          con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con->binlog->binlog_context);
           return DRIZZLE_RETURN_BINLOG_CRC;
         }
       }
@@ -349,10 +384,16 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
       drizzle_set_error(con, "drizzle_state_binlog_read",
                         "unexpected data after packet:%zu", con->buffer_size);
+      con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con->binlog->binlog_context);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     con->pop_state();
   }
+
+  con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
+  con->push_state(drizzle_state_binlog_read);
+  con->push_state(drizzle_state_packet_read);
+
   return DRIZZLE_RETURN_OK;
 }
 

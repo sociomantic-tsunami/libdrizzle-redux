@@ -565,6 +565,7 @@ typedef struct drizzle_options_st drizzle_options_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
+typedef struct drizzle_binlog_event_st drizzle_binlog_event_st;
 typedef struct drizzle_stmt_st drizzle_stmt_st;
 typedef struct drizzle_bind_st drizzle_bind_st;
 typedef char *drizzle_field_t;
@@ -572,6 +573,8 @@ typedef drizzle_field_t *drizzle_row_t;
 
 typedef void (drizzle_log_fn)(const char *line, drizzle_verbose_t verbose,
                               void *context);
+typedef void (drizzle_binlog_fn)(drizzle_binlog_event_st *event, void *context);
+typedef void (drizzle_binlog_error_fn)(drizzle_return_t error, void *context);
 typedef drizzle_return_t (drizzle_state_fn)(drizzle_st *con);
 typedef void (drizzle_context_free_fn)(drizzle_st *con,
                                            void *context);

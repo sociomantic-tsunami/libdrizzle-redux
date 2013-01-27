@@ -246,6 +246,11 @@ void drizzle_free(drizzle_st *con)
     SSL_CTX_free(con->ssl_context);
 #endif
 
+  if (con->binlog != NULL)
+  {
+    drizzle_binlog_free(con->binlog);
+  }
+
   free(con->buffer);
   delete con;
 }
