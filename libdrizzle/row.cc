@@ -2,6 +2,7 @@
  *
  *  Drizzle Client & Protocol Library
  *
+ * Copyright (C) 2008-2013 Drizzle Developer Group
  * Copyright (C) 2008 Eric Day (eday@oddments.org)
  * All rights reserved.
  *
