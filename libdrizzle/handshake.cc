@@ -198,7 +198,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
   con->buffer_ptr= con->buffer;
 
-  drizzle_state_pop(con);
+  con->pop_state();
 
   if (con->state.raw_packet == false)
   {
@@ -319,7 +319,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 
@@ -470,7 +470,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
 
   con->buffer_ptr= con->buffer;
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 
@@ -596,7 +596,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   /* Store packet size now. */
   drizzle_set_byte3(con->buffer_ptr, con->packet_size);
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 
@@ -632,7 +632,7 @@ drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con)
 
   memset(ptr, 0, 23);
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 

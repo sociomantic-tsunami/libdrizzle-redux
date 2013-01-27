@@ -63,6 +63,7 @@ extern "C" {
 #endif
 
 #include "libdrizzle/datetime.h"
+#include "libdrizzle/packet.h"
 
 #if defined _WIN32 || defined __CYGWIN__
 typedef SOCKET socket_t;
@@ -178,7 +179,6 @@ struct drizzle_st
   } flags;
   uint8_t packet_number;
   uint8_t protocol_version;
-  uint8_t state_current;
   short events;
   short revents;
   drizzle_capabilities_t capabilities;
@@ -233,7 +233,6 @@ struct drizzle_st
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
   char server_version[DRIZZLE_MAX_SERVER_VERSION_SIZE];
   char server_extra[DRIZZLE_MAX_SERVER_EXTRA_SIZE];
-  drizzle_state_fn *state_stack[DRIZZLE_STATE_STACK_SIZE];
   char user[DRIZZLE_MAX_USER_SIZE];
 #ifdef USE_OPENSSL
   SSL_CTX *ssl_context;
@@ -253,11 +252,12 @@ struct drizzle_st
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
+  size_t _state_stack_count;
+  Packet *_state_stack_list;
 
   drizzle_st() :
     packet_number(0),
     protocol_version(0),
-    state_current(0),
     events(0),
     revents(0),
     capabilities(DRIZZLE_CAPABILITIES_NONE),
@@ -293,7 +293,9 @@ struct drizzle_st
     timeout(-1),
     log_fn(NULL),
     log_context(NULL),
-    stmt(NULL)
+    stmt(NULL),
+    _state_stack_count(0),
+    _state_stack_list(NULL)
   {
     db[0]= '\0';
     password[0]= '\0';
@@ -303,6 +305,46 @@ struct drizzle_st
     last_error[0]= '\0';
     buffer= (unsigned char*)malloc(DRIZZLE_DEFAULT_BUFFER_SIZE);
     buffer_ptr= buffer;
+  }
+
+  ~drizzle_st()
+  {
+    clear_state();
+  }
+
+  bool push_state(drizzle_state_fn* func_)
+  {
+    Packet *tmp= new (std::nothrow) Packet(func_);
+    if (tmp)
+    {
+      LIBDRIZZLE_LIST_ADD(_state_stack, tmp);
+      return true;
+    }
+
+    return false;
+  }
+
+  drizzle_return_t current_state()
+  {
+    return _state_stack_list->func(this);
+  }
+
+  void pop_state()
+  {
+    Packet* tmp= _state_stack_list;
+    if (tmp)
+    {
+      LIBDRIZZLE_LIST_DEL(_state_stack, tmp);
+      delete tmp;
+    }
+  }
+
+  void clear_state()
+  {
+    while(_state_stack_list)
+    {
+      pop_state();
+    }
   }
 };
 

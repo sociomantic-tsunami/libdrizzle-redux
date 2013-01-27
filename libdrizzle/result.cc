@@ -474,6 +474,6 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
     con->packet_size= 0;
   }
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return ret;
 }

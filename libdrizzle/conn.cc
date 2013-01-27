@@ -965,7 +965,8 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
     break;
   }
 
-  drizzle_state_pop(con);
+  con->pop_state();
+
   return DRIZZLE_RETURN_OK;
 }
 
@@ -1019,7 +1020,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       }
     } while (0);
 
-    drizzle_state_pop(con);
+    con->pop_state();
 
     return DRIZZLE_RETURN_OK;
 #endif // defined _WIN32 || defined __CYGWIN__
@@ -1090,7 +1091,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       {
         if (connect_poll(con))
         {
-          drizzle_state_pop(con);
+          con->pop_state();
           return DRIZZLE_RETURN_OK;
         }
       }
@@ -1110,7 +1111,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       SSL_set_fd(con->ssl, con->fd);
     }
 #endif
-    drizzle_state_pop(con);
+    con->pop_state();
   }
 
   return DRIZZLE_RETURN_OK;
@@ -1132,7 +1133,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     int error= 0;
     if (con->revents & POLLOUT)
     {
-      drizzle_state_pop(con);
+      con->pop_state();
       socklen_t error_length= sizeof(error);
       int getsockopt_error;
       if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (char*)&error, &error_length)) < 1)
@@ -1143,7 +1144,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
 
       if (error == 0)
       {
-        drizzle_state_pop(con);
+        con->pop_state();
         return DRIZZLE_RETURN_OK;
       }
     }
@@ -1155,7 +1156,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     if (error)
     {
       con->revents= 0;
-      drizzle_state_pop(con);
+      con->pop_state();
       drizzle_state_push(con, drizzle_state_connect);
       con->addrinfo_next= con->addrinfo_next->ai_next;
       return DRIZZLE_RETURN_OK;
@@ -1306,7 +1307,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       case ECONNREFUSED:
         {
           con->revents= 0;
-          drizzle_state_pop(con);
+          con->pop_state();
           drizzle_state_push(con, drizzle_state_connect);
           con->addrinfo_next= con->addrinfo_next->ai_next;
           return DRIZZLE_RETURN_OK;
@@ -1346,7 +1347,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     break;
   }
 
-  drizzle_state_pop(con);
+  con->pop_state();
 
   return DRIZZLE_RETURN_OK;
 }
@@ -1434,7 +1435,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
 
   con->buffer_ptr= con->buffer;
 
-  drizzle_state_pop(con);
+  con->pop_state();
 
   return DRIZZLE_RETURN_OK;
 }

@@ -277,7 +277,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
   }
   else if (con->buffer_ptr[0] == 255)
   {
-    drizzle_state_pop(con);
+    con->pop_state();
     drizzle_state_push(con, drizzle_state_result_read);
     return DRIZZLE_RETURN_OK;
   }
@@ -292,7 +292,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
     con->result->field_current= 0;
   }
 
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 

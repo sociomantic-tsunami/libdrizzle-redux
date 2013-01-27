@@ -155,7 +155,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
 
   if (con->command_offset == con->command_total)
   {
-    drizzle_state_pop(con);
+    con->pop_state();
 
     if (!(con->state.raw_packet || con->state.no_result_read) &&
         con->command != DRIZZLE_COMMAND_FIELD_LIST)

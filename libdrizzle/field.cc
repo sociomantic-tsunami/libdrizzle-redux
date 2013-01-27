@@ -210,7 +210,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     {
       con->result->field= NULL;
       con->result->field_current++;
-      drizzle_state_pop(con);
+      con->pop_state();
       return DRIZZLE_RETURN_OK;
     }
     else if (ret != DRIZZLE_RETURN_OK)
@@ -263,7 +263,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     }
     else
     {
-      drizzle_state_pop(con);
+      con->pop_state();
       drizzle_state_push(con, drizzle_state_packet_read);
       drizzle_state_push(con, drizzle_state_field_read);
     }
@@ -296,7 +296,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   if (con->result->field_total == 0 || con->result->field_size > 0 ||
       con->packet_size == 0)
   {
-    drizzle_state_pop(con);
+    con->pop_state();
   }
 
   return DRIZZLE_RETURN_OK;
@@ -313,7 +313,8 @@ drizzle_return_t drizzle_state_binary_null_read(drizzle_st *con)
   con->buffer_size-= con->result->null_bitmap_length+1;
   con->packet_size-= con->result->null_bitmap_length+1;
 
-  drizzle_state_pop(con);
+  con->pop_state();
+
   return DRIZZLE_RETURN_OK;
 }
 
@@ -381,7 +382,7 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
   con->result->field_total= con->result->field_size;
 
   con->result->field_current++;
-  drizzle_state_pop(con);
+  con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
 

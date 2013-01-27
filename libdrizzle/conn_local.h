@@ -137,14 +137,14 @@ void drizzle_set_uds(drizzle_st *con, const char *uds);
  *  drizzle_create(), drizzle_clone(), or related functions.
  * @return True if empty, false if something is on the stack.
  */
-static inline bool drizzle_state_none(drizzle_st *con)
+static inline bool drizzle_state_none(drizzle_st *drizzle)
 {
-  if (con == NULL)
+  if (drizzle)
   {
-    return false;
+    return drizzle->_state_stack_count == 0;
   }
 
-  return con->state_current == 0;
+  return false;
 }
 
 /**
@@ -157,22 +157,7 @@ static inline bool drizzle_state_none(drizzle_st *con)
 static inline void drizzle_state_push(drizzle_st *con,
                                       drizzle_state_fn *function)
 {
-  /* The maximum stack depth can be determined at compile time, so bump this
-     constant if needed to avoid the dynamic memory management. */
-  assert(con->state_current < DRIZZLE_STATE_STACK_SIZE);
-  con->state_stack[con->state_current]= function;
-  con->state_current++;
-}
-
-/**
- * Pop a function off of the stack.
- *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
- */
-static inline void drizzle_state_pop(drizzle_st *con)
-{
-  con->state_current--;
+  con->push_state(function);
 }
 
 /**
@@ -183,7 +168,7 @@ static inline void drizzle_state_pop(drizzle_st *con)
  */
 static inline void drizzle_state_reset(drizzle_st *con)
 {
-  con->state_current= 0;
+  con->clear_state();
 }
 
 /** @} */
