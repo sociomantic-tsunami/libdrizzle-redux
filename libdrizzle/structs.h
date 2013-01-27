@@ -252,8 +252,10 @@ struct drizzle_st
   char sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE + 1];
   char last_error[DRIZZLE_MAX_ERROR_SIZE];
   drizzle_stmt_st *stmt;
+private:
   size_t _state_stack_count;
   Packet *_state_stack_list;
+public:
 
   drizzle_st() :
     packet_number(0),
