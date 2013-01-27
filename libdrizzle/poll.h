@@ -1,4 +1,5 @@
 /* LibMemcached
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * Copyright (C) 2010 Brian Aker, Trond Norbye
  * All rights reserved.
  *

@@ -37,6 +37,8 @@
 
 #include <yatl/lite.h>
 
+#include "tests/unit/cleanup.h"
+
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,23 +49,17 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SOCK"),
-                                  0,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  con= drizzle_create(getenv("MYSQL_SOCK"),
+                      0,
+                      getenv("MYSQL_USER"),
+                      getenv("MYSQL_PASSWORD"),
+                      getenv("MYSQL_SCHEMA"), 0);
+  CLOSE_ON_EXIT(con);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret= drizzle_connect(con);
-  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
-  {
-    char error[DRIZZLE_MAX_ERROR_SIZE];
-    strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
-    drizzle_quit(con);
-
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
-  }
-  ASSERT_EQ(DRIZZLE_RETURN_OK, ret);
+  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret), getenv("MYSQL_SOCK"));
 
   drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
@@ -83,9 +79,6 @@ int main(int argc, char *argv[])
     // Now that we know everything is good... lets push it.
     drizzle_close(con);
   }
-
-  ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;
 }

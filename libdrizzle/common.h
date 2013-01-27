@@ -1,6 +1,7 @@
 /*
  * Drizzle Client & Protocol Library
  *
+ * Copyright (C) 2008-2013 Drizzle Developer Group
  * Copyright (C) 2008 Eric Day (eday@oddments.org)
  * All rights reserved.
  *
@@ -89,5 +90,6 @@ typedef struct pollfd pollfd_t;
 #include "libdrizzle/column.h"
 #include "libdrizzle/binlog.h"
 #include "libdrizzle/handshake_client.h"
+#include "libdrizzle/result.h"
 
 #include <memory.h>
