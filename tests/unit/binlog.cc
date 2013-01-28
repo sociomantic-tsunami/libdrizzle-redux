@@ -45,10 +45,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-void binlog_error(drizzle_return_t ret, void *context)
+void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
 {
   (void) context;
-  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "%s(%s)", drizzle_error(connection), drizzle_strerror(ret));
 }
 
 void binlog_event(drizzle_binlog_event_st *event, void *context)
