@@ -6,6 +6,21 @@ Introduction
 
 This section outlines the query and result functions
 
+Structs
+-------
+
+.. c:type:: drizzle_query_st
+
+   The internal query object struct
+
+.. c:type:: drizzle_result_st
+
+   The internal result object struct
+
+.. c:type:: drizzle_column_st
+
+   The internal column object struct
+
 Functions
 ---------
 

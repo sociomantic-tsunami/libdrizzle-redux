@@ -6,6 +6,13 @@ Introduction
 
 This section outlines the connection functions
 
+Structs
+-------
+
+.. c:type:: drizzle_st
+
+   The internal drizzle connection object struct
+
 Functions
 ---------
 

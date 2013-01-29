@@ -6,6 +6,17 @@ Introduction
 
 This section outlines the prepared statement functionality
 
+Structs
+-------
+
+.. c:type:: drizzle_stmt_st
+
+   The internal struct containing the prepared statment object
+
+.. c:type:: drizzle_datetime_st
+
+   The internal struct for passing a date/time to/from the prepared statement API
+
 Functions
 ---------
 

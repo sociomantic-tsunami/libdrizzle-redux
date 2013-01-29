@@ -271,7 +271,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_EOF, con->binlog->binlog_context);
+    con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
     return DRIZZLE_RETURN_EOF;
   }
   else if (con->buffer_ptr[0] == 255)
@@ -299,7 +299,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->packet_size= 0;
 
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con->binlog->binlog_context);
+    con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
     return DRIZZLE_RETURN_ERROR_CODE;
   }
   else
@@ -316,7 +316,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
         drizzle_set_error(con, "drizzle_state_binlog_read",
                           "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
-        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con->binlog->binlog_context);
+        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     if (binlog_event->length <= 27)
@@ -374,7 +374,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
         if (event_crc != binlog_event->checksum)
         {
           drizzle_set_error(con, __func__, "CRC doesn't match: 0x%lX, 0x%lX", event_crc, binlog_event->checksum);
-          con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con->binlog->binlog_context);
+          con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
           return DRIZZLE_RETURN_BINLOG_CRC;
         }
       }
@@ -384,7 +384,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
       drizzle_set_error(con, "drizzle_state_binlog_read",
                         "unexpected data after packet:%zu", con->buffer_size);
-      con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con->binlog->binlog_context);
+      con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     con->pop_state();
