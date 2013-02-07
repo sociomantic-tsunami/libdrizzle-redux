@@ -38,7 +38,7 @@ Code
       drizzle_row_t row;
       int num_fields;
 
-      con = drizzle_create_tcp("localhost", 3306, "root", "", "libdrizzle", 0);
+      con = drizzle_create("localhost", 3306, "root", "", "libdrizzle", 0);
       if (con == NULL)
       {
         printf("Drizzle connection object creation error\n");

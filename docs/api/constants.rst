@@ -179,58 +179,6 @@ Return
 Connection
 ----------
 
-.. c:type:: drizzle_options_t
-
-   An ENUM of connection options intended to be used in a bit field
-
-   .. py:data:: DRIZZLE_CON_NONE
-
-      No option set
-
-   .. py:data:: DRIZZLE_CON_NON_BLOCKING
-
-      Connect in non-blocking mode
-
-   .. py:data:: DRIZZLE_CON_RAW_PACKET
-
-      Raw packet data mode (for low-level clients)
-
-   .. py:data:: DRIZZLE_CON_RAW_SCRAMBLE
-
-      Raw auth scramble data (for low-level clients)
-
-   .. py:data:: DRIZZLE_CON_READY
-
-      Connection is ready
-
-   .. py:data:: DRIZZLE_CON_NO_RESULT_READ
-
-      Don't read result data from buffer (advanced feature, use with caution)
-
-   .. py:data:: DRIZZLE_CON_IO_READY
-   
-      Used for event handling
-
-   .. py:data:: DRIZZLE_CON_LISTEN
-
-      Unused
-
-   .. py:data:: DRIZZLE_CON_FOUND_ROWS
-
-      Enable the FOUND_ROWS functionality
-
-   .. py:data:: DRIZZLE_CON_INTERACTIVE
-
-      This is an interactive client
-
-   .. py:data:: DRIZZLE_CON_MULTI_STATEMENTS
-
-      Multi-statement support
-
-   .. py:data:: DRIZZLE_CON_AUTH_PLUGIN
-
-      Authentiaction plugin support
-
 .. c:type:: drizzle_charset_t
 
    An ENUM of the possible character set with colation ID

@@ -13,30 +13,26 @@ Structs
 
    The internal drizzle connection object struct
 
+.. c:type:: drizzle_options_st
+
+   The internal structure containing connection options
+
 Functions
 ---------
 
-.. c:function:: drizzle_st* drizzle_create_tcp(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_options_t options)
+.. c:function:: drizzle_st* drizzle_create(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_options_st *options)
 
-   Creates a TCP/IP connection connection object
+   Creates a connection connection object.  If a path beginning with ``/`` is given as the host the library will connect as a UDS socket.  Otherwise a TCP/IP conection is made.
 
-   :param host: The hostname or IP of the server
-   :param port: The port number of the server
+   .. note::
+      a connection does not happen until the first query or an explicit :c:func:`drizzle_connect` call is made
+
+   :param host: The socket path, hostname or IP of the server
+   :param port: The port number of the server (if TCP/IP)
    :param user: The username of the server
    :param password: The password of the server
    :param db: The default DB to connect to on the server
-   :param options: The connection options to set
-   :returns: A newly allocated and setup connection object
-
-.. c:function:: drizzle_st* drizzle_create_uds(const char *uds, const char *user, const char *password, const char *db, drizzle_options_t options)
-
-   Creates a Unix Domain Socket connection object
-
-   :param uds: The path of the UDS file
-   :param user: The username of the server
-   :param password: The password of the server
-   :param db: The default DB to connect to on the server
-   :param options: The connection options to set
+   :param options: A pointer to a :c:type:`drizzle_options_st` created using :c:func:`drizzle_options_create` or :c:type:`NULL`
    :returns: A newly allocated and setup connection object
 
 .. c:function:: int drizzle_timeout(const drizzle_st *con)
@@ -51,7 +47,7 @@ Functions
    Sets the connection timeout for the connection object
 
    :param drizzle: A connection object
-   :param int: The new timeout to set
+   :param timeout: The new timeout to set
 
 .. c:function:: drizzle_verbose_t drizzle_verbose(const drizzle_st *con)
 
@@ -103,34 +99,102 @@ Functions
    :param con: A connection object
    :returns: A string containing the sqlstate
 
-.. c:function:: drizzle_options_t drizzle_options(const drizzle_st *con)
+.. c:function:: drizzle_options_st *drizzle_options_create(void)
 
-   Gets the connection options
+   Create a new connection options object
 
-   :param con: A connection object
-   :returns: The options for the connection
+   :returns: The new connection options object
 
-.. c:function:: void drizzle_set_options(drizzle_st *con, drizzle_options_t options)
+.. c:function:: void drizzle_options_destroy(drizzle_options_st *options)
 
-   Sets the connection options
+   Destroys a connection options object
 
-   :param con: A connection object
-   :param options: A bit field of the :c:type:`drizzle_options_t` options
+   :param options: The options object to be destroyed
 
-.. c:function:: void drizzle_add_options(drizzle_st *con, drizzle_options_t options)
+.. c:function:: void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
 
-   Add connection options
+   Sets/unsets non-blocking connect option
 
-   :param con: A connection object
-   :param options: A bit field of the :c:type:`drizzle_options_t` options
+   :param options: The options object to modify
+   :param state: Set option to true/false
 
-.. c:function:: void drizzle_remove_options(drizzle_st *con, drizzle_options_t options)
+.. c:function:: bool drizzle_options_get_non_blocking(drizzle_options_st *options)
 
-   Removes connection options
+   Gets the non-blocking connect option
 
-   :param con: A connection object
-   :param options: A bit field of the :c:type:`drizzle_options_t` options
+   :param options: The options object to get the value from
+   :returns: The state of the non-blocking option
 
+.. c:function:: void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state)
+
+   Sets/unsets the raw scramble connect option
+
+   :param options: The options object to modify
+   :param state: Set to true/false
+
+.. c:function:: bool drizzle_options_get_raw_scramble(drizzle_options_st *options)
+
+   Gets the raw scramble connect option
+
+   :param options: The options object to get the value from
+   :returns: The state of the raw scramble option
+
+.. c:function:: void drizzle_options_set_found_rows(drizzle_options_st *options, bool state)
+
+   Sets/unsets the found rows connect option
+
+   :param options: The options object to modify
+   :param state: Set to true/false
+
+.. c:function:: bool drizzle_options_get_found_rows(drizzle_options_st *options)
+
+   Gets the found rows connect option
+
+   :param options: The options object to get the value from
+   :returns: The state of the found rows option
+
+.. c:function:: void drizzle_options_set_interactive(drizzle_options_st *options, bool state)
+
+   Sets/unsets the interactive connect option
+
+   :param options: The options object to modify
+   :param state: Set to true/false
+
+.. c:function:: bool drizzle_options_get_interactive(drizzle_options_st *option)
+
+   Gets the interactive connect option
+
+   :param options: The options object to get the value from
+   :returns: The state of the interactive option
+
+.. c:function:: void drizzle_options_set_multi_statements(drizzle_options_st *options, bool state)
+
+   Sets/unsets the multi-statements connect option
+
+   :param options: The options object to modify
+   :parma state: Set to true/false
+
+.. c:function:: bool drizzle_options_get_multi_statements(drizzle_options_st *options)
+
+   Gets the multi-statements connect option
+
+   :param options: The options object to get the value from
+   :returns: The state of the multi-statements option
+
+.. c:function:: void drizzle_options_set_auth_plugin(drizzle_options_st *options, bool state)
+
+   Sets/unsets the auth plugin connect option
+
+   :param options: The optoins object to modify
+   :param state: Set to true/false
+
+.. c:function:: bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
+
+   Gets the auth plugin connect option
+
+   :param options: The options object to get the value from
+   :returns: The state of the auth plugin option
+   
 .. c:function:: const char* drizzle_host(const drizzle_st *con)
 
    Gets the host name from a TCP/IP connection
