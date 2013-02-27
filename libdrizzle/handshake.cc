@@ -83,7 +83,7 @@ drizzle_return_t drizzle_handshake_client_write(drizzle_st *con)
 drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 {
   unsigned char *ptr;
-  int extra_length;
+  ptrdiff_t extra_length;
   unsigned char* packet_end;
 
   if (con == NULL)
