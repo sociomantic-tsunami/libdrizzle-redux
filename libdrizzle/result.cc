@@ -460,10 +460,10 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
   if (con->packet_size > 0)
   {
     snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
-             (int32_t)con->packet_size, con->buffer_ptr);
+             (int)con->packet_size, con->buffer_ptr);
     con->last_error[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
     snprintf(con->result->info, DRIZZLE_MAX_INFO_SIZE, "%.*s",
-             (int32_t)con->packet_size, con->buffer_ptr);
+             (int)con->packet_size, con->buffer_ptr);
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
     con->buffer_ptr+= con->packet_size;
     con->buffer_size-= con->packet_size;

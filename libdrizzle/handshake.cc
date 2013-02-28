@@ -117,7 +117,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
     if (con->protocol_version == 255)
     {
       drizzle_set_error(con, "drizzle_state_handshake_server_read",
-                        "%.*s", (int32_t)con->packet_size - 3,
+                        "%.*s", (int)con->packet_size - 3,
                         con->buffer_ptr + 2);
       return DRIZZLE_RETURN_AUTH_FAILED;
     }
