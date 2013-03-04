@@ -43,6 +43,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
+
+#define CHECKED_QUERY(cmd) drizzle_query(con, cmd, 0, &ret); ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(ret), drizzle_error(con), cmd);
 
 int main(int argc, char *argv[])
 {
@@ -63,20 +66,16 @@ int main(int argc, char *argv[])
   SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(ret));
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
 
-  drizzle_query(con, "CREATE SCHEMA libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
 
   ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
-  drizzle_query(con, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)", 0, &ret);
-  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
+  CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
 
-  drizzle_query(con, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')", 0, &ret);
-  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
+  CHECKED_QUERY("insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
 
   drizzle_result_st *result= drizzle_query(con, "select * from libdrizzle.t1", 0, &ret);
   ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "select * from libdrizzle.t1");

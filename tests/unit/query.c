@@ -42,6 +42,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define CHECKED_QUERY(cmd) drizzle_query(con, cmd, 0, &ret); ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(ret), drizzle_error(con), cmd);
+
 int main(int argc, char *argv[])
 {
   (void) argc;
@@ -66,11 +68,9 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
 
-  drizzle_query(con, "CREATE SCHEMA libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
 
   ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
