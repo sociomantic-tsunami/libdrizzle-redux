@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
   drizzle_return_t ret= drizzle_connect(con);
   SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
   drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
