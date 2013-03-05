@@ -51,7 +51,7 @@ static drizzle_st *con= NULL;
 static void close_connection_on_exit(void)
 {
   drizzle_return_t ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", drizzle_strerror(ret));
 }
 
 #define CLOSE_ON_EXIT(__connection) atexit(close_connection_on_exit);

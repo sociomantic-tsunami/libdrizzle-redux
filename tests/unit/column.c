@@ -43,6 +43,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
+
+#define CHECKED_QUERY(cmd) drizzle_query(con, cmd, 0, &ret); ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(ret), drizzle_error(con), cmd);
 
 int main(int argc, char *argv[])
 {
@@ -61,22 +64,20 @@ int main(int argc, char *argv[])
 
   drizzle_return_t ret= drizzle_connect(con);
   SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
 
-  drizzle_query(con, "CREATE SCHEMA libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA libdrizzle (%s)", drizzle_error(con));
+  CHECKED_QUERY("SET CHARACTER SET latin1"); /* Or any other one-byte-per-character character set */
+    
+  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
 
   ret= drizzle_select_db(con, "libdrizzle");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
 
-  drizzle_query(con, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)", 0, &ret);
-  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
+  CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
 
-  drizzle_query(con, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')", 0, &ret);
-  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
+  CHECKED_QUERY("insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
 
   drizzle_result_st *result= drizzle_query(con, "select * from libdrizzle.t1", 0, &ret);
   ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "select * from libdrizzle.t1");
@@ -84,29 +85,38 @@ int main(int argc, char *argv[])
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
 
-  ASSERT_TRUE_(num_fields == 3, "Retrieved bad number of fields");
+  ASSERT_EQ_(num_fields, 3, "Retrieved bad number of fields");
 
   int i= 0;
   drizzle_column_st *column;
   while ((row = drizzle_row_next(result)))
   {
     drizzle_column_seek(result, 0);
-    int j= 0;
+    int cur_column= 0;
     i++;
     char buf[10];
     snprintf(buf, sizeof(buf), "%d", i);
     ASSERT_EQ_(strcmp(row[0], buf), 0, "Retrieved bad row value");
     while ((column= drizzle_column_next(result)))
     {
-      j++;
+      cur_column++;
       ASSERT_EQ_(strcmp(drizzle_column_db(column), "libdrizzle"), 0, "Column has bad DB name");
       ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
-      ASSERT_FALSE_((j == 2) && (drizzle_column_max_size(column) != 255), "Column max size wrong %lu != 255", drizzle_column_max_size(column));
-
-      ASSERT_FALSE_((j == 2) && (drizzle_column_charset(column) != DRIZZLE_CHARSET_LATIN1_SWEDISH_CI), "Column type wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
-      ASSERT_FALSE_((j == 3) && (drizzle_column_type(column) != DRIZZLE_COLUMN_TYPE_TIMESTAMP), "Column type wrong");
+        switch (cur_column) {
+            case 1:
+                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG, "Column type wrong");
+                break;
+            case 2:
+                ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", drizzle_column_max_size(column));
+                
+                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
+                break;
+            case 3:
+                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP, "Column type wrong");
+                break;
+        }
     }
-    ASSERT_EQ_(j, 3, "Wrong column count");
+    ASSERT_EQ_(cur_column, 3, "Wrong column count");
   }
   /* Should have had 3 rows */
   ASSERT_EQ_(i, 3, "Retrieved bad number of rows");
