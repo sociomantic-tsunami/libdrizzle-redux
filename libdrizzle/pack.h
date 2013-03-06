@@ -85,9 +85,10 @@ void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char
 
 /**
  * Unpack length-encoded string.
+ * max_size is a size_t because it describes the size of the in-core 'buffer'.
  */
 drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
-                                       uint64_t max_size);
+                                       size_t max_size);
 
 /**
  * Pack user, scramble, and db.

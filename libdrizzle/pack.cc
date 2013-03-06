@@ -292,7 +292,7 @@ void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char
 }
 
 drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
-                                       uint64_t max_length)
+                                       size_t max_length)
 {
   drizzle_return_t ret= DRIZZLE_RETURN_OK;
 
@@ -313,6 +313,18 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
     return ret;
   }
 
+  if (length > con->packet_size)
+  {
+    drizzle_set_error(con, "drizzle_unpack_string",
+                           "string extends past end of packet");
+    return DRIZZLE_RETURN_UNEXPECTED_DATA;
+  }
+  if (length > con->buffer_size)
+  {
+    return DRIZZLE_RETURN_IO_WAIT;
+  }
+
+  assert(max_length > 1);
   if (length < max_length)
   {
     if (length > 0)
@@ -322,13 +334,13 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
   }
   else
   {
-    memcpy(buffer, con->buffer_ptr, (size_t)(max_length - 1));
+    memcpy(buffer, con->buffer_ptr, max_length - 1);
     buffer[max_length - 1]= 0;
   }
-  
+
   con->buffer_ptr+= length;
-  con->buffer_size-= (size_t)length;
-  con->packet_size-= (size_t)length;
+  con->buffer_size-= length;
+  con->packet_size-= (uint32_t)length;
 
   return DRIZZLE_RETURN_OK;
 }
