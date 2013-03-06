@@ -370,7 +370,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       memcpy(&binlog_event->checksum, binlog_event->raw_data + (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
       if (con->binlog->verify_checksums)
       {
-        event_crc= crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
+        event_crc= (uint32_t)crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
         if (event_crc != binlog_event->checksum)
         {
           drizzle_set_error(con, __func__, "CRC doesn't match: 0x%"PRIX32", 0x%"PRIX32, event_crc, binlog_event->checksum);
