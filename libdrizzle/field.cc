@@ -207,7 +207,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     con->result->field_size= 0;
 
     drizzle_return_t ret;
-    con->result->field_total= (size_t)drizzle_unpack_length(con, &ret);
+    con->result->field_total= drizzle_unpack_length(con, &ret);
     if (ret == DRIZZLE_RETURN_NULL_SIZE)
     {
       con->result->field= NULL;
@@ -231,31 +231,39 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
                       con->result->field_offset, con->result->field_size,
                       con->result->field_total);
 
-    if ((size_t)(con->buffer_size) >= con->result->field_total)
+    uint32_t available_data = (con->buffer_size < con->packet_size)? (uint32_t)con->buffer_size : con->packet_size;
+    /* packet_size fits in uint32, so available_data fits in uint32 */
+    
+    if (available_data >= con->result->field_total)
     {
-      con->result->field_size= con->result->field_total;
+      /* narrowing cast is safe because field_total<packet_size and packet_size is uint32 */
+      con->result->field_size= (uint32_t)con->result->field_total;
     }
     else
     {
-      con->result->field_size= con->buffer_size;
+      con->result->field_size= available_data;
     }
   }
   else
   {
-    if ((con->result->field_offset + con->buffer_size) >=
-        con->result->field_total)
+    uint32_t available_data = (con->buffer_size < con->packet_size)? (uint32_t)con->buffer_size : con->packet_size;
+    /* packet_size fits in uint32, so available_data fits in uint32 */
+    
+    uint64_t field_remaining = con->result->field_total - con->result->field_offset;
+    
+    if (field_remaining <= available_data)
     {
-      con->result->field_size= (con->result->field_total -
-                                con->result->field_offset);
+      /* narrowing cast is safe because field_remaining<=packet_size and packet_size is uint32 */
+      con->result->field_size= (uint32_t)field_remaining;
     }
     else
     {
-      con->result->field_size= con->buffer_size;
+      con->result->field_size= available_data;
     }
   }
 
   /* This is a special case when a row is larger than the packet size. */
-  if (con->result->field_size > (size_t)con->packet_size)
+  if (con->result->field_size > con->packet_size)
   {
     con->result->field_size= con->packet_size;
 
