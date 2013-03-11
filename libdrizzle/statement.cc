@@ -320,7 +320,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
 
   if (stmt->state < DRIZZLE_STMT_PREPARED)
   {
-    drizzle_set_error(stmt->con, __func__, "stmt object has bot been prepared");
+    drizzle_set_error(stmt->con, __func__, "stmt object has not been prepared");
     return DRIZZLE_RETURN_STMT_ERROR;
   }
 
