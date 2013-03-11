@@ -520,7 +520,7 @@ struct drizzle_bind_st
   drizzle_column_type_t type;
   void *data;
   char *data_buffer;
-  uint32_t length;
+  size_t length;  /* amount of data in 'data' */
   bool is_bound;
   struct options_t
   {
