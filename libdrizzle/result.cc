@@ -314,16 +314,20 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
 
     if (result->row_list_size < result->row_count)
     {
-      row_list= (drizzle_row_t *)realloc(result->row_list, sizeof(drizzle_row_t) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+      size_t new_row_list_size = result->row_list_size + DRIZZLE_ROW_GROW_SIZE;
+      
+      row_list= (drizzle_row_t *)realloc(result->row_list, sizeof(drizzle_row_t) * new_row_list_size);
       if (row_list == NULL)
       {
         drizzle_row_free(result, row);
         drizzle_set_error(result->con, __func__, "Failed to realloc row_list.");
         return DRIZZLE_RETURN_MEMORY;
       }
+      result->row_list= row_list;
+      
       if (result->binary_rows)
       {
-        uint8_t **null_bitmap_list= (uint8_t**)realloc(result->null_bitmap_list, sizeof(uint8_t*) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+        uint8_t **null_bitmap_list= (uint8_t **)realloc(result->null_bitmap_list, sizeof(uint8_t *) * new_row_list_size);
         if (null_bitmap_list == NULL)
         {
           drizzle_row_free(result, row);
@@ -332,19 +336,17 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
         }
         result->null_bitmap_list= null_bitmap_list;
       }
-      result->row_list= row_list;
 
-      field_sizes_list= (size_t **)realloc(result->field_sizes_list, sizeof(size_t *) * ((size_t)(result->row_list_size) + DRIZZLE_ROW_GROW_SIZE));
+      field_sizes_list= (size_t **)realloc(result->field_sizes_list, sizeof(size_t *) * new_row_list_size);
       if (field_sizes_list == NULL)
       {
         drizzle_row_free(result, row);
         drizzle_set_error(result->con, "drizzle_result_buffer", "Failed to realloc field list.");
         return DRIZZLE_RETURN_MEMORY;
       }
-
       result->field_sizes_list= field_sizes_list;
 
-      result->row_list_size+= DRIZZLE_ROW_GROW_SIZE;
+      result->row_list_size= new_row_list_size;
     }
 
     if (result->binary_rows)
