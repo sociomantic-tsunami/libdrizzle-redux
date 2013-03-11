@@ -165,6 +165,7 @@ bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *colum
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
@@ -192,6 +193,7 @@ bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *c
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
@@ -219,6 +221,7 @@ const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char 
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
@@ -318,6 +321,7 @@ uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *colum
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
@@ -407,6 +411,7 @@ uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *co
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
@@ -492,6 +497,7 @@ double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *colu
   if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
   }
   column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)

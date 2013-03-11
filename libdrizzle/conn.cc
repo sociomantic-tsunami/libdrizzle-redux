@@ -724,6 +724,12 @@ drizzle_return_t drizzle_select_db(drizzle_st *con,
 {
   drizzle_result_st *result;
   drizzle_return_t ret;
+
+  if (db == NULL)
+  {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
   drizzle_set_db(con, db);
   result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_INIT_DB,
                                    db, strlen(db), strlen(db), &ret);
