@@ -492,7 +492,7 @@ struct drizzle_stmt_st
   uint16_t param_count;
   drizzle_bind_st *query_params;
   drizzle_bind_st *result_params;
-  uint8_t null_bitmap_length;
+  uint16_t null_bitmap_length;
   uint8_t *null_bitmap;
   bool new_bind;
   drizzle_result_st *prepare_result;

@@ -80,7 +80,7 @@ struct drizzle_result_st
   bool binlog_checksums;
   uint8_t **null_bitmap_list;
   uint8_t *null_bitmap;
-  uint8_t null_bitmap_length;
+  uint16_t null_bitmap_length;
   bool binary_rows;
 
   drizzle_result_st() :
