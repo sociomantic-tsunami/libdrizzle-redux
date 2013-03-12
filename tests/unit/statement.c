@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   /* Result should have 2 rows */
-  int count= drizzle_stmt_row_count(stmt);
+  uint64_t count = drizzle_stmt_row_count(stmt);
   ASSERT_EQ_(2, count, "%s", drizzle_error(con));
 
   uint32_t i= 1;

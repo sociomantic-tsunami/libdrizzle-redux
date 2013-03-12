@@ -208,13 +208,13 @@ struct drizzle_st
   uint32_t thread_id;
   int backlog;
   socket_t fd;
-  size_t buffer_size;
+  size_t buffer_size;              /* amount of valid data after 'buffer_ptr' in 'buffer' */
   size_t command_offset;
   size_t command_size;
   size_t command_total;
-  size_t packet_size;
+  uint32_t packet_size;            /* remaining number of bytes in packet currently being read; maximum value 2^24 */
   struct addrinfo *addrinfo_next;
-  unsigned char *buffer_ptr;
+  unsigned char *buffer_ptr;       /* cursor pointing into 'buffer' */
   unsigned char *command_buffer;
   unsigned char *command_data;
   void *context;
@@ -228,7 +228,7 @@ struct drizzle_st
     drizzle_uds_st uds;
   } socket;
   unsigned char *buffer;
-  size_t buffer_allocation;
+  size_t buffer_allocation; /* total allocated size of 'buffer' */
   char db[DRIZZLE_MAX_DB_SIZE];
   char password[DRIZZLE_MAX_PASSWORD_SIZE];
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
@@ -492,7 +492,7 @@ struct drizzle_stmt_st
   uint16_t param_count;
   drizzle_bind_st *query_params;
   drizzle_bind_st *result_params;
-  uint8_t null_bitmap_length;
+  uint16_t null_bitmap_length;
   uint8_t *null_bitmap;
   bool new_bind;
   drizzle_result_st *prepare_result;
@@ -520,7 +520,7 @@ struct drizzle_bind_st
   drizzle_column_type_t type;
   void *data;
   char *data_buffer;
-  uint32_t length;
+  size_t length;  /* amount of data in 'data' */
   bool is_bound;
   struct options_t
   {

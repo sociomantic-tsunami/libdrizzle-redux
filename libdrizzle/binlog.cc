@@ -289,10 +289,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->packet_size-= 9;
 
     snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
-             (int32_t)con->packet_size, con->buffer_ptr);
+             (int)con->packet_size, con->buffer_ptr);
     con->last_error[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
     snprintf(con->result->info, DRIZZLE_MAX_INFO_SIZE, "%.*s",
-             (int32_t)con->packet_size, con->buffer_ptr);
+             (int)con->packet_size, con->buffer_ptr);
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
     con->buffer_ptr+= con->packet_size;
     con->buffer_size-= con->packet_size;
@@ -315,7 +315,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     if (con->packet_size != binlog_event->length)
     {
         drizzle_set_error(con, "drizzle_state_binlog_read",
-                          "packet size error:%zu:%zu", con->packet_size, binlog_event->length);
+                          "packet size error:%"PRIu32":%"PRIu32, con->packet_size, binlog_event->length);
         con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
@@ -370,10 +370,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       memcpy(&binlog_event->checksum, binlog_event->raw_data + (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN), DRIZZLE_BINLOG_CRC32_LEN);
       if (con->binlog->verify_checksums)
       {
-        event_crc= crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
+        event_crc= (uint32_t)crc32(0, binlog_event->raw_data, (binlog_event->raw_length - DRIZZLE_BINLOG_CRC32_LEN));
         if (event_crc != binlog_event->checksum)
         {
-          drizzle_set_error(con, __func__, "CRC doesn't match: 0x%lX, 0x%lX", event_crc, binlog_event->checksum);
+          drizzle_set_error(con, __func__, "CRC doesn't match: 0x%"PRIX32", 0x%"PRIX32, event_crc, binlog_event->checksum);
           con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
           return DRIZZLE_RETURN_BINLOG_CRC;
         }

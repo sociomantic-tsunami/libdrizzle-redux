@@ -60,14 +60,29 @@ extern "C" {
  * Read field for unbuffered result, possibly in parts. This is especially
  * useful for blob streaming, since the client does not need to buffer the
  * entire blob.
+ *
+ * The return value is a pointer into a buffer internal to \a result and should
+ * not be freed. It is valid only until the next call to a drizzle function for this
+ * connection.
+ *
+ * @returns               A pointer to \a size bytes of field data.
+ * @param[in,out] result  The result handle for the response being read.
+ * @param[out]   offset   The offset within the field of the data that was read.
+ * @param[out]   size     The number of bytes returned.
+ * @param[out]   total    The total size of the field being read.
+ * @param[out]   ret_ptr  DRIZZLE_RETURN_*
+ * 
  */
 DRIZZLE_API
-drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset,
-                                   size_t *size, size_t *total,
+drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
+                                   size_t *size, uint64_t *total,
                                    drizzle_return_t *ret_ptr);
 
 /**
  * Buffer one field.
+ *
+ * The return value is a newly allocated buffer and must be freed using drizzle_field_free
+ * when no longer needed.
  */
 DRIZZLE_API
 drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,

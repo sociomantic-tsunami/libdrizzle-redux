@@ -64,14 +64,14 @@ struct drizzle_result_st
   uint64_t row_count;
   uint64_t row_current;
 
-  uint16_t field_current;
-  size_t field_total;
-  size_t field_offset;
-  size_t field_size;
+  uint16_t field_current;         /* field index */
+  uint64_t field_total;           /* total length of the field currently being read */
+  uint64_t field_offset;          /* offset within field of most recently read field fragment (0 if first/only fragment) */
+  uint32_t field_size;            /* size of most recently read field value or fragment of field value; max 2^24 */
   drizzle_field_t field;
   drizzle_field_t field_buffer;
 
-  uint64_t row_list_size;
+  size_t row_list_size;
   drizzle_row_t row;
   drizzle_row_t *row_list;
   size_t *field_sizes;
@@ -80,7 +80,7 @@ struct drizzle_result_st
   bool binlog_checksums;
   uint8_t **null_bitmap_list;
   uint8_t *null_bitmap;
-  uint8_t null_bitmap_length;
+  uint16_t null_bitmap_length;
   bool binary_rows;
 
   drizzle_result_st() :
