@@ -48,8 +48,8 @@
  * Client definitions
  */
 
-drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset,
-                                   size_t *size, size_t *total,
+drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
+                                   size_t *size, uint64_t *total,
                                    drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
@@ -115,8 +115,9 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset,
 drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
                                      drizzle_return_t *ret_ptr)
 {
-  size_t offset= 0;
+  uint64_t offset= 0;
   size_t size= 0;
+  uint64_t wire_size;
 
   drizzle_return_t unused_ret;
   if (ret_ptr == NULL)
@@ -130,7 +131,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     return 0;
   }
 
-  drizzle_field_t field= drizzle_field_read(result, &offset, &size, total, ret_ptr);
+  drizzle_field_t field= drizzle_field_read(result, &offset, &size, &wire_size, ret_ptr);
 
   if (*ret_ptr != DRIZZLE_RETURN_OK)
   {
@@ -143,6 +144,14 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     return NULL;
   }
 
+  if ((SIZE_MAX < UINT64_MAX) && (wire_size >= SIZE_MAX))
+  {
+    drizzle_set_error(result->con, __func__, "Field is larger than memory.");
+    *ret_ptr= DRIZZLE_RETURN_MEMORY;
+    return NULL;
+  }
+  *total = (size_t)wire_size;
+  
   if (result->field_buffer == NULL)
   {
     result->field_buffer= new (std::nothrow) char[(*total) + 1];
@@ -158,12 +167,13 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
 
   while ((offset + size) != (*total))
   {
-    field= drizzle_field_read(result, &offset, &size, total, ret_ptr);
+    field= drizzle_field_read(result, &offset, &size, &wire_size, ret_ptr);
     if (*ret_ptr != DRIZZLE_RETURN_OK)
     {
       return NULL;
     }
-
+    assert(wire_size == (uint64_t)*total);
+    
     memcpy(result->field_buffer + offset, field, size);
   }
 
@@ -227,7 +237,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     }
 
     drizzle_log_debug(con,
-                      "field_offset= %zu, field_size= %zu, field_total= %zu",
+                      "field_offset= %"PRIu64", field_size= %zu, field_total= %"PRIu64,
                       con->result->field_offset, con->result->field_size,
                       con->result->field_total);
 
@@ -285,7 +295,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   con->packet_size-= con->result->field_size;
 
   drizzle_log_debug(con,
-                    "field_offset= %zu, field_size= %zu, field_total= %zu",
+                    "field_offset= %"PRIu64", field_size= %zu, field_total= %"PRIu64,
                     con->result->field_offset, con->result->field_size,
                     con->result->field_total);
 
