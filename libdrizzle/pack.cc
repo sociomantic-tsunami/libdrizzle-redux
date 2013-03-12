@@ -165,12 +165,12 @@ unsigned char *drizzle_pack_string(char *string, unsigned char *ptr)
     return NULL;
   }
 
-  uint64_t size= strlen(string);
+  size_t size= strlen(string);
 
   ptr= drizzle_pack_length(size, ptr);
   if (size > 0)
   {
-    memcpy(ptr, string, (size_t)size);
+    memcpy(ptr, string, size);
     ptr+= size;
   }
 
