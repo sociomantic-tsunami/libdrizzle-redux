@@ -129,6 +129,8 @@ drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num
   drizzle_datetime_st *time;
   time= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
+  bzero(time, sizeof(*time));
+
   time->negative= is_negative;
   time->day= days;
   time->hour= hours;
@@ -145,6 +147,8 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   drizzle_datetime_st *timestamp;
   timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
+  bzero(timestamp, sizeof(*timestamp));
+
   timestamp->negative= false;
   timestamp->year= year;
   timestamp->day= day;
@@ -156,7 +160,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   timestamp->microsecond= microseconds;
 
   /* Length not important because we will figure that out when packing */ 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, timestamp, 0, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIMESTAMP, timestamp, 0, false);
 }
 
 bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
