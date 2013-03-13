@@ -621,26 +621,26 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
   char* buffer= param->data_buffer + 50;
   if (time->microsecond == 0)
   {
-    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
+    snprintf(buffer, 17, "%s%02"PRIu16":%02"PRIu8":%02"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
   }
   else
   {
-    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
+    snprintf(buffer, 17, "%s%02"PRIu16":%02"PRIu8":%02"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
   }
   return buffer;
 }
 
 char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp)
 {
-  /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 26 */
+  /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 27 */
   char* buffer= param->data_buffer + 50;
   if (timestamp->microsecond == 0)
   {
-    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
+    snprintf(buffer, 27, "%"PRIu16"-%02"PRIu8"-%02"PRIu32" %02"PRIu16":%02"PRIu8":%02"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
   }
   else
   {
-    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
+    snprintf(buffer, 27, "%"PRIu16"-%02"PRIu8"-%02"PRIu32" %02"PRIu16":%02"PRIu8":%02"PRIu8".%06"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
   }
   return buffer;
 }
