@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
             case 2:
                 ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", drizzle_column_max_size(column));
                 
-                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
+                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
                 break;
             case 3:
                 ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP, "Column type wrong");
