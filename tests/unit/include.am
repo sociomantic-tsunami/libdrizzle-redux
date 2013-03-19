@@ -52,6 +52,12 @@ tests_unit_numbers_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/numbers
 noinst_PROGRAMS+= tests/unit/numbers
 
+tests_unit_datetypes_SOURCES= tests/unit/datetypes.c tests/unit/common.c
+tests_unit_datetypes_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/datetypes
+noinst_PROGRAMS+= tests/unit/datetypes
+XFAIL_TESTS+= tests/unit/datetypes
+
 tests_unit_nulls_SOURCES= tests/unit/nulls.c tests/unit/common.c
 tests_unit_nulls_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/nulls
