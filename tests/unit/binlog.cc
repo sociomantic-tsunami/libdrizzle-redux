@@ -72,19 +72,10 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
   drizzle_binlog_st *binlog;
+  drizzle_return_t ret;
 
-  con= drizzle_create(getenv("MYSQL_SERVER"),
-                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), NULL);
-
-  CLOSE_ON_EXIT(con);
-  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-
-  drizzle_return_t ret= drizzle_connect(con);
-  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  set_up_connection();
+  
   binlog= drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
   ret= drizzle_binlog_start(binlog, 0, "", 0);
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));

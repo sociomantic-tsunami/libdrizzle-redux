@@ -46,10 +46,6 @@
 #include <inttypes.h>
 #include <math.h>
 
-#define CHECKED_QUERY(cmd) result = drizzle_query(con, cmd, 0, &driz_ret); ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), cmd);
-
-#define CHECK(s) driz_ret = (s); ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, in \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), #s);
-
 /* We've chosen the floats so that the are exactly representable in a normal binary floating-point format, so we should get exact results out. However, some compilers (pretty reasonably) warn when doing exact equality tests of floats. This gets around that. */
 #define FLOAT_EQ_EXACT(a, b) ( isfinite(a) && isfinite(b) && !(a < b) && !(a > b) )
 
@@ -86,28 +82,14 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
   drizzle_result_st *result;
+  drizzle_return_t driz_ret;
   drizzle_row_t row;
   const char *query;
   drizzle_stmt_st *sth;
   int num_fields;
   
-  con= drizzle_create(getenv("MYSQL_SERVER"),
-                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), 0);
-  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-  CLOSE_ON_EXIT(con);
-  
-  drizzle_return_t driz_ret= drizzle_connect(con);
-  SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
-  
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
-  
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
-  
-  CHECK(drizzle_select_db(con, "libdrizzle"));
+  set_up_connection();
+  set_up_schema();
   
   CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double)");
   
@@ -338,8 +320,7 @@ int main(int argc, char *argv[])
   drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &driz_ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE libdrizzle.t1");
   
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &driz_ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP SCHEMA libdrizzle (%s)", drizzle_error(con));
+  tear_down_schema();
   
   return EXIT_SUCCESS;
 }
