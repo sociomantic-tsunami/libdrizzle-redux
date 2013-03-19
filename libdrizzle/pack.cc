@@ -256,9 +256,8 @@ unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned cha
   return ptr + 1 + length;
 }
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *data)
+void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
   memset(datetime, 0, length);
 
   if (length)
@@ -277,9 +276,8 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *da
   }
 }
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char *data)
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
   memset(datetime, 0, length);
 
   if (length)
