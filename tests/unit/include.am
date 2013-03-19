@@ -2,7 +2,7 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-noinst_HEADERS+= tests/unit/cleanup.h
+noinst_HEADERS+= tests/unit/common.h
 
 tests_unit_binlog_SOURCES= tests/unit/binlog.cc
 tests_unit_binlog_LDADD= libdrizzle/libdrizzle.la
