@@ -258,7 +258,7 @@ unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned cha
 
 void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  memset(datetime, 0, length);
+  memset(datetime, 0, sizeof(*datetime));
 
   if (length)
   {
@@ -278,7 +278,7 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_
 
 void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  memset(datetime, 0, length);
+  memset(datetime, 0, sizeof(*datetime));
 
   if (length)
   {
