@@ -2,9 +2,9 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-noinst_HEADERS+= tests/unit/cleanup.h
+noinst_HEADERS+= tests/unit/common.h
 
-tests_unit_binlog_SOURCES= tests/unit/binlog.cc
+tests_unit_binlog_SOURCES= tests/unit/binlog.cc tests/unit/common.c
 tests_unit_binlog_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/binlog
 noinst_PROGRAMS+= tests/unit/binlog
@@ -33,7 +33,7 @@ tests_unit_query_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/query
 noinst_PROGRAMS+= tests/unit/query
 
-tests_unit_column_SOURCES= tests/unit/column.c
+tests_unit_column_SOURCES= tests/unit/column.c tests/unit/common.c
 tests_unit_column_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/column
 noinst_PROGRAMS+= tests/unit/column
@@ -47,6 +47,23 @@ valgrind-column: tests/unit/column
 check-column: tests/unit/column
 	tests/unit/column
 
+tests_unit_numbers_SOURCES= tests/unit/numbers.c tests/unit/common.c
+tests_unit_numbers_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/numbers
+noinst_PROGRAMS+= tests/unit/numbers
+
+tests_unit_datetypes_SOURCES= tests/unit/datetypes.c tests/unit/common.c
+tests_unit_datetypes_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/datetypes
+noinst_PROGRAMS+= tests/unit/datetypes
+XFAIL_TESTS+= tests/unit/datetypes
+
+tests_unit_nulls_SOURCES= tests/unit/nulls.c tests/unit/common.c
+tests_unit_nulls_LDADD= libdrizzle/libdrizzle.la
+check_PROGRAMS+= tests/unit/nulls
+noinst_PROGRAMS+= tests/unit/nulls
+# Currently fails due to https://bugs.launchpad.net/libdrizzle/+bug/1150195
+XFAIL_TESTS+= tests/unit/nulls
 
 tests_unit_row_SOURCES= tests/unit/row.c
 tests_unit_row_LDADD= libdrizzle/libdrizzle.la
@@ -77,7 +94,7 @@ valgrind-connect: tests/unit/connect
 check-connect: tests/unit/connect
 	tests/unit/connect
 
-tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c
+tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c tests/unit/common.c
 tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/connect_uds
 noinst_PROGRAMS+= tests/unit/connect_uds

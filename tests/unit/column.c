@@ -36,7 +36,7 @@
  */
 
 #include <yatl/lite.h>
-#include "tests/unit/cleanup.h"
+#include "tests/unit/common.h"
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
@@ -45,42 +45,24 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-#define CHECKED_QUERY(cmd) drizzle_query(con, cmd, 0, &ret); ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(ret), drizzle_error(con), cmd);
-
 int main(int argc, char *argv[])
 {
   (void) argc;
   (void) argv;
   drizzle_row_t row;
   int num_fields;
+  drizzle_result_st *result;
+  drizzle_return_t driz_ret;
 
-  con= drizzle_create(getenv("MYSQL_SERVER"),
-                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), 0);
-  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-  CLOSE_ON_EXIT(con);
-
-  drizzle_return_t ret= drizzle_connect(con);
-  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
-
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
-
+  set_up_connection();
   CHECKED_QUERY("SET CHARACTER SET latin1"); /* Or any other one-byte-per-character character set */
-    
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
-
-  ret= drizzle_select_db(con, "libdrizzle");
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
+  set_up_schema();
 
   CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
 
   CHECKED_QUERY("insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
 
-  drizzle_result_st *result= drizzle_query(con, "select * from libdrizzle.t1", 0, &ret);
-  ASSERT_TRUE_(ret == DRIZZLE_RETURN_OK, "select * from libdrizzle.t1");
+  CHECKED_QUERY("select * from libdrizzle.t1");
 
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
@@ -107,9 +89,9 @@ int main(int argc, char *argv[])
                 ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG, "Column type wrong");
                 break;
             case 2:
-                ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", drizzle_column_max_size(column));
+                ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", (size_t)drizzle_column_max_size(column));
                 
-                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_UTF8_BIN);
+                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
                 break;
             case 3:
                 ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP, "Column type wrong");
@@ -123,11 +105,9 @@ int main(int argc, char *argv[])
 
   drizzle_result_free(result);
 
-  drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE libdrizzle.t1");
+  CHECKED_QUERY("DROP TABLE libdrizzle.t1");
 
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA libdrizzle (%s)", drizzle_error(con));
+  tear_down_schema();
 
   return EXIT_SUCCESS;
 }
