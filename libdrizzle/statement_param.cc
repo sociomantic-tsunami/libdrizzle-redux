@@ -623,14 +623,18 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
 {
   /* Max time is -HHH:MM:SS.ssssss + NUL = 17 */
   char* buffer= param->data_buffer + 50;
-  if (time->microsecond == 0)
-  {
-    snprintf(buffer, 17, "%s%02"PRIu16":%02"PRIu8":%02"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
-  }
-  else
-  {
-    snprintf(buffer, 17, "%s%02"PRIu16":%02"PRIu8":%02"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
-  }
+  int buffersize = 17;
+  int used = 0;
+    
+  /* Values are transferred with days separated from hours, but presented with days folded into hours. */
+  used = snprintf(buffer, buffersize-used, "%s%02u:%02"PRIu8":%02"PRIu8, (time->negative) ? "-" : "", time->hour + 24 * time->day, time->minute, time->second);
+
+  /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
+  if (time->microsecond)
+    used += snprintf(buffer+used, buffersize-used, ".%06" PRIu32, time->microsecond);
+  
+  assert(used < buffersize);
+    
   return buffer;
 }
 
@@ -638,14 +642,27 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
 {
   /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 27 */
   char* buffer= param->data_buffer + 50;
-  if (timestamp->microsecond == 0)
+  int buffersize = 27;
+  int used = 0;
+  
+  used += snprintf(buffer, buffersize-used, "%"PRIu16"-%02"PRIu8"-%02"PRIu32,
+     timestamp->year, timestamp->month, timestamp->day);
+  assert(used < buffersize);
+  
+  if (param->type == DRIZZLE_COLUMN_TYPE_DATE)
+    return buffer;
+  
+  used += snprintf(buffer+used, buffersize-used, " %02"PRIu16":%02"PRIu8":%02"PRIu8,
+    timestamp->hour, timestamp->minute, timestamp->second);
+
+  /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
+  if (timestamp->microsecond)
   {
-    snprintf(buffer, 27, "%"PRIu16"-%02"PRIu8"-%02"PRIu32" %02"PRIu16":%02"PRIu8":%02"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
+    used += snprintf(buffer+used, buffersize-used, ".%06"PRIu32, timestamp->microsecond);
   }
-  else
-  {
-    snprintf(buffer, 27, "%"PRIu16"-%02"PRIu8"-%02"PRIu32" %02"PRIu16":%02"PRIu8":%02"PRIu8".%06"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
-  }
+  
+  assert(used < buffersize);
+  
   return buffer;
 }
 

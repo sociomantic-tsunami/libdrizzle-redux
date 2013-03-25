@@ -265,8 +265,6 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_
     datetime->negative= field[0];
     datetime->day= drizzle_get_byte4(&field[1]);
     datetime->hour= field[5];
-    datetime->hour= datetime->day * 24;
-    datetime->day= 0;
     datetime->minute= field[6];
     datetime->second= field[7];
     if (length > 8)
