@@ -45,32 +45,8 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
-#ifndef SOCK_CLOEXEC 
-# define SOCK_CLOEXEC 0
-#endif
-
-#ifndef SOCK_NONBLOCK 
-# define SOCK_NONBLOCK 0
-#endif
-
-#ifndef FD_CLOEXEC
-# define FD_CLOEXEC 0
-#endif
-
-#ifndef F_GETFD
-# define F_GETFD 0
-#endif
-
-#ifndef MSG_DONTWAIT
-# define MSG_DONTWAIT 0
-#endif
-
 #ifndef MSG_NOSIGNAL
 # define MSG_NOSIGNAL 0
-#endif
-
-#ifndef EWOULDBLOCK
-# define EWOULDBLOCK EAGAIN
 #endif
 
 #include <cerrno>
@@ -1044,16 +1020,16 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 
     {
       int type= con->addrinfo_next->ai_socktype;
-      if (SOCK_CLOEXEC)
-      { 
-        type|= SOCK_CLOEXEC;
-      }
-
-      if (SOCK_NONBLOCK)
-      { 
-        type|= SOCK_NONBLOCK;
-      }
-
+      
+      /* Linuxisms to set some fd flags at the same time as creating the socket. */ 
+#ifdef SOCK_CLOEXEC
+      type|= SOCK_CLOEXEC;
+#endif
+      
+#ifdef SOCK_NONBLOCK
+      type|= SOCK_NONBLOCK;
+#endif
+      
       con->fd= socket(con->addrinfo_next->ai_family,
                       type,
                       con->addrinfo_next->ai_protocol);
@@ -1171,7 +1147,11 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     }
 
     ret= drizzle_set_events(con, POLLOUT);
-    if (con->options.non_blocking)
+    if (ret != DRIZZLE_RETURN_OK)
+    {
+      return ret;
+    }
+    else if (con->options.non_blocking)
     {
       return DRIZZLE_RETURN_IO_WAIT;
     }
@@ -1220,6 +1200,8 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
     return DRIZZLE_RETURN_IO_WAIT;
   }
+  
+  assert(con->buffer_allocation > 0); /* Appease static analyzer */
 
   while (1)
   {
@@ -1287,7 +1269,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       switch (errno)
       {
       case EAGAIN:
-#if EWOULDBLOCK != EAGAIN
+#if defined(EWOULDBLOCK) && (EWOULDBLOCK != EAGAIN)
       case EWOULDBLOCK:
 #endif
         {
@@ -1463,32 +1445,25 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-#ifdef HAVE_FCNTL
-  if (HAVE_FCNTL)
+#if HAVE_FCNTL && !defined(SOCK_CLOEXEC) && defined(FD_CLOEXEC)
   {
-    if (SOCK_CLOEXEC == 0)
+    int flags;
+    do
     {
-      if (FD_CLOEXEC and F_GETFD)
+      flags= fcntl(con->fd, F_GETFD, 0);
+    } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
+    
+    if (flags != -1)
+    {
+      int rval;
+      do
       {
-        int flags;
-        do
-        {
-          flags= fcntl(con->fd, F_GETFD, 0);
-        } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
-
-        if (flags != -1)
-        { 
-          int rval;
-          do
-          { 
-            rval= fcntl (con->fd, F_SETFD, flags | FD_CLOEXEC);
-          } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
-          // we currently ignore the case where rval is -1
-        }
-      }
+        rval= fcntl (con->fd, F_SETFD, flags | FD_CLOEXEC);
+      } while (rval == -1 && (errno == EINTR or errno == EAGAIN));
+      // we currently ignore the case where rval is -1
     }
   }
-#endif // HAVE_FCNTL
+#endif // HAVE_FCNTL but not SOCK_CLOEXEC
                                                                           
 
   int ret= 1;
@@ -1579,16 +1554,20 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 
 #if defined(SO_NOSIGPIPE)
-  if (SO_NOSIGPIPE)
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret), sizeof(int));
+  
+  if (ret == -1)
   {
-    int ret= 1;
-    ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret), sizeof(int));
-
-    if (ret == -1)
-    {
-      drizzle_set_error(con, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
-      return DRIZZLE_RETURN_ERRNO;
-    }
+    drizzle_set_error(con, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+#elif HAVE_FCNTL && defined(F_SETNOSIGPIPE)
+  ret= fcntl(con->fd, F_SETNOSIGPIPE, 1);
+  
+  if (ret == -1)
+  {
+    drizzle_set_error(con, __func__, "fcntl:F_SETNOSIGPIPE:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
   }
 #endif
 
@@ -1602,22 +1581,21 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   // @todo find out why this can't be non-blocking for SSL
   if (!con->ssl)
   {
-    if (SOCK_NONBLOCK == 0)
+#if HAVE_FCNTL && defined(O_NONBLOCK) && !defined(SOCK_NONBLOCK)
+    ret= fcntl(con->fd, F_GETFL, 0);
+    if (ret == -1)
     {
-      ret= fcntl(con->fd, F_GETFL, 0);
-      if (ret == -1)
-      {
-        drizzle_set_error(con, __func__, "fcntl:F_GETFL:%s", strerror(errno));
-        return DRIZZLE_RETURN_ERRNO;
-      }
-
-      ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
-      if (ret == -1)
-      {
-        drizzle_set_error(con, __func__, "fcntl:F_SETFL:%s", strerror(errno));
-        return DRIZZLE_RETURN_ERRNO;
-      }
+      drizzle_set_error(con, __func__, "fcntl:F_GETFL:%s", strerror(errno));
+      return DRIZZLE_RETURN_ERRNO;
     }
+    
+    ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
+    if (ret == -1)
+    {
+      drizzle_set_error(con, __func__, "fcntl:F_SETFL:%s", strerror(errno));
+      return DRIZZLE_RETURN_ERRNO;
+    }
+#endif
   }
 #endif
 
