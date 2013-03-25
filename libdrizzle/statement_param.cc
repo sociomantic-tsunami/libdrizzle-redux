@@ -38,6 +38,8 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#include <inttypes.h>
+
 /* Internal function */
 drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned)
 {
