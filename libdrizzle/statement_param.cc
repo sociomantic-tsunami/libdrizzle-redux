@@ -41,7 +41,7 @@
 #include <inttypes.h>
 
 /* Internal function */
-drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned)
+drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, const void *data, size_t length, bool is_unsigned)
 {
   if ((stmt == NULL) || (param_num >= stmt->param_count) || (data == NULL))
   {
@@ -116,7 +116,7 @@ drizzle_return_t drizzle_stmt_set_float(drizzle_stmt_st *stmt, uint16_t param_nu
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_FLOAT, val, 4, false);
 }
 
-drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, char *value, size_t length)
+drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, const char *value, size_t length)
 {
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_STRING, value, length, false);
 }
