@@ -257,8 +257,8 @@ int main(int argc, char *argv[])
       ASSERT_STREQ(expect_strval, col_strval);
     }
     
-    float expect_floatval;
-    double expect_dblval;
+    float expect_floatval = 0.0;
+    double expect_dblval = 0.0;
     switch (columnA) {
       case 1:
         expect_floatval = 1.0;

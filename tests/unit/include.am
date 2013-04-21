@@ -49,6 +49,7 @@ check-column: tests/unit/column
 
 tests_unit_numbers_SOURCES= tests/unit/numbers.c tests/unit/common.c
 tests_unit_numbers_LDADD= libdrizzle/libdrizzle.la
+tests_unit_numbers_LDADD+= -lm
 check_PROGRAMS+= tests/unit/numbers
 noinst_PROGRAMS+= tests/unit/numbers
 

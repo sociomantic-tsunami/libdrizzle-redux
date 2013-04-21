@@ -75,7 +75,7 @@ void set_up_connection(void)
 
 void set_up_schema(void)
 {
-  drizzle_result_st *result;
+  drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
 
   CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
@@ -85,7 +85,7 @@ void set_up_schema(void)
 
 void tear_down_schema(void)
 {
-  drizzle_result_st *result;
+  drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
 
   CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
