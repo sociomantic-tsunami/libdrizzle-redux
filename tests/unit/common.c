@@ -66,10 +66,10 @@ void set_up_connection(void)
                       getenv("MYSQL_PASSWORD"),
                       getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-  atexit(close_connection_on_exit);
   
   driz_ret= drizzle_connect(con);
   SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
+  atexit(close_connection_on_exit);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
 }
 
