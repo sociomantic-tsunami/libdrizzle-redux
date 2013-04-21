@@ -40,6 +40,7 @@
 #ifdef  __cplusplus
 # include <cstdlib>
 # include <cstdio>
+extern "C" {
 #else
 # include <stdlib.h>
 # include <stdio.h>
@@ -47,12 +48,29 @@
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
-static drizzle_st *con= NULL;
-static void close_connection_on_exit(void)
-{
-  drizzle_return_t ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", drizzle_strerror(ret));
-}
 
-#define CLOSE_ON_EXIT(__connection) atexit(close_connection_on_exit);
+extern drizzle_st *con;
+
+/* Common connection setup used by the unit tests. 
+ */
+extern void set_up_connection(void);
+
+extern void close_connection_on_exit(void);
+
+/* For unit tests that make tables, etc.: delete-and-recreate the schema on setup, and delete the schema on teardown. */
+extern void set_up_schema(void);
+extern void tear_down_schema(void);
+
+#ifdef  __cplusplus
+} /* extern "C" */
+#endif
+
+/* Perform a query; assign the result to 'result' and the returncode to 'driz_ret'; assert that the returncode is DRIZZLE_RETURN_OK. */
+#define CHECKED_QUERY(cmd) result = drizzle_query(con, cmd, 0, &driz_ret); \
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), cmd);
+
+/* Call a libdrizzle function that just returns a drizzle_return_t. Assign the return to 'driz_ret' and assert that it is DRIZZLE_RETURN_OK. */
+#define CHECK(s) driz_ret = (s); \
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, in \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), #s);
+
 

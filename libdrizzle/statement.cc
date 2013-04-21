@@ -441,6 +441,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
           param->length= 0;
           break;
         case DRIZZLE_COLUMN_TYPE_TINY:
+          param->data= param->data_buffer;
           *(uint8_t*)param->data= *row[column_counter];
           break;
         case DRIZZLE_COLUMN_TYPE_SHORT:

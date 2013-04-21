@@ -35,50 +35,59 @@
  *
  */
 
+#include "common.h"
 #include <yatl/lite.h>
 
-#include "tests/unit/common.h"
+drizzle_st *con= NULL;
 
-#include <libdrizzle-5.1/libdrizzle.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-
-int main(int argc, char *argv[])
+void close_connection_on_exit(void)
 {
-  (void) argc;
-  (void) argv;
+  if (con == NULL) {
+    return;
+  }
+  
+  drizzle_return_t ret= drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", drizzle_strerror(ret));
+  con= NULL;
+}
 
-  con= drizzle_create(getenv("MYSQL_SOCK"),
-                      0,
+/* Common connection setup used by the unit tests. 
+ * Connects to the server, deletes and recreates the libdrizzle schema. 
+ */
+void set_up_connection(void)
+{
+  drizzle_return_t driz_ret;
+  
+  ASSERT_NULL_(con, "con opened twice?");
+  
+  con= drizzle_create(getenv("MYSQL_SERVER"),
+                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
                       getenv("MYSQL_USER"),
                       getenv("MYSQL_PASSWORD"),
                       getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
   atexit(close_connection_on_exit);
-
-  drizzle_return_t ret= drizzle_connect(con);
-  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret), getenv("MYSQL_SOCK"));
-
-  drizzle_query(con, "SELECT 1", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
-
-  // Now that we know everything is good... lets push it.
-  drizzle_close(con);
-
-  int limit= 20;
-  while (--limit)
-  {
-    ret= drizzle_connect(con);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
-
-    drizzle_query(con, "SELECT 1", 0, &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
-
-    // Now that we know everything is good... lets push it.
-    drizzle_close(con);
-  }
-
-  return EXIT_SUCCESS;
+  
+  driz_ret= drizzle_connect(con);
+  SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
 }
+
+void set_up_schema(void)
+{
+  drizzle_result_st *result;
+  drizzle_return_t driz_ret;
+
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
+  CHECK(drizzle_select_db(con, "libdrizzle"));
+}
+
+void tear_down_schema(void)
+{
+  drizzle_result_st *result;
+  drizzle_return_t driz_ret;
+
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+}
+
