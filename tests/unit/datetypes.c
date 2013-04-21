@@ -35,6 +35,8 @@
  *
  */
 
+#define _GNU_SOURCE
+
 #include <yatl/lite.h>
 #include "tests/unit/common.h"
 
@@ -276,7 +278,8 @@ int main(int argc, char *argv[])
   for (unsigned checking_column = 2; checking_column < 10; checking_column ++) {
     const char *col_name = column_names[checking_column];
     char *query_buf = NULL;
-    asprintf(&query_buf, "select a, %s, cast(%s as char) from libdrizzle.dt1",
+    int VARIABLE_IS_NOT_USED unused;
+    unused = asprintf(&query_buf, "select a, %s, cast(%s as char) from libdrizzle.dt1",
 	     col_name, col_name);
     query = query_buf;
 

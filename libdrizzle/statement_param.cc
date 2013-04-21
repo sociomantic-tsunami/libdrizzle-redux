@@ -129,6 +129,8 @@ drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num
   drizzle_datetime_st *time;
   time= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
+  bzero(time, sizeof(*time));
+
   time->negative= is_negative;
   time->day= days;
   time->hour= hours;
@@ -145,6 +147,8 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   drizzle_datetime_st *timestamp;
   timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
+  bzero(timestamp, sizeof(*timestamp));
+
   timestamp->negative= false;
   timestamp->year= year;
   timestamp->day= day;
@@ -156,7 +160,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   timestamp->microsecond= microseconds;
 
   /* Length not important because we will figure that out when packing */ 
-  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIME, timestamp, 0, false);
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIMESTAMP, timestamp, 0, false);
 }
 
 bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
@@ -546,7 +550,7 @@ double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, dr
       val= (double) (*(float*)param->data);
       break;
     case DRIZZLE_COLUMN_TYPE_DOUBLE:
-      val= (uint32_t) (*(double*)param->data);
+      val= (*(double*)param->data);
       break;
     case DRIZZLE_COLUMN_TYPE_TIME:
     case DRIZZLE_COLUMN_TYPE_DATE:
@@ -619,29 +623,46 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
 {
   /* Max time is -HHH:MM:SS.ssssss + NUL = 17 */
   char* buffer= param->data_buffer + 50;
-  if (time->microsecond == 0)
-  {
-    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8, (time->negative) ? "-" : "", time->hour, time->minute, time->second);
-  }
-  else
-  {
-    snprintf(buffer, 17, "%s%"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, (time->negative) ? "-" : "", time->hour, time->minute, time->second, time->microsecond);
-  }
+  int buffersize = 17;
+  int used = 0;
+    
+  /* Values are transferred with days separated from hours, but presented with days folded into hours. */
+  used = snprintf(buffer, buffersize-used, "%s%02u:%02"PRIu8":%02"PRIu8, (time->negative) ? "-" : "", time->hour + 24 * time->day, time->minute, time->second);
+
+  /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
+  if (time->microsecond)
+    used += snprintf(buffer+used, buffersize-used, ".%06" PRIu32, time->microsecond);
+  
+  assert(used < buffersize);
+    
   return buffer;
 }
 
 char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp)
 {
-  /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 26 */
+  /* Max timestamp is YYYY-MM-DD HH:MM:SS.ssssss + NUL = 27 */
   char* buffer= param->data_buffer + 50;
-  if (timestamp->microsecond == 0)
+  int buffersize = 27;
+  int used = 0;
+  
+  used += snprintf(buffer, buffersize-used, "%"PRIu16"-%02"PRIu8"-%02"PRIu32,
+     timestamp->year, timestamp->month, timestamp->day);
+  assert(used < buffersize);
+  
+  if (param->type == DRIZZLE_COLUMN_TYPE_DATE)
+    return buffer;
+  
+  used += snprintf(buffer+used, buffersize-used, " %02"PRIu16":%02"PRIu8":%02"PRIu8,
+    timestamp->hour, timestamp->minute, timestamp->second);
+
+  /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
+  if (timestamp->microsecond)
   {
-    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second);
+    used += snprintf(buffer+used, buffersize-used, ".%06"PRIu32, timestamp->microsecond);
   }
-  else
-  {
-    snprintf(buffer, 26, "%"PRIu16"-%"PRIu8"-%"PRIu32" %"PRIu16":%"PRIu8":%"PRIu8".%"PRIu32, timestamp->year, timestamp->month, timestamp->day, timestamp->hour, timestamp->minute, timestamp->second, timestamp->microsecond);
-  }
+  
+  assert(used < buffersize);
+  
   return buffer;
 }
 

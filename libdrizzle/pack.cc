@@ -193,71 +193,78 @@ unsigned char *drizzle_pack_time(drizzle_datetime_st *time, unsigned char *ptr)
 {
   uint8_t length= 0;
 
-  /* If nothing is set then we are sending a 0 length time */
-  if (time->day || time->hour || time->minute || time->second)
-  {
-    ptr[0]= (time->negative) ? 1 : 0;
-    drizzle_set_byte4(&ptr[1], time->day);
-    ptr[5]= (uint8_t) time->hour;
-    ptr[6]= time->minute;
-    ptr[7]= time->second;
-    length= 8;
-  }
   /* NOTE: MySQL has a bug here and doesn't follow this part of the protocol
    * when packing, we will for now, no idea if it works
    * */
   if (time->microsecond)
   {
-    drizzle_set_byte4(&ptr[8], time->microsecond);
+    drizzle_set_byte4(ptr+9, time->microsecond);
     length= 12;
   }
-  return ptr+length;
+
+  if (length || time->day || time->hour || time->minute || time->second)
+  {
+    ptr[1]= (time->negative) ? 1 : 0;
+    drizzle_set_byte4(ptr+2, time->day);
+    drizzle_set_byte1(ptr+6, time->hour);
+    drizzle_set_byte1(ptr+7, time->minute);
+    drizzle_set_byte1(ptr+8, time->second);
+    /* If no microseconds, then we are packing 8 bytes */
+    if (!length)
+      length= 8;
+  }
+
+  /* If nothing is set then we are sending a 0 length time */
+
+  drizzle_set_byte1(ptr, length);
+  return ptr + 1 + length;
 }
 
 unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned char *ptr)
 {
   uint8_t length= 0;
 
-  /* If nothing is set then we are sending a 0 length datetime */
-
-  /* If only date is provided then we are packing 4 bytes */
-  if (datetime->year || datetime->month || datetime->day)
-  {
-    drizzle_set_byte2(ptr, datetime->year);
-    ptr[2]= datetime->month;
-    ptr[3]= datetime->day;
-    length= 4;
-  }
-
-  if (datetime->hour || datetime->minute || datetime->second)
-  {
-    ptr[4]= (uint8_t) datetime->hour;
-    ptr[5]= datetime->minute;
-    ptr[6]= datetime->second;
-    length= 7;
-  }
-
   if (datetime->microsecond)
   {
-    drizzle_set_byte4(&ptr[7], datetime->microsecond);
-    length= 11;
+    drizzle_set_byte4(ptr+8, datetime->microsecond);
+    length = 11;
   }
 
-  return ptr + length;
+  if (length || datetime->hour || datetime->minute || datetime->second)
+  {
+    drizzle_set_byte1(ptr+5, datetime->hour);
+    drizzle_set_byte1(ptr+6, datetime->minute);
+    drizzle_set_byte1(ptr+7, datetime->second);
+    /* If only date+time is provided then we are packing 7 bytes */
+    if (!length)
+      length = 7;
+  }
+
+  if (length || datetime->year || datetime->month || datetime->day)
+  {
+    drizzle_set_byte2(ptr+1, datetime->year);
+    drizzle_set_byte1(ptr+3, datetime->month);
+    drizzle_set_byte1(ptr+4, datetime->day);
+    /* If only date is provided then we are packing 4 bytes */
+    if (!length)
+      length = 4;
+  }
+
+  /* If nothing is set then we are sending a 0 length datetime */
+
+  drizzle_set_byte1(ptr, length);
+  return ptr + 1 + length;
 }
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *data)
+void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
-  memset(datetime, 0, length);
+  memset(datetime, 0, sizeof(*datetime));
 
   if (length)
   {
     datetime->negative= field[0];
     datetime->day= drizzle_get_byte4(&field[1]);
     datetime->hour= field[5];
-    datetime->hour= datetime->day * 24;
-    datetime->day= 0;
     datetime->minute= field[6];
     datetime->second= field[7];
     if (length > 8)
@@ -267,10 +274,9 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, unsigned char *da
   }
 }
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, unsigned char *data)
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
 {
-  drizzle_datetime_st *datetime= (drizzle_datetime_st*) data;
-  memset(datetime, 0, length);
+  memset(datetime, 0, sizeof(*datetime));
 
   if (length)
   {

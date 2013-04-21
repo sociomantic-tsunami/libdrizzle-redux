@@ -37,17 +37,20 @@
 
 #pragma once
 
-#ifdef  __cplusplus
-# include <cstdlib>
-# include <cstdio>
-extern "C" {
-#else
-# include <stdlib.h>
-# include <stdio.h>
-#endif
+#include <stdlib.h>
+#include <stdio.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
+#ifdef __GNUC__
+#define VARIABLE_IS_NOT_USED __attribute__ ((unused))
+#else
+#define VARIABLE_IS_NOT_USED
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 extern drizzle_st *con;
 
@@ -61,10 +64,6 @@ extern void close_connection_on_exit(void);
 extern void set_up_schema(void);
 extern void tear_down_schema(void);
 
-#ifdef  __cplusplus
-} /* extern "C" */
-#endif
-
 /* Perform a query; assign the result to 'result' and the returncode to 'driz_ret'; assert that the returncode is DRIZZLE_RETURN_OK. */
 #define CHECKED_QUERY(cmd) result = drizzle_query(con, cmd, 0, &driz_ret); \
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), cmd);
@@ -73,4 +72,6 @@ extern void tear_down_schema(void);
 #define CHECK(s) driz_ret = (s); \
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, in \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), #s);
 
-
+#ifdef __cplusplus
+} /* extern "C" */
+#endif

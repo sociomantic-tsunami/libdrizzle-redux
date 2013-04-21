@@ -621,6 +621,8 @@ typedef drizzle_return_t (drizzle_event_watch_fn)(drizzle_st *con,
   ((uint64_t)drizzle_get_byte4(((uint8_t *)__buffer)+4) << 32))
 
 /* Protocol packing macros. */
+#define drizzle_set_byte1(__buffer, __int) do { \
+    (__buffer)[0] = (uint8_t)(__int); } while (0)
 #define drizzle_set_byte2(__buffer, __int) do { \
   (__buffer)[0]= (uint8_t)((__int) & 0xFF); \
   (__buffer)[1]= (uint8_t)(((__int) >> 8) & 0xFF); } while (0)

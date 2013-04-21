@@ -66,16 +66,16 @@ void set_up_connection(void)
                       getenv("MYSQL_PASSWORD"),
                       getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-  atexit(close_connection_on_exit);
   
   driz_ret= drizzle_connect(con);
   SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
+  atexit(close_connection_on_exit);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
 }
 
 void set_up_schema(void)
 {
-  drizzle_result_st *result;
+  drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
 
   CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
@@ -85,7 +85,7 @@ void set_up_schema(void)
 
 void tear_down_schema(void)
 {
-  drizzle_result_st *result;
+  drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
 
   CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
