@@ -62,6 +62,9 @@ AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 
+# Check for -lm
+LT_LIB_M
+
 # Checks for header files.
 AC_DEFUN([CHECK_FOR_CXXABI],
          [AC_LANG_PUSH([C++])

@@ -550,7 +550,7 @@ double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, dr
       val= (double) (*(float*)param->data);
       break;
     case DRIZZLE_COLUMN_TYPE_DOUBLE:
-      val= (uint32_t) (*(double*)param->data);
+      val= (*(double*)param->data);
       break;
     case DRIZZLE_COLUMN_TYPE_TIME:
     case DRIZZLE_COLUMN_TYPE_DATE:
