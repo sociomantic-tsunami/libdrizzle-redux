@@ -155,10 +155,16 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
     return;
   }
 
-  for (x= 0; x < result->column_count; x++)
+  for (x= 0; x < (result->column_count - result->null_bitcount); x++)
   {
     drizzle_field_free(row[x]);
   }
+
+  if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))
+  { 
+    delete[] result->null_bitmap;
+    result->null_bitmap= NULL;
+  } 
 
   delete[] row;
 }

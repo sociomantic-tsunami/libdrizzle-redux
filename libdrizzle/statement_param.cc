@@ -41,7 +41,7 @@
 /* Internal function */
 drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned)
 {
-  if ((stmt == NULL) || (param_num >= stmt->param_count) || (data == NULL))
+  if ((stmt == NULL) || (param_num >= stmt->param_count))
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }

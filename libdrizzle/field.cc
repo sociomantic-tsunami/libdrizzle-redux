@@ -66,7 +66,7 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
 
   if (result->has_state())
   {
-    if (result->field_current == result->column_count)
+    if (result->field_current == (result->column_count - result->null_bitcount))
     {
       *ret_ptr= DRIZZLE_RETURN_ROW_END;
       return NULL;
@@ -324,11 +324,23 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 
 drizzle_return_t drizzle_state_binary_null_read(drizzle_st *con)
 {
+  uint16_t bit_count= 0;
   con->result->null_bitmap_length= (con->result->column_count+7+2)/8;
   con->result->null_bitmap= new uint8_t[con->result->null_bitmap_length];
   con->buffer_ptr++;
 
   memcpy(con->result->null_bitmap, con->buffer_ptr, con->result->null_bitmap_length);
+
+  for (uint16_t it= 0; it < con->result->null_bitmap_length; it++)
+  {
+    uint8_t data= con->result->null_bitmap[it];
+    while (data)
+    {
+      data &= (data - 1);
+      bit_count++;
+    }
+  }
+  con->result->null_bitcount = bit_count;
   con->buffer_ptr+= con->result->null_bitmap_length;
   con->buffer_size-= con->result->null_bitmap_length+1;
   con->packet_size-= con->result->null_bitmap_length+1;
