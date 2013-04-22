@@ -160,6 +160,12 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
     drizzle_field_free(row[x]);
   }
 
+  if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))
+  { 
+    delete[] result->null_bitmap;
+    result->null_bitmap= NULL;
+  } 
+
   delete[] row;
 }
 

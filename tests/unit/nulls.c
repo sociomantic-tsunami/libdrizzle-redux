@@ -273,6 +273,7 @@ int main(int argc, char *argv[])
 
   driz_ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
-  
+ 
+  free(querybuf); 
   return EXIT_SUCCESS;
 }
