@@ -64,7 +64,7 @@ tests_unit_nulls_LDADD= libdrizzle/libdrizzle.la
 check_PROGRAMS+= tests/unit/nulls
 noinst_PROGRAMS+= tests/unit/nulls
 # Currently fails due to https://bugs.launchpad.net/libdrizzle/+bug/1150195
-XFAIL_TESTS+= tests/unit/nulls
+#XFAIL_TESTS+= tests/unit/nulls
 
 tests_unit_row_SOURCES= tests/unit/row.c
 tests_unit_row_LDADD= libdrizzle/libdrizzle.la

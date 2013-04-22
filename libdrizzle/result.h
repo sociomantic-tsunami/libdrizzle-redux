@@ -81,6 +81,7 @@ struct drizzle_result_st
   uint8_t **null_bitmap_list;
   uint8_t *null_bitmap;
   uint16_t null_bitmap_length;
+  uint16_t null_bitcount;
   bool binary_rows;
 
   drizzle_result_st() :
@@ -115,6 +116,7 @@ struct drizzle_result_st
     null_bitmap_list(NULL),
     null_bitmap(NULL),
     null_bitmap_length(0),
+    null_bitcount(0),
     binary_rows(false)
   {
     info[0]= '\0';

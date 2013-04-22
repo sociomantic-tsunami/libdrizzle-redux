@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   
 #define NCOLS 11
   
-  char *querybuf = malloc(256 + 60*64);
+  char *querybuf = calloc(256 + 60*64, 1);
   strcpy(querybuf, "insert into libdrizzle.t1 values ");
   char *p = querybuf + strlen(querybuf);
   
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
     uint32_t rowvalue;
     
 #define GETNULLNESS(cn) isNull = drizzle_stmt_get_is_null(sth, cn, &driz_ret); ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
-#define NULLNOTNOW(cn) ASSERT_FALSE_(isNull, "Column %d, row %d should not be NULL", cn+1, cur_row); rowvalue = drizzle_stmt_get_int(sth, cn, &driz_ret); ASSERT_EQ(driz_ret,DRIZZLE_RETURN_OK); ASSERT_EQ(rowvalue, (unsigned)(rowbase + cn));
+#define NULLNOTNOW(cn) ASSERT_FALSE_(isNull, "Column %d, row %d should not be NULL", cn+1, cur_row); rowvalue = drizzle_stmt_get_int(sth, cn, &driz_ret); ASSERT_EQ(driz_ret,DRIZZLE_RETURN_OK); ASSERT_EQ_(rowvalue, (unsigned)(rowbase + cn), "Column %d, row %d has unexpected data, expected: %d, got: %d", cn+1, cur_row, rowbase+cn, rowvalue);
 #define NULLMAYBE(cn, b) GETNULLNESS(cn); if (sym & b) { ASSERT_TRUE_(isNull, "Column %d, row %d should be NULL", cn+1, cur_row); } else { NULLNOTNOW(cn); }
 #define NULLNEVER(cn) GETNULLNESS(cn); NULLNOTNOW(cn);
     
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
 #undef GETNULLNESS
 #undef NULLNOTNOW
   }
-  ASSERT_EQ(cur_row, table_size);
+  ASSERT_EQ_(cur_row, table_size, "Current row not equal to table size, expected %d, got %d", table_size, cur_row);
   ASSERT_EQ(drizzle_stmt_close(sth), DRIZZLE_RETURN_OK);
 #endif
   

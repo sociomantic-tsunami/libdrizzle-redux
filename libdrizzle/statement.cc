@@ -105,6 +105,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
 drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
 {
   uint16_t current_param;
+  uint16_t param_count = stmt->param_count;
   drizzle_bind_st *param_ptr;
   size_t param_lengths= 0;
   size_t buffer_size= 0;
@@ -121,6 +122,12 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       drizzle_set_error(stmt->con, __func__, "parameter %d has not been bound", current_param);
       return DRIZZLE_RETURN_STMT_ERROR;
     }
+    /* Don't count NULLs */
+    if (stmt->query_params[current_param].type == DRIZZLE_COLUMN_TYPE_NULL)
+    {
+      param_count--;
+      continue;
+    }
     /* parameter length + 8 byte header */
     param_lengths+= stmt->query_params[current_param].length + 8;
   }
@@ -130,7 +137,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
              + 4 /* Reserved (always set to 1) */
              + stmt->null_bitmap_length /* Null bitmap length */
              + 1 /* New parameters bound flag */
-             + (stmt->param_count * 2) /* Parameter type data */
+             + (param_count * 2) /* Parameter type data */
              + param_lengths; /* Parameter data */
 
   buffer = new (std::nothrow) unsigned char[buffer_size];
@@ -149,7 +156,6 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   drizzle_set_byte4(&buffer[5], 1);
   buffer_pos+= 9;
   /* Null bitmap */
-  memcpy(buffer_pos, stmt->null_bitmap, stmt->null_bitmap_length);
   buffer_pos+= stmt->null_bitmap_length;
   /* New parameters bound flag
    * If set to 1 then we need to leave a gap between the parameters type data
@@ -162,7 +168,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     buffer_pos++;
     /* Each param has a 2 byte data type header so the data pointer should be
      * moved to this */
-    data_pos= buffer_pos + (stmt->param_count * 2);
+    data_pos= buffer_pos + (param_count * 2);
   }
   else
   {
@@ -170,7 +176,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     buffer_pos++;
     data_pos= buffer_pos;
   }
-  
+  memset(stmt->null_bitmap, 0, stmt->null_bitmap_length); 
   /* Go through each param copying to buffer 
    * In an ideal world we would do this without the copy
    * */
@@ -184,13 +190,16 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     if (stmt->new_bind)
     {
       uint16_t type= (uint16_t)param_ptr->type;
-      if (param_ptr->options.is_unsigned)
+      if (type != DRIZZLE_COLUMN_TYPE_NULL)
       {
-        /* Set the unsigned bit flag on the type data */
-        type |= 0x8000;
+        if (param_ptr->options.is_unsigned)
+        {
+          /* Set the unsigned bit flag on the type data */
+          type |= 0x8000;
+        }
+        drizzle_set_byte2(buffer_pos, type);
+        buffer_pos+= 2;
       }
-      drizzle_set_byte2(buffer_pos, type);
-      buffer_pos+= 2;
     }
 
     if (param_ptr->options.is_long_data)
@@ -203,7 +212,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     {
       case DRIZZLE_COLUMN_TYPE_NULL:
         /* Toggle the bit for this column in the bitmap */
-        *stmt->null_bitmap |= (current_param ^ 2);
+        stmt->null_bitmap[current_param/8] |= (1 << (current_param % 8));
         break;
       case DRIZZLE_COLUMN_TYPE_TINY:
         *data_pos= *(uint8_t*)param_ptr->data;
@@ -271,6 +280,8 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
         break;
     }
   }
+  /* Copy NULL bitmap */
+  memcpy(&buffer[9], stmt->null_bitmap, stmt->null_bitmap_length);
   if (stmt->execute_result)
   {
     drizzle_result_free(stmt->execute_result);
@@ -379,7 +390,7 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
 drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
 {
   drizzle_return_t ret= DRIZZLE_RETURN_OK;
-  uint16_t column_counter= 0;
+  uint16_t column_counter= 0, current_column= 0;
   drizzle_row_t row;
   drizzle_column_st *column;
 
@@ -413,22 +424,25 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
   }
   drizzle_column_seek(stmt->execute_result, 0);
 
-  while((column= drizzle_column_next(stmt->execute_result)))
+  for (column_counter = 0; column_counter < stmt->execute_result->column_count; column_counter++)
   {
     drizzle_bind_st *param= &stmt->result_params[column_counter];
-    param->type= column->type;
-    /* if this row is null in the result bitmap */
-    if (*stmt->execute_result->null_bitmap & ((column_counter^2) << 2))
+    /* if this row is null in the result bitmap, skip first 2 bits */
+    if (stmt->execute_result->null_bitmap[(column_counter+2)/8] & (1 << ((column_counter+2) % 8)))
     {
       param->options.is_null= true;
       param->length= 0;
+      param->type= DRIZZLE_COLUMN_TYPE_NULL;
     }
     else
     {
       uint16_t short_data;
       uint32_t long_data;
       uint64_t longlong_data;
-      param->length= stmt->execute_result->field_sizes[column_counter];
+      column= drizzle_column_next(stmt->execute_result);
+      param->type= column->type;
+      param->options.is_null= false;
+      param->length= stmt->execute_result->field_sizes[current_column];
       if (column->flags & DRIZZLE_COLUMN_FLAGS_UNSIGNED)
       {
         param->options.is_unsigned= true;
@@ -442,42 +456,42 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
           break;
         case DRIZZLE_COLUMN_TYPE_TINY:
           param->data= param->data_buffer;
-          *(uint8_t*)param->data= *row[column_counter];
+          *(uint8_t*)param->data= *row[current_column];
           break;
         case DRIZZLE_COLUMN_TYPE_SHORT:
         case DRIZZLE_COLUMN_TYPE_YEAR:
           param->data= param->data_buffer;
-          short_data= drizzle_get_byte2(row[column_counter]);
+          short_data= drizzle_get_byte2(row[current_column]);
           memcpy(param->data, &short_data, 2);
           break;
         case DRIZZLE_COLUMN_TYPE_INT24:
         case DRIZZLE_COLUMN_TYPE_LONG:
           param->data= param->data_buffer;
-          long_data= drizzle_get_byte4(row[column_counter]);
+          long_data= drizzle_get_byte4(row[current_column]);
           memcpy(param->data, &long_data, 4);
           break;
         case DRIZZLE_COLUMN_TYPE_LONGLONG:
           param->data= param->data_buffer;
-          longlong_data= drizzle_get_byte8(row[column_counter]);
+          longlong_data= drizzle_get_byte8(row[current_column]);
           memcpy(param->data, &longlong_data, 8);
           break;
         case DRIZZLE_COLUMN_TYPE_FLOAT:
           param->data= param->data_buffer;
-          memcpy(param->data, row[column_counter], 4);
+          memcpy(param->data, row[current_column], 4);
           break;
         case DRIZZLE_COLUMN_TYPE_DOUBLE:
           param->data= param->data_buffer;
-          memcpy(param->data, row[column_counter], 8);
+          memcpy(param->data, row[current_column], 8);
           break;
         case DRIZZLE_COLUMN_TYPE_TIME:
           param->data= param->data_buffer;
-          drizzle_unpack_time(row[column_counter], param->length, (drizzle_datetime_st *)param->data);
+          drizzle_unpack_time(row[current_column], param->length, (drizzle_datetime_st *)param->data);
           break;
         case DRIZZLE_COLUMN_TYPE_DATE:
         case DRIZZLE_COLUMN_TYPE_DATETIME:
         case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
           param->data= param->data_buffer;
-          drizzle_unpack_datetime(row[column_counter], param->length, (drizzle_datetime_st *)param->data);
+          drizzle_unpack_datetime(row[current_column], param->length, (drizzle_datetime_st *)param->data);
           break;
         case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
         case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:
@@ -489,7 +503,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
         case DRIZZLE_COLUMN_TYPE_DECIMAL:
         case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
         case DRIZZLE_COLUMN_TYPE_NEWDATE:
-          param->data= row[column_counter];
+          param->data= row[current_column];
           break;
         /* These types aren't handled yet, most are for older MySQL versions */
         case DRIZZLE_COLUMN_TYPE_VARCHAR:
@@ -505,8 +519,8 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
           ret= DRIZZLE_RETURN_UNEXPECTED_DATA;
           break;
       }
+      current_column++;
     }
-    column_counter++;
     if (ret == DRIZZLE_RETURN_UNEXPECTED_DATA)
     {
       break;
