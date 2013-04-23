@@ -277,9 +277,9 @@ int main(int argc, char *argv[])
   /* Check that libdrizzle stringifies values the same way the server does */
   for (unsigned checking_column = 2; checking_column < 10; checking_column ++) {
     const char *col_name = column_names[checking_column];
-    char *query_buf = NULL;
+    char query_buf[128];
     int VARIABLE_IS_NOT_USED unused;
-    unused = asprintf(&query_buf, "select a, %s, cast(%s as char) from libdrizzle.dt1",
+    unused = snprintf(query_buf, 128, "select a, %s, cast(%s as char) from libdrizzle.dt1",
 	     col_name, col_name);
     query = query_buf;
 
@@ -290,8 +290,6 @@ int main(int argc, char *argv[])
     driz_ret = drizzle_stmt_buffer(sth);
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   
-    free(query_buf);
-    query_buf = NULL;
     query = NULL;
 
     ASSERT_EQ(rows_in_table, drizzle_stmt_row_count(sth));

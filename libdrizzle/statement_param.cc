@@ -129,7 +129,7 @@ drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num
   drizzle_datetime_st *time;
   time= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
-  bzero(time, sizeof(*time));
+  memset(time, 0, sizeof(*time));
 
   time->negative= is_negative;
   time->day= days;
@@ -147,7 +147,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   drizzle_datetime_st *timestamp;
   timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
-  bzero(timestamp, sizeof(*timestamp));
+  memset(timestamp, 0, sizeof(*timestamp));
 
   timestamp->negative= false;
   timestamp->year= year;
