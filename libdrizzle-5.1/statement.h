@@ -96,7 +96,7 @@ DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_float(drizzle_stmt_st *stmt, uint16_t param_num, float value);
 
 DRIZZLE_API
-drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, char *value, size_t length);
+drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, const char *value, size_t length);
 
 DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_null(drizzle_stmt_st *stmt, uint16_t param_num);

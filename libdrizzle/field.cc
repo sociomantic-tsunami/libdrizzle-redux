@@ -44,6 +44,8 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#include <inttypes.h>
+
 /*
  * Client definitions
  */

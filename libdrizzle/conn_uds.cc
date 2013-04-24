@@ -77,7 +77,6 @@ void drizzle_set_uds(drizzle_st *con, const char *uds)
 
   if (uds == NULL)
   {
-    uds= "";
     con->socket.uds.path_buffer[0]= 0;
   }
   else

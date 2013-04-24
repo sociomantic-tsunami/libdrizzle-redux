@@ -38,8 +38,12 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#include <inttypes.h>
+
+#define CHECK_PARAM_NUM do { if (param_num > stmt->param_count) return DRIZZLE_RETURN_INVALID_ARGUMENT; } while(0)
+
 /* Internal function */
-drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, void *data, uint32_t length, bool is_unsigned)
+drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, const void *data, size_t length, bool is_unsigned)
 {
   if ((stmt == NULL) || (param_num >= stmt->param_count))
   {
@@ -64,6 +68,7 @@ drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_nu
 drizzle_return_t drizzle_stmt_set_tiny(drizzle_stmt_st *stmt, uint16_t param_num, uint8_t value, bool is_unsigned)
 {
   uint8_t *val;
+  CHECK_PARAM_NUM;
   val= (uint8_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
@@ -72,6 +77,7 @@ drizzle_return_t drizzle_stmt_set_tiny(drizzle_stmt_st *stmt, uint16_t param_num
 drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t value, bool is_unsigned)
 {
   uint16_t *val;
+  CHECK_PARAM_NUM;
   val= (uint16_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
@@ -81,6 +87,7 @@ drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_nu
 drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
 {
   uint32_t *val;
+  CHECK_PARAM_NUM;
   val= (uint32_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
@@ -90,6 +97,7 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
 drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
 {
   uint64_t *val;
+  CHECK_PARAM_NUM;
   val= (uint64_t*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
@@ -99,6 +107,7 @@ drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_n
 drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_num, double value)
 {
   double *val;
+  CHECK_PARAM_NUM;
   val= (double*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
@@ -108,13 +117,14 @@ drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_n
 drizzle_return_t drizzle_stmt_set_float(drizzle_stmt_st *stmt, uint16_t param_num, float value)
 {
   float *val;
+  CHECK_PARAM_NUM;
   val= (float*) stmt->query_params[param_num].data_buffer;
   *val= value;
 
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_FLOAT, val, 4, false);
 }
 
-drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, char *value, size_t length)
+drizzle_return_t drizzle_stmt_set_string(drizzle_stmt_st *stmt, uint16_t param_num, const char *value, size_t length)
 {
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_STRING, value, length, false);
 }
@@ -127,6 +137,7 @@ drizzle_return_t drizzle_stmt_set_null(drizzle_stmt_st *stmt, uint16_t param_num
 drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t days, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds, bool is_negative)
 {
   drizzle_datetime_st *time;
+  CHECK_PARAM_NUM;
   time= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
   memset(time, 0, sizeof(*time));
@@ -145,6 +156,7 @@ drizzle_return_t drizzle_stmt_set_time(drizzle_stmt_st *stmt, uint16_t param_num
 drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t year, uint8_t month, uint8_t day, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds)
 {
   drizzle_datetime_st *timestamp;
+  CHECK_PARAM_NUM;
   timestamp= (drizzle_datetime_st*) stmt->query_params[param_num].data_buffer;
 
   memset(timestamp, 0, sizeof(*timestamp));

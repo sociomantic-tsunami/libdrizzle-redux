@@ -39,6 +39,7 @@
 #include "libdrizzle/common.h"
 
 #include <zlib.h>
+#include <inttypes.h>
 
 drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
                                        drizzle_binlog_fn *binlog_fn,
