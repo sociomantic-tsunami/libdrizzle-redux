@@ -642,7 +642,7 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
   used = snprintf(buffer, buffersize-used, "%s%02u:%02"PRIu8":%02"PRIu8, (time->negative) ? "-" : "", time->hour + 24 * time->day, time->minute, time->second);
 
   /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
-  if (time->microsecond)
+  if (time->microsecond || time->show_microseconds)
     used += snprintf(buffer+used, buffersize-used, ".%06" PRIu32, time->microsecond);
   
   assert(used < buffersize);
@@ -657,7 +657,7 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
   int buffersize = 27;
   int used = 0;
   
-  used += snprintf(buffer, buffersize-used, "%"PRIu16"-%02"PRIu8"-%02"PRIu32,
+  used += snprintf(buffer, buffersize-used, "%04"PRIu16"-%02"PRIu8"-%02"PRIu32,
      timestamp->year, timestamp->month, timestamp->day);
   assert(used < buffersize);
   
@@ -667,8 +667,7 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
   used += snprintf(buffer+used, buffersize-used, " %02"PRIu16":%02"PRIu8":%02"PRIu8,
     timestamp->hour, timestamp->minute, timestamp->second);
 
-  /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
-  if (timestamp->microsecond)
+  if (timestamp->microsecond || timestamp->show_microseconds)
   {
     used += snprintf(buffer+used, buffersize-used, ".%06"PRIu32, timestamp->microsecond);
   }

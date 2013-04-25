@@ -256,7 +256,7 @@ unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned cha
   return ptr + 1 + length;
 }
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
+void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime, uint8_t decimals)
 {
   memset(datetime, 0, sizeof(*datetime));
 
@@ -271,10 +271,14 @@ void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_
     {
       datetime->microsecond= drizzle_get_byte4(&field[8]);
     }
+    if (decimals)
+    {
+      datetime->show_microseconds= true;
+    }
   }
 }
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime)
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime, uint8_t decimals)
 {
   memset(datetime, 0, sizeof(*datetime));
 
@@ -294,6 +298,10 @@ void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datet
         datetime->microsecond= drizzle_get_byte4(&field[7]);
       }
     }
+    if (decimals)
+    {
+      datetime->show_microseconds= true;
+    } 
   }
 }
 
