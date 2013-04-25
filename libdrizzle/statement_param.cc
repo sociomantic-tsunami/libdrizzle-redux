@@ -56,7 +56,7 @@ drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_nu
   }
 
   stmt->query_params[param_num].type= type;
-  stmt->query_params[param_num].data= data;
+  stmt->query_params[param_num].data= (void*)data;
   stmt->query_params[param_num].length= length;
   stmt->query_params[param_num].options.is_unsigned= is_unsigned;
   stmt->query_params[param_num].is_bound= true;

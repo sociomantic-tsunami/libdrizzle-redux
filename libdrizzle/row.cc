@@ -106,7 +106,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
       return NULL;
     }
 
-    result->row= new (std::nothrow) drizzle_field_t[sizeof(size_t) * result->column_count];
+    result->row= new (std::nothrow) drizzle_field_t[result->column_count];
     if (result->row == NULL)
     {
       drizzle_set_error(result->con, __func__, "Failed to allocate.");
@@ -114,7 +114,13 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
       return NULL;
     }
 
-    result->field_sizes= (size_t *)(result->row + result->column_count);
+    result->field_sizes= new (std::nothrow) size_t[result->column_count];
+    if (result->field_sizes == NULL)
+    {
+      drizzle_set_error(result->con, __func__, "Failed to allocate.");
+      *ret_ptr= DRIZZLE_RETURN_MEMORY;
+      return NULL;
+    }
   }
 
   while (1)
@@ -128,6 +134,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
       if (*ret_ptr != DRIZZLE_RETURN_IO_WAIT)
       {
         delete[] result->row;
+        delete[] result->field_sizes;
         result->row= NULL;
         result->field_sizes= NULL;
       }
@@ -164,6 +171,8 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
   { 
     delete[] result->null_bitmap;
     result->null_bitmap= NULL;
+    delete[] result->field_sizes;
+    result->field_sizes= NULL;
   } 
 
   delete[] row;

@@ -101,6 +101,7 @@ void drizzle_result_free(drizzle_result_st *result)
       {
         delete[] result->null_bitmap_list[x];
       }
+      delete[] result->field_sizes_list[x];
     }
     if (result->null_bitmap_list != NULL)
     {
