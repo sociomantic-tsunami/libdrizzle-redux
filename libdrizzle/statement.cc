@@ -485,13 +485,13 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
           break;
         case DRIZZLE_COLUMN_TYPE_TIME:
           param->data= param->data_buffer;
-          drizzle_unpack_time(row[current_column], param->length, (drizzle_datetime_st *)param->data);
+          drizzle_unpack_time(row[current_column], param->length, (drizzle_datetime_st *)param->data, stmt->execute_result->column_buffer[current_column].decimals);
           break;
         case DRIZZLE_COLUMN_TYPE_DATE:
         case DRIZZLE_COLUMN_TYPE_DATETIME:
         case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
           param->data= param->data_buffer;
-          drizzle_unpack_datetime(row[current_column], param->length, (drizzle_datetime_st *)param->data);
+          drizzle_unpack_datetime(row[current_column], param->length, (drizzle_datetime_st *)param->data, stmt->execute_result->column_buffer[current_column].decimals);
           break;
         case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
         case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:

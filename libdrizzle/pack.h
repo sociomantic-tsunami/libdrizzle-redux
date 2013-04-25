@@ -79,9 +79,9 @@ unsigned char *drizzle_pack_time(drizzle_datetime_st *time, unsigned char *ptr);
 
 unsigned char *drizzle_pack_datetime(drizzle_datetime_st *datetime, unsigned char *ptr);
 
-void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime);
+void drizzle_unpack_time(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime, uint8_t decimals);
 
-void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime);
+void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datetime_st *datetime, uint8_t decimals);
 
 /**
  * Unpack length-encoded string.

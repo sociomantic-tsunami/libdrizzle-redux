@@ -47,6 +47,7 @@ struct drizzle_datetime_st
   uint8_t second;
   uint32_t microsecond;
   bool negative;
+  bool show_microseconds;
 };
 
 

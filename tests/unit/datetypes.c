@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
     if (cur_row == 2) {
 	    ASSERT_COL_STREQ_(2, "1984-02-29");
     } else if (cur_row == 4) {
-	    ASSERT_COL_STREQ_(2, "0084-02-29");  /* Yes, year 84, during the reign of Domitian */
+	    ASSERT_COL_STREQ_(2, "0084-02-09");  /* Yes, year 84, during the reign of Domitian */
     }
 
     /* TODO: libdrizzle currently has no way to give us access to the actual returned values for time/date fields. If that changes, test the values here. */
