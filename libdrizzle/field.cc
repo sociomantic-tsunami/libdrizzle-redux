@@ -285,9 +285,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     }
     else
     {
-      con->pop_state();
       con->push_state(drizzle_state_packet_read);
-      con->push_state(drizzle_state_field_read);
     }
   }
 
