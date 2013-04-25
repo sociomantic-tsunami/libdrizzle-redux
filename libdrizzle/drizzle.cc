@@ -364,6 +364,7 @@ drizzle_st *drizzle_create(const char *host, in_port_t port,
  * Local Definitions
  */
 
+__attribute__((__format__ (__printf__, 3, 4)))
 void drizzle_set_error(drizzle_st *con, const char *function,
                        const char *format, ...)
 {
@@ -413,6 +414,7 @@ void drizzle_set_error(drizzle_st *con, const char *function,
   }
 }
 
+__attribute__((__format__ (__printf__, 3, 0)))
 void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
                  const char *format, va_list args)
 {

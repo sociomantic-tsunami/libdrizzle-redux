@@ -228,7 +228,8 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   drizzle_log_debug(con, "drizzle_state_handshake_server_write");
 
   /* Calculate max packet size. */
-  con->packet_size= 1   /* Protocol version */
+  con->packet_size= (uint32_t)(
+                    1   /* Protocol version */
                   + strlen(con->server_version) + 1
                   + 4   /* Thread ID */
                   + 8   /* Scramble */
@@ -238,7 +239,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
                   + 2   /* Status */
                   + 13  /* Unused */
                   + 12  /* Scramble */
-                  + 1;  /* NULL */
+                  + 1);  /* NULL */
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if ((con->packet_size + 4) > con->buffer_allocation)
@@ -541,14 +542,15 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   }
 #endif
   /* Calculate max packet size. */
-  con->packet_size= 4   /* Capabilities */
+  con->packet_size= (uint32_t)(
+                    4   /* Capabilities */
                   + 4   /* Max packet size */
                   + 1   /* Charset */
                   + 23  /* Unused */
                   + strlen(con->user) + 1
                   + 1   /* Scramble size */
                   + DRIZZLE_MAX_SCRAMBLE_SIZE
-                  + strlen(con->db) + 1;
+                  + strlen(con->db) + 1);
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if ((con->packet_size + 4) > con->buffer_allocation)

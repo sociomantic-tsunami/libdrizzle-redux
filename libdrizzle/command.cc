@@ -85,11 +85,12 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     /* Make sure we can fit the largest non-streaming packet, currently a
        DRIZZLE_COMMAND_CHANGE_USER command. */
 
-    con->packet_size= 1  /* Command */
+    con->packet_size= (uint32_t)(
+                      1  /* Command */
                     + strlen(con->user) + 1
                     + 1  /* Scramble size */
                     + DRIZZLE_MAX_SCRAMBLE_SIZE
-                    + strlen(con->db) + 1;
+                    + strlen(con->db) + 1);
 
     /* Flush buffer if there is not enough room. */
     free_size= con->buffer_allocation - (size_t)(start - con->buffer);
@@ -121,7 +122,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     }
     else
     {
-      con->packet_size= 1 + con->command_total;
+      con->packet_size= (uint32_t)(1 + con->command_total);
       free_size-= 5;
 
       /* Copy as much of the data in as we can into the write buffer. */

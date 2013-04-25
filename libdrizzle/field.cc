@@ -307,7 +307,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
         con->result->field_total)
     {
       con->result->column_buffer[con->result->field_current].size=
-                                                       con->result->field_total;
+                                             (uint32_t)con->result->field_total;
     }
 
     con->result->field_current++;
@@ -388,7 +388,7 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
     case DRIZZLE_COLUMN_TYPE_DECIMAL:
     case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
     case DRIZZLE_COLUMN_TYPE_NEWDATE:
-      con->result->field_size= (size_t)drizzle_unpack_length(con, &ret);
+      con->result->field_size= (uint32_t)drizzle_unpack_length(con, &ret);
       if (ret != DRIZZLE_RETURN_OK)
       {
         return ret;
