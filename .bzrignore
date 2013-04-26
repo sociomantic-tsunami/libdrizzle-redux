@@ -40,3 +40,4 @@ rpm/spec
 docs/changes/
 docs/latex/
 libdrizzle-config
+test-suite.log

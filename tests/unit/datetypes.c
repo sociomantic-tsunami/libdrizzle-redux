@@ -85,20 +85,22 @@ int main(int argc, char *argv[])
   unsigned rows_in_table;
   
   set_up_connection();
-  set_up_schema();
-  
-  CHECKED_QUERY("create table libdrizzle.dt1 (a int primary key not null, b date, c year(4), d timestamp(0), e timestamp(6), f time(0), g time(6), h datetime(0), i datetime(6))");
+  set_up_schema("test_datetime");
+ 
+  SKIP_IF_(drizzle_server_version_number(con) < 50604, "Test requires MySQL 5.6.4 or higher");
+ 
+  CHECKED_QUERY("create table test_datetime.dt1 (a int primary key not null, b date, c year(4), d timestamp(0), e timestamp(6), f time(0), g time(6), h datetime(0), i datetime(6))");
   rows_in_table = 0;
   
   /* Insert rows with pk 1 and 2 */
-  CHECKED_QUERY("insert into libdrizzle.dt1 (a,b,c,d,e,f,g,h,i) values "
+  CHECKED_QUERY("insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) values "
                 "(1, '1970-01-01', '2112', '2013-03-13 09:22:00.001', '2013-03-13 09:22:00.001', '6:15:03', '23:59:59.75', '1642-12-25 12:15:01', '1642-12-25 12:12:00.125'),"
                 "(2, '84-02-29', '12', NOW(), NOW(), '3 6:15:03', '23:59:59.0625', '1642-12-25 12:15:01', '1642-12-25 12:12:00.000000');");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
   rows_in_table += 2;
     
   /* Insert row with pk 3 and 4 - test marshaling values we transmit */
-  query = "insert into libdrizzle.dt1 (a,b,c,d,e,f,g,h,i) values (?,?,?,?,?,?,?,?,?)";
+  query = "insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) values (?,?,?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   
@@ -139,7 +141,7 @@ int main(int argc, char *argv[])
   CHECK(drizzle_stmt_close(sth));
 
   /* Read the table back, with values sent over the wire in text form */
-  CHECKED_QUERY("select * from libdrizzle.dt1 order by a");
+  CHECKED_QUERY("select * from test_datetime.dt1 order by a");
   
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
@@ -163,7 +165,7 @@ int main(int argc, char *argv[])
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
-      ASSERT_EQ_(strcmp(drizzle_column_db(column), "libdrizzle"), 0, "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_datetime"), 0, "Column has bad DB name");
       ASSERT_EQ_(strcmp(drizzle_column_table(column), "dt1"), 0, "Column %d had bad table name", cur_column);
       ASSERT_EQ(drizzle_column_current(result), cur_column);
       ASSERT_STREQ_(drizzle_column_name(column), column_names[cur_column], "Column %d name", cur_column);
@@ -200,7 +202,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
 
   /* Read the table back, with values sent over the wire in binary form */
-  query = "select a,b,c,d,e,f,g,h,i from libdrizzle.dt1 order by a";
+  query = "select a,b,c,d,e,f,g,h,i from test_datetime.dt1 order by a";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_execute(sth);
@@ -279,7 +281,7 @@ int main(int argc, char *argv[])
     const char *col_name = column_names[checking_column];
     char query_buf[128];
     int VARIABLE_IS_NOT_USED unused;
-    unused = snprintf(query_buf, 128, "select a, %s, cast(%s as char) from libdrizzle.dt1",
+    unused = snprintf(query_buf, 128, "select a, %s, cast(%s as char) from test_datetime.dt1",
 	     col_name, col_name);
     query = query_buf;
 
@@ -323,9 +325,9 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s", drizzle_strerror(driz_ret), drizzle_error(con));
   }
   
-  CHECKED_QUERY("DROP TABLE libdrizzle.dt1");
+  CHECKED_QUERY("DROP TABLE test_datetime.dt1");
   
-  tear_down_schema();
+  tear_down_schema("test_datetime");
     
   return EXIT_SUCCESS;
 }

@@ -68,31 +68,31 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS test_insert");
 
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
+  CHECKED_QUERY("CREATE SCHEMA test_insert");
 
-  ret= drizzle_select_db(con, "libdrizzle");
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
+  ret= drizzle_select_db(con, "test_insert");
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_insert");
 
-  CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b int)");
+  CHECKED_QUERY("create table test_insert.t1 (a int primary key auto_increment, b int)");
 
-  drizzle_result_st *result= drizzle_query(con, "insert into libdrizzle.t1 (b) values (1),(2),(3)", 0, &ret);
+  drizzle_result_st *result= drizzle_query(con, "insert into test_insert.t1 (b) values (1),(2),(3)", 0, &ret);
   ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values (1),(2),(3): %s", drizzle_error(con));
   ASSERT_TRUE(result);
 
   ASSERT_EQ_(drizzle_result_insert_id(result), 1, "Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  result= drizzle_query(con, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6)", 0, &ret);
-  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "INSERT INTO libdrizzle.t1 (b) VALUES (4),(5),(6): %s", drizzle_error(con));
+  result= drizzle_query(con, "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6)", 0, &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6): %s", drizzle_error(con));
 
   ASSERT_EQ_(drizzle_result_insert_id(result), 4, "Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  CHECKED_QUERY("DROP TABLE libdrizzle.t1");
+  CHECKED_QUERY("DROP TABLE test_insert.t1");
 
-  CHECKED_QUERY("DROP SCHEMA libdrizzle");
+  CHECKED_QUERY("DROP SCHEMA test_insert");
 
   ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));

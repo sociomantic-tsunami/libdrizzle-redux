@@ -68,28 +68,28 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)", drizzle_error(con), drizzle_strerror(ret));
 
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS test_query");
 
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
+  CHECKED_QUERY("CREATE SCHEMA test_query");
 
-  ret= drizzle_select_db(con, "libdrizzle");
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE libdrizzle");
+  ret= drizzle_select_db(con, "test_query");
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_query");
 
-  drizzle_query(con, "create table libdrizzle.t1 (a int)", 0, &ret);
+  drizzle_query(con, "create table test_query.t1 (a int)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Create table failure\n");
     return EXIT_FAILURE;
   }
 
-  drizzle_query(con, "insert into libdrizzle.t1 values (1),(2),(3)", 0, &ret);
+  drizzle_query(con, "insert into test_query.t1 values (1),(2),(3)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Insert failure\n");
     return EXIT_FAILURE;
   }
 
-  drizzle_result_st *result= drizzle_query(con, "select * from libdrizzle.t1", 0, &ret);
+  drizzle_result_st *result= drizzle_query(con, "select * from test_query.t1", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Select failure\n");
@@ -124,11 +124,11 @@ int main(int argc, char *argv[])
 
   drizzle_result_free(result);
 
-  drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE libdrizzle.t1");
+  drizzle_query(con, "DROP TABLE test_query.t1", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE test_query.t1");
 
-  drizzle_query(con, "DROP SCHEMA IF EXISTS libdrizzle", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA libdrizzle (%s)", drizzle_error(con));
+  drizzle_query(con, "DROP SCHEMA IF EXISTS test_query", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_query (%s)", drizzle_error(con));
 
   ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
