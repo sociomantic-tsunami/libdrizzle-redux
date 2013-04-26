@@ -102,7 +102,8 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
          _APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
          _APPEND_COMPILE_FLAGS_ERROR([-std=c99])
 # Anything below this comment please keep sorted.
-         _APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
+         AS_IF([test "x$CC_VERSION_VENDOR" != xclang],
+               [_APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])], [])
 # _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-format-attribute])
           _APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
           _APPEND_COMPILE_FLAGS_ERROR([-Waddress])
@@ -187,7 +188,8 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
          _APPEND_COMPILE_FLAGS_ERROR([-Wunknown-pragmas])
          _APPEND_COMPILE_FLAGS_ERROR([-Wthis-test-should-fail])
 # Anything below this comment please keep sorted.
-         _APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])
+         AS_IF([test "x$CXX_VERSION_VENDOR" != xclang],
+               [_APPEND_COMPILE_FLAGS_ERROR([--param=ssp-buffer-size=1])], [])
 # _APPEND_COMPILE_FLAGS_ERROR([-Wmissing-format-attribute])
           _APPEND_COMPILE_FLAGS_ERROR([-Wno-attributes])
           _APPEND_COMPILE_FLAGS_ERROR([-Waddress])

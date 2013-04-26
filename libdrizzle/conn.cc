@@ -1445,7 +1445,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-#if HAVE_FCNTL && !defined(SOCK_CLOEXEC) && defined(FD_CLOEXEC)
+#if defined(HAVE_FCNTL) && !defined(SOCK_CLOEXEC) && defined(FD_CLOEXEC)
   {
     int flags;
     do
@@ -1561,7 +1561,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     drizzle_set_error(con, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
-#elif HAVE_FCNTL && defined(F_SETNOSIGPIPE)
+#elif defined(HAVE_FCNTL) && defined(F_SETNOSIGPIPE)
   ret= fcntl(con->fd, F_SETNOSIGPIPE, 1);
   
   if (ret == -1)
