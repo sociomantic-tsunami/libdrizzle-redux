@@ -73,21 +73,27 @@ void set_up_connection(void)
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
 }
 
-void set_up_schema(void)
+void set_up_schema(const char *schema)
 {
   drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
+  char sch_query[128];
 
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
-  CHECK(drizzle_select_db(con, "libdrizzle"));
+  snprintf(sch_query, 127, "DROP SCHEMA IF EXISTS %s", schema);
+
+  CHECKED_QUERY(sch_query);
+  snprintf(sch_query, 127, "CREATE SCHEMA %s", schema);
+  CHECKED_QUERY(sch_query);
+  CHECK(drizzle_select_db(con, schema));
 }
 
-void tear_down_schema(void)
+void tear_down_schema(const char *schema)
 {
   drizzle_result_st VARIABLE_IS_NOT_USED *result;
   drizzle_return_t driz_ret;
+  char sch_query[128];
 
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  snprintf(sch_query, 127, "DROP SCHEMA IF EXISTS %s", schema);
+  CHECKED_QUERY(sch_query);
 }
 

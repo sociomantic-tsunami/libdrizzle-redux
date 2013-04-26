@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 
   set_up_connection();
   CHECKED_QUERY("SET CHARACTER SET latin1"); /* Or any other one-byte-per-character character set */
-  set_up_schema();
+  set_up_schema("test_column");
 
-  CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
+  CHECKED_QUERY("create table test_column.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
 
-  CHECKED_QUERY("insert into libdrizzle.t1 (b) values ('this'),('is'),('war')");
+  CHECKED_QUERY("insert into test_column.t1 (b) values ('this'),('is'),('war')");
 
-  CHECKED_QUERY("select * from libdrizzle.t1");
+  CHECKED_QUERY("select * from test_column.t1");
 
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
-      ASSERT_EQ_(strcmp(drizzle_column_db(column), "libdrizzle"), 0, "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_column"), 0, "Column has bad DB name");
       ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
         switch (cur_column) {
             case 1:
@@ -105,9 +105,9 @@ int main(int argc, char *argv[])
 
   drizzle_result_free(result);
 
-  CHECKED_QUERY("DROP TABLE libdrizzle.t1");
+  CHECKED_QUERY("DROP TABLE test_column.t1");
 
-  tear_down_schema();
+  tear_down_schema("test_column");
 
   return EXIT_SUCCESS;
 }

@@ -61,8 +61,8 @@ extern void set_up_connection(void);
 extern void close_connection_on_exit(void);
 
 /* For unit tests that make tables, etc.: delete-and-recreate the schema on setup, and delete the schema on teardown. */
-extern void set_up_schema(void);
-extern void tear_down_schema(void);
+extern void set_up_schema(const char* schema);
+extern void tear_down_schema(const char* schema);
 
 /* Perform a query; assign the result to 'result' and the returncode to 'driz_ret'; assert that the returncode is DRIZZLE_RETURN_OK. */
 #define CHECKED_QUERY(cmd) result = drizzle_query(con, cmd, 0, &driz_ret); \

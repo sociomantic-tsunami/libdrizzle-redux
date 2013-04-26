@@ -89,20 +89,20 @@ int main(int argc, char *argv[])
   int num_fields;
   
   set_up_connection();
-  set_up_schema();
+  set_up_schema("test_numbers");
   
-  CHECKED_QUERY("create table libdrizzle.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double)");
+  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double)");
   
   /* Insert rows with pk 1 and 2 */
-  CHECKED_QUERY("insert into libdrizzle.t1 (b,c,d,e,f,g,h) values (1,1,1,1,1,1,1), (127,32687,8388351,2147352575,9222246136947920895,443664,291.2711110711098);");
+  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values (1,1,1,1,1,1,1), (127,32687,8388351,2147352575,9222246136947920895,443664,291.2711110711098);");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
   
   /* Insert row with pk 3 */
-  CHECKED_QUERY("insert into libdrizzle.t1 (b,c,d,e,f,g,h) ( select 0-b, 0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 from t1 where a = 2 );");
+  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) ( select 0-b, 0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 from t1 where a = 2 );");
   ASSERT_EQ(drizzle_result_affected_rows(result), 1);
   
   /* Insert row with pk 4 - test marshaling values we transmit */
-  query = "insert into libdrizzle.t1 (b,c,d,e,f,g,h) values (?,?,?,?,?,?,?)";
+  query = "insert into test_numbers.t1 (b,c,d,e,f,g,h) values (?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   CHECK(drizzle_stmt_set_tiny(sth,   0, 127, 0));
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
   /* TODO: Also send some negative values of each type */
   
   /* Read the table back, with values sent over the wire in text form */
-  CHECKED_QUERY("select * from libdrizzle.t1 order by b, a");
+  CHECKED_QUERY("select * from test_numbers.t1 order by b, a");
   
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
-      ASSERT_EQ_(strcmp(drizzle_column_db(column), "libdrizzle"), 0, "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_numbers"), 0, "Column has bad DB name");
       ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
       ASSERT_EQ(drizzle_column_current(result), cur_column);
       ASSERT_STREQ(drizzle_column_name(column), column_names[cur_column]);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
   
   /* Read the table back, with values sent over the wire in binary form */
-  query = "select a,b,c,d,e,f,g,h from libdrizzle.t1";
+  query = "select a,b,c,d,e,f,g,h from test_numbers.t1";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_execute(sth);
@@ -317,10 +317,10 @@ int main(int argc, char *argv[])
   driz_ret = drizzle_stmt_close(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s", drizzle_strerror(driz_ret), drizzle_error(con));
   
-  drizzle_query(con, "DROP TABLE libdrizzle.t1", 0, &driz_ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE libdrizzle.t1");
+  drizzle_query(con, "DROP TABLE test_numbers.t1", 0, &driz_ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE test_numbers.t1");
   
-  tear_down_schema();
+  tear_down_schema("test_numbers");
   
   return EXIT_SUCCESS;
 }

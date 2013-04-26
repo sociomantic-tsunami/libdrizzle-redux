@@ -85,19 +85,19 @@ int main(int argc, char *argv[])
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "drizzle_connect(): %s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
   
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS test_nulls");
   
-  CHECKED_QUERY("CREATE SCHEMA libdrizzle");
+  CHECKED_QUERY("CREATE SCHEMA test_nulls");
   
-  driz_ret= drizzle_select_db(con, "libdrizzle");
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "USE libdrizzle");
+  driz_ret= drizzle_select_db(con, "test_nulls");
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "USE test_nulls");
   
-  CHECKED_QUERY("create table libdrizzle.t1 (a int, b int, c int, d int, e int, f int, g int, h int, i int, j int, k int)");
+  CHECKED_QUERY("create table test_nulls.t1 (a int, b int, c int, d int, e int, f int, g int, h int, i int, j int, k int)");
   
 #define NCOLS 11
   
   char *querybuf = calloc(256 + 60*64, 1);
-  strcpy(querybuf, "insert into libdrizzle.t1 values ");
+  strcpy(querybuf, "insert into test_nulls.t1 values ");
   char *p = querybuf + strlen(querybuf);
   
   for(int sym = 0; sym < 64; sym++) {
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
   CHECKED_QUERY(querybuf);
   
 #ifdef TEST_PREPARED_STATEMENTS
-  strcpy(querybuf, "insert into libdrizzle.t1 values (?,?,?,?,?,?,?,?,?,?,?)");
+  strcpy(querybuf, "insert into test_nulls.t1 values (?,?,?,?,?,?,?,?,?,?,?)");
   sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
   
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
   table_size = 64;
 #endif
   
-  CHECKED_QUERY("select a,b,c,d,e,f,g,h,i,j,k from libdrizzle.t1 order by e");
+  CHECKED_QUERY("select a,b,c,d,e,f,g,h,i,j,k from test_nulls.t1 order by e");
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
   ASSERT_EQ_(num_fields, NCOLS, "Bad number of fields, expected %d, got %d", 11, num_fields);
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
   
 #ifdef TEST_PREPARED_STATEMENTS
-  strcpy(querybuf, "select a,b,c,d,e,f,g,h,i,j,k from libdrizzle.t1 order by e");
+  strcpy(querybuf, "select a,b,c,d,e,f,g,h,i,j,k from test_nulls.t1 order by e");
   sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
   driz_ret = drizzle_stmt_execute(sth);
@@ -266,10 +266,10 @@ int main(int argc, char *argv[])
   ASSERT_EQ(drizzle_stmt_close(sth), DRIZZLE_RETURN_OK);
 #endif
   
-  CHECKED_QUERY("DROP TABLE libdrizzle.t1");
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE libdrizzle.t1");
+  CHECKED_QUERY("DROP TABLE test_nulls.t1");
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE test_nulls.t1");
    
-  CHECKED_QUERY("DROP SCHEMA IF EXISTS libdrizzle");
+  CHECKED_QUERY("DROP SCHEMA IF EXISTS test_nulls");
 
   driz_ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
