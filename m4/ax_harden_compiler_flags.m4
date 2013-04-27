@@ -278,7 +278,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-funsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-Wc++11-compat])
-          _APPEND_COMPILE_FLAGS_ERROR([-Weffc++])
+#         _APPEND_COMPILE_FLAGS_ERROR([-Weffc++])
           AS_IF([test "x$ac_cv_vcs_checkout" = xyes],[
             _APPEND_COMPILE_FLAGS_ERROR([-fno-omit-frame-pointer])
             _APPEND_COMPILE_FLAGS_ERROR([-fsanitize=address])
@@ -304,7 +304,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
             _APPEND_COMPILE_FLAGS_ERROR([-fsanitize=vla-bound])
             _APPEND_COMPILE_FLAGS_ERROR([-fsanitize=vptr])
           ])
-          _APPEND_COMPILE_FLAGS_ERROR([-Wold-style-cast])
+#         _APPEND_COMPILE_FLAGS_ERROR([-Wold-style-cast])
           _APPEND_COMPILE_FLAGS_ERROR([-Wclobbered])
           _APPEND_COMPILE_FLAGS_ERROR([-Wunused])
           _APPEND_COMPILE_FLAGS_ERROR([-Wunused-result])
