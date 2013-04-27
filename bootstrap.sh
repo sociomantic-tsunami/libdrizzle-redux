@@ -1,6 +1,6 @@
 #!/bin/bash
 # 
-# Copyright (C) 2012 Brian Aker
+# Copyright (C) 2012-2013 Brian Aker
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -151,7 +151,8 @@ function rebuild_host_os ()
   fi
 }
 
-#  Valid values are: darwin,fedora,rhel,ubuntu
+# Validate the distribution name, or toss an erro
+#  values: darwin,fedora,rhel,ubuntu,debian,opensuse
 function set_VENDOR_DISTRIBUTION ()
 {
   local dist=`echo "$1" | tr '[A-Z]' '[a-z]'`
@@ -165,8 +166,14 @@ function set_VENDOR_DISTRIBUTION ()
     rhel)
       VENDOR_DISTRIBUTION='rhel'
       ;;
+    debian)
+      VENDOR_DISTRIBUTION='debian'
+      ;;
     ubuntu)
       VENDOR_DISTRIBUTION='ubuntu'
+      ;;
+    suse)
+      VENDOR_DISTRIBUTION='opensuse'
       ;;
     opensuse)
       VENDOR_DISTRIBUTION='opensuse'
@@ -177,21 +184,57 @@ function set_VENDOR_DISTRIBUTION ()
   esac
 }
 
+# Validate a Vendor's release name/number 
 function set_VENDOR_RELEASE ()
 {
   local release=`echo "$1" | tr '[A-Z]' '[a-z]'`
-  case "$VENDOR_DISTRIBUTION" in
+
+  if $DEBUG; then 
+    echo "VENDOR_DISTRIBUTION:$VENDOR_DISTRIBUTION"
+    echo "VENDOR_RELEASE:$release"
+  fi
+
+  case $VENDOR_DISTRIBUTION in
     darwin)
-      VENDOR_RELEASE='mountain'
+      case $release in
+        10.6*)
+          VENDOR_RELEASE='snow_leopard'
+          ;;
+        10.7*)
+          VENDOR_RELEASE='mountain'
+          ;;
+        mountain)
+          VENDOR_RELEASE='mountain'
+          ;;
+        10.8.*)
+          echo "mountain_lion"
+          VENDOR_RELEASE='mountain_lion'
+          ;;
+        *)
+          echo $VENDOR_RELEASE
+          VENDOR_RELEASE='unknown'
+          ;;
+      esac
       ;;
     fedora)
       VENDOR_RELEASE="$release"
+      if [[ "x$VENDOR_RELEASE" == '18' ]]; then
+        VENDOR_RELEASE='sphericalcow'
+      fi
       ;;
     rhel)
       VENDOR_RELEASE="$release"
       ;;
+    debian)
+      VENDOR_RELEASE="$release"
+      ;;
     ubuntu)
       VENDOR_RELEASE="$release"
+      if [[ "x$VENDOR_RELEASE" == 'x12.04' ]]; then
+        VENDOR_RELEASE="precise"
+      elif [[ "x$VENDOR_RELEASE" == 'x12.10' ]]; then
+        VENDOR_RELEASE="quantal"
+      fi
       ;;
     opensuse)
       VENDOR_RELEASE="$release"
@@ -206,7 +249,7 @@ function set_VENDOR_RELEASE ()
 }
 
 
-#  Valid values are: apple, redhat, centos, canonical
+#  Valid values are: apple, redhat, centos, canonical, oracle, suse
 function set_VENDOR ()
 {
   local vendor=`echo "$1" | tr '[A-Z]' '[a-z]'`
@@ -218,11 +261,29 @@ function set_VENDOR ()
     redhat)
       VENDOR='redhat'
       ;;
+    fedora)
+      VENDOR='redhat'
+      ;;
+    redhat-release-server-*)
+      VENDOR='redhat'
+      ;;
+    enterprise-release-*)
+      VENDOR='oracle'
+      ;;
     centos)
       VENDOR='centos'
       ;;
     canonical)
       VENDOR='canonical'
+      ;;
+    ubuntu)
+      VENDOR='canonical'
+      ;;
+    debian)
+      VENDOR='debian'
+      ;;
+    opensuse)
+      VENDOR='suse'
       ;;
     suse)
       VENDOR='suse'
@@ -234,6 +295,27 @@ function set_VENDOR ()
 
   set_VENDOR_DISTRIBUTION $2
   set_VENDOR_RELEASE $3
+
+  # Set which vendor/versions we trust for autoreconf
+  case $VENDOR_DISTRIBUTION in
+    fedora)
+      if [[ "x$VENDOR_RELEASE" == 'x18' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xsphericalcow' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'x19' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      fi
+      ;;
+    canonical)
+      if [[ "x$VENDOR_RELEASE" == 'xprecise' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xquantal' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      fi
+      ;;
+  esac
+
 }
 
 function determine_target_platform ()
@@ -242,14 +324,14 @@ function determine_target_platform ()
   UNAME_KERNEL=`(uname -s) 2>/dev/null`  || UNAME_SYSTEM=unknown
   UNAME_KERNEL_RELEASE=`(uname -r) 2>/dev/null` || UNAME_KERNEL_RELEASE=unknown
 
-  if [[ $(uname) == 'Darwin' ]]; then
+  if [[ -x '/usr/bin/sw_vers' ]]; then 
+    local _VERSION=`/usr/bin/sw_vers -productVersion`
+    set_VENDOR 'apple' 'darwin' $_VERSION
+  elif [[ $(uname) == 'Darwin' ]]; then
     set_VENDOR 'apple' 'darwin' 'mountain'
   elif [[ -f '/etc/fedora-release' ]]; then 
     local fedora_version=`cat /etc/fedora-release | awk ' { print $3 } '`
     set_VENDOR 'redhat' 'fedora' $fedora_version
-    if [[ "x$VENDOR_RELEASE" == 'x17' ]]; then
-      AUTORECONF_REBUILD_HOST=true
-    fi
   elif [[ -f '/etc/centos-release' ]]; then
     local centos_version=`cat /etc/centos-release | awk ' { print $7 } '`
     set_VENDOR 'centos' 'rhel' $centos_version
@@ -259,14 +341,18 @@ function determine_target_platform ()
     set_VENDOR 'suse' $suse_distribution $suse_version
   elif [[ -f '/etc/redhat-release' ]]; then
     local rhel_version=`cat /etc/redhat-release | awk ' { print $7 } '`
-    set_VENDOR 'redhat' 'rhel' $rhel_version
+    local _vendor=`rpm -qf /etc/redhat-release`
+    set_VENDOR $_vendor 'rhel' $rhel_version
+  elif [[ -f '/etc/os-release' ]]; then 
+    source '/etc/os-release'
+    set_VENDOR $ID $ID $VERSION_ID
+  elif [[ -x '/usr/bin/lsb_release' ]]; then 
+    local _ID=`/usr/bin/lsb_release -s -i`
+    local _VERSION=`/usr/bin/lsb_release -s -r`
+    set_VENDOR $_ID $_ID $_VERSION_ID
   elif [[ -f '/etc/lsb-release' ]]; then 
-    local debian_DISTRIB_ID=`cat /etc/lsb-release | grep DISTRIB_ID | awk -F= ' { print $2 } '`
-    local debian_version=`cat /etc/lsb-release | grep DISTRIB_CODENAME | awk -F= ' { print $2 } '`
-    set_VENDOR 'canonical' $debian_DISTRIB_ID $debian_version
-    if [[ "x$VENDOR_RELEASE" == 'xprecise' ]]; then
-      AUTORECONF_REBUILD_HOST=true
-    fi
+    source '/etc/lsb-release'
+    set_VENDOR 'canonical' $DISTRIB_ID $DISTRIB_CODENAME
   fi
 
   rebuild_host_os
@@ -296,42 +382,48 @@ function run_configure ()
   # Arguments for configure
   local BUILD_CONFIGURE_ARG= 
 
-  # Set ENV DEBUG in order to enable debugging
-  if $DEBUG; then 
-    BUILD_CONFIGURE_ARG='--enable-debug'
-  fi
-
-  # Set ENV ASSERT in order to enable assert
-  if [[ -n "$ASSERT" ]]; then 
-    local ASSERT_ARG=
-    ASSERT_ARG='--enable-assert'
-    BUILD_CONFIGURE_ARG="$ASSERT_ARG $BUILD_CONFIGURE_ARG"
+  # If ENV DEBUG is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
+  # Set ENV ASSERT in order to enable assert.
+  # If we are doing a valgrind run, we always compile with assert disabled
+  if $valgrind_run; then
+    BUILD_CONFIGURE_ARG+= " CXXFLAGS=-DNDEBUG "
+    BUILD_CONFIGURE_ARG+= " CFLAGS=-DNDEBUG "
+  else
+    if $DEBUG; then 
+      BUILD_CONFIGURE_ARG+=' --enable-debug --enable-assert'
+    elif [[ -n "$VCS_CHECKOUT" ]]; then
+      BUILD_CONFIGURE_ARG+=' --enable-assert'
+    fi
   fi
 
   if [[ -n "$CONFIGURE_ARG" ]]; then 
-    BUILD_CONFIGURE_ARG= "$BUILD_CONFIGURE_ARG $CONFIGURE_ARG"
+    BUILD_CONFIGURE_ARG+=" $CONFIGURE_ARG"
+  fi
+
+  if [[ -n "$PREFIX_ARG" ]]; then 
+    BUILD_CONFIGURE_ARG+=" $PREFIX_ARG"
   fi
 
   ret=1;
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=clang CXX=clang++ $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     rhel-5*)
       command_exists 'gcc44' || die "Could not locate gcc44"
-      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG $PREFIX_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+      CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     *)
-      $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG
+      $CONFIGURE $BUILD_CONFIGURE_ARG
       ret=$?
       ;;
   esac
 
   if [ $ret -ne 0 ]; then
-    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG $PREFIX_ARG"
+    die "Could not execute $CONFIGURE $BUILD_CONFIGURE_ARG"
   fi
 
   if [ ! -f 'Makefile' ]; then
@@ -353,7 +445,7 @@ function setup_gdb_command () {
 function setup_valgrind_command () {
   VALGRIND_PROGRAM=`type -p valgrind`
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --show-reachable=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE"
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --show-reachable=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
@@ -365,6 +457,10 @@ function save_BUILD ()
 
   if [[ -n "$OLD_CONFIGURE_ARG" ]]; then
     die "OLD_CONFIGURE_ARG($OLD_CONFIGURE_ARG) was set on push, programmer error!"
+  fi
+
+  if [[ -n "$OLD_PREFIX" ]]; then
+    die "OLD_PREFIX($OLD_PREFIX) was set on push, programmer error!"
   fi
 
   if [[ -n "$OLD_MAKE" ]]; then
@@ -402,6 +498,10 @@ function restore_BUILD ()
     CONFIGURE_ARG=$OLD_CONFIGURE_ARG
   fi
 
+  if [[ -n "$OLD_PREFIX" ]]; then
+    PREFIX_ARG=$OLD_PREFIX
+  fi
+
   if [[ -n "$OLD_MAKE" ]]; then
     MAKE=$OLD_MAKE
   fi
@@ -412,56 +512,11 @@ function restore_BUILD ()
 
   OLD_CONFIGURE=
   OLD_CONFIGURE_ARG=
+  OLD_PREFIX=
   OLD_MAKE=
   OLD_TESTS_ENVIRONMENT=
-  echo "reset happened"
-}
 
-function push_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    die "OLD_PREFIX_ARG was set on push, programmer error!"
-  fi
-
-  if [[ -n "$PREFIX_ARG" ]]; then
-    OLD_PREFIX_ARG=$PREFIX_ARG
-    PREFIX_ARG=
-  fi
-
-  if [[ -n "$1" ]]; then
-    PREFIX_ARG="--prefix=$1"
-  fi
-}
-
-function pop_PREFIX_ARG ()
-{
-  if [[ -n "$OLD_PREFIX_ARG" ]]; then
-    PREFIX_ARG=$OLD_PREFIX_ARG
-    OLD_PREFIX_ARG=
-  else
-    PREFIX_ARG=
-  fi
-}
-
-function push_TESTS_ENVIRONMENT ()
-{
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    die "OLD_TESTS_ENVIRONMENT was set on push, programmer error!"
-  fi
-
-  if [[ -n "$TESTS_ENVIRONMENT" ]]; then
-    OLD_TESTS_ENVIRONMENT=$TESTS_ENVIRONMENT
-    TESTS_ENVIRONMENT=
-  fi
-}
-
-function pop_TESTS_ENVIRONMENT ()
-{
-  TESTS_ENVIRONMENT=
-  if [[ -n "$OLD_TESTS_ENVIRONMENT" ]]; then
-    TESTS_ENVIRONMENT=$OLD_TESTS_ENVIRONMENT
-    OLD_TESTS_ENVIRONMENT=
-  fi
+  export -n CC CXX
 }
 
 function safe_pushd ()
@@ -490,11 +545,6 @@ function safe_popd ()
 
 function make_valgrind ()
 {
-  if [[ "$VENDOR_DISTRIBUTION" == 'darwin' ]]; then
-    make_darwin_malloc
-    return
-  fi
-
   # If the env VALGRIND_COMMAND is set then we assume it is valid
   local valgrind_was_set=false
   if [[ -z "$VALGRIND_COMMAND" ]]; then
@@ -512,10 +562,12 @@ function make_valgrind ()
     return 1
   fi
 
-  # If we are required to run configure, do so now
-  run_configure_if_required
+  save_BUILD
 
-  push_TESTS_ENVIRONMENT
+  valgrind_run=true
+
+  # If we are required to run configure, do so now
+  run_configure
 
   # If we don't have a configure, then most likely we will be missing libtool
   assert_file 'configure'
@@ -525,15 +577,29 @@ function make_valgrind ()
     TESTS_ENVIRONMENT="$VALGRIND_COMMAND"
   fi
 
-  make_target 'check' || return 1
+  make_target 'check'
+  ret=$?
 
-  pop_TESTS_ENVIRONMENT
+  # If we aren't going to error, we will clean up our environment
+  if [ "$ret" -eq 0 ]; then
+     make 'distclean'
+  fi
+
+  valgrind_run=false
+
+  restore_BUILD
+
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
 }
 
 function make_install_system ()
 {
   local INSTALL_LOCATION=$(mktemp -d /tmp/XXXXXXXXXX)
-  push_PREFIX_ARG $INSTALL_LOCATION
+
+  save_BUILD
+  PREFIX_ARG="--prefix=$INSTALL_LOCATION"
 
   if [ ! -d $INSTALL_LOCATION ] ; then
     die "ASSERT temp directory not found '$INSTALL_LOCATION'"
@@ -541,16 +607,11 @@ function make_install_system ()
 
   run_configure #install_buid_dir
 
-  push_TESTS_ENVIRONMENT
-
   make_target 'install'
 
   make_target 'installcheck'
 
   make_target 'uninstall'
-
-  pop_TESTS_ENVIRONMENT
-  pop_PREFIX_ARG
 
   rm -r -f $INSTALL_LOCATION
   make 'distclean'
@@ -559,6 +620,7 @@ function make_install_system ()
     die "ASSERT Makefile should not exist"
   fi
 
+  restore_BUILD
   safe_popd
 }
 
@@ -625,7 +687,29 @@ function check_mingw ()
   return 0
 }
 
-function make_skeleton_mingw ()
+function check_clang ()
+{
+  command_exists 'clang'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+function check_clang_analyzer ()
+{
+  command_exists 'scan-build'
+  ret=$?
+  if [ "$ret" -ne 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+function make_skeleton ()
 {
   run_configure
   ret=$?
@@ -642,8 +726,6 @@ function make_skeleton_mingw ()
         if command_exists 'wine'; then
           TESTS_ENVIRONMENT='wine'
         fi
-      elif command_exists 'wineconsole'; then
-        TESTS_ENVIRONMENT='wineconsole --backend=curses'
       fi
 
       if [[ -n "$TESTS_ENVIRONMENT" ]]; then
@@ -662,9 +744,8 @@ function make_skeleton_mingw ()
 
 function make_for_mingw ()
 {
-  check_mingw
   if ! check_mingw; then
-    die 'mingw64 tools were not found'
+    return 1
   fi
 
   # Make sure it is clean
@@ -678,10 +759,73 @@ function make_for_mingw ()
 
   CONFIGURE='mingw64-configure'
   MAKE='mingw64-make'
-  CONFIGURE_ARGS='--enable-static'
+  CONFIGURE_ARGS='--enable-static --disable-shared'
 
-  make_skeleton_mingw
+  make_skeleton
   ret=$?
+
+  restore_BUILD
+
+  return $ret
+}
+
+function make_for_clang ()
+{
+  if ! check_clang; then
+    return 1
+  fi
+
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+
+  run_autoreconf
+
+  save_BUILD
+
+  CC=clang CXX=clang++
+  export CC CXX
+
+  make_skeleton
+  ret=$?
+
+  make_target 'check'
+
+  restore_BUILD
+
+  return $ret
+}
+
+function make_for_clang_analyzer ()
+{
+  if ! check_clang; then
+    return 1
+  fi
+
+  if ! check_clang_analyzer; then
+    die 'clang-analyzer was not found'
+  fi
+
+  # Make sure it is clean
+  if [ -f Makefile -o -f configure ]; then
+    make_maintainer_clean
+  fi
+
+  run_autoreconf
+
+  save_BUILD
+
+  CC=clang CXX=clang++
+  export CC CXX
+  CONFIGURE_ARGS='--enable-debug'
+
+  make_skeleton
+  ret=$?
+
+  make_target 'clean' 'warn'
+
+  scan-build -o clang-html make -j4 -k
 
   restore_BUILD
 
@@ -710,6 +854,8 @@ function make_universe ()
   make_valgrind
   make_gdb
   make_rpm
+  make_for_clang
+  make_for_clang_analyzer
 
   if [ check_mingw -eq 0 ]; then
     make_for_mingw
@@ -815,10 +961,10 @@ function make_install_html ()
 
 function make_gdb ()
 {
+  save_BUILD
+
   if command_exists 'gdb'; then
     run_configure_if_required
-
-    push_TESTS_ENVIRONMENT
 
     # Set ENV GDB_COMMAND
     if [[ -z "$GDB_COMMAND" ]]; then
@@ -839,8 +985,6 @@ function make_gdb ()
       rm 'gdb.txt'
     fi
 
-    pop_TESTS_ENVIRONMENT
-
     if [ -f '.gdb_history' ]; then
       rm '.gdb_history'
     fi
@@ -852,6 +996,8 @@ function make_gdb ()
     echo 'gdb was not present'
     return 1
   fi
+
+  restore_BUILD
 }
 
 # $1 target to compile
@@ -883,9 +1029,9 @@ function make_target ()
 
   if [ $ret -ne 0 ]; then
     if [ -n "$2" ]; then
-      warn "Cannot execute $MAKE $1: $ret"
+      warn "Failed to execute $MAKE $1: $ret"
     else
-      die "Cannot execute $MAKE $1: $ret"
+      die "Failed to execute $MAKE $1: $ret"
     fi
   fi
 
@@ -951,6 +1097,13 @@ function run_configure_if_required ()
   assert_file 'Makefile' 'configure did not produce a Makefile'
 }
 
+function run_make_maintainer_clean_if_possible () 
+{
+  if [ -f 'Makefile' ]; then
+    make_maintainer_clean
+  fi
+}
+
 function run_autoreconf_if_required () 
 {
   if [ ! -x 'configure' ]; then
@@ -958,6 +1111,7 @@ function run_autoreconf_if_required ()
   fi
 
   assert_exec_file 'configure'
+  bash -n configure
 }
 
 function run_autoreconf () 
@@ -971,7 +1125,7 @@ function run_autoreconf ()
     run $BOOTSTRAP_LIBTOOLIZE '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
   fi
 
-  run $AUTORECONF || die "Cannot execute $AUTORECONF"
+  run $AUTORECONF $AUTORECONF_ARGS || die "Cannot execute $AUTORECONF"
 
   eval 'bash -n configure' || die "autoreconf generated a malformed configure"
 }
@@ -1023,6 +1177,14 @@ function parse_command_line_options ()
         ;;
       h) # help
         echo "bootstrap.sh [options] optional_target ..."
+        echo "  -a # Just run autoreconf";
+        echo "  -p # Print ENV";
+        echo "  -c # Just run configure";
+        echo "  -m # Just run maintainer-clean";
+        echo "  -t # Make target";
+        echo "  -d # Enable debug";
+        echo "  -h # Show help";
+        echo "  -v # Be more verbose in output";
         exit
         ;;
       v) # verbose
@@ -1057,6 +1219,8 @@ function determine_vcs ()
     VCS_CHECKOUT=svn
   elif [[ -d '.hg' ]]; then
     VCS_CHECKOUT=hg
+  else
+    VCS_CHECKOUT=
   fi
 
   if [[ -n "$VCS_CHECKOUT" ]]; then
@@ -1122,6 +1286,7 @@ function autoreconf_setup ()
 
       if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
         echo "Couldn't find user supplied libtoolize, it is required"
+        return 1
       fi
     else
       # If we are using OSX, we first check to see glibtoolize is available
@@ -1130,21 +1295,27 @@ function autoreconf_setup ()
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find glibtoolize, it is required on OSX"
+          return 1
         fi
       else
         BOOTSTRAP_LIBTOOLIZE=`type -p libtoolize`
 
         if [[ -z "$BOOTSTRAP_LIBTOOLIZE" ]]; then
           echo "Couldn't find libtoolize, it is required"
+          return 1
         fi
       fi
     fi
+
     if $VERBOSE; then
       LIBTOOLIZE_OPTIONS="--verbose $BOOTSTRAP_LIBTOOLIZE_OPTIONS"
     fi
+
     if $DEBUG; then
       LIBTOOLIZE_OPTIONS="--debug $BOOTSTRAP_LIBTOOLIZE_OPTIONS"
     fi
+
+    # Here we set LIBTOOLIZE to true since we are going to invoke it via BOOTSTRAP_LIBTOOLIZE
     LIBTOOLIZE=true
   fi
 
@@ -1182,7 +1353,7 @@ function autoreconf_setup ()
     fi
 
     if [[ -n "$GNU_BUILD_FLAGS" ]]; then
-      AUTORECONF="$AUTORECONF $GNU_BUILD_FLAGS"
+      AUTORECONF_ARGS="$GNU_BUILD_FLAGS"
     fi
   fi
 
@@ -1200,6 +1371,9 @@ function print_setup ()
   echo 'BOOTSTRAP ENV' 
   echo "AUTORECONF=$AUTORECONF"
   echo "HOST_OS=$HOST_OS"
+  echo "VENDOR=$VENDOR"
+  echo "VENDOR_DISTRIBUTION=$VENDOR_DISTRIBUTION"
+  echo "VENDOR_RELEASE=$VENDOR_RELEASE"
 
   echo "getopt()"
   if $AUTORECONF_OPTION; then
@@ -1333,18 +1507,25 @@ function check_make_target()
       ;;
     'make_default')
       ;;
-    'test-*')
+    'clang')
       ;;
-    'valgrind-*')
+    'clang-analyzer')
       ;;
-    'gdb-*')
+    test-*)
+      ;;
+    valgrind-*)
+      ;;
+    gdb-*)
       ;;
     'dist')
       ;;
     *)
-      die "Unknown MAKE_TARGET option: $1"
+      echo "Matched default"
+      return 1
       ;;
   esac
+
+  return 0
 }
 
 function bootstrap ()
@@ -1355,7 +1536,9 @@ function bootstrap ()
 
   # Set up whatever we need to do to use autoreconf later
   require_libtoolise
-  autoreconf_setup
+  if ! autoreconf_setup; then
+    return 1
+  fi
 
   if [ -z "$MAKE_TARGET" ]; then
     MAKE_TARGET="make_default"
@@ -1377,7 +1560,7 @@ function bootstrap ()
 
   # Set ENV PREFIX in order to set --prefix for ./configure
   if [[ -n "$PREFIX" ]]; then 
-    push_PREFIX_ARG $PREFIX
+    PREFIX_ARG="--prefix=$PREFIX"
   fi
 
   # We should always have a target by this point
@@ -1390,7 +1573,14 @@ function bootstrap ()
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
       check_make_target $target
+      ret=$?
+      if [ $ret -ne 0 ]; then
+        die "Unknown MAKE_TARGET option: $target"
+      fi
     fi
+
+    local snapshot_run=false
+    local valgrind_run=false
 
     case $target in
       'self')
@@ -1417,14 +1607,31 @@ function bootstrap ()
       'make_default')
         make_default
         ;;
+      'clang')
+        if ! check_clang; then
+          die "clang was not found"
+        fi
+
+        if ! make_for_clang; then
+          die "Failed to build clang: $?"
+        fi
+        ;;
+      'clang-analyzer')
+        if ! check_clang_analyzer; then
+          die "clang-analyzer was not found"
+        fi
+        if ! check_clang; then
+          die "clang was not found"
+        fi
+
+        if ! make_for_clang_analyzer; then
+          die "Failed to build clang-analyzer: $?"
+        fi
+        ;;
       'mingw')
-        check_mingw
         if ! check_mingw; then
           die "mingw was not found"
         fi
-
-        make_for_mingw
-        check_ret=$?
 
         if ! make_for_mingw; then
           die "Failed to build mingw: $?"
@@ -1432,11 +1639,16 @@ function bootstrap ()
         ;;
       'snapshot')
         make_for_snapshot
+        snapshot_run=true
         ;;
       'rpm')
         make_rpm
         ;;
+      'darwin_malloc')
+        make_darwin_malloc
+        ;;
       'valgrind')
+        make_maintainer_clean 
         make_valgrind
         ;;
       'universe')
@@ -1450,6 +1662,13 @@ function bootstrap ()
         make_target "$target"
         ;;
     esac
+
+    if $jenkins_build_environment; then
+      if ! $snapshot_run; then
+        run_make_maintainer_clean_if_possible
+      fi
+    fi
+
   done
 }
 
@@ -1474,6 +1693,7 @@ function main ()
 
   local OLD_CONFIGURE=
   local OLD_CONFIGURE_ARG=
+  local OLD_PREFIX=
   local OLD_MAKE=
   local OLD_TESTS_ENVIRONMENT=
 
@@ -1517,7 +1737,16 @@ function main ()
   # We don't want Jenkins overriding other variables, so we NULL them.
   if [ -z "$MAKE_TARGET" ]; then
     if $jenkins_build_environment; then
-      MAKE_TARGET='jenkins'
+      if [[ -n "$label" ]]; then
+        check_make_target $label
+        if [ $? -eq 0 ]; then
+          MAKE_TARGET="$label"
+        fi
+      fi
+
+      if [ -z "$MAKE_TARGET" ]; then
+        MAKE_TARGET='check'
+      fi
     fi
   fi
 
@@ -1620,11 +1849,13 @@ export AUTOHEADER
 export AUTOM4TE
 export AUTOMAKE
 export AUTORECONF
+export CONFIGURE_ARG
 export DEBUG
 export GNU_BUILD_FLAGS
 export LIBTOOLIZE
 export LIBTOOLIZE_OPTIONS
 export MAKE
+export PREFIX_ARG
 export TESTS_ENVIRONMENT
 export VERBOSE
 export WARNINGS
