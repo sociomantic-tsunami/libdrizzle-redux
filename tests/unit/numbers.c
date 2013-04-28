@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   set_up_connection();
   set_up_schema("test_numbers");
   
-  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double)");
+  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double(16,13))");
   
   /* Insert rows with pk 1 and 2 */
   CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values (1,1,1,1,1,1,1), (127,32687,8388351,2147352575,9222246136947920895,443664,291.2711110711098);");
@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
   CHECK(drizzle_stmt_set_int(sth,    2, 8388351, 0));
   CHECK(drizzle_stmt_set_int(sth,    3, 2147352575, 0));
   CHECK(drizzle_stmt_set_bigint(sth, 4, 9222246136947920895, 0));
-  CHECK(drizzle_stmt_set_float(sth,  5, 443664.0));
-  CHECK(drizzle_stmt_set_double(sth, 6, 291.2711110711098));
+  CHECK(drizzle_stmt_set_float(sth,  5, 443664.0f));
+  CHECK(drizzle_stmt_set_double(sth, 6, 291.2711110711098l));
   driz_ret = drizzle_stmt_execute(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
@@ -257,21 +257,21 @@ int main(int argc, char *argv[])
       ASSERT_STREQ(expect_strval, col_strval);
     }
     
-    float expect_floatval = 0.0;
-    double expect_dblval = 0.0;
+    float expect_floatval = 0.0f;
+    double expect_dblval = 0.0f;
     switch (columnA) {
       case 1:
-        expect_floatval = 1.0;
-        expect_dblval = 1.0;
+        expect_floatval = 1.0f;
+        expect_dblval = 1.0f;
         break;
       case 2:
       case 4:
-        expect_floatval = 443664.0;
-        expect_dblval = 291.2711110711098;
+        expect_floatval = 443664.0f;
+        expect_dblval = 291.2711110711098l;
         break;
       case 3:
-        expect_floatval = 443665.0;
-        expect_dblval = 292.2711110711098;
+        expect_floatval = 443665.0f;
+        expect_dblval = 292.2711110711098l;
         break;
     }
     
