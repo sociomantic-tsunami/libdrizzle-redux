@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
   CHECK(drizzle_stmt_set_int(sth,    2, 8388351, 0));
   CHECK(drizzle_stmt_set_int(sth,    3, 2147352575, 0));
   CHECK(drizzle_stmt_set_bigint(sth, 4, 9222246136947920895, 0));
-  CHECK(drizzle_stmt_set_float(sth,  5, 443664.0));
-  CHECK(drizzle_stmt_set_double(sth, 6, 291.2711110711098));
+  CHECK(drizzle_stmt_set_float(sth,  5, 443664.0f));
+  CHECK(drizzle_stmt_set_double(sth, 6, 291.2711110711098l));
   driz_ret = drizzle_stmt_execute(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
@@ -257,21 +257,21 @@ int main(int argc, char *argv[])
       ASSERT_STREQ(expect_strval, col_strval);
     }
     
-    float expect_floatval = 0.0;
-    double expect_dblval = 0.0;
+    float expect_floatval = 0.0f;
+    double expect_dblval = 0.0f;
     switch (columnA) {
       case 1:
-        expect_floatval = 1.0;
-        expect_dblval = 1.0;
+        expect_floatval = 1.0f;
+        expect_dblval = 1.0f;
         break;
       case 2:
       case 4:
-        expect_floatval = 443664.0;
-        expect_dblval = 291.2711110711098;
+        expect_floatval = 443664.0f;
+        expect_dblval = 291.2711110711098l;
         break;
       case 3:
-        expect_floatval = 443665.0;
-        expect_dblval = 292.2711110711098;
+        expect_floatval = 443665.0f;
+        expect_dblval = 292.2711110711098l;
         break;
     }
     
