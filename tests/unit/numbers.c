@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   set_up_connection();
   set_up_schema("test_numbers");
   
-  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double)");
+  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double(16,13))");
   
   /* Insert rows with pk 1 and 2 */
   CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values (1,1,1,1,1,1,1), (127,32687,8388351,2147352575,9222246136947920895,443664,291.2711110711098);");
