@@ -155,7 +155,7 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
           _APPEND_COMPILE_FLAGS_ERROR([-Wtrampolines])
           _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
+#          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-funsafe-loop-optimizations])
           AS_IF([test "x$ac_cv_vcs_checkout" = xyes && test "x$MINGW" != xyes],[
             _APPEND_COMPILE_FLAGS_ERROR([-fno-omit-frame-pointer])
@@ -275,7 +275,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
           _APPEND_COMPILE_FLAGS_ERROR([-Wtrampolines])
           _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
+#          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-funsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-Wc++11-compat])
 #         _APPEND_COMPILE_FLAGS_ERROR([-Weffc++])
