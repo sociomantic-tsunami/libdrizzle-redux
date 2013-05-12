@@ -12,7 +12,8 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.11 color-tests -Wno-portability subdir-objects foreign tar-ustar])
+# Automake version before 1.13 (when the serial-tests option was dnl still the default) still defined the badly obsolete macro.  'AM_PROG_INSTALL'.
+AM_INIT_AUTOMAKE(1.11 no-define color-tests -Wno-portability subdir-objects foreign tar-ustar m4_ifndef([AM_PROG_INSTALL], [serial-tests]))
 AC_PREREQ([2.68])
 
 AC_CANONICAL_HOST
@@ -44,6 +45,8 @@ LT_PREREQ([2.2])
 LT_INIT
 LT_LANG([C++])
 
+AC_PROG_CXX
+AC_PROG_CC
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
 
