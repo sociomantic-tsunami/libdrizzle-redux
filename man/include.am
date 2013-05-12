@@ -2,17 +2,11 @@
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
 
-if HAVE_RECENT_SPHINX
-
-if IS_VCS_CHECKOUT
+dist_man_MANS+= man/cxxflags.1
+dist_man_MANS+= man/cflags.1
 
 # Build rule for documentation
-$(dist_man_MANS): man
+$(dist_man_MANS): $(top_srcdir)/configure.ac
+	$(MAKE) $(AM_MAKEFLAGS) man
 
-endif
-
-BUILT_SOURCES+= $(dist_man_MANS)
-
-dist_man_MANS+=  man/libdrizzle.3
-
-endif
+.NOTPARALLEL: $(dist_man_MANS)

@@ -24,6 +24,9 @@
 #include "config.h"
 #include "libdrizzle/common.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
+
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
 
 /*
@@ -178,3 +181,5 @@ SHA1Final(uint8_t digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context)
 		memset(context, 0, sizeof(*context));
 	}
 }
+
+#pragma GCC diagnostic pop
