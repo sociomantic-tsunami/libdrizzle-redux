@@ -185,7 +185,7 @@ AC_DEFUN([_HARDEN_CC_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
           _APPEND_COMPILE_FLAGS_ERROR([-Wtrampolines])
           _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
+#         _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-funsafe-loop-optimizations])
 
           _APPEND_COMPILE_FLAGS_ERROR([-Wclobbered])
@@ -286,7 +286,7 @@ AC_DEFUN([_HARDEN_CXX_COMPILER_FLAGS],
           _APPEND_COMPILE_FLAGS_ERROR([-Wswitch-enum])
           _APPEND_COMPILE_FLAGS_ERROR([-Wtrampolines])
           _APPEND_COMPILE_FLAGS_ERROR([-Wundef])
-          _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
+#         _APPEND_COMPILE_FLAGS_ERROR([-Wunsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-funsafe-loop-optimizations])
           _APPEND_COMPILE_FLAGS_ERROR([-Wc++11-compat])
 #         _APPEND_COMPILE_FLAGS_ERROR([-Weffc++])
