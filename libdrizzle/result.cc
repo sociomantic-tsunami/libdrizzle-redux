@@ -78,6 +78,7 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
 void drizzle_result_free(drizzle_result_st *result)
 {
   drizzle_column_st* column;
+  int64_t y;
 
   if (result == NULL)
   {
@@ -94,18 +95,13 @@ void drizzle_result_free(drizzle_result_st *result)
   if (result->options & DRIZZLE_RESULT_BUFFER_ROW)
   {
     uint64_t x;
-    int64_t y;
-    if (result->field_buffer)
+
+    for (x= 0; x < result->row_count; x++)
     {
       for (y= 0; y < (result->column_count - result->null_bitcount); y++)
       {
-        free(result->field_buffer[y]);
+        delete[] result->row_list[x][y];
       }
-    }
-    drizzle_row_free(result, result->row);
- 
-    for (x= 0; x < result->row_count; x++)
-    {
       delete[] result->row_list[x];
       if (result->null_bitmap_list != NULL)
       {
@@ -120,6 +116,17 @@ void drizzle_result_free(drizzle_result_st *result)
     free(result->row_list);
     free(result->field_sizes_list);
   }
+
+  if (result->field_buffer)
+  {
+    for (y= 0; y < (result->column_count); y++)
+    {
+      free(result->field_buffer[y]);
+    }
+    delete[] result->field_buffer;
+    delete[] result->field_buffer_sizes;
+  }
+  delete[] result->row;
 
   if (result->con)
   {

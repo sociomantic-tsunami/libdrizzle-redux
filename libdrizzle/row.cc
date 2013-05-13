@@ -99,28 +99,31 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
   drizzle_field_t field;
   drizzle_row_t row;
 
+  if (result->row)
+  {
+    delete[] result->row;
+    result->row= NULL;
+  }
+
+  if (drizzle_row_read(result, ret_ptr) == 0 || *ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return NULL;
+  }
+
+  result->row= new (std::nothrow) drizzle_field_t[result->column_count];
   if (result->row == NULL)
   {
-    if (drizzle_row_read(result, ret_ptr) == 0 || *ret_ptr != DRIZZLE_RETURN_OK)
-    {
-      return NULL;
-    }
+    drizzle_set_error(result->con, __func__, "Failed to allocate.");
+    *ret_ptr= DRIZZLE_RETURN_MEMORY;
+    return NULL;
+  }
 
-    result->row= new (std::nothrow) drizzle_field_t[result->column_count];
-    if (result->row == NULL)
-    {
-      drizzle_set_error(result->con, __func__, "Failed to allocate.");
-      *ret_ptr= DRIZZLE_RETURN_MEMORY;
-      return NULL;
-    }
-
-    result->field_sizes= new (std::nothrow) size_t[result->column_count];
-    if (result->field_sizes == NULL)
-    {
-      drizzle_set_error(result->con, __func__, "Failed to allocate.");
-      *ret_ptr= DRIZZLE_RETURN_MEMORY;
-      return NULL;
-    }
+  result->field_sizes= new (std::nothrow) size_t[result->column_count];
+  if (result->field_sizes == NULL)
+  {
+    drizzle_set_error(result->con, __func__, "Failed to allocate.");
+    *ret_ptr= DRIZZLE_RETURN_MEMORY;
+    return NULL;
   }
 
   while (1)
@@ -148,7 +151,6 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
 
   *ret_ptr= DRIZZLE_RETURN_OK;
   row= result->row;
-  result->row= NULL;
 
   return row;
 }
@@ -160,15 +162,16 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
     return;
   }
 
+  delete[] row;
   if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))
   {
     delete[] result->null_bitmap;
     result->null_bitmap= NULL;
     delete[] result->field_sizes;
     result->field_sizes= NULL;
+    result->row= NULL;
   }
 
-  delete[] row;
 }
 
 size_t *drizzle_row_field_sizes(drizzle_result_st *result)
