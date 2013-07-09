@@ -444,7 +444,7 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
     case DRIZZLE_COLUMN_TYPE_ENUM:
     case DRIZZLE_COLUMN_TYPE_SET:
     case DRIZZLE_COLUMN_TYPE_GEOMETRY:
-    /* TODO: Next 3 we really need to support */
+    /* We do not need to support these three: they exist internally to the MySQL server, but do not appear on the wire */
     case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
     case DRIZZLE_COLUMN_TYPE_DATETIME2:
     case DRIZZLE_COLUMN_TYPE_TIME2:
