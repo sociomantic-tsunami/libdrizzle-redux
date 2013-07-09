@@ -314,11 +314,15 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
       val= (char*)param->data;
       *len= param->length;
       break;
+
+    /* These types aren't handled yet, most are for older MySQL versions */
     case DRIZZLE_COLUMN_TYPE_NEWDATE:
     case DRIZZLE_COLUMN_TYPE_VARCHAR:
     case DRIZZLE_COLUMN_TYPE_ENUM:
     case DRIZZLE_COLUMN_TYPE_SET:
     case DRIZZLE_COLUMN_TYPE_GEOMETRY:
+
+    /* We do not need to support these three: they exist internally to the MySQL server, but do not appear on the wire */
     case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
     case DRIZZLE_COLUMN_TYPE_DATETIME2:
     case DRIZZLE_COLUMN_TYPE_TIME2:

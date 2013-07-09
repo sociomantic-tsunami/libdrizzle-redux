@@ -269,7 +269,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       case DRIZZLE_COLUMN_TYPE_SET:
       case DRIZZLE_COLUMN_TYPE_GEOMETRY:
       case DRIZZLE_COLUMN_TYPE_BIT:
-      /* TODO: We need to support these three */
+      /* We do not need to support these three: they exist internally to the MySQL server, but do not appear on the wire */
       case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
       case DRIZZLE_COLUMN_TYPE_DATETIME2:
       case DRIZZLE_COLUMN_TYPE_TIME2:
@@ -510,7 +510,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
         case DRIZZLE_COLUMN_TYPE_ENUM:
         case DRIZZLE_COLUMN_TYPE_SET:
         case DRIZZLE_COLUMN_TYPE_GEOMETRY:
-        /* TODO: We need to support these three */
+        /* We do not need to support these three: they exist internally to the MySQL server, but do not appear on the wire */
         case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
         case DRIZZLE_COLUMN_TYPE_DATETIME2:
         case DRIZZLE_COLUMN_TYPE_TIME2:
