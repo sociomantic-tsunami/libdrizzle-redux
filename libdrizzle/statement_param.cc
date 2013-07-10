@@ -163,9 +163,8 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
 
   timestamp->negative= false;
   timestamp->year= year;
-  timestamp->day= day;
   timestamp->month= month;
-  timestamp->year= year;
+  timestamp->day= day;
   timestamp->hour= hours;
   timestamp->minute= minutes;
   timestamp->second= seconds;
