@@ -147,12 +147,14 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     return NULL;
   }
 
-  if ((SIZE_MAX < UINT64_MAX) && (wire_size >= SIZE_MAX))
+#if SIZE_MAX < UINT64_MAX
+  if (wire_size >= SIZE_MAX)
   {
     drizzle_set_error(result->con, __func__, "Field is larger than memory.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     return NULL;
   }
+#endif
   *total = (size_t)wire_size;
 
   if (result->field_buffer == NULL)
