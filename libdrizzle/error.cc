@@ -76,8 +76,6 @@ const char *drizzle_strerror(const drizzle_return_t arg)
   case DRIZZLE_RETURN_TRUNCATED: return "DRIZZLE_RETURN_TRUNCATED";
   case DRIZZLE_RETURN_INVALID_CONVERSION: return "DRIZZLE_RETURN_INVALID_CONVERSION";
   case DRIZZLE_RETURN_NOT_FOUND: return "DRIZZLE_RETURN_NOT_FOUND";
-  case DRIZZLE_RETURN_MAX: return "DRIZZLE_RETURN_MAX";
+  default: return "DRIZZLE_RETURN_UNKNOWN_ERROR";
   }
-
-  return "DRIZZLE_RETURN_MAX";
 }
