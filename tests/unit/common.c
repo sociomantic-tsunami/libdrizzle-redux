@@ -57,6 +57,7 @@ void close_connection_on_exit(void)
 void set_up_connection(void)
 {
   drizzle_return_t driz_ret;
+  const char *verbosity;
   
   ASSERT_NULL_(con, "con opened twice?");
   
@@ -66,6 +67,10 @@ void set_up_connection(void)
                       getenv("MYSQL_PASSWORD"),
                       getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
+
+  verbosity = getenv("DRIZZLE_TEST_VERBOSE");
+  if (verbosity)
+    drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
   
   driz_ret= drizzle_connect(con);
   SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
