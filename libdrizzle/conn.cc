@@ -67,6 +67,8 @@
  */
 static drizzle_return_t _setsockopt(drizzle_st *con);
 
+static void connect_failed_try_next(drizzle_st *con, const char *func, const char *msg);
+
 static void __closesocket(socket_t& fd)
 {
   if (fd != INVALID_SOCKET)
@@ -75,97 +77,6 @@ static void __closesocket(socket_t& fd)
     (void)closesocket(fd);
     fd= INVALID_SOCKET;
   }
-}
-
-static bool connect_poll(drizzle_st *con)
-{
-  struct pollfd fds[1];
-  fds[0].fd= con->fd;
-  fds[0].events= POLLIN;
-
-  size_t loop_max= 5; // This should only be used for EINTR
-  while (--loop_max) // Should only loop on cases of ERESTART or EINTR
-  {
-    int error= poll(fds, 1, con->timeout);
-    if (error == 1)
-    {
-      if (fds[0].revents & (POLLIN))
-      {
-        drizzle_log_debug(con, "poll(POLLIN)");
-        return true;
-      }
-
-      if (fds[0].revents & (POLLOUT))
-      {
-        drizzle_log_debug(con, "poll(POLLOUT)");
-        return true;
-      }
-
-      if (fds[0].revents & (POLLERR | POLLHUP | POLLNVAL))
-      {
-#ifdef __MINGW32__
-        char err;
-#else
-        int err;
-#endif
-        socklen_t len= sizeof (err);
-        // We replace errno with err if getsockopt() passes, but err has been
-        // set.
-        if (getsockopt(con->fd, SOL_SOCKET, SO_ERROR, &err, &len) == 0)
-        {
-          // We check the value to see what happened wth the socket.
-          if (err == 0)
-          {
-            return true;
-          }
-          errno= err;
-          perror("poll()");
-        }
-
-        // "getsockopt() failed"
-        return false;
-      }
-
-      assert(0);
-
-      return false;
-    }
-    else if (error == 0)
-    {
-      // "timeout occurred while trying to connect"
-      drizzle_log_debug(con, "poll(TIMEOUT) %d", con->timeout);
-      return false;
-    }
-
-    perror("poll2()");
-    switch (get_socket_errno())
-    {
-#ifdef TARGET_OS_LINUX
-    case ERESTART:
-#endif
-    case EINTR:
-      continue;
-
-    case EFAULT:
-    case ENOMEM:
-      // "poll() failure"
-      break;
-
-    case EINVAL:
-      // "RLIMIT_NOFILE exceeded, or if OSX the timeout value was invalid"
-      break;
-
-    default:
-      break;
-    }
-
-    //"socket error occurred");
-    return false;
-  }
-
-  // This should only be possible from ERESTART or EINTR;
-  // "connection failed (error should be from either ERESTART or EINTR"
-  return false;
 }
 
 /** @} */
@@ -700,7 +611,19 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
     con->push_state(drizzle_state_addrinfo);
   }
 
-  return drizzle_state_loop(con);
+  while (1)
+  {
+    drizzle_return_t ret = drizzle_state_loop(con);
+    
+    if (ret == DRIZZLE_RETURN_IO_WAIT && !con->options.non_blocking) {
+      ret = drizzle_wait(con);
+      if (ret != DRIZZLE_RETURN_OK)
+        return ret;
+      continue;
+    }
+
+    return ret;
+  }
 }
 
 drizzle_return_t drizzle_quit(drizzle_st *con)
@@ -1092,29 +1015,63 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 
       if (ret == 0)
       {
+        /* Success. */
+        con->revents= POLLOUT;
         con->addrinfo_next= NULL;
         break;
       }
 
-      if (errno == EAGAIN || errno == EINTR)
-      {
-        continue;
-      }
+      con->revents= 0;
 
-      if (errno == EINPROGRESS)
-      {
-        if (connect_poll(con))
+      if (errno == EINTR
+#ifdef ERESTART
+          || errno == ERESTART
+#endif
+#ifdef EINPROGRESS
+          || errno == EINPROGRESS
+#endif
+#ifdef EALREADY
+          || errno == EALREADY
+#endif
+          )
         {
+        /* EINTR: Interrupted system call. POSIX states that in this case,
+           the connection attempt will continue asynchronously, as if we'd
+           made a nonblocking connect.
+
+           ERESTART: Should never escape libc, but if it does, treat it
+           as EINTR.
+
+           EINPROGRESS: Normal response indicating nonblocking connect has been
+           started.
+
+           EALREADY: Indicates nonblocking connect already in progress.
+        */
           con->pop_state();
+        con->revents= 0;
+        drizzle_set_events(con, POLLOUT);
+        con->push_state(drizzle_state_connecting);
           return DRIZZLE_RETURN_OK;
         }
-      }
-      else if (errno == ECONNREFUSED || errno == ENETUNREACH || errno == ETIMEDOUT)
+
+      if (errno == ECONNREFUSED || errno == ECONNRESET
+#ifdef ENETUNREACH
+          || errno == ENETUNREACH || errno == EHOSTUNREACH || errno == ENETDOWN
+#endif
+#ifdef ETIMEDOUT
+          || errno == ETIMEDOUT
+#endif
+#ifdef EAFNOSUPPORT
+          || errno == EAFNOSUPPORT
+#endif
+          )
       {
+        /* Positive failure. Try the next address. */
         con->addrinfo_next= con->addrinfo_next->ai_next;
         return DRIZZLE_RETURN_OK;
       }
 
+      /* Other failures not specific to this address */
       drizzle_set_error(con, __func__, "connect:%s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
@@ -1142,55 +1099,69 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
 
   drizzle_log_debug(con, "drizzle_state_connecting");
 
-  while (1)
+  if (con->revents & (POLLOUT | POLLERR | POLLHUP))
   {
     int error= 0;
-    if (con->revents & POLLOUT)
-    {
       con->pop_state();
       socklen_t error_length= sizeof(error);
       int getsockopt_error;
-      if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (char*)&error, &error_length)) < 1)
+    if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (void *)&error, &error_length)) < 0)
       {
-        drizzle_set_error(con, __func__, strerror(getsockopt_error));
-        return DRIZZLE_RETURN_COULD_NOT_CONNECT;
+      drizzle_set_error(con, __func__, "getsockopt: %s", strerror(errno));
+      return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
 
-      if (error == 0)
+    if (error == 0 && (con->revents & POLLOUT))
       {
-        con->pop_state();
+      /* Successful connection! */
+      con->addrinfo_next= NULL;
         return DRIZZLE_RETURN_OK;
       }
-    }
-    else if (con->revents & (POLLERR | POLLHUP | POLLNVAL))
+    else
     {
-      error= 1;
+      const char *msg;
+
+      if (error != 0)
+      {
+        /* If we have an error code from SO_ERROR,
+           report it in the failure message */
+        msg= strerror(error);
+      }
+      else if (con->revents & POLLHUP)
+      {
+        /* If we don't have an error code, but we know the connection
+           was dropped, just report that */
+        msg= "Hangup";
+    }
+      else
+    {
+        /* We only reach here if we get POLLERR from poll(), but
+           SO_ERROR returned zero. Presumably shouldn't happen. */
+        msg= "Unknown failure";
     }
 
-    if (error)
-    {
-      con->revents= 0;
-      con->pop_state();
-      con->push_state(drizzle_state_connect);
-      con->addrinfo_next= con->addrinfo_next->ai_next;
-
+      /* Failed connection. Try the next address. */
+      connect_failed_try_next(con, __func__, msg);
       return DRIZZLE_RETURN_OK;
     }
-
+  }
+  else if (con->revents & POLLNVAL)
+    {
+    /* Failed connection. Try the next address. */
+      con->revents= 0;
+      con->pop_state();
+    connect_failed_try_next(con, __func__, "Invalid file descriptor");
+      return DRIZZLE_RETURN_OK;
+  } else {
+    con->revents= 0;
     ret= drizzle_set_events(con, POLLOUT);
     if (ret != DRIZZLE_RETURN_OK)
     {
       return ret;
     }
-    else if (con->options.non_blocking)
+    else
     {
       return DRIZZLE_RETURN_IO_WAIT;
-    }
-
-    ret= drizzle_wait(con);
-    if (ret != DRIZZLE_RETURN_OK)
-    {
-      return ret;
     }
   }
 }
@@ -1411,7 +1382,11 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     { }
     else if (write_size == -1)
     {
-      if (errno == EAGAIN)
+      if (errno == EAGAIN
+#ifdef EWOULDBLOCK
+          || errno == EWOULDBLOCK
+#endif
+          )
       {
         ret= drizzle_set_events(con, POLLOUT);
         if (ret != DRIZZLE_RETURN_OK)
@@ -1631,4 +1606,26 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #endif
 
   return DRIZZLE_RETURN_OK;
+}
+
+static void connect_failed_try_next(drizzle_st *con, const char *func, const char *msg)
+{
+  char hostbuf[NI_MAXHOST], servbuf[NI_MAXSERV];
+  struct addrinfo *aip = con->addrinfo_next;
+  
+  if (getnameinfo(aip->ai_addr, aip->ai_addrlen,
+                  hostbuf, sizeof(hostbuf),
+                  servbuf, sizeof(servbuf),
+                  NI_NUMERICHOST | NI_NUMERICSERV)) {
+    strcpy(hostbuf, "???");
+    strcpy(servbuf, "???");
+  }
+  drizzle_log_info(con, "connect failure: host=%s port=%s msg=%s",
+                   hostbuf, servbuf, msg);
+
+  drizzle_set_error(con, func, "connect: %s (port %s): %s",
+                    hostbuf, servbuf, msg);
+
+  con->addrinfo_next= con->addrinfo_next->ai_next;
+  con->push_state(drizzle_state_connect);
 }
