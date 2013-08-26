@@ -264,8 +264,43 @@ void drizzle_free(drizzle_st *con)
   delete con;
 }
 
+#ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
+
+#define POLLDEBUGBUFLEN 21
+static char *pollevents_str(short events, char *buf)
+{
+  char *p = buf;
+
+#define N(sym,txt)  if (events & (sym)) {       \
+    strcpy(p, txt ",");                         \
+    p += strlen(txt ",");                       \
+  }
+
+  N(POLLERR, "err");
+  N(POLLHUP, "hup");
+  N(POLLIN,  "in");
+  N(POLLOUT, "out");
+  N(POLLNVAL, "nval");
+  
+  if (p == buf) {
+    strcpy(buf, "none");
+    return buf;
+  }
+  else
+  {
+    p[-1] = (char)0;
+    return buf;
+  }
+}
+
+#endif
+
 drizzle_return_t drizzle_wait(drizzle_st *con)
 {
+#ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
+  char ebuf[POLLDEBUGBUFLEN];
+#endif
+
   if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
@@ -286,14 +321,20 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   int ret;
   while (1)
   {
-    drizzle_log_debug(con, "poll timeout=%d", con->timeout);
+#ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
+    drizzle_log_debug(con, "poll timeout=%d waitfor=%s (0x%04X)",
+                      con->timeout, pollevents_str(con->pfds[0].events, ebuf), con->pfds[0].events);
+#else
+    drizzle_log_debug(con, "poll timeout=%d waitfor=0x%04X",
+                      con->timeout, con->pfds[0].events);
+#endif
 
     ret= poll(con->pfds, 1, con->timeout);
 
-    drizzle_log_debug(con, "poll return=%d errno=%d", ret, errno);
-
     if (ret == -1)
     {
+      drizzle_log_debug(con, "poll return=%d errno=%d (%s)", ret, errno, strerror(errno));
+
       if (errno == EINTR)
       {
         continue;
@@ -303,6 +344,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
+    drizzle_log_debug(con, "poll return=%d", ret);
 
     break;
   }
@@ -313,6 +355,11 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
     return DRIZZLE_RETURN_TIMEOUT;
   }
 
+#ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
+  drizzle_log_debug(con, "poll readyfor=%s",
+                    pollevents_str(con->pfds[0].revents, ebuf));
+#endif
+  
   return drizzle_set_revents(con, con->pfds[0].revents);
 }
 
