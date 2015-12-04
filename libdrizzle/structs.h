@@ -219,6 +219,8 @@ struct drizzle_st
   unsigned char *command_data;
   void *context;
   drizzle_context_free_fn *context_free_fn;
+  void *event_watch_context; /* context for custom callback function  */
+  drizzle_event_watch_fn *event_watch_fn; /* custom call back function */
   drizzle_result_st *result;
   drizzle_result_st *result_list;
   unsigned char *scramble;
@@ -287,6 +289,8 @@ public:
     command_data(NULL),
     context(NULL),
     context_free_fn(NULL),
+    event_watch_context(NULL),
+    event_watch_fn(NULL),
     result(NULL),
     result_list(NULL),
     scramble(NULL),

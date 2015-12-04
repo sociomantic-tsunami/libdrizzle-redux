@@ -164,6 +164,29 @@ void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose);
 DRIZZLE_API
 void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
                         void *context);
+
+
+/**
+ * Set a custom I/O event watcher function for a drizzle structure. Used to
+ * integrate libdrizzle with a custom event loop. The callback will be invoked
+ * to register or deregister interest in events for a connection. When the
+ * events are triggered, drizzle_con_set_revents() should be called to
+ * indicate which events are ready. The event loop should stop waiting for
+ * these events, as libdrizzle will call the callback again if it is still
+ * interested. To resume processing, the libdrizzle function that returned
+ * DRIZZLE_RETURN_IO_WAIT should be called again. See drizzle_event_watch_fn().
+ *
+ * @param[in] drizzle Drizzle structure previously initialized with
+ *  drizzle_create() or drizzle_clone().
+ * @param[in] function Function to call when there is an I/O event.
+ * @param[in] context Argument to pass into the callback function.
+ */
+DRIZZLE_API
+void drizzle_set_event_watch_fn(drizzle_st *drizzle,
+                                drizzle_event_watch_fn *function,
+                                void *context);
+
+
 /**
  * Wait for I/O on connections.
  *

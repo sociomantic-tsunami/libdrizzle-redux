@@ -209,6 +209,8 @@ void drizzle_close(drizzle_st *con)
 
 drizzle_return_t drizzle_set_events(drizzle_st *con, short events)
 {
+  drizzle_return_t ret;
+
   if ((con->events | events) == con->events)
   {
     return DRIZZLE_RETURN_OK;
@@ -216,11 +218,24 @@ drizzle_return_t drizzle_set_events(drizzle_st *con, short events)
 
   con->events|= events;
 
+  if (con->event_watch_fn != NULL)
+  {
+    ret= con->event_watch_fn(con, con->events, con->event_watch_context);
+
+    if (ret != DRIZZLE_RETURN_OK)
+      {
+        drizzle_close(con);
+        return ret;
+      }
+  }
+
   return DRIZZLE_RETURN_OK;
 }
 
 drizzle_return_t drizzle_set_revents(drizzle_st *con, short revents)
 {
+  drizzle_return_t ret;
+
   if (con == NULL)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
@@ -230,6 +245,21 @@ drizzle_return_t drizzle_set_revents(drizzle_st *con, short revents)
     con->state.io_ready= true;
 
   con->revents= revents;
+
+  /* Remove external POLLOUT watch if we didn't ask for it. Otherwise we spin
+     forever until another POLLIN state change. This is much more efficient
+     than removing POLLOUT on every state change since some external polling
+     mechanisms need to use a system call to change flags (like Linux epoll). */
+  if (revents & POLLOUT && !(con->events & POLLOUT) && con->event_watch_fn != NULL)
+  {
+    ret= con->event_watch_fn(con, con->events, con->event_watch_context);
+
+    if (ret != DRIZZLE_RETURN_OK)
+    {
+      drizzle_close(con);
+      return ret;
+    }
+  }
 
   con->events&= (short)~revents;
 
