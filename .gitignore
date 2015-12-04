@@ -29,6 +29,7 @@ libdrizzle/.dirstamp
 libdrizzle/.libs/
 libdrizzle/*.la
 libdrizzle/*.lo
+libdrizzle/*.o
 libdrizzle-*/version.h
 m4/libtool.m4
 m4/ltoptions.m4
@@ -41,3 +42,4 @@ docs/changes/
 docs/latex/
 libdrizzle-config
 test-suite.log
+
