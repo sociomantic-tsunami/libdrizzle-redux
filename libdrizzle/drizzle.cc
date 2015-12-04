@@ -184,6 +184,14 @@ void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function, void *context
   con->log_context= context;
 }
 
+void drizzle_set_event_watch_fn(drizzle_st *drizzle,
+                                drizzle_event_watch_fn *function,
+                                void *context)
+{
+  drizzle->event_watch_fn= function;
+  drizzle->event_watch_context= context;
+}
+
 drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
 {
   drizzle= new (std::nothrow) drizzle_st;
