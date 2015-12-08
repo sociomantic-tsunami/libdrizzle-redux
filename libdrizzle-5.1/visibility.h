@@ -23,13 +23,13 @@
 # elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 #  define DRIZZLE_API __global
 # elif defined(_MSC_VER)
-#  define DRIZZLE_API extern __declspec(dllexport) 
+#  define DRIZZLE_API extern __declspec(dllexport)
 # else
 #  define DRIZZLE_API
 # endif /* defined(HAVE_VISIBILITY) */
 #else  /* defined(BUILDING_LIBDRIZZLE) */
 # if defined(_MSC_VER)
-#  define DRIZZLE_API extern __declspec(dllimport) 
+#  define DRIZZLE_API extern __declspec(dllimport)
 # else
 #  define DRIZZLE_API
 # endif /* defined(_MSC_VER) */

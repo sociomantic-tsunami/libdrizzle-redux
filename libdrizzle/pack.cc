@@ -301,7 +301,7 @@ void drizzle_unpack_datetime(drizzle_field_t field, size_t length, drizzle_datet
     if (decimals)
     {
       datetime->show_microseconds= true;
-    } 
+    }
   }
 }
 

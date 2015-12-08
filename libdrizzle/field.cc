@@ -153,7 +153,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     return NULL;
   }
   *total = (size_t)wire_size;
-  
+
   if (result->field_buffer == NULL)
   {
     result->field_buffer= new (std::nothrow) char[(*total) + 1];
@@ -175,7 +175,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
       return NULL;
     }
     assert(wire_size == (uint64_t)*total);
-    
+
     memcpy(result->field_buffer + offset, field, size);
   }
 
@@ -245,7 +245,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 
     uint32_t available_data = (con->buffer_size < con->packet_size)? (uint32_t)con->buffer_size : con->packet_size;
     /* packet_size fits in uint32, so available_data fits in uint32 */
-    
+
     if (available_data >= con->result->field_total)
     {
       /* narrowing cast is safe because field_total<packet_size and packet_size is uint32 */
@@ -260,9 +260,9 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   {
     uint32_t available_data = (con->buffer_size < con->packet_size)? (uint32_t)con->buffer_size : con->packet_size;
     /* packet_size fits in uint32, so available_data fits in uint32 */
-    
+
     uint64_t field_remaining = con->result->field_total - con->result->field_offset;
-    
+
     if (field_remaining <= available_data)
     {
       /* narrowing cast is safe because field_remaining<=packet_size and packet_size is uint32 */
@@ -417,4 +417,3 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
   con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
-

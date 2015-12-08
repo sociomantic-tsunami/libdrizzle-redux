@@ -15,7 +15,7 @@ extern "C" {
  * Copyright (C) 2010 nobody (this is public domain)
  *
  * This file is based on public domain code.
- * Initial source code is in the public domain, 
+ * Initial source code is in the public domain,
  * so clarified by Steve Reid <steve@edmweb.com>
  *
  * @{

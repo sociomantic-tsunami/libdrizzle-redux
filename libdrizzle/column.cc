@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -561,4 +561,3 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
 
   return DRIZZLE_RETURN_OK;
 }
-

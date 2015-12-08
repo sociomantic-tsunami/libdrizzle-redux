@@ -1,4 +1,4 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  * Drizzle Client & Protocol Library
  *
@@ -45,5 +45,3 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result);
 void drizzle_column_set_default_value(drizzle_column_st *column,
                                       const unsigned char *default_value,
                                       size_t size);
-
-

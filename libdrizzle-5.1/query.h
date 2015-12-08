@@ -70,7 +70,7 @@ extern "C" {
  *         if the allocation failed.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_query(drizzle_st *con, 
+drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr);
 

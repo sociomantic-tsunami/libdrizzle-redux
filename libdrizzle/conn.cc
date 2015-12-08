@@ -162,7 +162,7 @@ static bool connect_poll(drizzle_st *con)
     return false;
   }
 
-  // This should only be possible from ERESTART or EINTR; 
+  // This should only be possible from ERESTART or EINTR;
   // "connection failed (error should be from either ERESTART or EINTR"
   return false;
 }
@@ -1020,16 +1020,16 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 
     {
       int type= con->addrinfo_next->ai_socktype;
-      
-      /* Linuxisms to set some fd flags at the same time as creating the socket. */ 
+
+      /* Linuxisms to set some fd flags at the same time as creating the socket. */
 #ifdef SOCK_CLOEXEC
       type|= SOCK_CLOEXEC;
 #endif
-      
+
 #ifdef SOCK_NONBLOCK
       type|= SOCK_NONBLOCK;
 #endif
-      
+
       con->fd= socket(con->addrinfo_next->ai_family,
                       type,
                       con->addrinfo_next->ai_protocol);
@@ -1200,7 +1200,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
     return DRIZZLE_RETURN_IO_WAIT;
   }
-  
+
   assert(con->buffer_allocation > 0); /* Appease static analyzer */
 
   while (1)
@@ -1249,7 +1249,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 #endif // defined _WIN32 || defined __CYGWIN__
 
     drizzle_log_debug(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
-                      con->fd, available_buffer, read_size, 
+                      con->fd, available_buffer, read_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
 
@@ -1362,7 +1362,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       write_size= SSL_write(con->ssl, con->buffer_ptr, con->buffer_size);
     }
     else
-#endif      
+#endif
     {
       write_size= send(con->fd,(char *) con->buffer_ptr, con->buffer_size, MSG_NOSIGNAL);
     }
@@ -1407,7 +1407,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       }
       else if (errno == EPIPE || errno == ECONNRESET)
       {
-        drizzle_set_error(con, __func__, "%s:%d lost connection to server (%s)", 
+        drizzle_set_error(con, __func__, "%s:%d lost connection to server (%s)",
                           __FILE__, __LINE__, strerror(errno));
         return DRIZZLE_RETURN_LOST_CONNECTION;
       }
@@ -1452,7 +1452,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     {
       flags= fcntl(con->fd, F_GETFD, 0);
     } while (flags == -1 and (errno == EINTR or errno == EAGAIN));
-    
+
     if (flags != -1)
     {
       int rval;
@@ -1464,7 +1464,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     }
   }
 #endif // HAVE_FCNTL but not SOCK_CLOEXEC
-                                                                          
+
 
   int ret= 1;
 
@@ -1555,7 +1555,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
 #if defined(SO_NOSIGPIPE)
   ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret), sizeof(int));
-  
+
   if (ret == -1)
   {
     drizzle_set_error(con, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
@@ -1563,7 +1563,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 #elif defined(HAVE_FCNTL) && defined(F_SETNOSIGPIPE)
   ret= fcntl(con->fd, F_SETNOSIGPIPE, 1);
-  
+
   if (ret == -1)
   {
     drizzle_set_error(con, __func__, "fcntl:F_SETNOSIGPIPE:%s", strerror(errno));
@@ -1588,7 +1588,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
       drizzle_set_error(con, __func__, "fcntl:F_GETFL:%s", strerror(errno));
       return DRIZZLE_RETURN_ERRNO;
     }
-    
+
     ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
     if (ret == -1)
     {

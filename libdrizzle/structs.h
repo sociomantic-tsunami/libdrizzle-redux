@@ -73,7 +73,7 @@ typedef int socket_t;
 #endif
 
 /**
- * @ingroup drizzle_command 
+ * @ingroup drizzle_command
  * Commands for drizzle_command functions.
  */
 enum drizzle_command_t
@@ -199,7 +199,7 @@ struct drizzle_st
       raw_packet(false)
     { }
   } state;
-  
+
   drizzle_options_st options;
   drizzle_socket_t socket_type;
   drizzle_status_t status;
@@ -475,7 +475,7 @@ struct drizzle_column_st
     flags(DRIZZLE_COLUMN_FLAGS_NONE),
     decimals(0),
     default_value_size(0)
-  { 
+  {
     catalog[0]= '\0';
     db[0]= '\0';
     table[0]= '\0';
@@ -539,7 +539,7 @@ struct drizzle_bind_st
     data(NULL),
     length(0),
     is_bound(false)
-  { 
+  {
     data_buffer= new (std::nothrow) char[128];
   }
 };

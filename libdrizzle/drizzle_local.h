@@ -56,7 +56,7 @@ extern "C" {
  * Set the error string.
  *
  * @param[in] drizzle Drizzle con structure
- * @param[in] function Name of function the error happened in. 
+ * @param[in] function Name of function the error happened in.
  * @param[in] format Format and variable argument list of message.
  */
 void drizzle_set_error(drizzle_st *con, const char *function, const char *format, ...);

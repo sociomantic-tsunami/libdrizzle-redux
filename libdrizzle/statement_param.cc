@@ -171,7 +171,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   timestamp->second= seconds;
   timestamp->microsecond= microseconds;
 
-  /* Length not important because we will figure that out when packing */ 
+  /* Length not important because we will figure that out when packing */
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIMESTAMP, timestamp, 0, false);
 }
 
@@ -222,7 +222,7 @@ bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *c
 bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
-  { 
+  {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return false;
   }
@@ -252,7 +252,7 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
   char *val;
   drizzle_bind_st *param;
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
-  { 
+  {
     *len= 0;
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return NULL;
@@ -353,7 +353,7 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
   drizzle_bind_st *param;
 
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
-  { 
+  {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
   }
@@ -443,7 +443,7 @@ uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, 
   drizzle_bind_st *param;
 
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
-  { 
+  {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
   }
@@ -609,11 +609,11 @@ char *long_to_string(drizzle_bind_st *param, uint32_t val)
 }
 
 char *longlong_to_string(drizzle_bind_st *param, uint64_t val)
-{ 
+{
   /* Max length is -INT64_MAX + NUL = 21 */
   char* buffer= param->data_buffer + 50;
   if (param->options.is_unsigned)
-  { 
+  {
     snprintf(buffer, 21, "%" PRIu64, val);
   }
   else
@@ -624,7 +624,7 @@ char *longlong_to_string(drizzle_bind_st *param, uint64_t val)
 }
 
 char *double_to_string(drizzle_bind_st *param, double val)
-{ 
+{
   /* Max length is 23 */
   char* buffer= param->data_buffer + 50;
   snprintf(buffer, 23, "%f", val);
@@ -637,16 +637,16 @@ char *time_to_string(drizzle_bind_st *param, drizzle_datetime_st *time)
   char* buffer= param->data_buffer + 50;
   int buffersize = 17;
   int used = 0;
-    
+
   /* Values are transferred with days separated from hours, but presented with days folded into hours. */
   used = snprintf(buffer, buffersize-used, "%s%02u:%02" PRIu8 ":%02" PRIu8, (time->negative) ? "-" : "", time->hour + 24 * time->day, time->minute, time->second);
 
   /* TODO: the existence (and length) of the decimals should be decided based on the number of fields sent by the server or possibly the column's "decimals" value, not by whether the microseconds are 0 */
   if (time->microsecond || time->show_microseconds)
     used += snprintf(buffer+used, buffersize-used, ".%06" PRIu32, time->microsecond);
-  
+
   assert(used < buffersize);
-    
+
   return buffer;
 }
 
@@ -656,14 +656,14 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
   char* buffer= param->data_buffer + 50;
   int buffersize = 27;
   int used = 0;
-  
+
   used += snprintf(buffer, buffersize-used, "%04" PRIu16 "-%02" PRIu8 "-%02" PRIu32,
      timestamp->year, timestamp->month, timestamp->day);
   assert(used < buffersize);
-  
+
   if (param->type == DRIZZLE_COLUMN_TYPE_DATE)
     return buffer;
-  
+
   used += snprintf(buffer+used, buffersize-used, " %02" PRIu16 ":%02" PRIu8 ":%02" PRIu8,
     timestamp->hour, timestamp->minute, timestamp->second);
 
@@ -671,9 +671,9 @@ char *timestamp_to_string(drizzle_bind_st *param, drizzle_datetime_st *timestamp
   {
     used += snprintf(buffer+used, buffersize-used, ".%06" PRIu32, timestamp->microsecond);
   }
-  
+
   assert(used < buffersize);
-  
+
   return buffer;
 }
 

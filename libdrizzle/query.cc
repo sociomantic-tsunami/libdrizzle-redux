@@ -173,7 +173,7 @@ bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_s
   {
     return false;
   }
-  
+
   SHA1_CTX ctx;
   unsigned char hash_tmp1[SHA1_DIGEST_LENGTH];
   unsigned char hash_tmp2[SHA1_DIGEST_LENGTH];

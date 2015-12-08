@@ -76,7 +76,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
                                           uint32_t server_id,
                                           const char *file,
                                           uint32_t start_position)
-{ 
+{
   unsigned char data[128];
   unsigned char *ptr;
   uint8_t len= 0, fn_len= 0;
@@ -337,7 +337,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
                             8;   // Fixed rotate length
       binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
       binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
-    
+
       con->buffer_ptr+= 27;
       con->buffer_size-= 27;
       con->packet_size-= 27;

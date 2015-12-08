@@ -46,4 +46,3 @@ drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *c
 #ifdef __cplusplus
 }
 #endif
-
