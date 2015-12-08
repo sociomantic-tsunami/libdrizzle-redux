@@ -1,4 +1,4 @@
-/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -168,12 +168,12 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
   }
 
   if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))
-  { 
+  {
     delete[] result->null_bitmap;
     result->null_bitmap= NULL;
     delete[] result->field_sizes;
     result->field_sizes= NULL;
-  } 
+  }
 
   delete[] row;
 }
@@ -275,7 +275,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
 
   drizzle_log_debug(con, "drizzle_state_row_read");
 
-  if (con->packet_size != 0 && con->buffer_size < con->packet_size && 
+  if (con->packet_size != 0 && con->buffer_size < con->packet_size &&
     con->buffer_size < 5)
   {
     con->push_state(drizzle_state_read);
@@ -311,4 +311,3 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
   con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
-

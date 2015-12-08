@@ -58,4 +58,3 @@ uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *colum
 #ifdef __cplusplus
 }
 #endif
-

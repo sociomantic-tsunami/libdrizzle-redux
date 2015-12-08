@@ -316,7 +316,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
     if (result->row_list_size < result->row_count)
     {
       size_t new_row_list_size = result->row_list_size + DRIZZLE_ROW_GROW_SIZE;
-      
+
       row_list= (drizzle_row_t *)realloc(result->row_list, sizeof(drizzle_row_t) * new_row_list_size);
       if (row_list == NULL)
       {
@@ -325,7 +325,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
         return DRIZZLE_RETURN_MEMORY;
       }
       result->row_list= row_list;
-      
+
       if (result->binary_rows)
       {
         uint8_t **null_bitmap_list= (uint8_t **)realloc(result->null_bitmap_list, sizeof(uint8_t *) * new_row_list_size);

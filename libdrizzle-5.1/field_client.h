@@ -71,7 +71,7 @@ extern "C" {
  * @param[out]   size     The number of bytes returned.
  * @param[out]   total    The total size of the field being read.
  * @param[out]   ret_ptr  DRIZZLE_RETURN_*
- * 
+ *
  */
 DRIZZLE_API
 drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,

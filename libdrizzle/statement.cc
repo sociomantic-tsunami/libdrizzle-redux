@@ -74,7 +74,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
       }
     }
   }
-  
+
   /* Reset column counter which is incremented when skipping parameter packets
    * and then buffer the columns */
 
@@ -176,8 +176,8 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
     buffer_pos++;
     data_pos= buffer_pos;
   }
-  memset(stmt->null_bitmap, 0, stmt->null_bitmap_length); 
-  /* Go through each param copying to buffer 
+  memset(stmt->null_bitmap, 0, stmt->null_bitmap_length);
+  /* Go through each param copying to buffer
    * In an ideal world we would do this without the copy
    * */
   for (current_param= 0; current_param < stmt->param_count; current_param++)
@@ -304,7 +304,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   }
 
   stmt->new_bind= false;
-  
+
   stmt->execute_result->binary_rows= true;
 
   stmt->execute_result->options= (drizzle_result_options_t)((uint8_t)stmt->execute_result->options | (uint8_t)DRIZZLE_RESULT_BINARY_ROWS);
@@ -525,7 +525,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
     {
       break;
     }
-      
+
   }
   stmt->state= DRIZZLE_STMT_FETCHED;
   if (!(stmt->execute_result->options & DRIZZLE_RESULT_BUFFER_ROW))
@@ -609,7 +609,7 @@ uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
   {
     return 0;
   }
-  
+
   return stmt->execute_result->affected_rows;
 }
 
