@@ -71,6 +71,15 @@ Functions
    :param function: The function to use in the format of :c:func:`drizzle_log_fn`
    :param context: A pointer to data to pass to the log function
 
+.. c:function:: void drizzle_set_event_watch_fn(drizzle_st *drizzle, drizzle_event_watch_fn *function, void *context)
+
+   Set a custom I/O event watcher function for a drizzle structure
+
+   :param drizzle: Drizzle structure previously initialized with
+    :c:func:`drizzle_create` or :c:func:`drizzle_clone`
+   :param function: Function to call when there is an I/O event, in the form of :c:func:`drizzle_event_watch_fn`
+   :param context: Argument to pass into the callback function.
+
 .. c:function:: const char* drizzle_error(const drizzle_st *con)
 
    Get the last error from a connection
@@ -194,7 +203,7 @@ Functions
 
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
-   
+
 .. c:function:: const char* drizzle_host(const drizzle_st *con)
 
    Gets the host name from a TCP/IP connection
@@ -348,3 +357,15 @@ Libdrizzle Redux library.
    :param verbose: The verbosity level of the message
    :param context: A pointer to data set in :c:func:`drizzle_set_log_fn`
 
+.. c:function:: drizzle_return_t drizzle_event_watch_fn(drizzle_st *con, short events, void *context)
+
+   The format of a function to register or deregister interest in file descriptor
+   events
+
+   :param con: Connection that has changed the events it is interested in.
+    Use drizzle_fd() to get the file descriptor.
+   :param events: A bit mask of POLLIN | POLLOUT, specifying if the
+    connection is waiting for read or write events.
+   :param context: Application context pointer registered with
+    :c:func:`drizzle_set_event_watch_fn`
+   :returns: DRIZZLE_RETURN_OK if successful.
