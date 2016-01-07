@@ -52,8 +52,14 @@
 # define __PRETTY_FUNCTION__ __func__
 #endif
 
+#ifndef SKIP_TEST_ON_ERROR
+ #define SKIP_TEST_ON_ERROR (getenv("SKIP_TEST_ON_ERROR") ? \
+                             atoi(getenv("SKIP_TEST_ON_ERROR")) : \
+                             0)
+#endif
+
 #ifndef EXIT_SKIP
-# define EXIT_SKIP 77
+ #define EXIT_SKIP SKIP_TEST_ON_ERROR ? 77 : EXIT_FAILURE
 #endif
 
 static inline bool valgrind_is_caller(void)
