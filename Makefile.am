@@ -41,6 +41,7 @@ include m4/include.am
 include libdrizzle/include.am
 include libdrizzle-5.1/include.am
 include rpm/include.am
+include deb/include.am
 include docs/include.am
 
 EXTRA_DIST+= AUTHORS
@@ -69,5 +70,6 @@ maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f @PACKAGE@-*.rpm
+	-rm -f @PACKAGE@-*.deb
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@ 
