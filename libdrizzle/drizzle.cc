@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2008-2013 Drizzle Developer Group
  * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2015 Andreas Bok Andersen (andreas.bok@sociomantic.com)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
