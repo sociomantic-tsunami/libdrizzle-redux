@@ -1,0 +1,33 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+# 
+# Makefile for building deb package 
+
+
+.PHONY: deb
+deb: 
+	$(MAKE) DESTDIR=${abs_builddir}/deb/install install 
+	deb/build
+
+.PHONY: install-deb
+install-deb:
+	@echo "This target is empty at the moment." 
+	@echo "Should be something like:" 
+	@echo "    sudo dpkg -i libdrizzle-redux.[version].d"
+
+.PHONY: release-deb
+release-deb:
+	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \
+	test -z $$version && exit 1; \
+	msg=`echo $$version | sed 's/v/Version /;s/-rc/ Release Candidate /'`; \
+	echo ; \
+	echo Changelog: ; \
+	git log --format='* %s (%h)' `git describe --abbrev=0 HEAD^`..HEAD; \
+	echo ; \
+	set -x; \
+	git tag -a -m "$$msg" $$version
+
+clean-deb:
+	-rm -rf deb/*.deb deb/install 
+
