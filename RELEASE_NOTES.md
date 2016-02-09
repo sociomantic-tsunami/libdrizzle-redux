@@ -4,9 +4,9 @@ Dependencies
 Dependency | Version
 -----------|---------
 gcc        | >=4.8.x
-automake   | >=v1.12
-CLooG      | >=v0.18.x
-
+autoconf   | >=2.61
+zlib1g-dev | >=0.13.x
+libtool    | >=2.x
 
 New Features
 ============
