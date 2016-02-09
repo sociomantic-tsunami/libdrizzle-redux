@@ -4,19 +4,18 @@
 # 
 # Makefile for building deb package 
 
+.PHONY: clean-deb deb install-deb release-deb
 
-.PHONY: deb
-deb: 
+deb: clean-deb
+	./configure --prefix=/usr
 	$(MAKE) DESTDIR=${abs_builddir}/deb/install install 
-	deb/build
+	deb/build deb
 
-.PHONY: install-deb
 install-deb:
 	@echo "This target is empty at the moment." 
 	@echo "Should be something like:" 
 	@echo "    sudo dpkg -i libdrizzle-redux.[version].d"
 
-.PHONY: release-deb
 release-deb:
 	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \
 	test -z $$version && exit 1; \
@@ -29,5 +28,4 @@ release-deb:
 	git tag -a -m "$$msg" $$version
 
 clean-deb:
-	-rm -rf deb/*.deb deb/install 
-
+	-rm -rf deb/*.deb deb/install
