@@ -38,5 +38,5 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--depends python2.7 \
 	--depends "git (>=1.7.7)" \
 	--deb-changelog "$changelog" \
-	install/usr
-
+	--deb-no-default-config-files \
+	install/=/
