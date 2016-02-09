@@ -35,8 +35,9 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
 	--category shared-lib \
-	--depends python2.7 \
-	--depends "git (>=1.7.7)" \
+	--depends autoconf \
+	--depends zlib1g-dev \
+	--depends libtool \
 	--deb-changelog "$changelog" \
 	install/usr
 
