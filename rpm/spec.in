@@ -50,11 +50,11 @@ mkdir -p $RPM_BUILD_ROOT/
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING 
-%{_libdir}/libdrizzle.a
-%{_libdir}/libdrizzle.la
-%{_libdir}/libdrizzle.so
-%{_libdir}/libdrizzle.so.*
-%{_bindir}/libdrizzle-config
+%{_libdir}/libdrizzle-redux.a
+%{_libdir}/libdrizzle-redux.la
+%{_libdir}/libdrizzle-redux.so
+%{_libdir}/libdrizzle-redux.so.*
+%{_bindir}/libdrizzle-redux-config
 
 %files devel
 %defattr(-,root,root,-)
