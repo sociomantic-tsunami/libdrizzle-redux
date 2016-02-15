@@ -8,7 +8,7 @@
 noinst_HEADERS+= tests/unit/common.h
 
 tests_unit_binlog_SOURCES= tests/unit/binlog.cc tests/unit/common.c
-tests_unit_binlog_LDADD= libdrizzle/libdrizzle.la
+tests_unit_binlog_LDADD= libdrizzle/libdrizzle-redux.la
 check_PROGRAMS+= tests/unit/binlog
 noinst_PROGRAMS+= tests/unit/binlog
 
@@ -22,25 +22,25 @@ check-binlog: tests/unit/binlog
 	tests/unit/binlog
 
 tests_unit_escape_SOURCES= tests/unit/escape.c
-tests_unit_escape_LDADD= libdrizzle/libdrizzle.la
+tests_unit_escape_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_escape_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/escape
 noinst_PROGRAMS+= tests/unit/escape
 
 tests_unit_insert_id_SOURCES= tests/unit/insert_id.c
-tests_unit_insert_id_LDADD= libdrizzle/libdrizzle.la
+tests_unit_insert_id_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_insert_id_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/insert_id
 noinst_PROGRAMS+= tests/unit/insert_id
 
 tests_unit_query_SOURCES= tests/unit/query.c
-tests_unit_query_LDADD= libdrizzle/libdrizzle.la
+tests_unit_query_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_query_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/query
 noinst_PROGRAMS+= tests/unit/query
 
 tests_unit_column_SOURCES= tests/unit/column.c tests/unit/common.c
-tests_unit_column_LDADD= libdrizzle/libdrizzle.la
+tests_unit_column_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_column_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/column
 noinst_PROGRAMS+= tests/unit/column
@@ -55,43 +55,43 @@ check-column: tests/unit/column
 	tests/unit/column
 
 tests_unit_numbers_SOURCES= tests/unit/numbers.c tests/unit/common.c
-tests_unit_numbers_LDADD= libdrizzle/libdrizzle.la
+tests_unit_numbers_LDADD= libdrizzle/libdrizzle-redux.la
 tests_unit_numbers_LDADD+= -lm
 nodist_EXTRA_tests_unit_numbers_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/numbers
 noinst_PROGRAMS+= tests/unit/numbers
 
 tests_unit_datetypes_SOURCES= tests/unit/datetypes.c tests/unit/common.c
-tests_unit_datetypes_LDADD= libdrizzle/libdrizzle.la
+tests_unit_datetypes_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_datetypes_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/datetypes
 noinst_PROGRAMS+= tests/unit/datetypes
 
 tests_unit_nulls_SOURCES= tests/unit/nulls.c tests/unit/common.c
-tests_unit_nulls_LDADD= libdrizzle/libdrizzle.la
+tests_unit_nulls_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_nulls_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/nulls
 noinst_PROGRAMS+= tests/unit/nulls
 
 tests_unit_row_SOURCES= tests/unit/row.c
-tests_unit_row_LDADD= libdrizzle/libdrizzle.la
+tests_unit_row_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_row_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/row
 noinst_PROGRAMS+= tests/unit/row
 
 tests_unit_version_SOURCES= tests/unit/version.c
-tests_unit_version_LDADD= libdrizzle/libdrizzle.la
+tests_unit_version_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_version_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/version
 noinst_PROGRAMS+= tests/unit/version
 
 tests_unit_version_cxx_SOURCES= tests/unit/version_cxx.cc
-tests_unit_version_cxx_LDADD= libdrizzle/libdrizzle.la
+tests_unit_version_cxx_LDADD= libdrizzle/libdrizzle-redux.la
 check_PROGRAMS+= tests/unit/version_cxx
 noinst_PROGRAMS+= tests/unit/version_cxx
 
 tests_unit_connect_SOURCES= tests/unit/connect.c
-tests_unit_connect_LDADD= libdrizzle/libdrizzle.la
+tests_unit_connect_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_connect_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/connect
 noinst_PROGRAMS+= tests/unit/connect
@@ -106,25 +106,25 @@ check-connect: tests/unit/connect
 	tests/unit/connect
 
 tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c tests/unit/common.c
-tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle.la
+tests_unit_connect_uds_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_connect_uds_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/connect_uds
 noinst_PROGRAMS+= tests/unit/connect_uds
 
 tests_unit_unbuffered_query_SOURCES= tests/unit/unbuffered_query.c
-tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle.la
+tests_unit_unbuffered_query_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_unbuffered_query_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/unbuffered_query
 noinst_PROGRAMS+= tests/unit/unbuffered_query
 
 tests_unit_statement_SOURCES= tests/unit/statement.c
-tests_unit_statement_LDADD= libdrizzle/libdrizzle.la
+tests_unit_statement_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_statement_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/statement
 noinst_PROGRAMS+= tests/unit/statement
 
 tests_unit_statement_char_SOURCES= tests/unit/statement_char.c
-tests_unit_statement_char_LDADD= libdrizzle/libdrizzle.la
+tests_unit_statement_char_LDADD= libdrizzle/libdrizzle-redux.la
 nodist_EXTRA_tests_unit_statement_char_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/statement_char
 noinst_PROGRAMS+= tests/unit/statement_char

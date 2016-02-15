@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle],[5.1.4],[https://github.com/sociomantic/libdrizzle-redux/issues],[libdrizzle],[https://github.com/sociomantic/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[5.1.4],[https://github.com/sociomantic/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
