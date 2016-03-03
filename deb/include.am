@@ -8,13 +8,8 @@
 
 deb: clean-deb
 	./configure --prefix=/usr
-	$(MAKE) DESTDIR=${abs_builddir}/deb/install install 
-	deb/build deb
-
-install-deb:
-	@echo "This target is empty at the moment." 
-	@echo "Should be something like:" 
-	@echo "    sudo dpkg -i libdrizzle-redux.[version].d"
+	$(MAKE) DESTDIR=${abs_builddir}/deb/install install
+	deb/build ${LIBDRIZZLE_LIBRARY_VERSION}
 
 release-deb:
 	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \
