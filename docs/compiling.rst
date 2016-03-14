@@ -82,6 +82,6 @@ Linking Your Application
 To link your app to libdrizzle-redux you need to provide the following to GCC,
 this assumes that the library is in your library and include paths::
 
-   gcc app.c -oapp -ldrizzle -lssl
+   gcc app.c -oapp -ldrizzle-redux -lssl
 
-A tool called :program:`libdrizzle_config` is included to also assist with this.
+A tool called :program:``libdrizzle-redux-config`` is included to also assist with this.
