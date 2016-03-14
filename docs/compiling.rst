@@ -68,11 +68,12 @@ The test suite can be run in wine, to do this follow these steps:
 
    #. Open the ``~/.wine/system.reg`` file for editing
    #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
-   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin`` directory using the ``Z:`` drive.  For Fedora 18 64bit this makes the entry::
-   
+   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin`` directory using the ``Z:`` drive. 
+      For Fedora 18 64bit this makes the entry::
+
          "PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"
 
-#. Run the test suite as follows (see :ref:`test-suite` for more details and needed environment variables when running the test suite)::
+#. Run the test suite as follows (see :ref:``test-suite`` for more details and needed environment variables when running the test suite)::
 
       WINEARCH=win32 TESTS_ENVIRONMENT=wine make check
 
