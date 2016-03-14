@@ -18,6 +18,10 @@ ALLSPHINXOPTS   = -c $(top_builddir)/docs $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(S
 clean-docs-check:
 	-rm -rf docs/_build docs/doctrees man/.doctrees
 
+.PHONY: clean-docs-all
+clean-docs-all: clean-docs-check
+	-rm -rf docs/json docs/latex docs/text docs/pickle docs/changes docs/man docs/singlehtml docs/linkcheck
+
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
 man: docs/conf.py
