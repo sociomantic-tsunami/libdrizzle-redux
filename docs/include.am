@@ -76,6 +76,7 @@ changes: docs/conf.py
 linkcheck: docs/conf.py
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/linkcheck
 
+# Requires adding "sphinx.ext.doctest" to "extensions" in conf.py.in
 doctest: docs/conf.py
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
