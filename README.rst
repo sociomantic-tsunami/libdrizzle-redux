@@ -61,12 +61,12 @@ cf. below.
 
 **Linking libdrizzle-redux**
 
-``gcc app.c -oapp -ldrizzle -lssl``
+``gcc app.c -oapp -ldrizzle-redux -lssl``
 
 If libdrizzle-redux is installed alongisde other versions of libdrizzle,
 the linking should be done with the full name of the dynamic library.
 
-``gcc app.c -oapp -l:libdrizzle.so.9 -lssl``
+``gcc app.c -oapp -l:libdrizzle-redux.so.9 -lssl``
 
 **Building documentation**
 
