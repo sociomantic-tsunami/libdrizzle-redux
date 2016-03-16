@@ -31,9 +31,10 @@ changelog=`mktemp`
 trap "rm -f '$changelog'; exit 1" INT TERM QUIT
 
 pkgname=libdrizzle-redux
+so_libname=./install/usr/lib/libdrizzle-redux.so
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
-cp install/usr/lib/libdrizzle-redux.so.$libversion ./libdrizzle-redux.so.$libversion
-strip install/usr/lib/libdrizzle-redux.so.$libversion
+cp $so_libname.$libversion $so_libname.$libversion.full
+strip  $so_libname.$libversion
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--architecture all \
 	--maintainer "$pkgmaint" \
@@ -47,15 +48,15 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--depends libtool \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
-	./install/usr/lib/libdrizzle-redux.so.$libversion=/usr/lib/ \
-	./install/usr/lib/libdrizzle-redux.so.$lib_major=/usr/lib/
+	$so_libname.$libversion=/usr/lib/ \
+	$so_libname.$lib_major=/usr/lib/
 
 pkgname=libdrizzle-redux-dbg
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 build_id=`readelf -n install/usr/lib/libdrizzle-redux.so.$libversion | \
 	sed -n 's/^.*Build ID: \([a-f0-9]\{40\}\).*$/\1/p'`
 debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
-objcopy --only-keep-debug ./libdrizzle-redux.so.$libversion libdrizzle-redux.so.$libversion.debug
+objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--architecture all \
 	--maintainer "$pkgmaint" \
@@ -70,7 +71,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--depends libdrizzle-redux \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
-	./libdrizzle-redux.so.$libversion.debug=/usr/lib/debug/.build-id/$debug_file
+	$so_libname.$libversion.debug=/usr/lib/debug/.build-id/$debug_file
 
 pkgname=libdrizzle-redux-dev
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
@@ -89,7 +90,6 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
 	install/usr/include/=/usr/include/ \
-	install/usr/lib/libdrizzle-redux.so=/usr/lib/ \
+	$so_libname=/usr/lib/ \
 	install/usr/lib/libdrizzle-redux.a=/usr/lib/
 
-rm ./libdrizzle-redux.so.$libversion
