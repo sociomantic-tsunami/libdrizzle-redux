@@ -42,10 +42,11 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--url 'https://github.com/sociomantic/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
-	--category shared-lib \
-	--depends autoconf \
-	--depends zlib1g-dev \
-	--depends libtool \
+	--category libs \
+	--depends zlib1g \
+	--depends libstdc++6 \
+	--depends libc6 \
+	--depends libgcc1 \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
 	$so_libname.$libversion=/usr/lib/ \
@@ -64,10 +65,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--url 'https://github.com/sociomantic/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
-	--category shared-lib \
-	--depends autoconf \
-	--depends zlib1g-dev \
-	--depends libtool \
+	--category debug \
 	--depends libdrizzle-redux \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
@@ -82,10 +80,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--url 'https://github.com/sociomantic/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
-	--category shared-lib \
-	--depends autoconf \
-	--depends zlib1g-dev \
-	--depends libtool \
+	--category libdevel \
 	--depends libdrizzle-redux \
 	--deb-changelog "$changelog" \
 	--deb-no-default-config-files \
