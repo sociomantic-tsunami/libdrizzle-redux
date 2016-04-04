@@ -39,7 +39,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--architecture all \
 	--maintainer "$pkgmaint" \
 	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic/libdrizzle-redux' \
+	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
 	--category shared-lib \
@@ -61,7 +61,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--architecture all \
 	--maintainer "$pkgmaint" \
 	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic/libdrizzle-redux' \
+	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
 	--category shared-lib \
@@ -79,7 +79,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 	--architecture all \
 	--maintainer "$pkgmaint" \
 	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic/libdrizzle-redux' \
+	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
 	--vendor 'Sociomantic Labs GmbH' \
 	--license 'Simplified BSD License' \
 	--category shared-lib \
