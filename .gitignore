@@ -30,8 +30,8 @@ m4/ltversion.m4
 m4/pkg.m4
 Makefile
 Makefile.in
-rpm/spec
-sphinx-build
+rpm/*.rpm
+rpm/install
 stamp-h1
 tests/unit/*
 !tests/unit/*.c*

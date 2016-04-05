@@ -1,35 +1,26 @@
 # vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+#
+# Makefile for building deb package
 
-rpm-build: rpm/spec dist
-	@rm -f *.rpm
-	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm
-	@rm -f ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm
-	@mkdir -p ~/rpmbuild/BUILD/
-	@mkdir -p ~/rpmbuild/RPMS/i386/
-	@mkdir -p ~/rpmbuild/RPMS/i686/
-	@mkdir -p ~/rpmbuild/RPMS/noarch/
-	@mkdir -p ~/rpmbuild/RPMS/x86_64/
-	@mkdir -p ~/rpmbuild/SOURCES/
-	@mkdir -p ~/rpmbuild/SPECS/
-	@mkdir -p ~/rpmbuild/SRPMS/
-	@cp $(PACKAGE)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
-	@rpmbuild -ba --clean rpm/spec
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
+.PHONY: clean-rpm rpm release-rpm
 
-rpm-sign: rpm-build
-	@rpm --addsign *.rpm
-	@rpm --checksig *.rpm
+rpm: clean-rpm
+	./configure --prefix=/usr
+	$(MAKE) DESTDIR=${abs_builddir}/rpm/install install
+	rpm/build ${LIBDRIZZLE_LIBRARY_VERSION}
+
+release-rpm:
+	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \
+	test -z $$version && exit 1; \
+	msg=`echo $$version | sed 's/v/Version /;s/-rc/ Release Candidate /'`; \
+	echo ; \
+	echo Changelog: ; \
+	git log --format='* %s (%h)' `git describe --abbrev=0 HEAD^`..HEAD; \
+	echo ; \
+	set -x; \
+	git tag -a -m "$$msg" $$version
 
 clean-rpm:
-	@rm -f *.tar.gz
-	@rm -f *.src.rpm
-	@rm -f *.rpm
-
-rpm: rpm-build
-
-release: rpm-sign
-
-auto-rpmbuild:
-	@auto-br-rpmbuild -ba rpm/spec
+	-rm -rf rpm/*.rpm rpm/install
