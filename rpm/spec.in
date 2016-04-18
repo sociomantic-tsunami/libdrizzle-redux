@@ -5,11 +5,11 @@ Release: 1
 License: BSD
 Group: System Environment/Libraries
 BuildRequires: zlib-devel openssl-devel
-URL: https://launchpad.net/libdrizzle
+URL: https://github.com/sociomantic-tsunami/libdrizzle-redux
 
 Packager: Brian Aker <brian@tangent.org>
 
-Source: libdrizzle-%{version}.tar.gz 
+Source: libdrizzle-redux-%{version}.tar.gz 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -83,5 +83,5 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
-* Wed Oct 11 2012 Brian Aker <brian@tangent.org> - 0.1-1
-- Initial package
+* Wed April 1 2016 Ben Palmer <ben.palmer@sociomantic.com> - 5.2.0
+- Project Moving
