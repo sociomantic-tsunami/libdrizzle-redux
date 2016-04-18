@@ -69,7 +69,7 @@ maintainer-clean-local:
 	-rm m4/lt~obsolete.m4
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
-	-rm -f @PACKAGE@-*.rpm
+	-rm -f rpm/@PACKAGE@-*.rpm
 	-rm -f @PACKAGE@-*.deb
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@ 
