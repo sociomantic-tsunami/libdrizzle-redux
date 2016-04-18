@@ -29,7 +29,7 @@ extensions = ['sphinx.ext.doctest']
 
 #extensions = ['sphinxcontrib.googleanalytics']
 
-# Google 
+# Google
 #googleanalytics_id = 'UA-23928702-1'
 #googleanalytics_enabled = 'True'
 
@@ -46,8 +46,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'libdrizzle'
-copyright = u'2008-2013, Drizzle Development Group, http://drizzle.org/'
+project = u'libdrizzle redux'
+copyright = u'2008-2013, Drizzle Development Group, http://drizzle.org/\n' + \
+'2015-2016, Sociomantic Labs GmbH, https://github.com/sociomantic-tsunami/libdrizzle-redux'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -186,7 +187,7 @@ htmlhelp_basename = 'gearmandoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'libdrizzle.tex', u'libdrizzle Documentation',
+  ('index', 'libdrizzle.tex', u'Libdrizzle Redux Documentation',
    u'Drizzle Development Group', 'manual'),
 ]
 
@@ -221,5 +222,9 @@ latex_logo = '_static/logo.png'
 # (source start file, name, description, authors, manual section).
 man_show_urls=True
 man_pages = [
-  ('library', 'libdrizzle', u'Libdrizzle Documentation, http://drizzle.org/', [u'Drizzle http://drizzle.org/'], 3),
+  ('library', 'libdrizzle-redux',
+    u'Libdrizzle Redux Documentation, https://github.com/sociomantic-tsunami/libdrizzle-redux',
+    [u'Drizzle Development Group http://drizzle.org',
+     u'Sociomantic Labs GmbH https://github.com/sociomantic-tsunami/libdrizzle-redux'],
+    3)
   ]
