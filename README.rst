@@ -60,18 +60,18 @@ refer to ``compiling.rst`` in the ``./docs`` folder or build the documentation,
 cf. below.
 
 **Linking libdrizzle-redux**
-
-``gcc app.c -oapp -ldrizzle-redux -lssl``
+::
+    gcc app.c -oapp -ldrizzle-redux -lpthread
 
 If libdrizzle-redux is installed alongisde other versions of libdrizzle,
-the linking should be done with the full name of the dynamic library.
-
-``gcc app.c -oapp -l:libdrizzle-redux.so.9 -lssl``
+the linking should be done with the full name of the dynamic library, e.g.
+::
+    gcc app.c -oapp -l:libdrizzle-redux.so.9 -lpthread
 
 **Building documentation**
 
 Documentation can be generated in several formats::
 
-   pdf  : make latexpdf
-   epub : make epub
-   html : make html
+    pdf  : make latexpdf
+    epub : make epub
+    html : make html
