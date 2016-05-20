@@ -77,30 +77,32 @@ drizzle_return_t drizzle_quit(drizzle_st *con);
  *
  * @param[in] con Connection structure previously initialized with
  *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[in] db Default database to select.
- * @param[out] ret_ptr Standard drizzle return value.
- * @return On success, a pointer to the (possibly allocated) structure. On
- *  failure this will be NULL.
+ * @return Standard drizzle return value
  */
 DRIZZLE_API
-drizzle_return_t drizzle_select_db(drizzle_st *con,
-                                         const char *db);
+drizzle_return_t drizzle_select_db(drizzle_st *con, const char *db);
 
 /**
  * Send a shutdown message to the server.
  *
  * @param[in] con Connection structure previously initialized with
  *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_shutdown(drizzle_st *con,
-                                        drizzle_return_t *ret_ptr);
+drizzle_result_st *drizzle_shutdown(drizzle_st *con, drizzle_return_t *ret_ptr);
 
+/**
+ * Sends a query kill command to the server
+ *
+ * @param[out] con – A connection object
+ * @param[in] connection_id – The connection ID to kill a query from
+ * @param[out] A pointer to a drizzle_return_t to store the return status into
+ * @return A newly allocated result object
+*/
 DRIZZLE_API
 drizzle_result_st *drizzle_kill(drizzle_st *con,
                                 uint32_t connection_id,
@@ -111,14 +113,12 @@ drizzle_result_st *drizzle_kill(drizzle_st *con,
  *
  * @param[in] con Connection structure previously initialized with
  *  drizzle_create(), drizzle_clone(), or related functions.
- * @param[in] result Caller allocated structure, or NULL to allocate one.
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.
  */
 DRIZZLE_API
-drizzle_result_st *drizzle_ping(drizzle_st *con,
-                                    drizzle_return_t *ret_ptr);
+drizzle_result_st *drizzle_ping(drizzle_st *con, drizzle_return_t *ret_ptr);
 
 /** @} */
 

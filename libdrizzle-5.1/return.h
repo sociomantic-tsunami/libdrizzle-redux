@@ -82,6 +82,12 @@ enum drizzle_return_t
 typedef enum drizzle_return_t drizzle_return_t;
 #endif
 
+/**
+* Check if a drizzle function call succeeded
+*
+* @param[in] ret result code
+* @return true on success, false otherwise
+*/
 static inline bool drizzle_success(drizzle_return_t ret)
 {
   if (ret == DRIZZLE_RETURN_OK)
@@ -92,6 +98,12 @@ static inline bool drizzle_success(drizzle_return_t ret)
   return false;
 }
 
+/**
+* Check if a drizzle function call failed
+*
+* @param[in] ret result code
+* @return true on fail, false otherwise
+*/
 static inline bool drizzle_failed(drizzle_return_t ret)
 {
   if (ret != DRIZZLE_RETURN_OK)

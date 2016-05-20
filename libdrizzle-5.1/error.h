@@ -40,8 +40,17 @@
 extern "C" {
 #endif
 
+/**
+ *
+ * Get detailed error description
+ *
+ *
+ * @param ret A libdrizzle return value
+ * @return description of libdrizzle error
+ *
+ */
 DRIZZLE_API
-  const char *drizzle_strerror(const drizzle_return_t);
+const char *drizzle_strerror(const drizzle_return_t ret);
 
 #ifdef __cplusplus
 }

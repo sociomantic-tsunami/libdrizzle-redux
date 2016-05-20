@@ -57,23 +57,30 @@ extern "C" {
  */
 
 /**
- * Skip a column in result.
+ * Skips the next column in a result set when using drizzle_column_read() to
+ * get the column data
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
  */
 DRIZZLE_API
 drizzle_return_t drizzle_column_skip(drizzle_result_st *result);
 
 /**
- * Skip all columns in a result
+ * Skips all columns in a result set when using drizzle_column_read() to
+ * get the column data
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
  */
-
 DRIZZLE_API
 drizzle_return_t drizzle_column_skip_all(drizzle_result_st *result);
 
 /**
  * Read column information.
  *
- * @param[in,out] result pointer to the structure to read from.
- * @param[out] ret_ptr Standard libdrizzle return value.
+ * @param[in,out] result  pointer to the structure to read from.
+ * @param[out]    ret_ptr Standard libdrizzle return value.
  * @return column if there is valid data, NULL if there are no more columns.
  */
 DRIZZLE_API
@@ -82,37 +89,56 @@ drizzle_column_st *drizzle_column_read(drizzle_result_st *result,
 
 /**
  * Buffer all columns in result structure.
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return Standard drizzle return value.
  */
 DRIZZLE_API
 drizzle_return_t drizzle_column_buffer(drizzle_result_st *result);
 
 /**
  * Get next buffered column from a result structure.
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return A column object
  */
 DRIZZLE_API
 drizzle_column_st *drizzle_column_next(drizzle_result_st *result);
 
 /**
  * Get previous buffered column from a result structure.
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return A column object
  */
 DRIZZLE_API
 drizzle_column_st *drizzle_column_prev(drizzle_result_st *result);
 
 /**
- * Seek to the given buffered column in a result structure.
+ * Seeks to a given column in a buffered column result set
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @param[in]     The column number
  */
 DRIZZLE_API
 void drizzle_column_seek(drizzle_result_st *result, uint16_t column);
 
 /**
- * Get the given buffered column from a result structure.
+ * Gets a given column in a column buffered result set
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @param[in]     column The column number
+ * @return A column object
  */
 DRIZZLE_API
 drizzle_column_st *drizzle_column_index(drizzle_result_st *result,
                                         uint16_t column);
 
 /**
- * Get current column number in a buffered or unbuffered result.
+ * Gets the column number in a buffered or unbuffered column result set
+ *
+ * @param[in,out] result pointer to the structure to read from.
+ * @return        The column number
  */
 DRIZZLE_API
 uint16_t drizzle_column_current(drizzle_result_st *result);

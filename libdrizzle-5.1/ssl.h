@@ -40,8 +40,23 @@
 extern "C" {
 #endif
 
+/**
+ *
+ * Sets the SSL data
+ *
+ * param[out] con A connection object
+ * param[in] key The path to a key file
+ * param[in] cert The path to a certificate file
+ * param[in] ca The path to a certificate authority file
+ * param[in] capath The path to a directory that contains trusted CA
+           certificate files
+ * param[in] cipher A list of allowed ciphers for SSL encryption
+ * return A return status code, DRIZZLE_RETURN_OK upon success
+ *
+ */
 DRIZZLE_API
-drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher);
+drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key,
+    const char *cert, const char *ca, const char *capath, const char *cipher);
 
 #ifdef __cplusplus
 }

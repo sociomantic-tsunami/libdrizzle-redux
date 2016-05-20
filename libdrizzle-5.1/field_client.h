@@ -62,34 +62,40 @@ extern "C" {
  * entire blob.
  *
  * The return value is a pointer into a buffer internal to \a result and should
- * not be freed. It is valid only until the next call to a drizzle function for this
- * connection.
+ * not be freed. It is valid only until the next call to a drizzle function for
+ * this connection.
  *
- * @returns               A pointer to \a size bytes of field data.
  * @param[in,out] result  The result handle for the response being read.
- * @param[out]   offset   The offset within the field of the data that was read.
- * @param[out]   size     The number of bytes returned.
- * @param[out]   total    The total size of the field being read.
- * @param[out]   ret_ptr  DRIZZLE_RETURN_*
- *
+ * @param[out]    offset  The offset within the field of the data that was read.
+ * @param[out]    size    The number of bytes returned.
+ * @param[out]    total   The total size of the field being read.
+ * @param[out]    ret_ptr DRIZZLE_RETURN_*
+ * @return A pointer to \a size bytes of field data.
  */
 DRIZZLE_API
 drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
                                    size_t *size, uint64_t *total,
                                    drizzle_return_t *ret_ptr);
 
+
 /**
- * Buffer one field.
+ * Read and buffer the entire field for an unbuffered row read.
+ * The return value is a newly allocated buffer and must be freed using
+ * drizzle_field_free when no longer needed.
  *
- * The return value is a newly allocated buffer and must be freed using drizzle_field_free
- * when no longer needed.
+ * @param[in]  result  A result object
+ * @param[in]  total   The total size of the field, to be written to by the function
+ * @param[out] ret_ptr A pointer to a drizzle_return_t to store the return status into
+ * @return The field data
  */
 DRIZZLE_API
 drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
                                      drizzle_return_t *ret_ptr);
 
 /**
- * Free a buffered field.
+ * Frees field data for unbuffered row reads
+ *
+ * @param field The field data to free
  */
 DRIZZLE_API
 void drizzle_field_free(drizzle_field_t field);

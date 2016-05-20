@@ -125,45 +125,126 @@ uint16_t drizzle_error_code(const drizzle_st *con);
 DRIZZLE_API
 const char *drizzle_sqlstate(const drizzle_st *con);
 
+/**
+ * Create a new connection options object
+ * @return The new connection options object
+ */
 DRIZZLE_API
 drizzle_options_st *drizzle_options_create(void);
 
+/**
+ * Destroys a connection options object
+ *
+ * @param[in] options The options object to be destroyed
+ */
 DRIZZLE_API
 void drizzle_options_destroy(drizzle_options_st *options);
 
+/**
+ * Sets/unsets non-blocking connect option
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] state Set option to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the non-blocking connect option
+ *
+ * @param[in,out] options The options object to get the value from
+ * @return The state of the non-blocking option
+ */
 DRIZZLE_API
 bool drizzle_options_get_non_blocking(drizzle_options_st *options);
 
+/**
+ * Sets/unsets the raw scramble connect option
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] state Set to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the raw scramble connect option
+ *
+ * @param[in] options – The options object to get the value from
+ * @return The state of the raw scramble option
+ */
 DRIZZLE_API
 bool drizzle_options_get_raw_scramble(drizzle_options_st *options);
 
+/**
+ * Sets/unsets the found rows connect option
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] state Set to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_found_rows(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the found rows connect option
+ *
+ * @param[in] options The options object to get the value from
+ * @return The state of the found rows option
+ */
 DRIZZLE_API
 bool drizzle_options_get_found_rows(drizzle_options_st *options);
 
+/**
+ * Sets/unsets the interactive connect option
+ *
+ * @param[int,out] options The options object to modify
+ * @param[in] state Set to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_interactive(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the interactive connect option
+ *
+ * @param[in] options The options object to get the value from
+ * @return The state of the interactive option
+ */
 DRIZZLE_API
 bool drizzle_options_get_interactive(drizzle_options_st *option);
 
+/**
+ * Sets/unsets the multi-statements connect option
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] state Set to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_multi_statements(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the multi-statements connect option
+ *
+ * @param[in] options The options object to get the value from
+ * @return The state of the multi-statements option
+ */
 DRIZZLE_API
 bool drizzle_options_get_multi_statements(drizzle_options_st *options);
 
+/**
+ * Sets/unsets the auth plugin connect option
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] state Set to true/false
+ */
 DRIZZLE_API
 void drizzle_options_set_auth_plugin(drizzle_options_st *options, bool state);
 
+/**
+ * Gets the auth plugin connect option
+ *
+ * @param[in] options The options object to get the value from
+ * @return The state of the auth plugin option
+ */
 DRIZZLE_API
 bool drizzle_options_get_auth_plugin(drizzle_options_st *options);
 

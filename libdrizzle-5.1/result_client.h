@@ -55,20 +55,31 @@ extern "C" {
  */
 
 /**
- * Read result packet.
+ * Reads the next result in a multi-result return
+ *
+ * @param[in] con a drizzle object
+ * @param[in,out] ret_ptr A pointer to a drizzle_return_t struct
+ * to store the return status into
+ * @return The result struct for the new object
  */
 DRIZZLE_API
 drizzle_result_st *drizzle_result_read(drizzle_st *con,
                                        drizzle_return_t *ret_ptr);
 
 /**
- * Buffer all data for a result.
+ * Buffers a result set
+ *
+ * @param[in,out] result A result object
+ * @return DRIZZLE_RETURN_OK upon success else DRIZZLE_RETURN_MEMORY
  */
 DRIZZLE_API
 drizzle_return_t drizzle_result_buffer(drizzle_result_st *result);
 
 /**
- * Get result row packet size.
+ * Get result row packet size in bytes.
+ *
+ * @param[in] result Caller allocated structure.
+ * @return size in bytes else 0
  */
 DRIZZLE_API
 size_t drizzle_result_row_size(drizzle_result_st *result);
