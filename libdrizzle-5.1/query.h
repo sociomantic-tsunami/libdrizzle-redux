@@ -74,11 +74,17 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,
                                  drizzle_return_t *ret_ptr);
 
-/*
- * Escape a string or encode a string in hexadecimal. The return value is the
- * size of the output string in to.
+/**
+ * Escape a string for an SQL query. The to parameter is allocated by the
+ * function and needs to be freed by the application when finished with.
+ *
+ * @param[in] con a connection object
+ * @param[in,out] to the destination string
+ * @param[in] from the source string
+ * @param[in] from_size the length of the source string
+ * @return the length of the ‘to’ string or -1 upon error due to empty
+ *         parameters or overflow
  */
-
 DRIZZLE_API
 ssize_t drizzle_escape_string(drizzle_st *con, char **to, const char *from, const size_t from_size);
 

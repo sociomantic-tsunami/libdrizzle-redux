@@ -56,73 +56,107 @@ extern "C" {
  */
 
 /**
- * Free a result structure.
+ * Frees all result objects for a given connection object
+ *
+ * @param[in,out] con a connection object
  */
 DRIZZLE_API
 void drizzle_result_free(drizzle_result_st *result);
 
 /**
- * Free all result structures.
+ * Frees all result objects for a given connection object
+ *
+ * @param[in,out] con a connection object
  */
 DRIZZLE_API
 void drizzle_result_free_all(drizzle_st *con);
 
 /**
- * Get the drizzle_st struct that the result belongs to.
+ * Gets the drizzle object from a given result object
+ *
+ * @param[in] result A result object
+ * @return The drizzle object associated to the result object
  */
 DRIZZLE_API
 drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result);
 
 /**
- * Get EOF flag for a result.
+ * Tests to see if an EOF packet has been hit
+ *
+ * @param[in] result A result object
+ * @return true on EOF else false
  */
 DRIZZLE_API
 bool drizzle_result_eof(drizzle_result_st *result);
 
 /**
- * Get information string for a result.
+ * Get error or information message from result set
+ *
+ * @param[in] result a result object
+ * @return The message to be returned
  */
 DRIZZLE_API
 const char *drizzle_result_message(drizzle_result_st *result);
 
 /**
- * Get server defined error code for a result.
+ * Gets the error code from a result set
+ *
+ * @param[in] result a result object
+ * @return The error code
  */
 DRIZZLE_API
 uint16_t drizzle_result_error_code(drizzle_result_st *result);
 
 /**
- * Get SQL state code for a result.
+ * Gets the SQL state from a result set
+ *
+ * @param[in] result A result object
+ * @return The SQL state string
  */
 DRIZZLE_API
 const char *drizzle_result_sqlstate(drizzle_result_st *result);
 
 /**
- * Get the number of warnings encounted during a command.
+  * Gets the warning count from a result set
+ *
+ * @param[in] result A result object
+ * @return The warning count
  */
 DRIZZLE_API
 uint16_t drizzle_result_warning_count(drizzle_result_st *result);
 
 /**
- * Get inet ID of the last command, if any.
+ * Gets the insert ID for an auto_increment column in a result set
+ *
+ * @param[in] result A result object
+ * @return The inserted ID
  */
 DRIZZLE_API
 uint64_t drizzle_result_insert_id(drizzle_result_st *result);
 
 /**
- * Get the number of affected rows during the command.
+ * Gets the affected row count from a result set
+ *
+ * @param[in] result A result object
+ * @return The affected row count
  */
 DRIZZLE_API
 uint64_t drizzle_result_affected_rows(drizzle_result_st *result);
 
 /**
- * Get the number of columns in a result set.
+ * Gets the column count from a result set
+ *
+ * @param[in] result A result object
+ * @return The column count
  */
 DRIZZLE_API
 uint16_t drizzle_result_column_count(drizzle_result_st *result);
 
 /**
- * Get the number of rows returned for the command.
+ * Gets the row count from a result set buffered with drizzle_result_buffer()
+ *
+ * @param[in] result A result object
+ * @return The row count
  */
 DRIZZLE_API
 uint64_t drizzle_result_row_count(drizzle_result_st *result);

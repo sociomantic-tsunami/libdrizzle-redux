@@ -84,42 +84,64 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
 
 /**
  * Free a row that was buffered with drizzle_row_buffer().
+ *
+ * @param[in,out] result A result object
+ * @param[in,out] row The row data to be freed
  */
 DRIZZLE_API
 void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row);
 
 /**
- * Get an array of all field sizes for buffered rows.
+ * Gets an array of the field sizes for buffered rows
+ *
+ * @param[in] result A result object
+ * @return An array of row sizes
  */
 DRIZZLE_API
 size_t *drizzle_row_field_sizes(drizzle_result_st *result);
 
 /**
- * Get next buffered row from a fully buffered result.
+ * Gets the next row in a buffered result set
+ *
+ * @param[in,out] result A result object
+ * @return The row data
  */
 DRIZZLE_API
 drizzle_row_t drizzle_row_next(drizzle_result_st *result);
 
 /**
- * Get previous buffered row from a fully buffered result.
+ * Gets the previous row in a buffered result set
+ *
+ * @param[in,out] result A result object
+ * @return The row data
  */
 DRIZZLE_API
 drizzle_row_t drizzle_row_prev(drizzle_result_st *result);
 
 /**
- * Seek to the given buffered row in a fully buffered result.
+ * Seeks to a given row in a buffered result set
+ *
+ * @param[in,out] result A result object
+ * @param[in] row The row number to seek to
  */
 DRIZZLE_API
 void drizzle_row_seek(drizzle_result_st *result, uint64_t row);
 
 /**
- * Get the given buffered row from a fully buffered result.
+ * Gets a row at the given index in a buffered result set
+ *
+ * @param[in,out] result A result object
+ * @param[in] row The row number to get
+ * @return The row data
  */
 DRIZZLE_API
 drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row);
 
 /**
- * Get current row number.
+ * Gets the current row number
+ *
+ * @param[in] result A result object
+ * @return The row number
  */
 DRIZZLE_API
 uint64_t drizzle_row_current(drizzle_result_st *result);
