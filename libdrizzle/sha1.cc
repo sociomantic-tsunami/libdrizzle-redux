@@ -25,6 +25,7 @@
 #include "libdrizzle/common.h"
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Wunsafe-loop-optimizations"
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
