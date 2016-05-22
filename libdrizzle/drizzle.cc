@@ -306,7 +306,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  if (!con->events == 0)
+  if (!(con->events == 0))
   {
     con->pfds[0].fd= con->fd;
     con->pfds[0].events= con->events;
