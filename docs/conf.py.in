@@ -47,8 +47,9 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'libdrizzle redux'
-copyright = u'2008-2013, Drizzle Development Group, http://drizzle.org/\n' + \
-'2015-2016, Sociomantic Labs GmbH, https://github.com/sociomantic-tsunami/libdrizzle-redux'
+description = u'Libdrizzle Redux Documentation'
+copyright = u'2008-2013 Drizzle Development Group http://drizzle.org\n\n' + \
+            u'2015-2016 Sociomantic Labs GmbH https://github.com/sociomantic-tsunami/libdrizzle-redux'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -187,8 +188,7 @@ htmlhelp_basename = 'gearmandoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'libdrizzle.tex', u'Libdrizzle Redux Documentation',
-   u'Drizzle Development Group', 'manual'),
+  ('index', 'libdrizzle.tex', description, u'Drizzle Development Group', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -217,14 +217,22 @@ latex_logo = '_static/logo.png'
 
 # -- Options for manual page output --------------------------------------------
 
+##
+# Creates a tuple with man page definition
+#
+# @param file Path to file with out extension,
+# @param name Section name
+# @param section Man page section number
+# @return A tuple with man page definition
+def get_man_page(file, name, section):
+    return (file, '-'.join(['drizzle', name]), description, copyright, section)
+
 # One entry per manual page. List of tuples
 
 # (source start file, name, description, authors, manual section).
 man_show_urls=True
 man_pages = [
-  ('library', 'libdrizzle-redux',
-    u'Libdrizzle Redux Documentation, https://github.com/sociomantic-tsunami/libdrizzle-redux',
-    [u'Drizzle Development Group http://drizzle.org',
-     u'Sociomantic Labs GmbH https://github.com/sociomantic-tsunami/libdrizzle-redux'],
-    3)
+    get_man_page('man/overview', 'overview', 1),
+    get_man_page('api/index', 'api', 1),
+    get_man_page('examples/index', 'examples', 1)
   ]
