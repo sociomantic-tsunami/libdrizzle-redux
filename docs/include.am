@@ -20,7 +20,7 @@ clean-docs-check:
 
 .PHONY: clean-docs-all
 clean-docs-all: clean-docs-check
-	-rm -rf docs/json docs/latex docs/text docs/pickle docs/changes docs/man docs/singlehtml docs/linkcheck
+	-rm -rf docs/json docs/latex docs/text docs/pickle docs/changes docs/singlehtml docs/linkcheck
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
