@@ -7,32 +7,33 @@
 
 SPHINXOPTS    = ${SPHINX_WARNINGS} -q
 PAPER         =
-SPHINX_BUILDDIR      = ${abs_srcdir}/docs
+SPHINX_SOURCEDIR = ${abs_srcdir}/docs
+SPHINX_BUILDDIR  = ${abs_srcdir}/sphinx-build
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
-ALLSPHINXOPTS   = -c $(top_builddir)/docs $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SPHINX_BUILDDIR)
+ALLSPHINXOPTS   = -c $(top_builddir)/docs $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) $(SPHINX_SOURCEDIR)
 
 .PHONY: clean-docs-check
 clean-docs-check:
-	-rm -rf docs/_build docs/doctrees man/.doctrees
+	-rm -rf $(SPHINX_BUILDDIR)/_build $(SPHINX_BUILDDIR)/doctrees
 
 .PHONY: clean-docs-all
 clean-docs-all: clean-docs-check
-	-rm -rf docs/json docs/latex docs/text docs/pickle docs/changes docs/singlehtml docs/linkcheck
+	-rm -rf $(SPHINX_BUILDDIR)
 
 .PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
 
 man: docs/conf.py
-	@PYTHONPATH=$(SPHINX_BUILDDIR)/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${top_builddir}/man
+	@PYTHONPATH=$(top_builddir)/docs  $(SPHINXBUILD) -b man $(ALLSPHINXOPTS) ${SPHINX_BUILDDIR}/man
 
 install-html-local: html-local
 	@$(MKDIR_P)  $(htmldir)/html
 	@cp -r ${top_builddir}/html $(htmldir)/
 
 html-local: docs/conf.py
-	@PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ${top_builddir}/html
+	@PYTHONPATH=${top_srcdir}/docs $(SPHINXBUILD) -b html $(ALLSPHINXOPTS) ${SPHINX_BUILDDIR}/html
 
 singlehtml: html-local
 	@PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b singlehtml $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/singlehtml
