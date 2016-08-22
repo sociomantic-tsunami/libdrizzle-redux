@@ -69,7 +69,8 @@ struct drizzle_result_st
   uint64_t field_offset;          /* offset within field of most recently read field fragment (0 if first/only fragment) */
   uint32_t field_size;            /* size of most recently read field value or fragment of field value; max 2^24 */
   drizzle_field_t field;
-  drizzle_field_t field_buffer;
+  drizzle_field_t *field_buffer;
+  size_t *field_buffer_sizes;
 
   size_t row_list_size;
   drizzle_row_t row;
