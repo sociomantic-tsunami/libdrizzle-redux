@@ -94,9 +94,19 @@ void drizzle_result_free(drizzle_result_st *result)
   if (result->options & DRIZZLE_RESULT_BUFFER_ROW)
   {
     uint64_t x;
+    int64_t y;
+    if (result->field_buffer)
+    {
+      for (y= 0; y < (result->column_count - result->null_bitcount); y++)
+      {
+        free(result->field_buffer[y]);
+      }
+    }
+    drizzle_row_free(result, result->row);
+ 
     for (x= 0; x < result->row_count; x++)
     {
-      drizzle_row_free(result, result->row_list[x]);
+      delete[] result->row_list[x];
       if (result->null_bitmap_list != NULL)
       {
         delete[] result->null_bitmap_list[x];
@@ -306,6 +316,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
 
   while (1)
   {
+    uint16_t x;
     row= drizzle_row_buffer(result, &ret);
     if (ret != DRIZZLE_RETURN_OK)
       return ret;
@@ -355,7 +366,15 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       result->null_bitmap_list[result->row_current - 1]= result->null_bitmap;
     }
 
-    result->row_list[result->row_current - 1]= row;
+    result->row_list[result->row_current - 1]= new drizzle_field_t[result->column_count]();
+    for (x= 0; x < result->column_count; x++)
+    {
+      if (result->field_sizes[x] > 0)
+      {
+        result->row_list[result->row_current - 1][x]= new char[result->field_sizes[x]+1]();
+        memcpy(result->row_list[result->row_current - 1][x], row[x], result->field_sizes[x]);
+      }
+    }
     result->field_sizes_list[result->row_current - 1]= result->field_sizes;
   }
 

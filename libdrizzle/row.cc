@@ -155,16 +155,9 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
 
 void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
 {
-  uint16_t x;
-
   if (result == NULL)
   {
     return;
-  }
-
-  for (x= 0; x < (result->column_count - result->null_bitcount); x++)
-  {
-    drizzle_field_free(row[x]);
   }
 
   if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))

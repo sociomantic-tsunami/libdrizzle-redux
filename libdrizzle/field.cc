@@ -120,6 +120,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
   uint64_t offset= 0;
   size_t size= 0;
   uint64_t wire_size;
+  uint16_t current_field;
 
   drizzle_return_t unused_ret;
   if (ret_ptr == NULL)
@@ -156,8 +157,26 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
 
   if (result->field_buffer == NULL)
   {
-    result->field_buffer= new (std::nothrow) char[(*total) + 1];
-    if (result->field_buffer == NULL)
+    result->field_buffer= new (std::nothrow) char*[result->column_count]();
+    result->field_buffer_sizes= new (std::nothrow) size_t[result->column_count]();
+  }
+
+  /* If we haven't got the whole field then current field hasn't been
+   * incremented yet */
+  if ((result->field_offset + result->field_size) != result->field_total)
+  {
+    current_field= result->field_current;
+  }
+  else
+  {
+    current_field= result->field_current-1;
+  }
+
+  if (result->field_buffer_sizes[current_field] < (*total) + 1)
+  {
+    result->field_buffer[current_field]= (drizzle_field_t) realloc(result->field_buffer[current_field], (*total) + 1);
+    result->field_buffer_sizes[current_field]= (*total) + 1;
+    if (result->field_buffer[current_field] == NULL)
     {
       drizzle_set_error(result->con, __func__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
@@ -165,7 +184,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     }
   }
 
-  memcpy(result->field_buffer + offset, field, size);
+  memcpy(result->field_buffer[current_field] + offset, field, size);
 
   while ((offset + size) != (*total))
   {
@@ -175,12 +194,19 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
       return NULL;
     }
     assert(wire_size == (uint64_t)*total);
+    if ((result->field_offset + result->field_size) != result->field_total)
+    {
+      current_field= result->field_current;
+    }
+    else
+    {
+      current_field= result->field_current-1;
+    }
 
-    memcpy(result->field_buffer + offset, field, size);
+    memcpy(result->field_buffer[current_field] + offset, field, size);
   }
 
-  field= result->field_buffer;
-  result->field_buffer= NULL;
+  field= result->field_buffer[current_field];
   field[*total]= 0;
 
   return field;
@@ -190,7 +216,7 @@ void drizzle_field_free(drizzle_field_t field)
 {
   if (field)
   {
-    delete[] field;
+    free(field);
   }
 }
 
