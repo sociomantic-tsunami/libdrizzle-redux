@@ -172,6 +172,26 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     current_field= result->field_current-1;
   }
 
+  /*
+    The code below pre-allocates each field in the buffer to a statically defined
+    size to reduce the number of mallocs at the cost of a memory overhead
+
+    Experimental results did confirm that the number of allocations is halved
+    but with the caveat that the number of bytes allocated is doubled.
+
+    Given that the improvement from lazy allocation is already five orders of
+    magnitude, having minimal memory overhead is (in our opinion) more favorable
+
+    The code is kept for reference and in the case that others would like to
+    pursue this optimization further
+
+    if (result->field_buffer_sizes[current_field] == 0)
+    {
+      result->field_buffer[current_field]= (drizzle_field_t) malloc(64*1024);
+      result->field_buffer_sizes[current_field]= 64*1024;
+    }
+  */
+
   if (result->field_buffer_sizes[current_field] < (*total) + 1)
   {
     result->field_buffer[current_field]= (drizzle_field_t) realloc(result->field_buffer[current_field], (*total) + 1);
