@@ -83,6 +83,14 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
  * The return value is a newly allocated buffer and must be freed using
  * drizzle_field_free when no longer needed.
  *
+ * The buffering is done by keeping an array of char* pointers, each representing
+ * a field from a result row. Memory is (re)allocated lazily as required by the
+ * size of the field to buffer. Moreover the allocation is conservative and
+ * allocates 'new-size + 1' bytes.
+ *
+ * For further details please refer to the inline documentation in
+ * libdrizzle/field.cc
+ *
  * @param[in]  result  A result object
  * @param[in]  total   The total size of the field, to be written to by the function
  * @param[out] ret_ptr A pointer to a drizzle_return_t to store the return status into
