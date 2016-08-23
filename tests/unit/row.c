@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     printf("Could not get the next row\n");
     return EXIT_FAILURE;
   }
-  
+
   if (strcmp(row[0], "1") != 0)
   {
     printf("Retrieved bad next row value\n");

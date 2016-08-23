@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -54,7 +54,7 @@ extern "C" {
 
 extern drizzle_st *con;
 
-/* Common connection setup used by the unit tests. 
+/* Common connection setup used by the unit tests.
  */
 extern void set_up_connection(void);
 

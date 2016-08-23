@@ -53,9 +53,9 @@
 
 static const drizzle_column_type_t expected_column_types[10] = {
   DRIZZLE_COLUMN_TYPE_NONE, /* Columns are 1-indexed */
-  
+
   DRIZZLE_COLUMN_TYPE_LONG,
-  
+
   DRIZZLE_COLUMN_TYPE_DATE,
   DRIZZLE_COLUMN_TYPE_YEAR,
   DRIZZLE_COLUMN_TYPE_TIMESTAMP,
@@ -83,27 +83,27 @@ int main(int argc, char *argv[])
   const char *query;
   drizzle_stmt_st *sth;
   unsigned rows_in_table;
-  
+
   set_up_connection();
   set_up_schema("test_datetime");
- 
+
   SKIP_IF_(drizzle_server_version_number(con) < 50604, "Test requires MySQL 5.6.4 or higher");
- 
+
   CHECKED_QUERY("create table test_datetime.dt1 (a int primary key not null, b date, c year(4), d timestamp(0), e timestamp(6), f time(0), g time(6), h datetime(0), i datetime(6))");
   rows_in_table = 0;
-  
+
   /* Insert rows with pk 1 and 2 */
   CHECKED_QUERY("insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) values "
                 "(1, '1970-01-01', '2112', '2013-03-13 09:22:00.001', '2013-03-13 09:22:00.001', '6:15:03', '23:59:59.75', '1642-12-25 12:15:01', '1642-12-25 12:12:00.125'),"
                 "(2, '84-02-29', '12', NOW(), NOW(), '3 6:15:03', '23:59:59.0625', '1642-12-25 12:15:01', '1642-12-25 12:12:00.000000');");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
   rows_in_table += 2;
-    
+
   /* Insert row with pk 3 and 4 - test marshaling values we transmit */
   query = "insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) values (?,?,?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
-  
+
   /* Row 3 should be the same as row 1, above */
   CHECK(drizzle_stmt_set_short(sth,  0, 3, 0));
   CHECK(drizzle_stmt_set_timestamp(sth,  1, 1970, 1, 1, 0, 0, 0, 0));
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   driz_ret = drizzle_stmt_buffer(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   rows_in_table ++;
-  
+
   /* Row 4 is similar to row 2, above. But 2-digit years aren't automatically y2k-promoted if we send them raw. */
   CHECK(drizzle_stmt_set_short(sth,  0, 4, 0));
   CHECK(drizzle_stmt_set_timestamp(sth,  1, 84, 2, 9, 0, 0, 0, 0));
@@ -136,18 +136,18 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
-  rows_in_table ++;  
+  rows_in_table ++;
 
   CHECK(drizzle_stmt_close(sth));
 
   /* Read the table back, with values sent over the wire in text form */
   CHECKED_QUERY("select * from test_datetime.dt1 order by a");
-  
+
   drizzle_result_buffer(result);
   num_fields= drizzle_result_column_count(result);
-  
+
   ASSERT_EQ_(num_fields, 9, "Retrieved bad number of fields");
-  
+
   unsigned int cur_row= 0;
   drizzle_column_st *column;
   while ((row = drizzle_row_next(result)))
@@ -157,11 +157,11 @@ int main(int argc, char *argv[])
     cur_row++;
     ASSERT_EQ(drizzle_row_current(result), cur_row);
     ASSERT_TRUE(cur_row <= 4);
-    
+
     char expected_colA[10];
     sprintf(expected_colA, "%d", cur_row);
     ASSERT_EQ_(strcmp(row[0], expected_colA), 0, "Retrieved bad row value; row=%d got=%s expected=%s", cur_row, row[0], expected_colA);
-    
+
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
       ASSERT_EQ_(drizzle_column_type(column), expected_column_types[cur_column], "Column %d has type=%d expected=%d", cur_column, drizzle_column_type(column), expected_column_types[cur_column]);
     }
     ASSERT_EQ_(cur_column, 9, "Wrong column count");
-    
+
     if (cur_row == 1 || cur_row == 3) {
         ASSERT_STREQ("1970-01-01", row[1]);
         ASSERT_STREQ("2112", row[2]);
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
         ASSERT_STREQ("0084-02-09", row[1]);
         ASSERT_STREQ("2012", row[2]);
     }
-    
+
     if (cur_row == 2 || cur_row == 4) {
 	    ASSERT_STREQ("78:15:03", row[5]);
         ASSERT_STREQ("23:59:59.062500", row[6]);
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
     }
   }
   ASSERT_EQ_(cur_row, rows_in_table, "Retrieved bad number of rows");
-  
+
   drizzle_result_free(result);
 
   /* Read the table back, with values sent over the wire in binary form */
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
-  
+
   ASSERT_EQ(rows_in_table, drizzle_stmt_row_count(sth));
   cur_row = 0;
   while (drizzle_stmt_fetch(sth) != DRIZZLE_RETURN_ROW_END)
@@ -217,14 +217,14 @@ int main(int argc, char *argv[])
     size_t lth;
     const char *col_strval;
     int col_intval;
-    
+
     cur_row ++;
     printf("Row %d\n", cur_row);
-    
+
     int columnA = drizzle_stmt_get_int(sth, 0, &driz_ret);
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), 1, cur_row);
     ASSERT_EQ(cur_row, (unsigned)columnA);
-    
+
 #define ASSERT_COL_STREQ_(coln, expected, ...) \
     col_strval = drizzle_stmt_get_string(sth, coln-1, &lth, &driz_ret);  \
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Fetching column %u of row %u", coln, cur_row);  \
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
         ASSERT_COL_STREQ_(9, "1642-12-25 12:12:00.000000");
         break;
     }
-    
+
     if (cur_row == 2) {
 	    ASSERT_COL_STREQ_(2, "1984-02-29");
     } else if (cur_row == 4) {
@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
     }
 
     /* TODO: libdrizzle currently has no way to give us access to the actual returned values for time/date fields. If that changes, test the values here. */
-    
+
     col_intval = drizzle_stmt_get_int(sth, 3-1, &driz_ret);
     ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
     switch (cur_row) {
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
     driz_ret = drizzle_stmt_buffer(sth);
     ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
-  
+
     query = NULL;
 
     ASSERT_EQ(rows_in_table, drizzle_stmt_row_count(sth));
@@ -302,10 +302,10 @@ int main(int argc, char *argv[])
       const char *server_strval, *drizzle_strval;
 
       cur_row ++;
-      
+
       unsigned columnA = drizzle_stmt_get_int(sth, 0, &driz_ret);
       ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
-      
+
       drizzle_strval = drizzle_stmt_get_string(sth, 1, &drizzle_strval_lth, &driz_ret);
       ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Raw column '%s' of row %u", col_name, columnA);
       ASSERT_EQ(strlen(drizzle_strval), drizzle_strval_lth);
@@ -313,21 +313,21 @@ int main(int argc, char *argv[])
       server_strval = drizzle_stmt_get_string(sth, 2, &server_strval_lth, &driz_ret);
       ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Cast column '%s' of row %u", col_name, columnA);
       ASSERT_EQ(strlen(server_strval), server_strval_lth);
-      
+
       printf("row=%u col=%s: '%s' / '%s'\n",
 	     columnA, col_name, drizzle_strval, server_strval);
 
       ASSERT_STREQ_(server_strval, drizzle_strval, "Row %u, column '%s': server strval does not match libdrizzle strval", columnA, col_name);
     }
     ASSERT_EQ(rows_in_table, cur_row);
-    
+
     driz_ret = drizzle_stmt_close(sth);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s", drizzle_strerror(driz_ret), drizzle_error(con));
   }
-  
+
   CHECKED_QUERY("DROP TABLE test_datetime.dt1");
-  
+
   tear_down_schema("test_datetime");
-    
+
   return EXIT_SUCCESS;
 }

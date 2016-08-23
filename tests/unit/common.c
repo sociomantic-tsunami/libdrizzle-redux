@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -45,14 +45,14 @@ void close_connection_on_exit(void)
   if (con == NULL) {
     return;
   }
-  
+
   drizzle_return_t ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", drizzle_strerror(ret));
   con= NULL;
 }
 
-/* Common connection setup used by the unit tests. 
- * Connects to the server, deletes and recreates the libdrizzle schema. 
+/* Common connection setup used by the unit tests.
+ * Connects to the server, deletes and recreates the libdrizzle schema.
  */
 void set_up_connection(void)
 {
@@ -60,7 +60,7 @@ void set_up_connection(void)
   const char *verbosity;
   
   ASSERT_NULL_(con, "con opened twice?");
-  
+
   con= drizzle_create(getenv("MYSQL_SERVER"),
                       getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
                       getenv("MYSQL_USER"),
