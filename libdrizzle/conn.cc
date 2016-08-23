@@ -727,7 +727,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
   {
     if (con->state.raw_packet)
     {
-      drizzle_set_error(con, "drizzle_command_write",
+      drizzle_set_error(con, __func__,
                         "connection not ready");
       *ret_ptr= DRIZZLE_RETURN_NOT_READY;
       return result;
@@ -752,7 +752,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
       {
         if (result == old_result)
         {
-          drizzle_set_error(con, "drizzle_command_write", "result struct already in use");
+          drizzle_set_error(con, __func__, "result struct already in use");
           *ret_ptr= DRIZZLE_RETURN_INTERNAL_ERROR;
           return result;
         }
@@ -886,7 +886,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
       int ret= getaddrinfo(host, port, &ai, &(tcp->addrinfo));
       if (ret != 0)
       {
-        drizzle_set_error(con, "drizzle_state_addrinfo", "getaddrinfo:%s", gai_strerror(ret));
+        drizzle_set_error(con, __func__, "getaddrinfo:%s", gai_strerror(ret));
         return DRIZZLE_RETURN_GETADDRINFO;
       }
 
@@ -914,7 +914,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_connect");
+  drizzle_log_debug(con, __func__);
 
   __closesocket(con->fd);
 
@@ -1097,7 +1097,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_connecting");
+  drizzle_log_debug(con, __func__);
 
   if (con->revents & (POLLOUT | POLLERR | POLLHUP))
   {
@@ -1176,7 +1176,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_read");
+  drizzle_log_debug(con, __func__);
 
   if (con->buffer_size == 0)
   {
@@ -1354,7 +1354,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_write");
+  drizzle_log_debug(con, __func__);
 
   while (con->buffer_size != 0)
   {
@@ -1418,7 +1418,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
         return DRIZZLE_RETURN_LOST_CONNECTION;
       }
 
-      drizzle_set_error(con, "drizzle_state_write", "send: %s", strerror(errno));
+      drizzle_set_error(con, __func__, "send: %s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }

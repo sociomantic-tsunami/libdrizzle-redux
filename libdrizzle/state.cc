@@ -76,7 +76,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_packet_read");
+  drizzle_log_debug(con, __func__);
 
   if (con->buffer_size < 4)
   {
@@ -94,7 +94,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 
   if (con->packet_number != con->buffer_ptr[3])
   {
-    drizzle_set_error(con, "drizzle_state_packet_read",
+    drizzle_set_error(con, __func__,
                       "bad packet number:%u:%u", con->packet_number,
                       con->buffer_ptr[3]);
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
