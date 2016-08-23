@@ -340,7 +340,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
         continue;
       }
 
-      drizzle_set_error(con, "drizzle_wait", "poll:%d", errno);
+      drizzle_set_error(con, __func__, "poll:%d", errno);
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
@@ -351,7 +351,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
 
   if (ret == 0)
   {
-    drizzle_set_error(con, "drizzle_wait", "timeout reached");
+    drizzle_set_error(con, __func__, "timeout reached");
     return DRIZZLE_RETURN_TIMEOUT;
   }
 

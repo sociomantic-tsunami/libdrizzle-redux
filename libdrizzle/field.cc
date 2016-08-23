@@ -252,7 +252,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_field_read");
+  drizzle_log_debug(con, __func__);
 
   if (con->buffer_size == 0)
   {

@@ -90,7 +90,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_handshake_server_read");
+  drizzle_log_debug(con, __func__);
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
@@ -101,7 +101,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
   if (con->packet_size < 46)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "bad packet size:>=46:%zu", con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
@@ -116,13 +116,13 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
        will be impossible and denies any attempt right away. */
     if (con->protocol_version == 255)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_server_read",
+      drizzle_set_error(con, __func__,
                         "%.*s", (int)con->packet_size - 3,
                         con->buffer_ptr + 2);
       return DRIZZLE_RETURN_AUTH_FAILED;
     }
 
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "protocol version not supported:%d",
                       con->protocol_version);
     return DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED;
@@ -132,14 +132,14 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 1);
   if (ptr == NULL)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "server version string not found");
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
 
   if (con->packet_size < (46 + (size_t)(ptr - con->buffer_ptr)))
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "bad packet size:%zu:%zu",
                       (46 + (size_t)(ptr - con->buffer_ptr)), con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
@@ -166,7 +166,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
   if (!(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "protocol version not supported, must be MySQL 4.1+");
     return DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED;
   }
@@ -192,7 +192,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   con->buffer_size-= con->packet_size;
   if (con->buffer_size != 0)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_read",
+    drizzle_set_error(con, __func__,
                       "unexpected data after packet:%zu", con->buffer_size);
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
@@ -225,7 +225,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_handshake_server_write");
+  drizzle_log_debug(con, __func__);
 
   /* Calculate max packet size. */
   con->packet_size= (uint32_t)(
@@ -244,7 +244,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   /* Assume the entire handshake packet will fit in the buffer. */
   if ((con->packet_size + 4) > con->buffer_allocation)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_write",
+    drizzle_set_error(con, __func__,
                       "buffer too small:%zu", con->packet_size + 4);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
@@ -315,7 +315,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   /* Make sure we packed it correctly. */
   if ((size_t)(ptr - con->buffer_ptr) != (4 + con->packet_size))
   {
-    drizzle_set_error(con, "drizzle_state_handshake_server_write",
+    drizzle_set_error(con, __func__,
                       "error packing server handshake:%zu:%zu",
                       (size_t)(ptr - con->buffer_ptr), 4 + con->packet_size);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
@@ -334,7 +334,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_handshake_client_read");
+  drizzle_log_debug(con, __func__);
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
@@ -346,7 +346,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   /* This is the minimum packet size. */
   if (con->packet_size < 34)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_read",
+    drizzle_set_error(con, __func__,
                       "bad packet size:>=34:%zu", con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
@@ -358,7 +358,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
 
   if (!(con->capabilities & DRIZZLE_CAPABILITIES_PROTOCOL_41))
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_read",
+    drizzle_set_error(con, __func__,
                       "protocol version not supported, must be MySQL 4.1+");
     return DRIZZLE_RETURN_PROTOCOL_NOT_SUPPORTED;
   }
@@ -376,7 +376,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   unsigned char *ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 32);
   if (ptr == NULL)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_read",
+    drizzle_set_error(con, __func__,
                       "user string not found");
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
@@ -391,7 +391,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
     real_size+= (size_t)(ptr - con->buffer_ptr);
     if (con->packet_size < real_size)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_client_read",
+      drizzle_set_error(con, __func__,
                         "bad packet size:>=%zu:%zu", real_size,
                         con->packet_size);
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
@@ -413,7 +413,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   {
     if (scramble_size != DRIZZLE_MAX_SCRAMBLE_SIZE)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_client_read",
+      drizzle_set_error(con, __func__,
                         "wrong scramble size");
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
     }
@@ -436,7 +436,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
                                     (34 + strlen(con->user) + scramble_size));
     if (ptr == NULL)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_client_read",
+      drizzle_set_error(con, __func__,
                         "db string not found");
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
     }
@@ -444,7 +444,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
     real_size+= ((size_t)(ptr - con->buffer_ptr) + 1);
     if (con->packet_size != real_size)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_client_read",
+      drizzle_set_error(con, __func__,
                         "bad packet size:%zu:%zu", real_size, con->packet_size);
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
     }
@@ -465,7 +465,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   con->buffer_size-= con->packet_size;
   if (con->buffer_size != 0)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_read",
+    drizzle_set_error(con, __func__,
                       "unexpected data after packet:%zu", con->buffer_size);
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
@@ -528,14 +528,14 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_handshake_client_write");
+  drizzle_log_debug(con, __func__);
 #ifdef USE_OPENSSL
   if (con->ssl)
   {
     ssl_ret= SSL_connect(con->ssl);
     if (ssl_ret != 1)
     {
-      drizzle_set_error(con, "drizzle_state_handshake_client_write", "SSL error: %d", SSL_get_error(con->ssl, ssl_ret));
+      drizzle_set_error(con, __func__, "SSL error: %d", SSL_get_error(con->ssl, ssl_ret));
       return DRIZZLE_RETURN_SSL_ERROR;
     }
     con->ssl_state= DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE;
@@ -555,7 +555,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   /* Assume the entire handshake packet will fit in the buffer. */
   if ((con->packet_size + 4) > con->buffer_allocation)
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_write",
+    drizzle_set_error(con, __func__,
                       "buffer too small:%zu", con->packet_size + 4);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
@@ -590,7 +590,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   /* Make sure we packed it correctly. */
   if ((size_t)(ptr - con->buffer_ptr) != (4 + con->packet_size))
   {
-    drizzle_set_error(con, "drizzle_state_handshake_client_write",
+    drizzle_set_error(con, __func__,
                       "error packing client handshake:%zu:%zu",
                       (size_t)(ptr - con->buffer_ptr), 4 + con->packet_size);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
@@ -608,7 +608,7 @@ drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con)
   unsigned char *ptr;
   int capabilities;
 
-  drizzle_log_debug(con, "drizzle_state_handshake_ssl_client_write");
+  drizzle_log_debug(con, __func__);
 
   /* SSL handshake packet structure */
   con->packet_size= 4   /* Capabilities */
@@ -645,7 +645,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, "drizzle_state_handshake_result_read");
+  drizzle_log_debug(con, __func__);
 
   drizzle_result_st *result = drizzle_result_create(con);
 
@@ -663,7 +663,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
     {
       if (drizzle_result_eof(result))
       {
-        drizzle_set_error(con, "drizzle_state_handshake_result_read",
+        drizzle_set_error(con, __func__,
                          "old insecure authentication mechanism not supported");
         ret= DRIZZLE_RETURN_AUTH_FAILED;
       }
