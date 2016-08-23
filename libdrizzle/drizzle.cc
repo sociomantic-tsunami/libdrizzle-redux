@@ -281,7 +281,7 @@ static char *pollevents_str(short events, char *buf)
   N(POLLIN,  "in");
   N(POLLOUT, "out");
   N(POLLNVAL, "nval");
-  
+
   if (p == buf) {
     strcpy(buf, "none");
     return buf;
@@ -359,7 +359,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   drizzle_log_debug(con, "poll readyfor=%s",
                     pollevents_str(con->pfds[0].revents, ebuf));
 #endif
-  
+
   return drizzle_set_revents(con, con->pfds[0].revents);
 }
 

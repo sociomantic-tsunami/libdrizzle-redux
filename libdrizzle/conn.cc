@@ -614,7 +614,7 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
   while (1)
   {
     drizzle_return_t ret = drizzle_state_loop(con);
-    
+
     if (ret == DRIZZLE_RETURN_IO_WAIT && !con->options.non_blocking) {
       ret = drizzle_wait(con);
       if (ret != DRIZZLE_RETURN_OK)
@@ -1612,7 +1612,7 @@ static void connect_failed_try_next(drizzle_st *con, const char *func, const cha
 {
   char hostbuf[NI_MAXHOST], servbuf[NI_MAXSERV];
   struct addrinfo *aip = con->addrinfo_next;
-  
+
   if (getnameinfo(aip->ai_addr, aip->ai_addrlen,
                   hostbuf, sizeof(hostbuf),
                   servbuf, sizeof(servbuf),

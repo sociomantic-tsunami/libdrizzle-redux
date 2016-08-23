@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   drizzle_return_t ret;
 
   set_up_connection();
-  
+
   binlog= drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
   ret= drizzle_binlog_start(binlog, 0, "", 0);
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
