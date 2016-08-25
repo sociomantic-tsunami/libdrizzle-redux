@@ -193,6 +193,35 @@ const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *even
 DRIZZLE_API
 uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event);
 
+/**
+* Get the event type for the binlog event as string
+*
+* @param[in] event_type A binlog event type
+* @return The event type of the binlog event as string
+*/
+DRIZZLE_API
+const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type);
+
+/**
+ * Get the name of a binlog-file
+ *
+ * Queries the database for a list of binlog files and copies the filename to
+ * the passed buffer
+ * If the file_index is invalid or no binlog files exist filename will contain an
+ * empty string.
+ * A valid file_index is in the range [-1 to (number of binlog files -1)]
+ *
+ * The filename parameter is allocated by the function and needs to be
+ * freed by the application when finished with.
+ *
+ * @param[in] con Drizzle structure previously initialized with
+ *  drizzle_create() or drizzle_clone().
+ * @param[in,out] filename buffer to copy filename to
+ * @param[in] file_index index of the binlog to retrieve.
+ */
+DRIZZLE_API
+void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_index);
+
 #ifdef __cplusplus
 }
 #endif

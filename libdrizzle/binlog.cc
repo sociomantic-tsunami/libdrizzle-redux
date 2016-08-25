@@ -420,3 +420,83 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
   return DRIZZLE_RETURN_OK;
 }
 
+const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type)
+{
+    switch(event_type)
+    {
+      case DRIZZLE_EVENT_TYPE_UNKNOWN : return "DRIZZLE_EVENT_TYPE_UNKNOWN";
+      case DRIZZLE_EVENT_TYPE_START : return "DRIZZLE_EVENT_TYPE_START";
+      case DRIZZLE_EVENT_TYPE_QUERY : return "DRIZZLE_EVENT_TYPE_QUERY";
+      case DRIZZLE_EVENT_TYPE_STOP : return "DRIZZLE_EVENT_TYPE_STOP";
+      case DRIZZLE_EVENT_TYPE_ROTATE : return "DRIZZLE_EVENT_TYPE_ROTATE";
+      case DRIZZLE_EVENT_TYPE_INTVAR : return "DRIZZLE_EVENT_TYPE_INTVAR";
+      case DRIZZLE_EVENT_TYPE_LOAD : return "DRIZZLE_EVENT_TYPE_LOAD";
+      case DRIZZLE_EVENT_TYPE_SLAVE : return "DRIZZLE_EVENT_TYPE_SLAVE";
+      case DRIZZLE_EVENT_TYPE_CREATE_FILE : return "DRIZZLE_EVENT_TYPE_CREATE_FILE";
+      case DRIZZLE_EVENT_TYPE_APPEND_BLOCK : return "DRIZZLE_EVENT_TYPE_APPEND_BLOCK";
+      case DRIZZLE_EVENT_TYPE_EXEC_LOAD : return "DRIZZLE_EVENT_TYPE_EXEC_LOAD";
+      case DRIZZLE_EVENT_TYPE_DELETE_FILE : return "DRIZZLE_EVENT_TYPE_DELETE_FILE";
+      case DRIZZLE_EVENT_TYPE_NEW_LOAD : return "DRIZZLE_EVENT_TYPE_NEW_LOAD";
+      case DRIZZLE_EVENT_TYPE_RAND : return "DRIZZLE_EVENT_TYPE_RAND";
+      case DRIZZLE_EVENT_TYPE_USER_VAR : return "DRIZZLE_EVENT_TYPE_USER_VAR";
+      case DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION : return "DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION";
+      case DRIZZLE_EVENT_TYPE_XID : return "DRIZZLE_EVENT_TYPE_XID";
+      case DRIZZLE_EVENT_TYPE_BEGIN_LOAD_QUERY : return "DRIZZLE_EVENT_TYPE_BEGIN_LOAD_QUERY";
+      case DRIZZLE_EVENT_TYPE_EXECUTE_LOAD_QUERY : return "DRIZZLE_EVENT_TYPE_EXECUTE_LOAD_QUERY";
+      case DRIZZLE_EVENT_TYPE_TABLE_MAP : return "DRIZZLE_EVENT_TYPE_TABLE_MAP";
+        // Next 3 are used in 5.1.0 -> 5.1.15 only
+      case DRIZZLE_EVENT_TYPE_OBSOLETE_WRITE_ROWS : return "DRIZZLE_EVENT_TYPE_OBSOLETE_WRITE_ROWS";
+      case DRIZZLE_EVENT_TYPE_OBSOLETE_UPDATE_ROWS : return "DRIZZLE_EVENT_TYPE_OBSOLETE_UPDATE_ROWS";
+      case DRIZZLE_EVENT_TYPE_OBSOLETE_DELETE_ROWS : return "DRIZZLE_EVENT_TYPE_OBSOLETE_DELETE_ROWS";
+      case DRIZZLE_EVENT_TYPE_V1_WRITE_ROWS : return "DRIZZLE_EVENT_TYPE_V1_WRITE_ROWS";
+      case DRIZZLE_EVENT_TYPE_V1_UPDATE_ROWS : return "DRIZZLE_EVENT_TYPE_V1_UPDATE_ROWS";
+      case DRIZZLE_EVENT_TYPE_V1_DELETE_ROWS : return "DRIZZLE_EVENT_TYPE_V1_DELETE_ROWS";
+      case DRIZZLE_EVENT_TYPE_INCIDENT : return "DRIZZLE_EVENT_TYPE_INCIDENT";
+      case DRIZZLE_EVENT_TYPE_HEARTBEAT : return "DRIZZLE_EVENT_TYPE_HEARTBEAT";
+      case DRIZZLE_EVENT_TYPE_IGNORABLE : return "DRIZZLE_EVENT_TYPE_IGNORABLE";
+      case DRIZZLE_EVENT_TYPE_ROWS_QUERY : return "DRIZZLE_EVENT_TYPE_ROWS_QUERY";
+      case DRIZZLE_EVENT_TYPE_V2_WRITE_ROWS : return "DRIZZLE_EVENT_TYPE_V2_WRITE_ROWS";
+      case DRIZZLE_EVENT_TYPE_V2_UPDATE_ROWS : return "DRIZZLE_EVENT_TYPE_V2_UPDATE_ROWS";
+      case DRIZZLE_EVENT_TYPE_V2_DELETE_ROWS : return "DRIZZLE_EVENT_TYPE_V2_DELETE_ROWS";
+      case DRIZZLE_EVENT_TYPE_GTID : return "DRIZZLE_EVENT_TYPE_GTID";
+      case DRIZZLE_EVENT_TYPE_ANONYMOUS_GTID : return "DRIZZLE_EVENT_TYPE_ANONYMOUS_GTID";
+      case DRIZZLE_EVENT_TYPE_PREVIOUS_GTIDS : return "DRIZZLE_EVENT_TYPE_PREVIOUS_GTIDS";
+      case DRIZZLE_EVENT_TYPE_END : return "DRIZZLE_EVENT_TYPE_END";
+      default : return "DRIZZLE_EVENT_TYPE_UNKNOWN";
+    }
+}
+
+void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_index)
+{
+  drizzle_return_t driz_ret;
+  drizzle_result_st *result = drizzle_query(con, "SHOW BINARY LOGS", 0, &driz_ret);
+
+  if (driz_ret != DRIZZLE_RETURN_OK)
+  {
+    drizzle_log_error(con, "%s Couldn't retrieve  %d", __func__, file_index );
+  }
+
+  drizzle_result_buffer(result);
+  int row_count = (int) drizzle_result_row_count(result);
+
+  if (file_index < -1 || file_index >= row_count )
+  {
+    drizzle_log_error(con, "%s Invalid binlog file index %d", __func__, file_index );
+  }
+
+  *filename = (char*) malloc(1);
+  *filename[0] = '\0';
+
+  if (row_count > 0)
+  {
+    int row_index = file_index == -1 || file_index >= row_count ?
+                            row_count - 1 : file_index;
+
+    drizzle_row_t row = drizzle_row_index(result, row_index);
+    *filename =( char*)realloc(*filename, strlen(row[0]));
+    memcpy(*filename, row[0], strlen(row[0]));
+    *filename[strlen(row[0])] = '\0';
+  }
+
+  drizzle_result_free(result);
+}
