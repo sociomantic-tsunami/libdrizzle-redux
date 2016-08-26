@@ -153,3 +153,25 @@ Functions
    :param event: The event from the binlog stream
    :returns: The length of the raw event data
 
+.. c:function:: const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type)
+
+   Get the event type for the binlog event as string
+
+   :param event_type: A binlog event type
+   :returns: The event type of the binlog event as string
+
+.. c:function:: void drizzle_binlog_get_filename(drizzle_st *con, char *filename, int file_index)
+
+   Get the name of a binlog-file
+
+   Queries the database for a list of binlog files and copies the filename to
+   the passed buffer
+   If the file_index is invalid or no binlog files exist filename will contain an
+   empty string
+   A valid file_index is in the range [-1 to (number of binlog files -1)]
+
+   The memory (de)allocation of the filename buffer must be done by the client
+
+   :param con: Drizzle structure previously initialized with drizzle_create() or drizzle_clone()
+   :param filename: Buffer to copy filename to
+   :param file_index: Index of the binlog to retrieve
