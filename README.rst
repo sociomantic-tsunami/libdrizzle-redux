@@ -1,12 +1,22 @@
 Description
 ===========
 
-Drizzle Redux is a project which aims to breath new life into the libdrizzle
+Drizzle Redux is a project which aims to breathe new life into the libdrizzle
 C connector. It is designed to allow you to connect to and query a
 MySQL database server using a simple API.
 
-Libdrizzle-redux in the sociomantic repository is a fork of the official
-libdrizzle redux at https://launchpad.net/libdrizzle.
+Libdrizzle-redux in the sociomantic tsunami repository is a fork of the official
+**v5.1.4 Felmingham** at https://launchpad.net/libdrizzle.
+
+The primary reason for the fork is that development of the upstream stopped in 2013
+which meant that crucial fixes and enhancements  were not included in the latest
+stable release **v5.1.4 Felmingham**.
+
+We hope that continuing the development of libdrizzle-redux can benefit current and
+future users of the library.
+
+For more details on new features please refer to the
+`release notes <https://github.com/sociomantic-tsunami/libdrizzle-redux/releases>`_
 
 Releases
 ========
@@ -59,13 +69,13 @@ For more information about compiling libdrizzle redux please
 refer to ``compiling.rst`` in the ``./docs`` folder or build the documentation,
 cf. below.
 
-**Linking libdrizzle-redux**
-::
+**Linking libdrizzle-redux**::
+
     gcc app.c -oapp -ldrizzle-redux -lpthread
 
 If libdrizzle-redux is installed alongisde other versions of libdrizzle,
-the linking should be done with the full name of the dynamic library, e.g.
-::
+the linking should be done with the full name of the dynamic library, e.g.::
+
     gcc app.c -oapp -l:libdrizzle-redux.so.9 -lpthread
 
 **Building documentation**
