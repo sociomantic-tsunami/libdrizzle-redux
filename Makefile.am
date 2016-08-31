@@ -72,4 +72,4 @@ maintainer-clean-local:
 	-rm -f rpm/@PACKAGE@-*.rpm
 	-rm -f @PACKAGE@-*.deb
 
-dist_bin_SCRIPTS+= @GENERIC_CONFIG@ 
+dist_bin_SCRIPTS+= @GENERIC_CONFIG@

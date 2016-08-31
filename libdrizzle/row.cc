@@ -269,7 +269,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, "drizzle_state_row_read");
+  drizzle_log_debug(con, __func__);
 
   if (con->packet_size != 0 && con->buffer_size < con->packet_size &&
     con->buffer_size < 5)

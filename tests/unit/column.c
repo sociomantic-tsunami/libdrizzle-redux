@@ -1,4 +1,4 @@
-/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab: 
+/*  vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
  *
  *  Drizzle Client & Protocol Library
  *
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                 break;
             case 2:
                 ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", (size_t)drizzle_column_max_size(column));
-                
+
                 ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
                 break;
             case 3:
