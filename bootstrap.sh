@@ -155,7 +155,7 @@ function rebuild_host_os ()
 #  values: darwin,fedora,rhel,ubuntu,debian,opensuse
 function set_VENDOR_DISTRIBUTION ()
 {
-  local dist="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+  local dist="$(echo "$1" | tr [:upper:] [:lower:])"
   case "$dist" in
     darwin)
       VENDOR_DISTRIBUTION='darwin'
@@ -187,7 +187,7 @@ function set_VENDOR_DISTRIBUTION ()
 # Validate a Vendor's release name/number
 function set_VENDOR_RELEASE ()
 {
-  local release="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+  local release="$(echo "$1" | tr [:upper:] [:lower:])"
 
   if $verbose; then
     echo "VENDOR_DISTRIBUTION:$VENDOR_DISTRIBUTION"
@@ -254,7 +254,7 @@ function set_VENDOR_RELEASE ()
 #  Valid values are: apple, redhat, centos, canonical, oracle, suse
 function set_VENDOR ()
 {
-  local vendor="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+  local vendor="$(echo "$1" | tr [:upper:] [:lower:])"
 
   case $vendor in
     apple)
