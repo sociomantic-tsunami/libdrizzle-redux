@@ -155,7 +155,7 @@ function rebuild_host_os ()
 #  values: darwin,fedora,rhel,ubuntu,debian,opensuse
 function set_VENDOR_DISTRIBUTION ()
 {
-  local dist="$(echo "$1" | tr [:upper:] [:lower:])"
+  local dist="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
   case "$dist" in
     darwin)
       VENDOR_DISTRIBUTION='darwin'
@@ -187,7 +187,7 @@ function set_VENDOR_DISTRIBUTION ()
 # Validate a Vendor's release name/number
 function set_VENDOR_RELEASE ()
 {
-  local release="$(echo "$1" | tr [:upper:] [:lower:])"
+  local release="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   if $verbose; then
     echo "VENDOR_DISTRIBUTION:$VENDOR_DISTRIBUTION"
@@ -254,7 +254,7 @@ function set_VENDOR_RELEASE ()
 #  Valid values are: apple, redhat, centos, canonical, oracle, suse
 function set_VENDOR ()
 {
-  local vendor="$(echo "$1" | tr [:upper:] [:lower:])"
+  local vendor="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   case $vendor in
     apple)
@@ -328,33 +328,33 @@ function determine_target_platform ()
 
   if [[ -x '/usr/bin/sw_vers' ]]; then
     local _VERSION="$(/usr/bin/sw_vers -productVersion)"
-    set_VENDOR 'apple' 'darwin' $_VERSION
+    set_VENDOR 'apple' 'darwin' "$_VERSION"
   elif [[ $(uname) == 'Darwin' ]]; then
     set_VENDOR 'apple' 'darwin' 'mountain'
   elif [[ -f '/etc/fedora-release' ]]; then
     local fedora_version="$(cat /etc/fedora-release | awk ' { print $3 } ')"
-    set_VENDOR 'redhat' 'fedora' $fedora_version
+    set_VENDOR 'redhat' 'fedora' "$fedora_version"
   elif [[ -f '/etc/centos-release' ]]; then
     local centos_version="$(cat /etc/centos-release | awk ' { print $7 } ')"
-    set_VENDOR 'centos' 'rhel' $centos_version
+    set_VENDOR 'centos' 'rhel' "$centos_version"
   elif [[ -f '/etc/SuSE-release' ]]; then
     local suse_distribution="$(head -1 /etc/SuSE-release | awk ' { print $1 } ')"
     local suse_version="$(head -1 /etc/SuSE-release | awk ' { print $2 } ')"
-    set_VENDOR 'suse' $suse_distribution $suse_version
+    set_VENDOR 'suse' "$suse_distribution" "$suse_version"
   elif [[ -f '/etc/redhat-release' ]]; then
     local rhel_version="$(cat /etc/redhat-release | awk ' { print $7 } ')"
     local _vendor="$(rpm -qf /etc/redhat-release)"
-    set_VENDOR $_vendor 'rhel' $rhel_version
+    set_VENDOR "$_vendor" 'rhel' "$rhel_version"
   elif [[ -f '/etc/os-release' ]]; then
     source '/etc/os-release'
-    set_VENDOR $ID $ID $VERSION_ID
+    set_VENDOR "$ID" "$ID" "$VERSION_ID"
   elif [[ -x '/usr/bin/lsb_release' ]]; then
     local _ID="$(/usr/bin/lsb_release -s -i)"
     local _VERSION="$(/usr/bin/lsb_release -s -r)"
-    set_VENDOR $_ID $_ID $_VERSION_ID
+    set_VENDOR "$_ID" "$_ID" "$_VERSION_ID"
   elif [[ -f '/etc/lsb-release' ]]; then
     source '/etc/lsb-release'
-    set_VENDOR 'canonical' $DISTRIB_ID $DISTRIB_CODENAME
+    set_VENDOR 'canonical' "$DISTRIB_ID" "$DISTRIB_CODENAME"
   fi
 
   rebuild_host_os
@@ -377,9 +377,9 @@ function run_configure ()
 
   local BUILD_DIR="$1"
   if [[ -n "$BUILD_DIR" ]]; then
-    rm -r -f $BUILD_DIR
-    mkdir -p $BUILD_DIR
-    safe_pushd $BUILD_DIR
+    rm -r -f "$BUILD_DIR"
+    mkdir -p "$BUILD_DIR"
+    safe_pushd "$BUILD_DIR"
   fi
 
   # Arguments for configure
@@ -606,7 +606,7 @@ function make_install_system ()
   save_BUILD
   PREFIX_ARG="--prefix=$INSTALL_LOCATION"
 
-  if [ ! -d $INSTALL_LOCATION ] ; then
+  if [ ! -d "$INSTALL_LOCATION" ] ; then
     die "ASSERT temp directory not found '$INSTALL_LOCATION'"
   fi
 
@@ -618,7 +618,7 @@ function make_install_system ()
 
   make_target 'uninstall'
 
-  rm -r -f $INSTALL_LOCATION
+  rm -r -f "$INSTALL_LOCATION"
   make 'distclean'
 
   if [ -f 'Makefile' ]; then
@@ -1087,7 +1087,7 @@ function run_autoreconf ()
   fi
 
   if $use_libtool; then
-    assert $BOOTSTRAP_LIBTOOLIZE
+    assert "$BOOTSTRAP_LIBTOOLIZE"
     run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
   fi
 
@@ -1540,8 +1540,7 @@ function execute_job ()
   local MAKE_TARGET_ARRAY
   MAKE_TARGET_ARRAY=( $MAKE_TARGET )
 
-  for target in "${MAKE_TARGET_ARRAY[@]}"
-  do
+  for target in "${MAKE_TARGET_ARRAY[@]}"; do
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
       check_make_target $target
@@ -1728,14 +1727,14 @@ function main ()
   if [ -z "$MAKE_TARGET" ]; then
     if $jenkins_build_environment; then
       if [[ -n "$label" ]]; then
-        check_make_target $label
+        check_make_target "$label"
         if [ $? -eq 0 ]; then
           MAKE_TARGET="$label"
         fi
       fi
 
       if [[ -n "$LABEL" ]]; then
-        check_make_target $LABEL
+        check_make_target "$LABEL"
         if [ $? -eq 0 ]; then
           MAKE_TARGET="$LABEL"
         fi
@@ -1788,7 +1787,7 @@ function merge ()
 
   if [[ "$VCS_CHECKOUT" == 'bzr' ]]; then
     if test -n "$BRANCH_TO_MERGE"; then
-      bzr merge $BRANCH_TO_MERGE
+      bzr merge "$BRANCH_TO_MERGE"
       bzr commit --message="Merge $BRANCH_TO_MERGE Build: $BUILD_TAG" --unchanged
     fi
 
