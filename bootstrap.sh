@@ -60,25 +60,21 @@ command_not_found_handle ()
   return 127
 }
 
-function error ()
-{
+function error {
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
 }
 
-function die ()
-{
+function die {
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
   exit 1;
 }
 
-function warn ()
-{
+function warn {
   echo "$BASH_SOURCE:$BASH_LINENO: $@"
   #echo "$BASH_SOURCE:$BASH_LINENO: $@" >&1
 }
 
-function nassert ()
-{
+function nassert {
   local param_name=\$"$1"
   local param_value="$(eval "expr \"$param_name\" ")"
 
@@ -88,8 +84,7 @@ function nassert ()
   fi
 }
 
-function assert ()
-{
+function assert {
   local param_name=\$"$1"
   local param_value="$(eval "expr \"$param_name\" ")"
 
@@ -99,32 +94,28 @@ function assert ()
   fi
 }
 
-function assert_file ()
-{
+function assert_file {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
     exit 1;
   fi
 }
 
-function assert_no_file ()
-{
+function assert_no_file {
   if [ -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) file exists: $2" >&2
     exit 1;
   fi
 }
 
-function assert_no_directory ()
-{
+function assert_no_directory {
   if [ -d "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) directory exists: $2" >&2
     exit 1;
   fi
 }
 
-function assert_exec_file ()
-{
+function assert_exec_file {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
     exit 1;
@@ -136,13 +127,11 @@ function assert_exec_file ()
   fi
 }
 
-function command_exists ()
-{
+function command_exists {
   type "$1" &> /dev/null ;
 }
 
-function rebuild_host_os ()
-{
+function rebuild_host_os {
   HOST_OS="${UNAME_MACHINE_ARCH}-${VENDOR}-${VENDOR_DISTRIBUTION}-${VENDOR_RELEASE}-${UNAME_KERNEL}-${UNAME_KERNEL_RELEASE}"
   if [ -z "$1" ]; then
     if $verbose; then
@@ -153,8 +142,7 @@ function rebuild_host_os ()
 
 # Validate the distribution name, or toss an erro
 #  values: darwin,fedora,rhel,ubuntu,debian,opensuse
-function set_VENDOR_DISTRIBUTION ()
-{
+function set_VENDOR_DISTRIBUTION {
   local dist="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
   case "$dist" in
     darwin)
@@ -185,8 +173,7 @@ function set_VENDOR_DISTRIBUTION ()
 }
 
 # Validate a Vendor's release name/number
-function set_VENDOR_RELEASE ()
-{
+function set_VENDOR_RELEASE {
   local release="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   if $verbose; then
@@ -252,8 +239,7 @@ function set_VENDOR_RELEASE ()
 
 
 #  Valid values are: apple, redhat, centos, canonical, oracle, suse
-function set_VENDOR ()
-{
+function set_VENDOR {
   local vendor="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   case $vendor in
@@ -320,8 +306,7 @@ function set_VENDOR ()
 
 }
 
-function determine_target_platform ()
-{
+function determine_target_platform {
   UNAME_MACHINE_ARCH="$(uname -m 2>/dev/null)" || UNAME_MACHINE_ARCH=unknown
   UNAME_KERNEL="$(uname -s 2>/dev/null)"  || UNAME_SYSTEM=unknown
   UNAME_KERNEL_RELEASE="$(uname -r 2>/dev/null)" || UNAME_KERNEL_RELEASE=unknown
@@ -360,8 +345,7 @@ function determine_target_platform ()
   rebuild_host_os
 }
 
-function run_configure ()
-{
+function run_configure {
   # We will run autoreconf if we are required
   run_autoreconf_if_required
 
@@ -433,8 +417,7 @@ function run_configure ()
   fi
 }
 
-function setup_gdb_command ()
-{
+function setup_gdb_command {
   GDB_TMPFILE=$(mktemp /tmp/gdb.XXXXXXXXXX)
   echo 'set logging overwrite on' > "$GDB_TMPFILE"
   echo 'set logging on' >> "$GDB_TMPFILE"
@@ -445,16 +428,14 @@ function setup_gdb_command ()
   GDB_COMMAND="gdb -f -batch -x $GDB_TMPFILE"
 }
 
-function setup_valgrind_command ()
-{
+function setup_valgrind_command {
   VALGRIND_PROGRAM="$(type -p valgrind)"
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
     VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
-function save_BUILD ()
-{
+function save_BUILD {
   if [[ -n "$OLD_CONFIGURE" ]]; then
     die "OLD_CONFIGURE($OLD_CONFIGURE) was set on push, programmer error!"
   fi
@@ -492,8 +473,7 @@ function save_BUILD ()
   fi
 }
 
-function restore_BUILD ()
-{
+function restore_BUILD {
   if [[ -n "$OLD_CONFIGURE" ]]; then
     CONFIGURE=$OLD_CONFIGURE
   fi
@@ -523,8 +503,7 @@ function restore_BUILD ()
   export -n CC CXX
 }
 
-function safe_pushd ()
-{
+function safe_pushd {
   pushd "$1" &> /dev/null ;
 
   if [ -n "$BUILD_DIR" ]; then
@@ -534,8 +513,7 @@ function safe_pushd ()
   fi
 }
 
-function safe_popd ()
-{
+function safe_popd {
   local directory_to_delete="$(pwd)"
   popd &> /dev/null ;
   if [ $? -eq 0 ]; then
@@ -547,8 +525,7 @@ function safe_popd ()
   fi
 }
 
-function make_valgrind ()
-{
+function make_valgrind {
   # If the env VALGRIND_COMMAND is set then we assume it is valid
   local valgrind_was_set=false
   if [[ -z "$VALGRIND_COMMAND" ]]; then
@@ -599,8 +576,7 @@ function make_valgrind ()
   fi
 }
 
-function make_install_system ()
-{
+function make_install_system {
   local INSTALL_LOCATION="$(mktemp -d /tmp/XXXXXXXXXX)"
 
   save_BUILD
@@ -629,8 +605,7 @@ function make_install_system ()
   safe_popd
 }
 
-function make_darwin_malloc ()
-{
+function make_darwin_malloc {
   run_configure_if_required
 
   old_MallocGuardEdges=$MallocGuardEdges
@@ -648,8 +623,7 @@ function make_darwin_malloc ()
 }
 
 # This will reset our environment, and make sure built files are available.
-function make_for_snapshot ()
-{
+function make_for_snapshot {
   # Lets make sure we have a clean environment
   assert_no_file 'Makefile'
   assert_no_file 'configure'
@@ -664,8 +638,7 @@ function make_for_snapshot ()
   assert_exec_file 'configure'
 }
 
-function check_mingw ()
-{
+function check_mingw {
   command_exists 'mingw64-configure'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -681,8 +654,7 @@ function check_mingw ()
   return 0
 }
 
-function check_clang ()
-{
+function check_clang {
   command_exists 'clang'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -692,8 +664,7 @@ function check_clang ()
   return 0
 }
 
-function check_clang_analyzer ()
-{
+function check_clang_analyzer {
   command_exists 'scan-build'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -703,8 +674,7 @@ function check_clang_analyzer ()
   return 0
 }
 
-function make_skeleton ()
-{
+function make_skeleton {
   run_configure
   ret=$?
 
@@ -736,8 +706,7 @@ function make_skeleton ()
   return $ret
 }
 
-function make_for_mingw ()
-{
+function make_for_mingw {
   if ! check_mingw; then
     return 1
   fi
@@ -763,8 +732,7 @@ function make_for_mingw ()
   return $ret
 }
 
-function make_for_clang ()
-{
+function make_for_clang {
   if ! check_clang; then
     return 1
   fi
@@ -791,8 +759,7 @@ function make_for_clang ()
   return $ret
 }
 
-function make_for_clang_analyzer ()
-{
+function make_for_clang_analyzer {
   if ! check_clang; then
     return 1
   fi
@@ -827,8 +794,7 @@ function make_for_clang_analyzer ()
 }
 
 # If we are locally testing, we should make sure the environment is setup correctly
-function check_for_jenkins ()
-{
+function check_for_jenkins {
   if ! $jenkins_build_environment; then
     echo "Not inside of jenkins, simulating environment"
 
@@ -842,8 +808,7 @@ function check_for_jenkins ()
   fi
 }
 
-function make_universe ()
-{
+function make_universe {
   make_for_snapshot
   make_valgrind
   make_gdb
@@ -860,15 +825,13 @@ function make_universe ()
   make_install_system
 }
 
-function check_snapshot ()
-{
+function check_snapshot {
   if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
     assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
   fi
 }
 
-function make_for_continuus_integration ()
-{
+function make_for_continuus_integration {
   # Setup the environment if we are local
   check_for_jenkins
 
@@ -904,8 +867,7 @@ function make_for_continuus_integration ()
 }
 
 # The point to this test is to test bootstrap.sh itself
-function self_test ()
-{
+function self_test {
   # We start off with a clean env
   make_maintainer_clean
 
@@ -915,16 +877,14 @@ function self_test ()
 #  eval "./bootstrap.sh maintainer-clean" || die "failed 'maintainer-clean'"
 }
 
-function make_install_html ()
-{
+function make_install_html {
   run_configure_if_required
   assert_file 'configure'
 
   make_target 'install-html'
 }
 
-function make_gdb ()
-{
+function make_gdb {
   save_BUILD
 
   if command_exists 'gdb'; then
@@ -966,8 +926,7 @@ function make_gdb ()
 
 # $1 target to compile
 # $2 to die, or not to die, based on contents
-function make_target ()
-{
+function make_target {
   if [ -z "$1" ]; then
     die "Programmer error, no target provided for make"
   fi
@@ -1004,13 +963,11 @@ function make_target ()
   return $ret
 }
 
-function make_distcheck ()
-{
+function make_distcheck {
   make_target 'distcheck'
 }
 
-function make_rpm ()
-{
+function make_rpm {
   if command_exists 'rpmbuild'; then
     if [ -f 'rpm.am' -o -d 'rpm' ]; then
       run_configure_if_required
@@ -1024,8 +981,7 @@ function make_rpm ()
   fi
 }
 
-function make_maintainer_clean ()
-{
+function make_maintainer_clean {
   run_configure_if_required
   make_target 'maintainer-clean' 'no_error'
 
@@ -1035,25 +991,21 @@ function make_maintainer_clean ()
   assert_no_directory 'autom4te.cache'
 }
 
-function make_check ()
-{
+function make_check {
   make_target 'check'
 }
 
-function make_jenkins_default ()
-{
+function make_jenkins_default {
   run_configure
   make_target 'all'
 }
 
-function make_default ()
-{
+function make_default {
   run_configure_if_required
   make_target 'all'
 }
 
-function run_configure_if_required ()
-{
+function run_configure_if_required {
   run_autoreconf_if_required
 
   if [ ! -f 'Makefile' ]; then
@@ -1063,15 +1015,13 @@ function run_configure_if_required ()
   assert_file 'Makefile' 'configure did not produce a Makefile'
 }
 
-function run_make_maintainer_clean_if_possible ()
-{
+function run_make_maintainer_clean_if_possible {
   if [ -f 'Makefile' ]; then
     make_maintainer_clean
   fi
 }
 
-function run_autoreconf_if_required ()
-{
+function run_autoreconf_if_required {
   if [ ! -x 'configure' ]; then
     run_autoreconf
   fi
@@ -1080,8 +1030,7 @@ function run_autoreconf_if_required ()
   bash -n configure
 }
 
-function run_autoreconf ()
-{
+function run_autoreconf {
   if [[ -z "$AUTORECONF" ]]; then
     die "Programmer error, tried to call run_autoreconf () but AUTORECONF was not set"
   fi
@@ -1096,8 +1045,7 @@ function run_autoreconf ()
   eval 'bash -n configure' || die "autoreconf generated a malformed configure"
 }
 
-function run ()
-{
+function run {
   if $verbose; then
     echo "\`$@' $ARGS"
   fi
@@ -1109,8 +1057,7 @@ function run ()
   eval "$@" "$ARGS"
 }
 
-function parse_command_line_options ()
-{
+function parse_command_line_options {
   local SHORTOPTS=':apcmt:dvh'
 
   nassert MAKE_TARGET
@@ -1174,8 +1121,7 @@ function parse_command_line_options ()
   fi
 }
 
-function determine_vcs ()
-{
+function determine_vcs {
   if [[ -d '.git' ]]; then
     VCS_CHECKOUT=git
   elif [[ -d '.bzr' ]]; then
@@ -1193,16 +1139,14 @@ function determine_vcs ()
   fi
 }
 
-function require_libtoolise ()
-{
+function require_libtoolise {
   grep '^[         ]*A[CM]_PROG_LIBTOOL' configure.ac >/dev/null \
     && use_libtool=true
   grep '^[         ]*LT_INIT' configure.ac >/dev/null \
     && use_libtool=true
 }
 
-function autoreconf_setup ()
-{
+function autoreconf_setup {
   # Set ENV MAKE in order to override "make"
   if [[ -z "$MAKE" ]]; then
     if command_exists 'gmake'; then
@@ -1324,8 +1268,7 @@ function autoreconf_setup ()
   run "$AUTORECONF" '--help'  &> /dev/null    || die "Failed to run AUTORECONF:$AUTORECONF"
 }
 
-function print_setup ()
-{
+function print_setup {
   local saved_debug_status=$debug
   if $debug; then
     disable_debug
@@ -1407,8 +1350,7 @@ function print_setup ()
   fi
 }
 
-function make_clean_option ()
-{
+function make_clean_option {
   run_configure_if_required
 
   make_maintainer_clean
@@ -1420,8 +1362,7 @@ function make_clean_option ()
   fi
 }
 
-function make_for_autoreconf ()
-{
+function make_for_autoreconf {
   if [ -f 'Makefile' ]; then
     make_maintainer_clean
   fi
@@ -1494,8 +1435,7 @@ function check_make_target()
   return $ret
 }
 
-function execute_job ()
-{
+function execute_job {
   determine_target_platform
 
   determine_vcs
@@ -1646,8 +1586,7 @@ function execute_job ()
   done
 }
 
-function main ()
-{
+function main {
   # Are we running inside of Jenkins?
   if [[ -n "$JENKINS_HOME" ]]; then
     declare -r jenkins_build_environment=true
@@ -1755,8 +1694,7 @@ function main ()
   exit $ret
 }
 
-function set_branch ()
-{
+function set_branch {
   if [ -z "$BRANCH" ]; then
     if [ -z "$CI_PROJECT_TEAM" ]; then
       die "Variable CI_PROJECT_TEAM has not been set"
@@ -1777,8 +1715,7 @@ function set_branch ()
   fi
 }
 
-function merge ()
-{
+function merge {
   if [ -z "$VCS_CHECKOUT" ]; then
     die "Merges require VCS_CHECKOUT."
   fi
@@ -1797,8 +1734,7 @@ function merge ()
   fi
 }
 
-function enable_debug ()
-{
+function enable_debug {
   if ! $debug; then
     local caller_loc="$(caller)"
     if [[ -n "$1" ]]; then
@@ -1811,8 +1747,7 @@ function enable_debug ()
   fi
 }
 
-function usage ()
-{
+function usage {
   cat << EOF
   Usage: $program_name [OPTION]..
 
@@ -1823,14 +1758,12 @@ function usage ()
 EOF
 }
 
-function disable_debug ()
-{
+function disable_debug {
   set +x
   debug=false
 }
 
-function bootstrap ()
-{
+function bootstrap {
   local env_debug_enabled=false
   local debug=false
 
