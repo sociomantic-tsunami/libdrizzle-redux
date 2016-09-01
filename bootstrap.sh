@@ -83,7 +83,7 @@ function nassert ()
   local param_value="$(eval "expr \"$param_name\" ")"
 
   if [ -n "$param_value" ]; then
-    echo "$bash_source:$bash_lineno: assert($param_name) had value of "$param_value"" >&2
+    echo "$bash_source:$bash_lineno: assert($param_name) had value of \"$param_value\"" >&2
     exit 1
   fi
 }
