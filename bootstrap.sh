@@ -79,7 +79,8 @@ function nassert {
   local param_value="$(eval "expr \"$param_name\" ")"
 
   if [ -n "$param_value" ]; then
-    echo "$bash_source:$bash_lineno: assert($param_name) had value of \"$param_value\"" >&2
+    echo "$bash_source:$bash_lineno: assert($param_name) had value of"\
+         "\"$param_value\"" >&2
     exit 1
   fi
 }
@@ -132,7 +133,11 @@ function command_exists {
 }
 
 function rebuild_host_os {
-  HOST_OS="${UNAME_MACHINE_ARCH}-${VENDOR}-${VENDOR_DISTRIBUTION}-${VENDOR_RELEASE}-${UNAME_KERNEL}-${UNAME_KERNEL_RELEASE}"
+  HOST_OS=$(printf "%s-%s-%s-%s-%s-%s" \
+    "${UNAME_MACHINE_ARCH}" "${VENDOR}" \
+    "${VENDOR_DISTRIBUTION}" "${VENDOR_RELEASE}" \
+    "${UNAME_KERNEL}" "${UNAME_KERNEL_RELEASE}")
+
   if [ -z "$1" ]; then
     if $verbose; then
       echo "HOST_OS=$HOST_OS"
@@ -369,7 +374,8 @@ function run_configure {
   # Arguments for configure
   local BUILD_CONFIGURE_ARG=''
 
-  # If debug is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
+  # If debug is set we enable both debug and asssert, otherwise we see if this
+  # is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
   if $valgrind_run; then
@@ -394,12 +400,14 @@ function run_configure {
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      eval "CC=clang CXX=clang++ ./configure $BUILD_CONFIGURE_ARG" || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
+      eval "CC=clang CXX=clang++ ./configure $BUILD_CONFIGURE_ARG" || \
+      die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     rhel-5*)
       command_exists 'gcc44' || die "Could not locate gcc44"
-      eval "CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG" || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
+      eval "CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG" || \
+      die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     *)
@@ -431,7 +439,9 @@ function setup_gdb_command {
 function setup_valgrind_command {
   VALGRIND_PROGRAM="$(type -p valgrind)"
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM "\
+                     "--error-exitcode=1 --leak-check=yes --malloc-fill=A5 "\
+                     " --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
@@ -1037,7 +1047,8 @@ function run_autoreconf {
 
   if $use_libtool; then
     assert "$BOOTSTRAP_LIBTOOLIZE"
-    run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
+    run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || \
+    die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
   fi
 
   run "$AUTORECONF" "$AUTORECONF_ARGS" || die "Cannot execute $AUTORECONF"
@@ -1805,7 +1816,8 @@ function bootstrap {
     source '.bootstrap'
   fi
 
-  # We do this in order to protect the case where DEBUG that came from the ENV (i.e. it overrides what is found in .bootstrap
+  # We do this in order to protect the case where DEBUG that came from the ENV
+  # (i.e. it overrides what is found in .bootstrap
   if $env_debug_enabled; then
     enable_debug
   elif [[ -n "$DEBUG" ]]; then
