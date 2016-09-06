@@ -2,6 +2,13 @@ language: cpp
 
 sudo: required
 
+os:
+  - linux
+
+compiler:
+  - gcc
+  - clang    
+
 dist: trusty
 
 services:
