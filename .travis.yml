@@ -14,11 +14,11 @@ services:
 #  
 #  Please refer to the section 'script' for info on 
 #  SKIP_TEST_ON_ERROR
-env: 
-  - MYSQL_SERVER=127.0.0.1
-  - MYSQL_PASSWORD=
-  - MYSQL_USER=root
-  - SKIP_TEST_ON_ERROR=0 
+env:
+  - MYSQL_SERVER=127.0.0.1 \
+    MYSQL_PASSWORD='' \
+    MYSQL_USER=root \
+    SKIP_TEST_ON_ERROR=0
 
 ## Defines packages to be installed by apt
 #  Version is specified since some tests require MySQL >=5.6 
