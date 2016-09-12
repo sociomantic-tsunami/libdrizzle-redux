@@ -1,5 +1,5 @@
-Description
-===========
+Description |BuildStatus|_
+==========================
 
 Drizzle Redux is a project which aims to breathe new life into the libdrizzle
 C connector. It is designed to allow you to connect to and query a
@@ -85,3 +85,6 @@ Documentation can be generated in several formats::
     pdf  : make latexpdf
     epub : make epub
     html : make html
+
+.. |BuildStatus| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg?branch=master
+.. _BuildStatus: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux
