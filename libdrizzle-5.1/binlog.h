@@ -42,8 +42,14 @@ extern "C" {
 #endif
 
 /**
-* Initializes a binlog object for the connection and sets the event callback
-* functions
+* Initializes a binlog object for the connection
+*
+* If the connection is blocking, 'binlog_fn' and 'error_fn' specify the callback
+* functions for event data and errors respectively.
+* However, if the connection is non-blocking the client is expected to read the
+* binlog data directly from the file descriptor obtained from drizzle_fd().
+* Hence for non-blocking connections specifying 'binlog_fn' and 'error_fn' have
+* no effect.
 *
 * @param[in] con              The connection the binlog retrieval will be on
 * @param[in] binlog_fn        The function callback defined in (drizzle_binlog_fn)()
@@ -71,8 +77,12 @@ DRIZZLE_API
 void drizzle_binlog_free(drizzle_binlog_st *binlog);
 
 /**
-* Start the binlog transaction. Set the server_id to 0 to disconnect
+* Start the binlog transaction.
+* If the connection is blocking, set the server_id to 0 to disconnect
 * automatically at the end of the last log.
+*
+* If the connection is non-blocking the client is expected to read data
+* directly from the file descriptor obtained from drizzle_fd()
 *
 * @param[in] binlog         A binlog object created using drizzle_binlog_init()
 * @param[in] server_id      A unique server ID (or 0) to connect to the
