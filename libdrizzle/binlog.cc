@@ -94,6 +94,14 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
   // Hack in 5.6 to say that client support checksums
   result= drizzle_query(con, "SET @master_binlog_checksum='NONE'", 0, &ret);
   drizzle_result_free(result);
+
+  // Ensure the checksum query is executed if we are in non-blocking mode
+  if (con->options.non_blocking)
+  {
+    drizzle_wait(con);
+    ret = drizzle_state_loop(con);
+  }
+
   if (ret != DRIZZLE_RETURN_OK)
   {
     return ret;
@@ -138,12 +146,26 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
                                    data, len, len, &ret);
 
   con->binlog= binlog;
-  if (ret != DRIZZLE_RETURN_OK)
+
+  if (con->options.non_blocking)
   {
-    return ret;
+    // In non-blocking node, wait for IO but free the result as data is
+    // expected to be read by the client
+    ret = drizzle_wait(con);
+    drizzle_result_free(result);
   }
-  result->push_state(drizzle_state_binlog_read);
-  result->push_state(drizzle_state_packet_read);
+  else
+  {
+    // In blocking mode data is read by drizzle_state_binlog_read
+    if (ret != DRIZZLE_RETURN_OK)
+    {
+      return ret;
+    }
+
+    result->push_state(drizzle_state_binlog_read);
+    result->push_state(drizzle_state_packet_read);
+  }
+
   return drizzle_state_loop(con);
 }
 
