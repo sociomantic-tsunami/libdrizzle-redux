@@ -35,6 +35,21 @@
  *
  */
 
+/**
+ * @brief Tests that drizzle_st::event_watch_fn is set correctly when calling
+ * ::drizzle_set_event_watch_fn() and called with valid arguments
+ *
+ * @details Check that the drizzle_event_callback was called. It is done
+ * indirectly by asserting that cxt_b has been incremented at three times.
+ * The number of calls varies with the availability of underlying socket.
+ * However a successful run of the unittest is guaranteed to invoke the
+ * event_callback on the following state changes:
+ *
+ * 1. when drizzle connection is initiated by calling drizzle_connect
+ * 2. before connecting to server after 1 succeeds
+ * 3. when the drizzle_st connection is closed by calling drizzle_quit
+ */
+
 #include <yatl/lite.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
@@ -78,9 +93,11 @@ int main(int argc, char *argv[])
                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
+  // Set drizzle dummy context
   drizzle_set_context(con, (void*)&cxt_a);
   ASSERT_NOT_NULL_(drizzle_context(con) , "Drizzle context is null");
 
+  // Set user defined callback function event_watch_fn
   drizzle_set_event_watch_fn(con, drizzle_event_callback, (void*)&cxt_b);
 
   drizzle_return_t driz_ret= drizzle_connect(con);
@@ -91,19 +108,8 @@ int main(int argc, char *argv[])
 
   driz_ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
-
-  // Check that the drizzle_event_callback was called. It is done indirectly by
-  // asserting that cxt_b has been incremented 4 times.
-  // The increments of cxt_b correspond to the following state changes:
-  //
-  // 1. when drizzle connection is initied by calling drizzle_connect
-  // 2. while connecting to server
-  // 3. when server handshake succeeds
-  // 4. when the drizzle_st connection is closed by calling drizzle_quit
-  //
-  // Please note that stepping through the test with 'make gdb-event_callback'
-  // can cause the test to fail
-  ASSERT_TRUE(cxt_b >= 3);
+  ASSERT_EQ_(cxt_b >= 3, true,  "Unexpected number of event callbacks, Got '%d', "
+    "Expected '3' or more", cxt_b);
 
   return EXIT_SUCCESS;
 }
