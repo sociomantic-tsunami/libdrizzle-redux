@@ -22,7 +22,7 @@ Functions
 
 .. c:function:: drizzle_st* drizzle_create(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_options_st *options)
 
-   Creates a connection connection object.  If a path beginning with ``/`` is given as the host the library will connect as a UDS socket.  Otherwise a TCP/IP conection is made.
+   Creates a connection connection object.  If a path beginning with ``/`` is given as the host the library will connect as a UDS socket.  Otherwise a TCP/IP connection is made.
 
    .. note::
       a connection does not happen until the first query or an explicit :c:func:`drizzle_connect` call is made
@@ -194,7 +194,7 @@ Functions
 
    Sets/unsets the auth plugin connect option
 
-   :param options: The optoins object to modify
+   :param options: The options object to modify
    :param state: Set to true/false
 
 .. c:function:: bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
@@ -203,7 +203,7 @@ Functions
 
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
-   
+
 .. c:function:: const char* drizzle_host(const drizzle_st *con)
 
    Gets the host name from a TCP/IP connection
@@ -262,7 +262,7 @@ Functions
 
 .. c:function:: drizzle_capabilities_t drizzle_capabilities(const drizzle_st *con)
 
-   Gets the server capabilites for a connection
+   Gets the server capabilities for a connection
 
    :param con: A connection object
    :returns: A bit field of capabilities

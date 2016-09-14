@@ -145,8 +145,8 @@ function rebuild_host_os {
   fi
 }
 
-# Validate the distribution name, or toss an erro
 #  values: darwin,fedora,rhel,ubuntu,debian,opensuse
+# Validate the distribution name, or toss an error
 function set_VENDOR_DISTRIBUTION {
   local dist="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
   case "$dist" in
@@ -374,7 +374,7 @@ function run_configure {
   # Arguments for configure
   local BUILD_CONFIGURE_ARG=''
 
-  # If debug is set we enable both debug and asssert, otherwise we see if this
+  # If debug is set we enable both debug and assert, otherwise we see if this
   # is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
@@ -845,7 +845,7 @@ function make_for_continuus_integration {
   # Setup the environment if we are local
   check_for_jenkins
 
-  # No matter then evironment, we should not have a Makefile at this point
+  # No matter then environment, we should not have a Makefile at this point
   assert_no_file 'Makefile'
 
   # Platforms which require bootstrap should have some setup done before we hit this stage.
@@ -1614,7 +1614,7 @@ function main {
   local use_libtool=false
   local verbose=false
 
-  #getop variables
+  #getopt variables
   local opt_debug=false
   local opt_verbose=false
 
@@ -1741,7 +1741,7 @@ function merge {
 
     bzr push "$BRANCH"
   elif [[ -n "$VCS_CHECKOUT" ]]; then
-    die "Merge attempt occured, current VCS setup does not support this"
+    die "Merge attempt occurred, current VCS setup does not support this"
   fi
 }
 

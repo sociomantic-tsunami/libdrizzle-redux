@@ -73,7 +73,7 @@ cf. below.
 
     gcc app.c -oapp -ldrizzle-redux -lpthread
 
-If libdrizzle-redux is installed alongisde other versions of libdrizzle,
+If libdrizzle-redux is installed alongside other versions of libdrizzle,
 the linking should be done with the full name of the dynamic library, e.g.::
 
     gcc app.c -oapp -l:libdrizzle-redux.so.9 -lpthread
