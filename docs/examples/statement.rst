@@ -22,7 +22,7 @@ using :c:func:`drizzle_stmt_row_count`.
 
 Finally we get the result data.  A call to :c:func:`drizzle_stmt_fetch` gets
 the next row from either the network or the buffer (the buffer in this case).
-The int data is retreived using :c:func:`drizzle_stmt_get_int`, a call for
+The int data is retrieved using :c:func:`drizzle_stmt_get_int`, a call for
 each column in the row (in example the table only has one column) is made using
 the ``drizzle_stmt_get_`` functions.
 

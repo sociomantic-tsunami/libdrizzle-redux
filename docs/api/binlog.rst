@@ -49,7 +49,7 @@ occurs.
    This defines the function that will be supplied to accept binlog errors
 
    :param error: The :c:type:`drizzle_return_t` for the error (or :py:const:`DRIZZLE_RETURN_EOF` when all events have been retrieved
-   :param con: The connection object the error occured on
+   :param con: The connection object the error occurred on
    :param context: A user defined pointer supplied in :c:func:`drizzle_binlog_init`
 
 Functions

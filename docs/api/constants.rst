@@ -46,7 +46,7 @@ Return
    Function return status ENUM
 
    .. py:data:: DRIZZLE_RETURN_OK
-   
+
       Return is OK
 
    .. py:data:: DRIZZLE_RETURN_IO_WAIT
@@ -101,7 +101,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_NO_SCRAMBLE
 
-      No password scrable received (usually if server is expecting an auth
+      No password scramble received (usually if server is expecting an auth
       plugin but client didn't use one)
 
    .. py:data:: DRIZZLE_RETURN_AUTH_FAILED
@@ -150,7 +150,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_SSL_ERROR
 
-      An error occured during SSL handshake
+      An error occurred during SSL handshake
 
    .. py:data:: DRIZZLE_RETURN_EOF
 
@@ -158,7 +158,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_STMT_ERROR
 
-      A prepared statment error has occurred
+      A prepared statement error has occurred
 
    .. py:data:: DRIZZLE_RETURN_BINLOG_CRC
 
@@ -181,7 +181,7 @@ Connection
 
 .. c:type:: drizzle_charset_t
 
-   An ENUM of the possible character set with colation ID
+   An ENUM of the possible character set with collation ID
 
    .. py:data:: DRIZZLE_CHARSET_BIG5_CHINESE_CI
 
@@ -897,7 +897,7 @@ Prepared Statement
 .. c:type:: drizzle_bind_options_t
 
    An ENUM of prepared statement element options intended to be used in a bitmask
-   
+
    .. py:data:: DRIZZLE_BIND_OPTION_NONE
 
       Empty options
@@ -1036,7 +1036,7 @@ Binlog
 
    .. py:data:: DRIZZLE_EVENT_TYPE_HEARTBEAT
 
-      Repliaction heartbeat event
+      Replication heartbeat event
 
    .. py:data:: DRIZZLE_EVENT_TYPE_IGNORABLE
 

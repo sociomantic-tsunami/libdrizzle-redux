@@ -32,7 +32,7 @@ The test suite uses system environment variables to find the MySQL server:
 * ``MYSQL_SCHEMA`` - The default database for the MySQL connection (default empty)
 
 The test suite can then be run using ``make check`` or ``make distcheck`` for
-testing a source distribution rather than the straight bzr branch.
+testing a source distribution rather than the straight git branch.
 
 To test with valgrind you can run the following::
 
@@ -68,7 +68,7 @@ The test suite can be run in wine, to do this follow these steps:
 
    #. Open the ``~/.wine/system.reg`` file for editing
    #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
-   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin`` directory using the ``Z:`` drive. 
+   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin`` directory using the ``Z:`` drive.
       For Fedora 18 64bit this makes the entry::
 
          "PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"
@@ -83,6 +83,6 @@ Linking Your Application
 To link your app to libdrizzle-redux you need to provide the following to GCC,
 this assumes that the library is in your library and include paths::
 
-   gcc app.c -oapp -ldrizzle-redux -lssl
+   gcc app.c -oapp -ldrizzle-redux -lpthread
 
 A tool called :program:``libdrizzle-redux-config`` is included to also assist with this.

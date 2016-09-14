@@ -11,7 +11,7 @@ Structs
 
 .. c:type:: drizzle_stmt_st
 
-   The internal struct containing the prepared statment object
+   The internal struct containing the prepared statement object
 
 .. c:type:: drizzle_datetime_st
 
@@ -22,7 +22,7 @@ Functions
 
 .. c:function:: drizzle_stmt_st* drizzle_stmt_prepare(drizzle_st *con, const char *statement, size_t size, drizzle_return_t *ret_ptr)
 
-   Prepare a new statememt
+   Prepare a new statement
 
    :param con: A connection object
    :param statement: The prepared statement with question marks ('?') for the elements to be provided as parameters
@@ -155,7 +155,7 @@ Functions
 
    Reset a statement to the prepared state
 
-   :param stmt: The prepared statment object
+   :param stmt: The prepared statement object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
 .. c:function:: drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
