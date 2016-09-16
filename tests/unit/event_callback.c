@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
 
   driz_ret= drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
-  ASSERT_EQ_(cxt_b >= 3, true,  "Unexpected number of event callbacks, Got '%d', "
-    "Expected '3' or more", cxt_b);
+  ASSERT_EQ_(cxt_b > 0, true,  "Unexpected number of event callbacks, Got '%d', "
+    "Expected '1' or more", cxt_b);
 
   return EXIT_SUCCESS;
 }
