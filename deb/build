@@ -22,7 +22,17 @@ pkgversion=$(git describe --dirty | cut -c2- |
 
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 
-libversion=$(echo $1 | sed  s/[^0-9]/./g)
+pkgname=libdrizzle-redux
+so_filename=libdrizzle-redux.so
+
+version_number=`find ./install/usr/lib/ ! -type l -name "$so_filename.*"`
+
+if [ $(echo $version_number | wc -l) != 1 ]; then
+    echo "'.so' file not found"
+    exit 1
+fi
+
+libversion=`echo $version_number | grep -o -P -e "([0-9]+\.?)+$"`
 lib_major=$(echo $libversion | cut -f1 -d .)
 lib_minor=$(echo $libversion | cut -f2 -d .)
 lib_patch=$(echo $libversion | cut -f3 -d .)
@@ -30,8 +40,7 @@ lib_patch=$(echo $libversion | cut -f3 -d .)
 changelog=`mktemp`
 trap "rm -f '$changelog'; exit 1" INT TERM QUIT
 
-pkgname=libdrizzle-redux
-so_libname=./install/usr/lib/libdrizzle-redux.so
+so_libname="./install/usr/lib/$so_filename"
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 cp $so_libname.$libversion $so_libname.$libversion.full
 strip  $so_libname.$libversion
