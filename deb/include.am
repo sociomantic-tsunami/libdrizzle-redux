@@ -1,8 +1,8 @@
 # vim:ft=automake
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
-# 
-# Makefile for building deb package 
+#
+# Makefile for building deb package
 
 .PHONY: clean-deb deb install-deb release-deb
 
