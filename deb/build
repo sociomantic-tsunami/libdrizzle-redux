@@ -5,20 +5,20 @@ cd `dirname $0`
 
 genchangelog()
 {
-        echo "$1 ($2) `lsb_release -sc`; urgency=low"
-        echo
-	prevtag=$(git describe --abbrev=0 HEAD^)
-        git log --date=short --format="  * %s (%h, %cd)" "$prevtag"..HEAD |
-                fold --spaces --width 76 | sed 's/^\([^ ]\+\)/    \1/'
-        echo
-        echo " -- $3  `LANG=C date -R`"
+    echo "$1 ($2) `lsb_release -sc`; urgency=low"
+    echo
+    prevtag=$(git describe --abbrev=0 HEAD^)
+    git log --date=short --format="  * %s (%h, %cd)" "$prevtag"..HEAD |
+            fold --spaces --width 76 | sed 's/^\([^ ]\+\)/    \1/'
+    echo
+    echo " -- $3  `LANG=C date -R`"
 }
 
 pkgversion=$(git describe --dirty | cut -c2- |
-		sed 's/-\([0-9]\+\)-\(g[0-9a-f]\+\)/+\1~\2/' |
-		sed 's/\(~g[0-9a-f]\+\)-dirty$/-dirty\1/' |
-		sed 's/-dirty/~dirty.'`date +%Y%m%d%H%M%S`'/'
-	)-$(lsb_release -cs)
+             sed 's/-\([0-9]\+\)-\(g[0-9a-f]\+\)/+\1~\2/' |
+             sed 's/\(~g[0-9a-f]\+\)-dirty$/-dirty\1/' |
+             sed 's/-dirty/~dirty.'`date +%Y%m%d%H%M%S`'/'
+            )-$(lsb_release -cs)
 
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 
@@ -41,59 +41,59 @@ changelog=`mktemp`
 trap "rm -f '$changelog'; exit 1" INT TERM QUIT
 
 so_libname="./install/usr/lib/$so_filename"
+
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 cp $so_libname.$libversion $so_libname.$libversion.full
 strip  $so_libname.$libversion
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
-	--architecture all \
-	--maintainer "$pkgmaint" \
-	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-	--vendor 'Sociomantic Labs GmbH' \
-	--license 'Simplified BSD License' \
-	--category libs \
-	--depends zlib1g \
-	--depends libstdc++6 \
-	--depends libc6 \
-	--depends libgcc1 \
-	--deb-changelog "$changelog" \
-	--deb-no-default-config-files \
-	$so_libname.$libversion=/usr/lib/ \
-	$so_libname.$lib_major=/usr/lib/
+    --architecture all \
+    --maintainer "$pkgmaint" \
+    --description "Simplified API to MySQL databases" \
+    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
+    --vendor 'Sociomantic Labs GmbH' \
+    --license 'Simplified BSD License' \
+    --category libs \
+    --depends zlib1g \
+    --depends libstdc++6 \
+    --depends libc6 \
+    --depends libgcc1 \
+    --deb-changelog "$changelog" \
+    --deb-no-default-config-files \
+    $so_libname.$libversion=/usr/lib/ \
+    $so_libname.$lib_major=/usr/lib/
 
 pkgname=libdrizzle-redux-dbg
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 build_id=`readelf -n install/usr/lib/libdrizzle-redux.so.$libversion | \
-	sed -n 's/^.*Build ID: \([a-f0-9]\{40\}\).*$/\1/p'`
+    sed -n 's/^.*Build ID: \([a-f0-9]\{40\}\).*$/\1/p'`
 debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
-	--architecture all \
-	--maintainer "$pkgmaint" \
-	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-	--vendor 'Sociomantic Labs GmbH' \
-	--license 'Simplified BSD License' \
-	--category debug \
-	--depends libdrizzle-redux \
-	--deb-changelog "$changelog" \
-	--deb-no-default-config-files \
-	$so_libname.$libversion.debug=/usr/lib/debug/.build-id/$debug_file
+    --architecture all \
+    --maintainer "$pkgmaint" \
+    --description "Simplified API to MySQL databases" \
+    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
+    --vendor 'Sociomantic Labs GmbH' \
+    --license 'Simplified BSD License' \
+    --category debug \
+    --depends libdrizzle-redux \
+    --deb-changelog "$changelog" \
+    --deb-no-default-config-files \
+    $so_libname.$libversion.debug=/usr/lib/debug/.build-id/$debug_file
 
 pkgname=libdrizzle-redux-dev
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
-	--architecture all \
-	--maintainer "$pkgmaint" \
-	--description "Simplified API to MySQL databases" \
-	--url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-	--vendor 'Sociomantic Labs GmbH' \
-	--license 'Simplified BSD License' \
-	--category libdevel \
-	--depends libdrizzle-redux \
-	--deb-changelog "$changelog" \
-	--deb-no-default-config-files \
-	install/usr/include/=/usr/include/ \
-	$so_libname=/usr/lib/ \
-	install/usr/lib/libdrizzle-redux.a=/usr/lib/
-
+    --architecture all \
+    --maintainer "$pkgmaint" \
+    --description "Simplified API to MySQL databases" \
+    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
+    --vendor 'Sociomantic Labs GmbH' \
+    --license 'Simplified BSD License' \
+    --category libdevel \
+    --depends libdrizzle-redux \
+    --deb-changelog "$changelog" \
+    --deb-no-default-config-files \
+    install/usr/include/=/usr/include/ \
+    $so_libname=/usr/lib/ \
+    install/usr/lib/libdrizzle-redux.a=/usr/lib/
