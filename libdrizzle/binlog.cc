@@ -154,14 +154,14 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
     ret = drizzle_wait(con);
     drizzle_result_free(result);
   }
-  else
-  {
-    // In blocking mode data is read by drizzle_state_binlog_read
-    if (ret != DRIZZLE_RETURN_OK)
-    {
-      return ret;
-    }
 
+  if (ret != DRIZZLE_RETURN_OK)
+  {
+    return ret;
+  }
+
+  if (con->options.socket_owner == DRIZZLE_SOCKET_OWNER_NATIVE)
+  {
     result->push_state(drizzle_state_binlog_read);
     result->push_state(drizzle_state_packet_read);
   }
