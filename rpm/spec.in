@@ -1,4 +1,4 @@
-Summary: libdrizzle
+Summary: Simplified API to MySQL databases
 Name: @PACKAGE@
 Version: @VERSION@
 Release: 1
@@ -7,7 +7,9 @@ Group: System Environment/Libraries
 BuildRequires: zlib-devel openssl-devel
 URL: https://github.com/sociomantic-tsunami/libdrizzle-redux
 
-Packager: Brian Aker <brian@tangent.org>
+%define packager_name %(git config user.name)
+%define packager_email %(git config user.email)
+Packager: %{packager_name} <%{packager_email}>
 
 Source: libdrizzle-redux-%{version}.tar.gz 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
