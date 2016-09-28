@@ -282,6 +282,15 @@ typedef enum
   DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE
 } drizzle_ssl_state_t;
 
+/**
+ * Owner of socket connection
+ */
+typedef enum
+{
+  DRIZZLE_SOCKET_OWNER_NATIVE=0,
+  DRIZZLE_SOCKET_OWNER_CLIENT
+} drizzle_socket_owner;
+
 typedef enum
 {
   DRIZZLE_EVENT_POSITION_TIMESTAMP= 0,
