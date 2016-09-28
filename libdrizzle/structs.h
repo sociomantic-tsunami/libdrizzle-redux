@@ -159,6 +159,7 @@ struct drizzle_options_st
   bool interactive;
   bool multi_statements;
   bool auth_plugin;
+  drizzle_socket_owner socket_owner;
 
   drizzle_options_st() :
     non_blocking(false),
@@ -166,7 +167,8 @@ struct drizzle_options_st
     found_rows(false),
     interactive(false),
     multi_statements(false),
-    auth_plugin(false)
+    auth_plugin(false),
+    socket_owner(DRIZZLE_SOCKET_OWNER_NATIVE)
   { }
 };
 

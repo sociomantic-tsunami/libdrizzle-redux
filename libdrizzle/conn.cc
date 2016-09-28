@@ -327,6 +327,26 @@ bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
   return options->auth_plugin;
 }
 
+void drizzle_options_set_socket_owner(drizzle_options_st *options,
+                   drizzle_socket_owner owner)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->socket_owner = owner;
+}
+
+drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return DRIZZLE_SOCKET_OWNER_NATIVE;
+  }
+
+  return options->socket_owner;
+}
+
 const char *drizzle_host(const drizzle_st *con)
 {
   if (con == NULL)
