@@ -1,18 +1,28 @@
 language: cpp
 
+## Cache dependencies and directories
+cache: ccache
+
+## Ensures the virtualization environment run as Ubuntu 14.04 Trusty
+#  TRUSTY BETA
 sudo: required
+dist: trusty
 
 os:
   - linux
+  - osx
 
+## Specifies the version of XCode for the The OS X Build Environment
+#  default xcode7.3
+# osx_image:
+
+## Compilers to use for builds
 compiler:
   - gcc
   - clang
 
-dist: trusty
-
 services:
- - mysql
+  - mysql
 
 ## The following environment variables are required for
 #  running unittests
@@ -22,9 +32,9 @@ services:
 #  Please refer to the section 'script' for info on
 #  SKIP_TEST_ON_ERROR
 env:
-  - MYSQL_SERVER=127.0.0.1 \
-    MYSQL_PASSWORD='' \
-    MYSQL_USER=root \
+  - MYSQL_SERVER=127.0.0.1
+    MYSQL_PASSWORD=''
+    MYSQL_USER=root
     SKIP_TEST_ON_ERROR=0
 
 ## Defines packages to be installed by apt
@@ -36,9 +46,17 @@ env:
 #  apt:
 #    packages:
 
+## The matrix combines options of Runtime, Environment and Exclusions/Inclusions
+#  to define the build configurations
+matrix:
+  fast_finish: true
+  exclude:
+  - os: osx
+    compiler: gcc
+
+## This runs custom commands to install os specific dependencies
 before_install:
-  - gem install fpm
-  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
+    - ./travis_configure.sh before_install
 
 ## This script runs before the compiling
 #  1. Stop MySQL server
@@ -46,9 +64,7 @@ before_install:
 #  3. Start MySQL server
 #  4. Print mysql config for debug purposes
 before_script:
-  - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
-  - sudo service mysql restart
-  - mysqld --print-defaults
+  - ./travis_configure.sh before_script
 
 ## Build steps
 #  - compile project
@@ -58,9 +74,4 @@ before_script:
 #  To skip errors and fail silently set environment variable:
 #    SKIP_TEST_ON_ERROR=1
 script:
-  - autoreconf -fi
-  - ./configure
-  - make
-  - make check
-  - make deb
-
+  - ./travis_configure.sh run_tests
