@@ -1,4 +1,4 @@
-Summary: libdrizzle
+Summary: Simplified API to MySQL databases
 Name: @PACKAGE@
 Version: @VERSION@
 Release: 1
@@ -7,9 +7,11 @@ Group: System Environment/Libraries
 BuildRequires: zlib-devel openssl-devel
 URL: https://github.com/sociomantic-tsunami/libdrizzle-redux
 
-Packager: Brian Aker <brian@tangent.org>
+%define packager_name %(git config user.name)
+%define packager_email %(git config user.email)
+Packager: %{packager_name} <%{packager_email}>
 
-Source: libdrizzle-redux-%{version}.tar.gz 
+Source: libdrizzle-redux-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -24,14 +26,13 @@ Requires: %{name} = %{version}-%{release}
 
 %description devel
 This package contains the header files and development libraries
-for %{name}. If you like to develop programs using %{name}, 
+for %{name}. If you like to develop programs using %{name},
 you will need to install %{name}-devel.
 
 %prep
 %setup -q
 
 %configure
-
 
 %build
 %{__make} %{?_smp_mflags}
@@ -49,7 +50,7 @@ mkdir -p $RPM_BUILD_ROOT/
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING 
+%doc AUTHORS COPYING
 %{_libdir}/libdrizzle-redux.a
 %{_libdir}/libdrizzle-redux.la
 %{_libdir}/libdrizzle-redux.so
@@ -58,7 +59,7 @@ mkdir -p $RPM_BUILD_ROOT/
 
 %files devel
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING 
+%doc AUTHORS COPYING
 %{_includedir}/libdrizzle-5.1/binlog.h
 %{_includedir}/libdrizzle-5.1/column.h
 %{_includedir}/libdrizzle-5.1/column_client.h
@@ -83,35 +84,25 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
-All notable changes to this project will be documented in this file.
+* Tue Oct 11 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.2
+- Fix incorrect rpm spec file
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
-
-## [v5.3.1] - 2016-09-21
-### Changed
+* Wed Sep 21 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.1
 - Minor fixes to documentation, syntax and formatting
 - Fix library version for deb packaging
 - Update current and previous changelog for rpm packaging
 
-## [v5.3.0] - 2016-09-16
-### Added
-- Modify drizzle_binlog_start() so binlog data can be read with a non-blocking
-  connection
-
-### Changed
+* Fri Sep 16 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.0
+- Modify drizzle_binlog_start() so binlog data can be read with a non-blocking connection
 - Update hardcoded repo location
 - Fix version number in configure script
 - Update readme and doc
 - Change location of generated documentation to top-level folder sphinx-build
 - Restructure man page doc generation
-- Bugfix where calls to drizzle_connect() would always block regardless of the
-  non_blocking option being set to true
-- Optimization of drizzle_field_buffer() so an array of drizzle_field_t pointers
-  are used to buffer fields
+- Bugfix where calls to drizzle_connect() would always block regardless of the non_blocking option being set to true
+- Optimization of drizzle_field_buffer() so an array of drizzle_field_t pointers are used to buffer fields
 - Minor fixes to .gitignore
-- Fixed integer underflow when processing large result sets using prepared
-  statements
+- Fixed integer underflow when processing large result sets using prepared statements
 - Use func macro when logging functions
 - Update README with reasons for a sociomantic-tsunami fork
 - Whitespace fixes
@@ -122,11 +113,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add unittest for event_watch_fn callback function
 - Improve documentation for binlog code example
 
-## [v5.2.0] - 2016-04-01
-### Added
+* Fri Apr 01 2016 Ben Palmer <ben.palmer@sociomantic.com - 5.2.0
 - Add callback function for poll events to client api
-
-### Changed
 - Move project repo to https://github.com/sociomantic-tsunami/libdrizzle-redux
 - Remove obsolete dependencies from deb packages
 - Rename library to libdrizzle-redux
