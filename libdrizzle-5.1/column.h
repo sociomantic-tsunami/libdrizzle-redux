@@ -131,6 +131,15 @@ DRIZZLE_API
 drizzle_column_type_t drizzle_column_type(drizzle_column_st *column);
 
 /**
+ * Get a column type as string
+ *
+ * @param type The table column type
+ * @return The type of the column in human readable format
+ */
+DRIZZLE_API
+const char *drizzle_column_type_str(drizzle_column_type_t type);
+
+/**
  * Get flags for a column.
  */
 DRIZZLE_API

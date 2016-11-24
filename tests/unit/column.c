@@ -45,6 +45,72 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+const drizzle_column_type_t column_types[] = {
+  DRIZZLE_COLUMN_TYPE_DECIMAL,
+  DRIZZLE_COLUMN_TYPE_TINY,
+  DRIZZLE_COLUMN_TYPE_SHORT,
+  DRIZZLE_COLUMN_TYPE_LONG,
+  DRIZZLE_COLUMN_TYPE_FLOAT,
+  DRIZZLE_COLUMN_TYPE_DOUBLE,
+  DRIZZLE_COLUMN_TYPE_NULL,
+  DRIZZLE_COLUMN_TYPE_TIMESTAMP,
+  DRIZZLE_COLUMN_TYPE_LONGLONG,
+  DRIZZLE_COLUMN_TYPE_INT24,
+  DRIZZLE_COLUMN_TYPE_DATE,
+  DRIZZLE_COLUMN_TYPE_TIME,
+  DRIZZLE_COLUMN_TYPE_DATETIME,
+  DRIZZLE_COLUMN_TYPE_YEAR,
+  DRIZZLE_COLUMN_TYPE_NEWDATE,
+  DRIZZLE_COLUMN_TYPE_VARCHAR,
+  DRIZZLE_COLUMN_TYPE_BIT,
+  DRIZZLE_COLUMN_TYPE_TIMESTAMP2,
+  DRIZZLE_COLUMN_TYPE_DATETIME2,
+  DRIZZLE_COLUMN_TYPE_TIME2,
+  DRIZZLE_COLUMN_TYPE_NEWDECIMAL,
+  DRIZZLE_COLUMN_TYPE_ENUM,
+  DRIZZLE_COLUMN_TYPE_SET,
+  DRIZZLE_COLUMN_TYPE_TINY_BLOB,
+  DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB,
+  DRIZZLE_COLUMN_TYPE_LONG_BLOB,
+  DRIZZLE_COLUMN_TYPE_BLOB,
+  DRIZZLE_COLUMN_TYPE_VAR_STRING,
+  DRIZZLE_COLUMN_TYPE_STRING,
+  DRIZZLE_COLUMN_TYPE_GEOMETRY
+};
+
+const char* column_type_names[] = {
+  "DECIMAL",
+  "TINY",
+  "SHORT",
+  "LONG",
+  "FLOAT",
+  "DOUBLE",
+  "NULL",
+  "TIMESTAMP",
+  "LONGLONG",
+  "INT24",
+  "DATE",
+  "TIME",
+  "DATETIME",
+  "YEAR",
+  "NEWDATE",
+  "VARCHAR",
+  "BIT",
+  "TIMESTAMP2",
+  "DATETIME2",
+  "TIME2",
+  "NEWDECIMAL",
+  "ENUM",
+  "SET",
+  "TINY_BLOB",
+  "MEDIUM_BLOB",
+  "LONG_BLOB",
+  "BLOB",
+  "VAR_STRING",
+  "STRING",
+  "GEOMETRY"
+};
+
 int main(int argc, char *argv[])
 {
   (void) argc;
@@ -108,6 +174,14 @@ int main(int argc, char *argv[])
   CHECKED_QUERY("DROP TABLE test_column.t1");
 
   tear_down_schema("test_column");
+
+  /* Check that column type is resolved to the correct string representation */
+  for (i = 0; i < 30; i++)
+  {
+    ASSERT_STREQ_(drizzle_column_type_str(column_types[i]), column_type_names[i],
+      "Column type 'DRIZZLE_COLUMN_TYPE_%s' resolved to wrong name: '%s'",
+      column_type_names[i], drizzle_column_type_str(column_types[i]));
+  }
 
   return EXIT_SUCCESS;
 }
