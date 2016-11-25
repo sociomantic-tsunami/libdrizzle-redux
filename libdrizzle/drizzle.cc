@@ -48,6 +48,10 @@
 #include <cerrno>
 #include <pthread.h>
 
+#if defined(USE_OPENSSL)
+#include <openssl/err.h>
+#endif
+
 /**
  * @addtogroup drizzle_static Static Drizzle Declarations
  * @ingroup drizzle
