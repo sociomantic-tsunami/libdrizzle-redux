@@ -50,6 +50,7 @@
 # define MSG_NOSIGNAL 0
 #endif
 
+#include <limits.h>
 #include <cerrno>
 
 /**
@@ -1258,7 +1259,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
-      read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, available_buffer);
+        read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, (available_buffer % INT_MAX));
     }
     else
 #endif
@@ -1381,7 +1382,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
-      write_size= SSL_write(con->ssl, con->buffer_ptr, con->buffer_size);
+      write_size= SSL_write(con->ssl, con->buffer_ptr, (con->buffer_size % INT_MAX));
     }
     else
 #endif
