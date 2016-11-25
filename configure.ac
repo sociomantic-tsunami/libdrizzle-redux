@@ -21,6 +21,8 @@ AC_CANONICAL_BUILD
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
+AX_ENABLE_SSL
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
@@ -63,8 +65,6 @@ AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
-
-AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 
