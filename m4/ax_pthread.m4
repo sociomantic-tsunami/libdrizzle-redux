@@ -159,12 +159,8 @@ case ${host_os} in
         ax_pthread_flags="-pthreads pthread -mt -pthread $ax_pthread_flags"
         ;;
 
-        darwin12*)
-        ax_pthread_flags="$ax_pthread_flags"
-        ;;
-
         darwin*)
-        ax_pthread_flags="-pthread $ax_pthread_flags"
+        ax_pthread_flags="$ax_pthread_flags"
         ;;
 esac
 
