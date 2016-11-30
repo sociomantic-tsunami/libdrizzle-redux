@@ -15,6 +15,9 @@ Alternatively you can build and customize::
    make
    make install
 
+Please check the `RELEASE NOTES`_ for a list of dependencies specific to the
+version of the library you are trying to compile.
+
 .. _test-suite:
 
 Running the Test Suite
@@ -87,3 +90,5 @@ this assumes that the library is in your library and include paths::
    gcc app.c -oapp -ldrizzle-redux -lpthread
 
 A tool called **libdrizzle-redux_config** is included to also assist with this.
+
+.. _RELEASE NOTES: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases
