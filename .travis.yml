@@ -11,8 +11,8 @@ compiler:
 
 dist: trusty
 
-services:
-  - mysql
+#services:
+#  - mysql
 
 ## The following environment variables are required for
 #  running unittests
@@ -39,7 +39,10 @@ env:
 
 
 before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y mysql-server-5.6 mysql-common-5.6
   - gem install fpm
+  - sudo service mysql restart
   - sudo tail -n 40 /var/log/upstart/mysql.log
   - sudo tail -n 40 /var/log/mysql/error.log
 
