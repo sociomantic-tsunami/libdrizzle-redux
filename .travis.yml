@@ -37,8 +37,11 @@ env:
 #    - mysql-client-5.6
 #    - mysql-server-5.6
 
+
 before_install:
   - gem install fpm
+  - sudo tail -n 40 /var/log/upstart/mysql.log
+  - sudo tail -n 40 /var/log/mysql/error.log
 
 ## This script runs before the compiling
 #  1. Stop MySQL server
