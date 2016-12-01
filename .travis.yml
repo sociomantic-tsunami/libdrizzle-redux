@@ -29,13 +29,13 @@ env:
 
 ## Defines packages to be installed by apt
 #  Version is specified since some tests require MySQL >=5.6 
-addons:
-  apt:
-    packages:
-    - mysql-client-core-5.6 
-    - mysql-server-core-5.6
-    - mysql-client-5.6
-    - mysql-server-5.6
+#addons:
+#  apt:
+#    packages:
+#    - mysql-client-core-5.6 
+#    - mysql-server-core-5.6
+#    - mysql-client-5.6
+#    - mysql-server-5.6
 
 before_install: 
   - gem install fpm
