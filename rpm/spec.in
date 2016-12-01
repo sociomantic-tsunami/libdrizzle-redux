@@ -84,6 +84,15 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Thu Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.0
+- Adds the ability to actually configure and use OpenSSL
+- Possibility to specify the consumer of the socket mysql writes binlog data to
+- Adds function to get the name binlog event type as string
+- Adds function to get the name of a column type as string
+- Adds function to get the filename of a binary log
+- Add make target which checks for latex support
+- Documentation fixes
+
 * Fri Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.3.4
 - Fix broken travis-ci build
 
