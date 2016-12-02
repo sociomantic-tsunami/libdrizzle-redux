@@ -12,7 +12,7 @@ compiler:
 dist: trusty
 
 services:
-  - mysql
+ - mysql-5.6
 
 ## The following environment variables are required for
 #  running unittests
@@ -28,17 +28,17 @@ env:
     SKIP_TEST_ON_ERROR=0
 
 ## Defines packages to be installed by apt
-#  Version is specified since some tests require MySQL >=5.6 
-addons:
-  apt:
-    packages:
-    - mysql-client-core-5.6 
-    - mysql-server-core-5.6
-    - mysql-client-5.6
-    - mysql-server-5.6
+#  2016/12/01 - mysql-5.6 was added to the default stack
+#  for sudo enabled trusty builds,
+#  The section is kept for reference since any additional packages
+#  would still need to go into this section
+#addons:
+#  apt:
+#    packages:
 
 before_install:
   - gem install fpm
+  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
 
 ## This script runs before the compiling
 #  1. Stop MySQL server
@@ -46,9 +46,8 @@ before_install:
 #  3. Start MySQL server
 #  4. Print mysql config for debug purposes
 before_script:
-  - sudo service mysql stop
-  - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
-  - sudo service mysql start 
+  - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql-5.6/my.cnf
+  - sudo service mysql-5.6 restart
   - mysqld --print-defaults
 
 ## Build steps
