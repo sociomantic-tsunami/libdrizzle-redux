@@ -7,19 +7,19 @@ os:
 
 compiler:
   - gcc
-  - clang    
+  - clang
 
 dist: trusty
 
 services:
   - mysql
 
-## The following environment variables are required for 
-#  running unittests 
-#  Environment variables can be defined in the repository, but 
-#  are overridden by values in .travis.yml. 
-#  
-#  Please refer to the section 'script' for info on 
+## The following environment variables are required for
+#  running unittests
+#  Environment variables can be defined in the repository, but
+#  are overridden by values in .travis.yml.
+#
+#  Please refer to the section 'script' for info on
 #  SKIP_TEST_ON_ERROR
 env:
   - MYSQL_SERVER=127.0.0.1 \
@@ -37,7 +37,7 @@ addons:
     - mysql-client-5.6
     - mysql-server-5.6
 
-before_install: 
+before_install:
   - gem install fpm
 
 ## This script runs before the compiling
@@ -49,14 +49,14 @@ before_script:
   - sudo service mysql stop
   - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
   - sudo service mysql start 
-  - mysqld --print-defaults 
+  - mysqld --print-defaults
 
-## Build steps 
-#  - compile project 
+## Build steps
+#  - compile project
 #  - run all tests with 'make check'
-# 
+#
 #  Please note that test fails on first error as default
-#  To skip errors and fail silently set environment variable: 
+#  To skip errors and fail silently set environment variable:
 #    SKIP_TEST_ON_ERROR=1
 script:
   - autoreconf -fi
