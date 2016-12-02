@@ -84,6 +84,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Fri Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.3.3
+- Fix .travis.yml file after travis-ci build environment update
+
 * Tue Oct 11 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.2
 - Fix incorrect rpm spec file
 
