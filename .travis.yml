@@ -39,15 +39,13 @@ env:
 
 before_install:
   - gem install fpm
-#  - sudo tail -n 40 /var/log/upstart/mysql.log
-#  - sudo tail -n 40 /var/log/mysql/error.log
+  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
 
 ## This script runs before the compiling
 #  1. Stop MySQL server
 #  2. Enable replication in mysql config file
 #  3. Start MySQL server
 #  4. Print mysql config for debug purposes
-#  - sudo service mysql-5.6 stop
 before_script:
   - sudo ls -l /etc/mysql*
   - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql-5.6/my.cnf
