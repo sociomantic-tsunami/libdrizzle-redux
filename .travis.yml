@@ -51,6 +51,7 @@ before_script:
   - service --status-all
   - dpkg -l mysql*
 #  - sudo service mysql-5.6 stop
+  - sudo ls -l /etc/mysql*
   - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
   - sudo service mysql-5.6 restart
   - mysqld --print-defaults
