@@ -47,13 +47,13 @@ before_install:
 #  2. Enable replication in mysql config file
 #  3. Start MySQL server
 #  4. Print mysql config for debug purposes
-before_script:
-  - service --status-all
-  - dpkg -l mysql*
 #  - sudo service mysql-5.6 stop
-  - sudo ls -l /etc/mysql*
+before_script:
+  - dpkg -l mysql*
+  - sudo ls -l /etc/mysql*
   - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
   - sudo service mysql-5.6 restart
+  - service --status-all
   - mysqld --print-defaults
 
 ## Build steps
