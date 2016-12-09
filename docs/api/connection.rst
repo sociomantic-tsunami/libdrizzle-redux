@@ -342,6 +342,12 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
+.. c:function:: const char *drizzle_strerror(const drizzle_return_t ret);
+
+   Get detailed error description
+
+   :param ret: A libdrizzle return value
+   :returns: description of libdrizzle error
 
 Callback Functions
 ------------------

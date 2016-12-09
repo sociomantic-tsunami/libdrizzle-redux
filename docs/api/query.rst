@@ -235,6 +235,13 @@ Functions
    :param column: A column object
    :returns: The column type
 
+.. c:function:: const char *drizzle_column_type_str(drizzle_column_type_t type)
+
+   Get a column type as string
+
+   :param type: The table column type
+   :returns: The type of the column in human readable format
+
 .. c:function:: drizzle_column_flags_t drizzle_column_flags(drizzle_column_st *column)
 
    Gets the flags for a given column
