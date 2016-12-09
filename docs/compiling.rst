@@ -39,7 +39,7 @@ testing a source distribution rather than the straight git branch.
 
 To test with valgrind you can run the following::
 
-   TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check
+``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
 Building For Windows (cross-compile)
 ------------------------------------
@@ -72,9 +72,9 @@ The test suite can be run in wine, to do this follow these steps:
    #. Open the ``~/.wine/system.reg`` file for editing
    #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
    #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin``
-      directory using the ``Z:`` drive. For Fedora 18 64bit this makes the entry::
+      directory using the ``Z:`` drive. For Fedora 18 64bit this makes the entry
 
-         "PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"
+      ``"PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"``
 
 #. Run the test suite as follows (see `Running the Test Suite`_ for more details
    and needed environment variables when running the test suite)::
