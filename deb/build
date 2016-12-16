@@ -59,6 +59,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --depends libgcc1 \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
+    --after-install after_install.sh \
     $so_libname.$libversion=/usr/lib/ \
     $so_libname.$lib_major=/usr/lib/
 
