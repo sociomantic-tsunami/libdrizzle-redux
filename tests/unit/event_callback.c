@@ -65,14 +65,18 @@ extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
   void *context)
 {
   ASSERT_TRUE((events != -1));
-  int* cxt_ptr = (int*) drizzle_context(con);
-  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle connection context is null");
-  ASSERT_EQ_(1, cxt_ptr[0], "Invalid drizzle context: Got '%d', Expected '1'",
-    cxt_ptr[0]);
+  char* char_ptr = (char*) drizzle_context(con);
+  ASSERT_NOT_NULL_(char_ptr, "Drizzle connection context is null");
+  ASSERT_STREQ_("Context is everything", char_ptr,
+    "Invalid drizzle context: Got '%s', Expected 'Context is everything'",
+    char_ptr);
+  printf("%s\n", char_ptr);
 
-  cxt_ptr = (int*)context;
-  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle Event Callback context is null");
+  int* cxt_ptr = (int*)context;
+
+  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle event callback context is null");
   (*cxt_ptr)++;
+  printf("Drizzle event callback number %d\n", cxt_ptr[0]);
 
   return DRIZZLE_RETURN_OK;
 }
@@ -82,7 +86,7 @@ int main(int argc, char *argv[])
   (void) argc;
   (void) argv;
 
-  int cxt_a = 1;
+  char cxt_a[] = "Context is everything";
   int cxt_b = 0;
 
   drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
@@ -110,6 +114,8 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
   ASSERT_EQ_(cxt_b > 0, true,  "Unexpected number of event callbacks, Got '%d', "
     "Expected '1' or more", cxt_b);
+
+  printf("\nEvent callback was invoked %d times\n", cxt_b);
 
   return EXIT_SUCCESS;
 }
