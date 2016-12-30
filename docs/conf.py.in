@@ -214,6 +214,13 @@ latex_logo = '_static/logo.png'
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+# A dictionary that contains LaTeX snippets that override those Sphinx
+# usually puts into the generated .tex files.
+# Keep in mind that backslashes must be doubled in Python string literals
+# to avoid interpretation as escape sequences.
+latex_elements = {
+    'classoptions': 'openany,oneside', 'babel' : '\\usepackage[english]{babel}'
+}
 
 # -- Options for manual page output --------------------------------------------
 
