@@ -78,10 +78,13 @@ int main(int argc, char *argv[])
   set_up_connection();
 
   char *binlog_file;
-  drizzle_binlog_get_filename(con, &binlog_file, -1);
+  uint32_t end_position;
+  ret = drizzle_binlog_get_filename(con, &binlog_file, &end_position, -1);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "Couldn't retrieve binlog filename: %s(%s)",
+             drizzle_error(con), drizzle_strerror(ret));
 
   binlog = drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
-  ret = drizzle_binlog_start(binlog, 0, binlog_file, 0);
+  ret = drizzle_binlog_start(binlog, 0, binlog_file, end_position);
 
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)",
            drizzle_error(con), drizzle_strerror(ret));
