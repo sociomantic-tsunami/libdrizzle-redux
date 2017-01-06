@@ -449,44 +449,54 @@ const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_typ
     }
 }
 
-void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_index)
+drizzle_return_t drizzle_binlog_get_filename(drizzle_st *con, char **filename,
+                                             uint32_t *end_position, int file_index)
 {
+  *filename = (char*) malloc(1);
+  *filename[0] = '\0';
+  *end_position = 0;
   drizzle_return_t driz_ret;
+
   drizzle_result_st *result = drizzle_query(con, "SHOW BINARY LOGS", 0, &driz_ret);
 
   __LOG_LOCATION__
 
   if (driz_ret != DRIZZLE_RETURN_OK)
   {
-    drizzle_log_error(con, __FILE_LINE_FUNC__,
-      "Couldn't retrieve BINARY LOGS from the database");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "Query to retrieve binary logs failed");
+    drizzle_result_free(result);
+    return driz_ret;
   }
 
   drizzle_result_buffer(result);
   int row_count = (int) drizzle_result_row_count(result);
 
-  drizzle_log_debug(con, __FILE_LINE_FUNC__, "Found %d binary log files", row_count);
-
-  if (file_index < -1 || file_index >= row_count )
+  if (file_index < -1 || file_index >= row_count)
   {
-    drizzle_log_error(con, __FILE_LINE_FUNC__, "Invalid file index. %d "
-      "binlog files were found ", file_index );
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "Invalid binlog file index: %d", file_index);
+    drizzle_result_free(result);
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-
-  *filename = (char*) malloc(1);
-  *filename[0] = '\0';
 
   if (row_count > 0)
   {
     int row_index = file_index == -1 || file_index >= row_count ?
-                            row_count - 1 : file_index;
+                    row_count - 1 : file_index;
 
     drizzle_row_t row = drizzle_row_index(result, row_index);
-    size_t len = strlen(row[0]);
-    *filename = (char*)realloc(*filename, len + 1);
-    memcpy(*filename, row[0], len);
-    (*filename)[len] = '\0';
+    *filename = (char*)realloc(*filename, strlen(row[0]) + 1);
+    memcpy(*filename, row[0], strlen(row[0]));
+    (*filename)[strlen(row[0])] = '\0';
+
+    *end_position = atoi(row[1]);
+    drizzle_log_info(con, __FILE_LINE_FUNC__, "Found binary log '%s' with filesize %d bytes",
+                     *filename, *end_position);
+  }
+  else
+  {
+    drizzle_log_info(con, __FILE_LINE_FUNC__, "No binary log files found");
   }
 
   drizzle_result_free(result);
+  return DRIZZLE_RETURN_OK;
 }
