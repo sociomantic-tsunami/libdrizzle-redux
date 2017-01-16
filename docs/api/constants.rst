@@ -730,6 +730,17 @@ Connection
       :py:const:`DRIZZLE_CAPABILITIES_PROTOCOL_41`,
       :py:const:`DRIZZLE_CAPABILITIES_SECURE_CONNECTION`
 
+.. c:type:: drizzle_ssl_state_t
+
+   An enum of SSL States
+   .. py:data:: DRIZZLE_SSL_STATE_NONE
+
+      SSL connection is not initialized
+
+   .. py:data:: DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE
+
+      SSL connection is established
+
 Query
 -----
 

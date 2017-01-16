@@ -249,6 +249,25 @@ DRIZZLE_API
 bool drizzle_options_get_auth_plugin(drizzle_options_st *options);
 
 /**
+ * Sets the owner of the socket connection
+ *
+ * @param[in,out] options The options object to modify
+ * @param[in] owner The owner of the socket connection
+ */
+DRIZZLE_API
+void drizzle_options_set_socket_owner(drizzle_options_st *options,
+                                      drizzle_socket_owner owner);
+
+/**
+ * Gets the owner of the socket connection
+ *
+ * @param[in] options The options object to get the value from
+ * @return The owner of the socket
+ */
+DRIZZLE_API
+drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options);
+
+/**
  * Get TCP host for a connection.
  *
  * @param[in] con Connection structure previously initialized with

@@ -204,6 +204,21 @@ Functions
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
 
+.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options,
+   drizzle_socket_owner owner)
+
+   Sets the owner of the socket connection
+
+   :param options: The options object to modify
+   :param owner: The owner of the socket connection
+
+.. c:function:: drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+
+   Gets the owner of the socket connection
+
+   :param options: The options object to get the value from
+   :returns: The owner of the socket connection
+
 .. c:function:: const char* drizzle_host(const drizzle_st *con)
 
    Gets the host name from a TCP/IP connection
@@ -342,6 +357,12 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
+.. c:function:: const char *drizzle_strerror(const drizzle_return_t ret);
+
+   Get detailed error description
+
+   :param ret: A libdrizzle return value
+   :returns: description of libdrizzle error
 
 Callback Functions
 ------------------

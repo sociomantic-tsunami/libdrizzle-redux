@@ -7,19 +7,19 @@ os:
 
 compiler:
   - gcc
-  - clang    
+  - clang
 
 dist: trusty
 
 services:
-  - mysql
+ - mysql
 
-## The following environment variables are required for 
-#  running unittests 
-#  Environment variables can be defined in the repository, but 
-#  are overridden by values in .travis.yml. 
-#  
-#  Please refer to the section 'script' for info on 
+## The following environment variables are required for
+#  running unittests
+#  Environment variables can be defined in the repository, but
+#  are overridden by values in .travis.yml.
+#
+#  Please refer to the section 'script' for info on
 #  SKIP_TEST_ON_ERROR
 env:
   - MYSQL_SERVER=127.0.0.1 \
@@ -28,17 +28,17 @@ env:
     SKIP_TEST_ON_ERROR=0
 
 ## Defines packages to be installed by apt
-#  Version is specified since some tests require MySQL >=5.6 
-addons:
-  apt:
-    packages:
-    - mysql-client-core-5.6 
-    - mysql-server-core-5.6
-    - mysql-client-5.6
-    - mysql-server-5.6
+#  2016/12/01 - mysql-5.6 was added to the default stack
+#  for sudo enabled trusty builds,
+#  The section is kept for reference since any additional packages
+#  would still need to go into this section
+#addons:
+#  apt:
+#    packages:
 
-before_install: 
+before_install:
   - gem install fpm
+  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
 
 ## This script runs before the compiling
 #  1. Stop MySQL server
@@ -46,17 +46,16 @@ before_install:
 #  3. Start MySQL server
 #  4. Print mysql config for debug purposes
 before_script:
-  - sudo service mysql stop
   - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
-  - sudo service mysql start 
-  - mysqld --print-defaults 
+  - sudo service mysql restart
+  - mysqld --print-defaults
 
-## Build steps 
-#  - compile project 
+## Build steps
+#  - compile project
 #  - run all tests with 'make check'
-# 
+#
 #  Please note that test fails on first error as default
-#  To skip errors and fail silently set environment variable: 
+#  To skip errors and fail silently set environment variable:
 #    SKIP_TEST_ON_ERROR=1
 script:
   - autoreconf -fi

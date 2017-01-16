@@ -204,6 +204,76 @@ drizzle_column_type_t drizzle_column_type(drizzle_column_st *column)
   return column->type;
 }
 
+const char *drizzle_column_type_str(drizzle_column_type_t type)
+{
+    switch (type)
+    {
+        case DRIZZLE_COLUMN_TYPE_DECIMAL:
+            return "DECIMAL";
+        case DRIZZLE_COLUMN_TYPE_TINY:
+            return "TINY";
+        case DRIZZLE_COLUMN_TYPE_SHORT:
+            return "SHORT";
+        case DRIZZLE_COLUMN_TYPE_LONG:
+            return "LONG";
+        case DRIZZLE_COLUMN_TYPE_FLOAT:
+            return "FLOAT";
+        case DRIZZLE_COLUMN_TYPE_DOUBLE:
+            return "DOUBLE";
+        case DRIZZLE_COLUMN_TYPE_NULL:
+            return "NULL";
+        case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
+            return "TIMESTAMP";
+        case DRIZZLE_COLUMN_TYPE_LONGLONG:
+            return "LONGLONG";
+        case DRIZZLE_COLUMN_TYPE_INT24:
+            return "INT24";
+        case DRIZZLE_COLUMN_TYPE_DATE:
+            return "DATE";
+        case DRIZZLE_COLUMN_TYPE_TIME:
+            return "TIME";
+        case DRIZZLE_COLUMN_TYPE_DATETIME:
+            return "DATETIME";
+        case DRIZZLE_COLUMN_TYPE_YEAR:
+            return "YEAR";
+        case DRIZZLE_COLUMN_TYPE_NEWDATE:
+            return "NEWDATE";
+        case DRIZZLE_COLUMN_TYPE_VARCHAR:
+            return "VARCHAR";
+        case DRIZZLE_COLUMN_TYPE_BIT:
+            return "BIT";
+        case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
+            return "TIMESTAMP2";
+        case DRIZZLE_COLUMN_TYPE_DATETIME2:
+            return "DATETIME2";
+        case DRIZZLE_COLUMN_TYPE_TIME2:
+            return "TIME2";
+        case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
+            return "NEWDECIMAL";
+        case DRIZZLE_COLUMN_TYPE_ENUM:
+            return "ENUM";
+        case DRIZZLE_COLUMN_TYPE_SET:
+            return "SET";
+        case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
+            return "TINY_BLOB";
+        case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:
+            return "MEDIUM_BLOB";
+        case DRIZZLE_COLUMN_TYPE_LONG_BLOB:
+            return "LONG_BLOB";
+        case DRIZZLE_COLUMN_TYPE_BLOB:
+            return "BLOB";
+        case DRIZZLE_COLUMN_TYPE_VAR_STRING:
+            return "VAR_STRING";
+        case DRIZZLE_COLUMN_TYPE_STRING:
+            return "STRING";
+        case DRIZZLE_COLUMN_TYPE_GEOMETRY:
+            return "GEOMETRY";
+        default:
+            break;
+    }
+    return "UNKNOWN";
+}
+
 drizzle_column_flags_t drizzle_column_flags(drizzle_column_st *column)
 {
   if (column == NULL)

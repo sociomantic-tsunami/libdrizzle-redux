@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[5.3.1],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[5.4.1],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -21,6 +21,8 @@ AC_CANONICAL_BUILD
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
+AX_ENABLE_SSL
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
@@ -28,7 +30,7 @@ AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 
 #shared library versioning
-LIBDRIZZLE_LIBRARY_VERSION=9:1:0
+LIBDRIZZLE_LIBRARY_VERSION=10:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
@@ -58,13 +60,16 @@ AX_CXX_CINTTYPES
 CONFIG_EXTRA
 SOCKET_SEND_FLAGS
 
+# Checks for latex
+ACLTX_PROG_LATEX
+ACLTX_PROG_PDFLATEX
+ACLTX_PROG_KPSEWHICH
+
 # Checks for programs.
 AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
-
-AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 

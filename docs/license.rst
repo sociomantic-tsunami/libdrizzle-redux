@@ -6,21 +6,22 @@ Documentation Content
 
 .. image:: _static/cc-symbol.png
    :alt:  Creative Commons License
+   :scale: 50%
    :target:  http://creativecommons.org/licenses/by-sa/3.0/
 
-Libdrizzle Redux Documentation is licensed under a `Creative Commons Share Alike 3.0 license <http://creativecommons.org/licenses/by-sa/3.0>`_.
+Libdrizzle Redux Documentation is licensed under a `Creative Commons Share Alike 3.0 license`_.
 
 About the Drizzle logo
 ----------------------
 
-The Drizzle logo was created by Zak Greant under the `Creative Commons Share Alike 3.0 license <http://creativecommons.org/licenses/by-sa/3.0>`_.
+The Drizzle logo was created by Zak Greant under the `Creative Commons Share Alike 3.0 license`_.
 
-The logo is available in SVG format on `Wikipedia <http://en.wikipedia.org/wiki/File:Drizzle-logotype.svg>`_.
+The logo is available in SVG format on Wikipedia_.
 
 Libdrizzle Redux License
 ------------------------
 
-Libdrizzle Redux is licensed under the `BSD 3-Clause License <http://opensource.org/licenses/BSD-3-Clause>`_.
+Libdrizzle Redux is licensed under the `BSD 3-Clause License`_.
 
 ::
 
@@ -56,3 +57,7 @@ Trademarks
 ----------
 
 MySQL is a registered trademark of Oracle and/or its affiliates
+
+.. _Creative Commons Share Alike 3.0 license: http://creativecommons.org/licenses/by-sa/3.0
+.. _Wikipedia: http://en.wikipedia.org/wiki/File:Drizzle-logotype.svg
+.. _BSD 3-Clause License: http://opensource.org/licenses/BSD-3-Clause

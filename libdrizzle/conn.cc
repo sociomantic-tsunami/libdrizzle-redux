@@ -50,6 +50,7 @@
 # define MSG_NOSIGNAL 0
 #endif
 
+#include <limits.h>
 #include <cerrno>
 
 /**
@@ -325,6 +326,26 @@ bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
     return false;
   }
   return options->auth_plugin;
+}
+
+void drizzle_options_set_socket_owner(drizzle_options_st *options,
+                   drizzle_socket_owner owner)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->socket_owner = owner;
+}
+
+drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+{
+  if (options == NULL)
+  {
+    return DRIZZLE_SOCKET_OWNER_NATIVE;
+  }
+
+  return options->socket_owner;
 }
 
 const char *drizzle_host(const drizzle_st *con)
@@ -1238,7 +1259,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
-      read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, available_buffer);
+        read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, (available_buffer % INT_MAX));
     }
     else
 #endif
@@ -1361,7 +1382,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
-      write_size= SSL_write(con->ssl, con->buffer_ptr, con->buffer_size);
+      write_size= SSL_write(con->ssl, con->buffer_ptr, (con->buffer_size % INT_MAX));
     }
     else
 #endif
