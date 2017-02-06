@@ -493,9 +493,10 @@ void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_inde
                             row_count - 1 : file_index;
 
     drizzle_row_t row = drizzle_row_index(result, row_index);
-    *filename =( char*)realloc(*filename, strlen(row[0]));
-    memcpy(*filename, row[0], strlen(row[0]));
-    *filename[strlen(row[0])] = '\0';
+    size_t len = strlen(row[0]);
+    *filename = (char*)realloc(*filename, len + 1);
+    memcpy(*filename, row[0], len);
+    (*filename)[len] = '\0';
   }
 
   drizzle_result_free(result);
