@@ -76,9 +76,14 @@ int main(int argc, char *argv[])
 
   set_up_connection();
 
+  char *binlog_file;
+  drizzle_binlog_get_filename(con, &binlog_file, -1);
+
   binlog= drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
-  ret= drizzle_binlog_start(binlog, 0, "", 0);
+  ret= drizzle_binlog_start(binlog, 0, binlog_file, 0);
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
   ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "Drizzle binlog start failure: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+
+  free(binlog_file);
   return EXIT_SUCCESS;
 }
