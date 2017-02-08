@@ -84,6 +84,10 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Tue Feb 07 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.2
+- Remove blank pages from generated pdf doc 
+- Fix allocation bug in drizzle_binlog_get_filename 
+
 * Fri Dec 16 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.1
 - Fix binary compatibility issue
 - Documentation added for new functions in v5.4.0
