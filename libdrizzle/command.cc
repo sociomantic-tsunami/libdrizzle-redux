@@ -60,7 +60,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   if (con->command_data == NULL && con->command_total != 0 &&
       con->command != DRIZZLE_COMMAND_CHANGE_USER)

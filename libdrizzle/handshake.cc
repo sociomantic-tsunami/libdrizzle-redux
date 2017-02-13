@@ -90,7 +90,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
@@ -229,7 +229,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   /* Calculate max packet size. */
   con->packet_size= (uint32_t)(
@@ -338,7 +338,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   /* Assume the entire handshake packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)
@@ -533,7 +533,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 #ifdef USE_OPENSSL
   if (con->ssl)
   {
@@ -613,7 +613,7 @@ drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con)
   unsigned char *ptr;
   int capabilities;
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   /* SSL handshake packet structure */
   con->packet_size= 4   /* Capabilities */
@@ -650,7 +650,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   drizzle_result_st *result = drizzle_result_create(con);
 

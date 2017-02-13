@@ -252,7 +252,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   if (con->buffer_size == 0)
   {
@@ -286,7 +286,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
       return ret;
     }
 
-    drizzle_log_debug(con,
+    drizzle_log_debug(con, __FILE_LINE_FUNC__,
                       "field_offset= %" PRIu64 ", field_size= %" PRIu32 ", field_total= %" PRIu64,
                       con->result->field_offset, con->result->field_size,
                       con->result->field_total);
@@ -342,7 +342,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   con->buffer_size-= con->result->field_size;
   con->packet_size-= con->result->field_size;
 
-  drizzle_log_debug(con,
+  drizzle_log_debug(con, __FILE_LINE_FUNC__,
                     "field_offset= %" PRIu64 ", field_size= %" PRIu32 ", field_total= %" PRIu64,
                     con->result->field_offset, con->result->field_size,
                     con->result->field_total);

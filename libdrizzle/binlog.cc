@@ -455,7 +455,8 @@ void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_inde
 
   if (driz_ret != DRIZZLE_RETURN_OK)
   {
-    drizzle_log_error(con, "%s Couldn't retrieve  %d", __func__, file_index );
+    drizzle_log_error(con, __FILE_LINE_FUNC__,
+      "Couldn't retrieve BINARY LOGS from the database");
   }
 
   drizzle_result_buffer(result);
@@ -463,7 +464,8 @@ void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_inde
 
   if (file_index < -1 || file_index >= row_count )
   {
-    drizzle_log_error(con, "%s Invalid binlog file index %d", __func__, file_index );
+    drizzle_log_error(con, __FILE_LINE_FUNC__, "Invalid file index. %d "
+      "binlog files were found ", file_index );
   }
 
   *filename = (char*) malloc(1);

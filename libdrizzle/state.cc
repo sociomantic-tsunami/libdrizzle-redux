@@ -76,7 +76,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   if (con->buffer_size < 4)
   {
@@ -100,8 +100,9 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
   }
 
-  drizzle_log_debug(con, "buffer_size= %" PRIu64 ", packet_size= %" PRIu32 \
-    ", packet_number= %" PRIu8, con->buffer_size, con->packet_size, con->packet_number);
+  drizzle_log_debug(con, __FILE_LINE_FUNC__,
+    "buffer_size= %" PRIu64 ", packet_size= %" PRIu32 ", packet_number= %" PRIu8,
+    con->buffer_size, con->packet_size, con->packet_number);
 
   con->packet_number++;
 
