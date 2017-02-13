@@ -685,6 +685,8 @@ drizzle_return_t drizzle_connect(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
+  __LOG_LOCATION__
+
   if (con->state.ready)
   {
     return DRIZZLE_RETURN_OK;
