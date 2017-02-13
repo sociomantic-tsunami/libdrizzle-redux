@@ -406,7 +406,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     if (con->packet_size != 0)
     {
       drizzle_set_error(con, __func__,
-                        "unexpected data after packet:%zu", con->buffer_size);
+                        "unexpected data after packet:%" PRIu64, con->buffer_size);
       con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }

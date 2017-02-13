@@ -100,8 +100,8 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
   }
 
-  drizzle_log_debug(con, "buffer_size= %zu, packet_size= %zu, packet_number= %u",
-                    con->buffer_size, con->packet_size, con->packet_number);
+  drizzle_log_debug(con, "buffer_size= %" PRIu64 ", packet_size= %" PRIu32 \
+    ", packet_number= %" PRIu8, con->buffer_size, con->packet_size, con->packet_number);
 
   con->packet_number++;
 
