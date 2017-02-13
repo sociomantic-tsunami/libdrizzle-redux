@@ -37,10 +37,23 @@
 
 #include <yatl/lite.h>
 
+#include "tests/unit/common.c"
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+extern void log_fn_callback(const char *file, uint line, const char *func,
+  const char *msg, drizzle_verbose_t verbose, void *context);
+extern void log_fn_callback(const char *file, uint line, const char *func,
+  const char *msg, drizzle_verbose_t verbose, void *context)
+{
+
+  void VARIABLE_IS_NOT_USED *cxt = context;
+
+  printf("%-6s[%s:%d] : %s %s%s\n", drizzle_verbose_name(verbose), file, line, func,
+      strlen(msg) > 0 ? "- " : "" , msg);
+}
 
 int main(int argc, char *argv[])
 {
@@ -50,12 +63,12 @@ int main(int argc, char *argv[])
   drizzle_options_st *opts = drizzle_options_create();
   drizzle_socket_set_options(opts, 10, 5, 3, 3);
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") 
-                                                       : DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), opts);
+  con= drizzle_create(getenv("MYSQL_SERVER"),
+                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                           : DRIZZLE_DEFAULT_TCP_PORT,
+                      getenv("MYSQL_USER"),
+                      getenv("MYSQL_PASSWORD"),
+                      getenv("MYSQL_SCHEMA"), opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
@@ -78,6 +91,9 @@ int main(int argc, char *argv[])
   opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
   ASSERT_EQ_(20, opt_val, "unexpected value for socket option KEEPALIVE: %d != 20",
     opt_val);
+  int cxt = 1;
+  drizzle_set_log_fn(con, log_fn_callback, (void*)&cxt);
+  drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
 
   drizzle_return_t ret= drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
