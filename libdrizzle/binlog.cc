@@ -453,6 +453,8 @@ void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_inde
   drizzle_return_t driz_ret;
   drizzle_result_st *result = drizzle_query(con, "SHOW BINARY LOGS", 0, &driz_ret);
 
+  __LOG_LOCATION__
+
   if (driz_ret != DRIZZLE_RETURN_OK)
   {
     drizzle_log_error(con, __FILE_LINE_FUNC__,
@@ -461,6 +463,8 @@ void drizzle_binlog_get_filename(drizzle_st *con, char **filename, int file_inde
 
   drizzle_result_buffer(result);
   int row_count = (int) drizzle_result_row_count(result);
+
+  drizzle_log_debug(con, __FILE_LINE_FUNC__, "Found %d binary log files", row_count);
 
   if (file_index < -1 || file_index >= row_count )
   {
