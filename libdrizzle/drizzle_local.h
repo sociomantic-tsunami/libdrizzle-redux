@@ -52,6 +52,12 @@ extern "C" {
  * @{
  */
 
+/*
+ * Macros for logging with file, line number and function name
+ */
+#define __FILE_LINE_FUNC__ __FILE__,__LINE__, __func__
+#define __LOG_LOCATION__ drizzle_log_debug(con, __FILE_LINE_FUNC__, "");
+
 /**
  * Set the error string.
  *
