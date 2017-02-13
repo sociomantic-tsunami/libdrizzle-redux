@@ -64,7 +64,8 @@ uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 
   if ((result->column_current != result->column_count) && (!(result->options & DRIZZLE_RESULT_BUFFER_COLUMN)))
   {
-    drizzle_set_error(result->con, "drizzle_row_read", "cannot retrieve rows until all columns are retrieved");
+    drizzle_set_error(result->con, __FILE_LINE_FUNC__,
+                      "cannot retrieve rows until all columns are retrieved");
     *ret_ptr= DRIZZLE_RETURN_NOT_READY;
     return 0;
   }
@@ -113,7 +114,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
   result->row= new (std::nothrow) drizzle_field_t[result->column_count];
   if (result->row == NULL)
   {
-    drizzle_set_error(result->con, __func__, "Failed to allocate.");
+    drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     return NULL;
   }
@@ -121,7 +122,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
   result->field_sizes= new (std::nothrow) size_t[result->column_count];
   if (result->field_sizes == NULL)
   {
-    drizzle_set_error(result->con, __func__, "Failed to allocate.");
+    drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     return NULL;
   }

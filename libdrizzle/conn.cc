@@ -820,8 +820,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
   {
     if (con->state.raw_packet)
     {
-      drizzle_set_error(con, __func__,
-                        "connection not ready");
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "connection not ready");
       *ret_ptr= DRIZZLE_RETURN_NOT_READY;
       return result;
     }
@@ -845,7 +844,7 @@ drizzle_result_st *drizzle_command_write(drizzle_st *con,
       {
         if (result == old_result)
         {
-          drizzle_set_error(con, __func__, "result struct already in use");
+          drizzle_set_error(con, __FILE_LINE_FUNC__, "result struct already in use");
           *ret_ptr= DRIZZLE_RETURN_INTERNAL_ERROR;
           return result;
         }
@@ -979,7 +978,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
       int ret= getaddrinfo(host, port, &ai, &(tcp->addrinfo));
       if (ret != 0)
       {
-        drizzle_set_error(con, __func__, "getaddrinfo:%s", gai_strerror(ret));
+        drizzle_set_error(con, __FILE_LINE_FUNC__, "getaddrinfo:%s", gai_strerror(ret));
         return DRIZZLE_RETURN_GETADDRINFO;
       }
 
@@ -1060,7 +1059,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     drizzle_return_t dret;
     if (con->addrinfo_next == NULL)
     {
-      drizzle_set_error(con, __func__, "could not connect");
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "could not connect");
       con->clear_state();
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
@@ -1084,7 +1083,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 
     if (con->fd == INVALID_SOCKET)
     {
-      drizzle_set_error(con, __func__, "socket:%s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "socket:%s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
@@ -1166,7 +1165,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       }
 
       /* Other failures not specific to this address */
-      drizzle_set_error(con, __func__, "connect:%s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "connect:%s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
@@ -1201,7 +1200,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
       int getsockopt_error;
     if ((getsockopt_error= getsockopt(con->fd, SOL_SOCKET, SO_ERROR, (void *)&error, &error_length)) < 0)
       {
-      drizzle_set_error(con, __func__, "getsockopt: %s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "getsockopt: %s", strerror(errno));
       return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
 
@@ -1306,7 +1305,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     {
       if (con->buffer_allocation >= DRIZZLE_MAX_BUFFER_SIZE)
       {
-        drizzle_set_error(con, __func__,
+        drizzle_set_error(con, __FILE_LINE_FUNC__,
                           "buffer too small:%" PRIu32 , con->packet_size + 4);
         return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
@@ -1320,7 +1319,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       unsigned char *realloc_buffer= (unsigned char*)realloc(con->buffer, con->buffer_allocation);
       if (realloc_buffer == NULL)
       {
-        drizzle_set_error(con, __func__, "realloc failure");
+        drizzle_set_error(con, __FILE_LINE_FUNC__, "realloc failure");
         return DRIZZLE_RETURN_MEMORY;
       }
       con->buffer= realloc_buffer;
@@ -1354,8 +1353,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     {
       if (con->flags.is_shutdown == false)
       {
-        drizzle_set_error(con, __func__,
-                          "%s:%d lost connection to server (EOF)", __FILE__, __LINE__);
+        drizzle_set_error(con, __FILE_LINE_FUNC__, "lost connection to server (EOF)");
       }
 
       return DRIZZLE_RETURN_LOST_CONNECTION;
@@ -1415,14 +1413,13 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       case EPIPE:
       case ECONNRESET:
         {
-          drizzle_set_error(con, __func__,
-                            "%s:%d lost connection to server (%s)",
-                            __FILE__, __LINE__, strerror(errno));
+          drizzle_set_error(con, __FILE_LINE_FUNC__,
+                            "lost connection to server (%s)", strerror(errno));
           return DRIZZLE_RETURN_LOST_CONNECTION;
         }
       }
 
-      drizzle_set_error(con, __func__, "recv:%s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "recv:%s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
@@ -1514,12 +1511,12 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
       }
       else if (errno == EPIPE || errno == ECONNRESET)
       {
-        drizzle_set_error(con, __func__, "%s:%d lost connection to server (%s)",
-                          __FILE__, __LINE__, strerror(errno));
+        drizzle_set_error(con, __FILE_LINE_FUNC__, "lost connection to server (%s)",
+                          strerror(errno));
         return DRIZZLE_RETURN_LOST_CONNECTION;
       }
 
-      drizzle_set_error(con, __func__, "send: %s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "send: %s", strerror(errno));
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
@@ -1584,7 +1581,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
-    drizzle_set_error(con, __func__, "setsockopt:TCP_NODELAY:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:TCP_NODELAY:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1601,7 +1598,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1)
   {
-    drizzle_set_error(con, __func__, "setsockopt:SO_LINGER:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:SO_LINGER:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1618,7 +1615,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
-    drizzle_set_error(con, __func__, "setsockopt:SO_SNDTIMEO:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:SO_SNDTIMEO:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1632,7 +1629,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
-    drizzle_set_error(con, __func__,
+    drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "setsockopt:SO_RCVTIMEO:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
@@ -1646,7 +1643,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
-    drizzle_set_error(con, __func__,
+    drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "setsockopt:SO_KEEPALIVE:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
@@ -1661,7 +1658,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
-    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPIDLE:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:TCP_KEEPIDLE:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1675,7 +1673,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
-    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPCNT:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:TCP_KEEPCNT:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1689,7 +1688,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
-    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPINTVL:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:TCP_KEEPINTVL:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1701,7 +1701,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #endif /* _WIN32 */
   if (ret == -1)
   {
-    drizzle_set_error(con, __func__, "setsockopt:SO_SNDBUF:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:SO_SNDBUF:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1713,7 +1714,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #endif /* _WIN32 */
   if (ret == -1)
   {
-    drizzle_set_error(con, __func__, "setsockopt:SO_RCVBUF:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt:SO_RCVBUF:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 
@@ -1723,7 +1725,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1)
   {
-    drizzle_set_error(con, __func__, "setsockopt(SO_NOSIGPIPE): %s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "setsockopt(SO_NOSIGPIPE): %s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 #elif defined(HAVE_FCNTL) && defined(F_SETNOSIGPIPE)
@@ -1731,7 +1734,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   if (ret == -1)
   {
-    drizzle_set_error(con, __func__, "fcntl:F_SETNOSIGPIPE:%s", strerror(errno));
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_SETNOSIGPIPE:%s",
+                      strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
 #endif
@@ -1750,14 +1754,14 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     ret= fcntl(con->fd, F_GETFL, 0);
     if (ret == -1)
     {
-      drizzle_set_error(con, __func__, "fcntl:F_GETFL:%s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_GETFL:%s", strerror(errno));
       return DRIZZLE_RETURN_ERRNO;
     }
 
     ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
     if (ret == -1)
     {
-      drizzle_set_error(con, __func__, "fcntl:F_SETFL:%s", strerror(errno));
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_SETFL:%s", strerror(errno));
       return DRIZZLE_RETURN_ERRNO;
     }
 #endif
@@ -1779,10 +1783,10 @@ static void connect_failed_try_next(drizzle_st *con, const char *func, const cha
     strcpy(hostbuf, "???");
     strcpy(servbuf, "???");
   }
-  drizzle_log_info(con, __FILE_LINE_FUNC__, "connect failure: host=%s port=%s msg=%s",
+  drizzle_log_info(con, file, line, function, "connect failure: host=%s port=%s msg=%s",
                    hostbuf, servbuf, msg);
 
-  drizzle_set_error(con, func, "connect: %s (port %s): %s",
+  drizzle_set_error(con, file, line, function, "connect: %s (port %s): %s",
                     hostbuf, servbuf, msg);
 
   con->addrinfo_next= con->addrinfo_next->ai_next;

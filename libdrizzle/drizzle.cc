@@ -111,7 +111,8 @@ bool drizzle_library_init(drizzle_st* connection)
   int pthread_error;
   if ((pthread_error= pthread_once(&ssl_startup_once, ssl_startup_function)) == -1)
   {
-    drizzle_set_error(connection, "pthread_once", "error:%s", strerror(errno));
+    drizzle_set_error(connection, __FILE_LINE_FUNC__, "pthread_once: error:%s",
+      strerror(errno));
     return false;
   }
 
@@ -318,7 +319,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   }
   else
   {
-    drizzle_set_error(con, __func__, "no active file descriptors");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "no active file descriptors");
     return DRIZZLE_RETURN_NO_ACTIVE_CONNECTIONS;
   }
 
@@ -346,7 +347,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
         continue;
       }
 
-      drizzle_set_error(con, __func__, "poll:%d", errno);
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "poll:%d", errno);
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
@@ -357,7 +358,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
 
   if (ret == 0)
   {
-    drizzle_set_error(con, __func__, "timeout reached");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "timeout reached");
     return DRIZZLE_RETURN_TIMEOUT;
   }
 
@@ -426,9 +427,9 @@ drizzle_st *drizzle_create(const char *host, in_port_t port,
  * Local Definitions
  */
 
-__attribute__((__format__ (__printf__, 3, 4)))
-void drizzle_set_error(drizzle_st *con, const char *function,
-                       const char *format, ...)
+__attribute__((__format__ (__printf__, 5, 6)))
+void drizzle_set_error(drizzle_st *con, const char *file, uint line,
+  const char *function, const char *format, ...)
 {
   if (con == NULL)
   {
@@ -472,7 +473,8 @@ void drizzle_set_error(drizzle_st *con, const char *function,
   }
   else
   {
-    con->log_fn("", 0, "", log_buffer, DRIZZLE_VERBOSE_ERROR, con->log_context);
+    con->log_fn(file, line, function, log_buffer, DRIZZLE_VERBOSE_ERROR,
+      con->log_context);
   }
 }
 

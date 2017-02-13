@@ -59,7 +59,7 @@ drizzle_result_st *drizzle_result_create(drizzle_st *con)
   result= new (std::nothrow) drizzle_result_st;
   if (result == NULL)
   {
-    drizzle_set_error(con, __func__, "Failed to allocate.");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "Failed to allocate.");
     return NULL;
   }
 
@@ -339,7 +339,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       if (row_list == NULL)
       {
         drizzle_row_free(result, row);
-        drizzle_set_error(result->con, __func__, "Failed to realloc row_list.");
+        drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc row_list.");
         return DRIZZLE_RETURN_MEMORY;
       }
       result->row_list= row_list;
@@ -350,7 +350,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
         if (null_bitmap_list == NULL)
         {
           drizzle_row_free(result, row);
-          drizzle_set_error(result->con, __func__, "Failed to realloc null_bitmap_list.");
+          drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc null_bitmap_list.");
           return DRIZZLE_RETURN_MEMORY;
         }
         result->null_bitmap_list= null_bitmap_list;
@@ -360,7 +360,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       if (field_sizes_list == NULL)
       {
         drizzle_row_free(result, row);
-        drizzle_set_error(result->con, "drizzle_result_buffer", "Failed to realloc field list.");
+        drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc field list.");
         return DRIZZLE_RETURN_MEMORY;
       }
       result->field_sizes_list= field_sizes_list;

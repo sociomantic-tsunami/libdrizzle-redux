@@ -150,7 +150,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
 #if SIZE_MAX < UINT64_MAX
   if (wire_size >= SIZE_MAX)
   {
-    drizzle_set_error(result->con, __func__, "Field is larger than memory.");
+    drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Field is larger than memory.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     return NULL;
   }
@@ -200,7 +200,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     result->field_buffer_sizes[current_field]= (*total) + 1;
     if (result->field_buffer[current_field] == NULL)
     {
-      drizzle_set_error(result->con, __func__, "Failed to allocate.");
+      drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
       return NULL;
     }

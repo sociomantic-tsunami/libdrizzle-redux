@@ -60,7 +60,7 @@ drizzle_column_st *drizzle_column_create(drizzle_result_st *result)
   column= new (std::nothrow) drizzle_column_st;
   if (column == NULL)
   {
-    drizzle_set_error(result->con, __func__, "Failed to allocate.");
+    drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
     return NULL;
   }
 
@@ -396,7 +396,7 @@ drizzle_return_t drizzle_column_buffer(drizzle_result_st *result)
     result->column_buffer= new (std::nothrow) drizzle_column_st[result->column_count];
     if (result->column_buffer == NULL)
     {
-      drizzle_set_error(result->con, __func__, "Failed to allocate.");
+      drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
 
       return DRIZZLE_RETURN_MEMORY;
     }

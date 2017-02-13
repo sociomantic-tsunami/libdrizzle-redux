@@ -44,7 +44,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
   if (stmt == NULL)
   {
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    drizzle_set_error(con, __func__, "new");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "new");
     return NULL;
   }
   con->stmt= stmt;
@@ -90,7 +90,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
   {
     delete stmt;
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    drizzle_set_error(con, __func__, "new");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "new");
     return NULL;
   }
 
@@ -119,7 +119,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   {
     if (!stmt->query_params[current_param].is_bound)
     {
-      drizzle_set_error(stmt->con, __func__, "parameter %d has not been bound", current_param);
+      drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "parameter %d has not been bound", current_param);
       return DRIZZLE_RETURN_STMT_ERROR;
     }
     /* Don't count NULLs */
@@ -143,7 +143,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   buffer = new (std::nothrow) unsigned char[buffer_size];
   if (buffer == NULL)
   {
-    drizzle_set_error(stmt->con, __func__, "new");
+    drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "new");
     return DRIZZLE_RETURN_MEMORY;
   }
   buffer_pos= buffer;
@@ -274,7 +274,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
       case DRIZZLE_COLUMN_TYPE_DATETIME2:
       case DRIZZLE_COLUMN_TYPE_TIME2:
       default:
-        drizzle_set_error(stmt->con, __func__, "unknown type when filling buffer");
+        drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "unknown type when filling buffer");
         delete[] buffer;
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
         break;
@@ -331,7 +331,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
 
   if (stmt->state < DRIZZLE_STMT_PREPARED)
   {
-    drizzle_set_error(stmt->con, __func__, "stmt object has not been prepared");
+    drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "stmt object has not been prepared");
     return DRIZZLE_RETURN_STMT_ERROR;
   }
 
@@ -401,7 +401,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
 
   if (stmt->state < DRIZZLE_STMT_EXECUTED)
   {
-    drizzle_set_error(stmt->con, __func__, "statement has not been executed");
+    drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "statement has not been executed");
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
   stmt->con->result= stmt->execute_result;
@@ -515,7 +515,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
         case DRIZZLE_COLUMN_TYPE_DATETIME2:
         case DRIZZLE_COLUMN_TYPE_TIME2:
         default:
-          drizzle_set_error(stmt->con, __func__, "Unknown data type found");
+          drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "Unknown data type found");
           ret= DRIZZLE_RETURN_UNEXPECTED_DATA;
           break;
       }
@@ -544,7 +544,7 @@ drizzle_return_t drizzle_stmt_buffer(drizzle_stmt_st *stmt)
   }
   if (stmt->state >= DRIZZLE_STMT_FETCHED)
   {
-    drizzle_set_error(stmt->con, __func__, "data set has already been read");
+    drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "data set has already been read");
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
 
