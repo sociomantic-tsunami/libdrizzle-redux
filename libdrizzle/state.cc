@@ -94,7 +94,7 @@ drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 
   if (con->packet_number != con->buffer_ptr[3])
   {
-    drizzle_set_error(con, __func__,
+    drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "bad packet number:%u:%u", con->packet_number,
                       con->buffer_ptr[3]);
     return DRIZZLE_RETURN_BAD_PACKET_NUMBER;

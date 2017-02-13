@@ -320,8 +320,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
   {
     if (ret == DRIZZLE_RETURN_NULL_SIZE)
     {
-      drizzle_set_error(con, __func__,
-                        "unexpected NULL length");
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "unexpected NULL length");
     }
 
     return ret;
@@ -329,8 +328,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
 
   if (length > con->packet_size)
   {
-    drizzle_set_error(con, __func__,
-                           "string extends past end of packet");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "string extends past end of packet");
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
   if (length > con->buffer_size)
@@ -443,7 +441,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
 
   if (SHA1_DIGEST_LENGTH != DRIZZLE_MAX_SCRAMBLE_SIZE)
   {
-    drizzle_set_error(con, __func__,
+    drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "SHA1 hash size mismatch:%u:%u", SHA1_DIGEST_LENGTH,
                       DRIZZLE_MAX_SCRAMBLE_SIZE);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
@@ -451,8 +449,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
 
   if (con->scramble == NULL)
   {
-    drizzle_set_error(con, __func__,
-                      "no scramble buffer");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "no scramble buffer");
     return DRIZZLE_RETURN_NO_SCRAMBLE;
   }
 
@@ -498,7 +495,7 @@ bool drizzle_check_unpack_error(drizzle_st *con)
   snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
            (int)con->packet_size-1, con->buffer_ptr);
 
-  drizzle_set_error(con, __func__, " %s", con->last_error);
+  drizzle_set_error(con, __FILE_LINE_FUNC__, " %s", con->last_error);
 
   con->buffer_ptr+= con->packet_size;
   con->buffer_size-= con->packet_size;
