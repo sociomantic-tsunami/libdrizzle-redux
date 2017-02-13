@@ -152,12 +152,15 @@ int main(int argc, char *argv[])
       ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
         switch (cur_column) {
             case 1:
-                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG, "Column type wrong");
+                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG,
+                  "Column type wrong");
                 break;
             case 2:
-                ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", (size_t)drizzle_column_max_size(column));
+                ASSERT_EQ_(drizzle_column_max_size(column), 255,
+                  "Column max size wrong %" PRIu64 " != 255", (size_t)drizzle_column_max_size(column));
 
-                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
+                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI,
+                  "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
                 break;
             case 3:
                 ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP, "Column type wrong");

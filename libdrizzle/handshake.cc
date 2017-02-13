@@ -102,7 +102,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   if (con->packet_size < 46)
   {
     drizzle_set_error(con, __func__,
-                      "bad packet size:>=46:%zu", con->packet_size);
+                      "bad packet size:>=46:%" PRIu32, con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
 
@@ -140,7 +140,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   if (con->packet_size < (46 + (size_t)(ptr - con->buffer_ptr)))
   {
     drizzle_set_error(con, __func__,
-                      "bad packet size:%zu:%zu",
+                      "bad packet size:%" PRIu64 ":%" PRIu32,
                       (46 + (size_t)(ptr - con->buffer_ptr)), con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
@@ -193,7 +193,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   if (con->buffer_size != 0)
   {
     drizzle_set_error(con, __func__,
-                      "unexpected data after packet:%zu", con->buffer_size);
+                      "unexpected data after packet:%" PRIu64, con->buffer_size);
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
 
@@ -245,7 +245,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, __func__,
-                      "buffer too small:%zu", con->packet_size + 4);
+                      "buffer too small:%" PRIu32, con->packet_size + 4);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
 
@@ -316,7 +316,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   if ((size_t)(ptr - con->buffer_ptr) != (4 + con->packet_size))
   {
     drizzle_set_error(con, __func__,
-                      "error packing server handshake:%zu:%zu",
+                      "error packing server handshake:%" PRIu64 ":%" PRIu32,
                       (size_t)(ptr - con->buffer_ptr), 4 + con->packet_size);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
@@ -347,7 +347,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   if (con->packet_size < 34)
   {
     drizzle_set_error(con, __func__,
-                      "bad packet size:>=34:%zu", con->packet_size);
+                      "bad packet size:>=34:%" PRIu32, con->packet_size);
     return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
   }
 
@@ -392,7 +392,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
     if (con->packet_size < real_size)
     {
       drizzle_set_error(con, __func__,
-                        "bad packet size:>=%zu:%zu", real_size,
+                        "bad packet size:>=%" PRIu64 ":%" PRIu32, real_size,
                         con->packet_size);
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
     }
@@ -445,7 +445,8 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
     if (con->packet_size != real_size)
     {
       drizzle_set_error(con, __func__,
-                        "bad packet size:%zu:%zu", real_size, con->packet_size);
+                        "bad packet size:%" PRIu64 ":%" PRIu64,
+                        real_size, con->packet_size);
       return DRIZZLE_RETURN_BAD_HANDSHAKE_PACKET;
     }
 
@@ -466,7 +467,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   if (con->buffer_size != 0)
   {
     drizzle_set_error(con, __func__,
-                      "unexpected data after packet:%zu", con->buffer_size);
+                      "unexpected data after packet:%" PRIu64, con->buffer_size);
     return DRIZZLE_RETURN_UNEXPECTED_DATA;
   }
 
@@ -556,7 +557,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   if ((con->packet_size + 4) > con->buffer_allocation)
   {
     drizzle_set_error(con, __func__,
-                      "buffer too small:%zu", con->packet_size + 4);
+                      "buffer too small:%" PRIu64, con->packet_size + 4);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
 
@@ -591,7 +592,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
   if ((size_t)(ptr - con->buffer_ptr) != (4 + con->packet_size))
   {
     drizzle_set_error(con, __func__,
-                      "error packing client handshake:%zu:%zu",
+                      "error packing client handshake:" PRIu64 ":%" PRIu32,
                       (size_t)(ptr - con->buffer_ptr), 4 + con->packet_size);
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }

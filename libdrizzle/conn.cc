@@ -1234,7 +1234,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       if (con->buffer_allocation >= DRIZZLE_MAX_BUFFER_SIZE)
       {
         drizzle_set_error(con, __func__,
-                          "buffer too small:%zu", con->packet_size + 4);
+                          "buffer too small:%" PRIu32 , con->packet_size + 4);
         return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
       // Shift data to beginning of the buffer then resize
@@ -1251,7 +1251,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
         return DRIZZLE_RETURN_MEMORY;
       }
       con->buffer= realloc_buffer;
-      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer_allocation);
+      drizzle_log_debug(con, "buffer resized to: %" PRIu32, con->buffer_allocation);
       con->buffer_ptr= con->buffer;
       available_buffer= con->buffer_allocation - con->buffer_size;
     }
@@ -1271,7 +1271,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
+    drizzle_log_debug(con, "read fd=%d avail= %" PRIu64 " recv=%" PRIi32 " ssl= %d errno=%s",
                       con->fd, available_buffer, read_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1331,7 +1331,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
       case EINVAL:
         {
-          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%zd",
+          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%" PRIu64,
                             con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer);
         }
         break;
@@ -1394,7 +1394,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "write fd=%d return=%zd ssl=%d errno=%s",
+    drizzle_log_debug(con, "write fd=%d return=%" PRIi64 " ssl=%d errno=%s",
                       con->fd, write_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
