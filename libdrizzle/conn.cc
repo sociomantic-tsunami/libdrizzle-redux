@@ -721,7 +721,7 @@ drizzle_return_t drizzle_quit(drizzle_st *con)
 {
   if (con != NULL)
   {
-    drizzle_log_debug(con, "shutting down the connection");
+    drizzle_log_debug(con, __FILE_LINE_FUNC__, "shutting down the connection");
     con->flags.is_shutdown= true;
     drizzle_return_t ret;
     drizzle_result_st *result;
@@ -933,7 +933,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   switch (con->socket_type)
   {
@@ -973,7 +973,7 @@ drizzle_return_t drizzle_state_addrinfo(drizzle_st *con)
         host= tcp->host;
       }
 
-      drizzle_log_debug(con, "host=%s port=%s", host, port);
+      drizzle_log_debug(con, __FILE_LINE_FUNC__, "host=%s port=%s", host, port);
       int ret= getaddrinfo(host, port, &ai, &(tcp->addrinfo));
       if (ret != 0)
       {
@@ -1005,7 +1005,7 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   __closesocket(con->fd);
 
@@ -1102,7 +1102,8 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       errno= translate_windows_error();
 #endif /* _WIN32 */
 
-      drizzle_log_debug(con, "connect return=%d errno=%s", ret, strerror(errno));
+      drizzle_log_debug(con, __FILE_LINE_FUNC__, "connect return=%d errno=%s",
+                        ret, strerror(errno));
 
       if (ret == 0)
       {
@@ -1188,7 +1189,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   if (con->revents & (POLLOUT | POLLERR | POLLHUP))
   {
@@ -1267,7 +1268,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   if (con->buffer_size == 0)
   {
@@ -1321,7 +1322,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
         return DRIZZLE_RETURN_MEMORY;
       }
       con->buffer= realloc_buffer;
-      drizzle_log_debug(con, "buffer resized to: %" PRIu32, con->buffer_allocation);
+      drizzle_log_debug(con, __FILE_LINE_FUNC__, "buffer resized to: %" PRIu32, con->buffer_allocation);
       con->buffer_ptr= con->buffer;
       available_buffer= con->buffer_allocation - con->buffer_size;
     }
@@ -1341,7 +1342,8 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "read fd=%d avail= %" PRIu64 " recv=%" PRIi32 " ssl= %d errno=%s",
+    drizzle_log_debug(con, __FILE_LINE_FUNC__,
+                      "read fd=%d avail= %" PRIu64 " recv=%" PRIi32 " ssl= %d errno=%s",
                       con->fd, available_buffer, read_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1401,8 +1403,10 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
       case EINVAL:
         {
-          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%" PRIu64,
-                            con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer);
+          drizzle_log_debug(con, __FILE_LINE_FUNC__,
+                            "EINVAL fd=%d buffer=%p available_buffer=%" PRIu64,
+                            con->fd, (char *)con->buffer_ptr + con->buffer_size,
+                            available_buffer);
         }
         break;
 
@@ -1445,7 +1449,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   while (con->buffer_size != 0)
   {
@@ -1464,7 +1468,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "write fd=%d return=%" PRIi64 " ssl=%d errno=%s",
+    drizzle_log_debug(con, __FILE_LINE_FUNC__, "write fd=%d return=%" PRIi64 " ssl=%d errno=%s",
                       con->fd, write_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1773,7 +1777,7 @@ static void connect_failed_try_next(drizzle_st *con, const char *func, const cha
     strcpy(hostbuf, "???");
     strcpy(servbuf, "???");
   }
-  drizzle_log_info(con, "connect failure: host=%s port=%s msg=%s",
+  drizzle_log_info(con, __FILE_LINE_FUNC__, "connect failure: host=%s port=%s msg=%s",
                    hostbuf, servbuf, msg);
 
   drizzle_set_error(con, func, "connect: %s (port %s): %s",

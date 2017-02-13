@@ -131,19 +131,21 @@ bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_s
  * @param[in] format Format and variable argument list of message.
  * @param[in] args Variable argument list that has been initialized.
  */
-void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose, const char *format, va_list args);
+void drizzle_log(drizzle_st *con, const char *file, uint line, const char *func,
+  drizzle_verbose_t verbose, const char *format, va_list args);
 
 /**
  * Log a fatal message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
+static inline void drizzle_log_fatal(drizzle_st *con, const char* file, uint line,
+  const char *func, const char *format, ...)
 {
   va_list args;
 
   if (con->verbose >= DRIZZLE_VERBOSE_CRITICAL)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_CRITICAL, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }
@@ -151,14 +153,15 @@ static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
 /**
  * Log an error message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_error(drizzle_st *con, const char *format, ...)
+static inline void drizzle_log_error(drizzle_st *con, const char* file, uint line,
+  const char *func, const char *format, ...)
 {
   va_list args;
 
   if (con->verbose >= DRIZZLE_VERBOSE_ERROR)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_ERROR, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }
@@ -166,14 +169,15 @@ static inline void drizzle_log_error(drizzle_st *con, const char *format, ...)
 /**
  * Log an info message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_info(drizzle_st *con, const char *format, ...)
+static inline void drizzle_log_info(drizzle_st *con, const char* file, uint line,
+  const char *func, const char *format, ...)
 {
   va_list args;
 
   if (con->verbose >= DRIZZLE_VERBOSE_INFO)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_INFO, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }
@@ -181,14 +185,15 @@ static inline void drizzle_log_info(drizzle_st *con, const char *format, ...)
 /**
  * Log a debug message, see drizzle_log() for argument details.
  */
-static inline void drizzle_log_debug(drizzle_st *con, const char *format, ...)
+static inline void drizzle_log_debug(drizzle_st *con, const char *file, uint line,
+  const char *func, const char *format, ...)
 {
   va_list args;
 
   if (con->verbose >= DRIZZLE_VERBOSE_DEBUG)
   {
     va_start(args, format);
-    drizzle_log(con, DRIZZLE_VERBOSE_DEBUG, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
     va_end(args);
   }
 }

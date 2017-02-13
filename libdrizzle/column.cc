@@ -537,7 +537,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
 
   drizzle_column_st *column;
 
-  drizzle_log_debug(con, __func__);
+  __LOG_LOCATION__
 
   /* Assume the entire column packet will fit in the buffer. */
   if (con->buffer_size < con->packet_size)

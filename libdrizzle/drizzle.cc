@@ -326,10 +326,11 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   while (1)
   {
 #ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
-    drizzle_log_debug(con, "poll timeout=%d waitfor=%s (0x%04X)",
-                      con->timeout, pollevents_str(con->pfds[0].events, ebuf), con->pfds[0].events);
+    drizzle_log_debug(con, __FILE_LINE_FUNC__, "poll timeout=%d waitfor=%s (0x%04X)",
+                      con->timeout, pollevents_str(con->pfds[0].events, ebuf),
+                      con->pfds[0].events);
 #else
-    drizzle_log_debug(con, "poll timeout=%d waitfor=0x%04X",
+    drizzle_log_debug(con, __FILE_LINE_FUNC__, "poll timeout=%d waitfor=0x%04X",
                       con->timeout, con->pfds[0].events);
 #endif
 
@@ -337,7 +338,8 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
 
     if (ret == -1)
     {
-      drizzle_log_debug(con, "poll return=%d errno=%d (%s)", ret, errno, strerror(errno));
+      drizzle_log_debug(con, __FILE_LINE_FUNC__, "poll return=%d errno=%d (%s)",
+                        ret, errno, strerror(errno));
 
       if (errno == EINTR)
       {
@@ -348,7 +350,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
       con->last_errno= errno;
       return DRIZZLE_RETURN_ERRNO;
     }
-    drizzle_log_debug(con, "poll return=%d", ret);
+    drizzle_log_debug(con, __FILE_LINE_FUNC__, "poll return=%d", ret);
 
     break;
   }
@@ -360,7 +362,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   }
 
 #ifdef DRIZZLE_EXTRA_POLL_DEBUGGING
-  drizzle_log_debug(con, "poll readyfor=%s",
+  drizzle_log_debug(con, __FILE_LINE_FUNC__, "poll readyfor=%s",
                     pollevents_str(con->pfds[0].revents, ebuf));
 #endif
 
@@ -470,13 +472,13 @@ void drizzle_set_error(drizzle_st *con, const char *function,
   }
   else
   {
-    con->log_fn(log_buffer, DRIZZLE_VERBOSE_ERROR, con->log_context);
+    con->log_fn("", 0, "", log_buffer, DRIZZLE_VERBOSE_ERROR, con->log_context);
   }
 }
 
-__attribute__((__format__ (__printf__, 3, 0)))
-void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
-                 const char *format, va_list args)
+__attribute__((__format__ (__printf__, 6, 0)))
+void drizzle_log(drizzle_st *con, const char *file, uint line, const char *func,
+  drizzle_verbose_t verbose, const char *format, va_list args)
 {
   if (con == NULL)
   {
@@ -487,7 +489,8 @@ void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
 
   if (con->log_fn == NULL)
   {
-    printf("%5s: ", drizzle_verbose_name(verbose));
+    printf("%-6s[%s:%d] : %s %s", drizzle_verbose_name(verbose), file, line, func,
+      strlen(format) > 0 ? "- " : "" );
     vprintf(format, args);
     printf("\n");
   }
@@ -495,6 +498,6 @@ void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose,
   {
     vsnprintf(log_buffer, DRIZZLE_MAX_ERROR_SIZE, format, args);
     log_buffer[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
-    con->log_fn(log_buffer, verbose, con->log_context);
+    con->log_fn(file, line, func, log_buffer, verbose, con->log_context);
   }
 }
