@@ -58,25 +58,18 @@
              drizzle_strerror(driz_ret), drizzle_error(con), #s);
 
 static const drizzle_column_type_t expected_column_types[10] = {
-  DRIZZLE_COLUMN_TYPE_NONE, /* Columns are 1-indexed */
-
-  DRIZZLE_COLUMN_TYPE_LONG,
-
-  DRIZZLE_COLUMN_TYPE_DATE,
-  DRIZZLE_COLUMN_TYPE_YEAR,
-  DRIZZLE_COLUMN_TYPE_TIMESTAMP,
-  DRIZZLE_COLUMN_TYPE_TIMESTAMP,
-  DRIZZLE_COLUMN_TYPE_TIME,
-  DRIZZLE_COLUMN_TYPE_TIME,
-  DRIZZLE_COLUMN_TYPE_DATETIME,
-//  DRIZZLE_COLUMN_TYPE_NEWDATE,
-  DRIZZLE_COLUMN_TYPE_DATETIME,
+    DRIZZLE_COLUMN_TYPE_NONE, /* Columns are 1-indexed */
+    DRIZZLE_COLUMN_TYPE_LONG,
+    DRIZZLE_COLUMN_TYPE_DATE, DRIZZLE_COLUMN_TYPE_YEAR,
+    DRIZZLE_COLUMN_TYPE_TIMESTAMP, DRIZZLE_COLUMN_TYPE_TIMESTAMP,
+    DRIZZLE_COLUMN_TYPE_TIME, DRIZZLE_COLUMN_TYPE_TIME,
+    DRIZZLE_COLUMN_TYPE_DATETIME,
+    //  DRIZZLE_COLUMN_TYPE_NEWDATE,
+    DRIZZLE_COLUMN_TYPE_DATETIME,
 };
 
-static const char *column_names[10] = {
-  NULL,
-  "a", "b", "c", "d", "e", "f", "g", "h", "i"
-};
+static const char *column_names[10] = {NULL, "a", "b", "c", "d",
+                                       "e",  "f", "g", "h", "i"};
 
 int main(int argc, char *argv[])
 {
@@ -97,17 +90,17 @@ int main(int argc, char *argv[])
            "Test requires MySQL 5.6.4 or higher");
 
   CHECKED_QUERY("CREATE TABLE test_datetime.dt1"
-    "("
-      "a INT PRIMARY KEY NOT NULL,"
-      "b DATE,"
-      "c YEAR(4),"
-      "d TIMESTAMP(0),"
-      "e TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6),"
-      "f TIME(0),"
-      "g TIME(6),"
-      "h DATETIME(0),"
-      "i DATETIME(6)"
-    ")");
+                "("
+                "a INT PRIMARY KEY NOT NULL,"
+                "b DATE,"
+                "c YEAR(4),"
+                "d TIMESTAMP(0),"
+                "e TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6),"
+                "f TIME(0),"
+                "g TIME(6),"
+                "h DATETIME(0),"
+                "i DATETIME(6)"
+                ")");
   rows_in_table = 0;
 
   /* Insert rows with pk 1 and 2 */
@@ -212,27 +205,27 @@ int main(int argc, char *argv[])
     ASSERT_EQ_(cur_column, 9, "Wrong column count");
 
     if (cur_row == 1 || cur_row == 3) {
-        ASSERT_STREQ("1970-01-01", row[1]);
-        ASSERT_STREQ("2112", row[2]);
-        ASSERT_STREQ("06:15:03", row[5]);
-        ASSERT_STREQ("23:59:59.750000", row[6]);
-        ASSERT_STREQ("1642-12-25 12:15:01", row[7]);
-        ASSERT_STREQ("1642-12-25 12:12:00.125000", row[8]);
+      ASSERT_STREQ("1970-01-01", row[1]);
+      ASSERT_STREQ("2112", row[2]);
+      ASSERT_STREQ("06:15:03", row[5]);
+      ASSERT_STREQ("23:59:59.750000", row[6]);
+      ASSERT_STREQ("1642-12-25 12:15:01", row[7]);
+      ASSERT_STREQ("1642-12-25 12:12:00.125000", row[8]);
     }
 
     if (cur_row == 2) {
-        ASSERT_STREQ("1984-02-29", row[1]);
-        ASSERT_STREQ("2012", row[2]);
+      ASSERT_STREQ("1984-02-29", row[1]);
+      ASSERT_STREQ("2012", row[2]);
     } else if (cur_row == 4) {
-        ASSERT_STREQ("0084-02-09", row[1]);
-        ASSERT_STREQ("2012", row[2]);
+      ASSERT_STREQ("0084-02-09", row[1]);
+      ASSERT_STREQ("2012", row[2]);
     }
 
     if (cur_row == 2 || cur_row == 4) {
-	    ASSERT_STREQ("78:15:03", row[5]);
-        ASSERT_STREQ("23:59:59.062500", row[6]);
-        ASSERT_STREQ("1642-12-25 12:15:01", row[7]);
-        ASSERT_STREQ("1642-12-25 12:12:00.000000", row[8]);
+      ASSERT_STREQ("78:15:03", row[5]);
+      ASSERT_STREQ("23:59:59.062500", row[6]);
+      ASSERT_STREQ("1642-12-25 12:15:01", row[7]);
+      ASSERT_STREQ("1642-12-25 12:12:00.000000", row[8]);
     }
   }
   ASSERT_EQ_(cur_row, rows_in_table, "Retrieved bad number of rows");
@@ -279,27 +272,27 @@ int main(int argc, char *argv[])
              cur_row);
 
     switch (cur_row) {
-      case 1:
-      case 3:
-	    ASSERT_COL_STREQ_(2, "1970-01-01");
-        ASSERT_COL_STREQ_(3, "2112");
-	    ASSERT_COL_STREQ_(6, "06:15:03");
-        ASSERT_COL_STREQ_(7, "23:59:59.750000");
-        ASSERT_COL_STREQ_(8, "1642-12-25 12:15:01");
-        ASSERT_COL_STREQ_(9, "1642-12-25 12:12:00.125000");
-        break;
-      case 2:
-      case 4:
-        ASSERT_COL_STREQ_(3, "2012");
-	    ASSERT_COL_STREQ_(6, "78:15:03");
-        ASSERT_COL_STREQ_(7, "23:59:59.062500");
-        ASSERT_COL_STREQ_(8, "1642-12-25 12:15:01");
-        ASSERT_COL_STREQ_(9, "1642-12-25 12:12:00.000000");
-        break;
+    case 1:
+    case 3:
+      ASSERT_COL_STREQ_(2, "1970-01-01");
+      ASSERT_COL_STREQ_(3, "2112");
+      ASSERT_COL_STREQ_(6, "06:15:03");
+      ASSERT_COL_STREQ_(7, "23:59:59.750000");
+      ASSERT_COL_STREQ_(8, "1642-12-25 12:15:01");
+      ASSERT_COL_STREQ_(9, "1642-12-25 12:12:00.125000");
+      break;
+    case 2:
+    case 4:
+      ASSERT_COL_STREQ_(3, "2012");
+      ASSERT_COL_STREQ_(6, "78:15:03");
+      ASSERT_COL_STREQ_(7, "23:59:59.062500");
+      ASSERT_COL_STREQ_(8, "1642-12-25 12:15:01");
+      ASSERT_COL_STREQ_(9, "1642-12-25 12:12:00.000000");
+      break;
     }
 
     if (cur_row == 2) {
-	    ASSERT_COL_STREQ_(2, "1984-02-29");
+      ASSERT_COL_STREQ_(2, "1984-02-29");
     } else if (cur_row == 4) {
       /* Yes, year 84, during the reign of Domitian */
       ASSERT_COL_STREQ_(2, "0084-02-09");

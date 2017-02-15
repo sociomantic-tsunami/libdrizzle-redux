@@ -60,7 +60,7 @@
 #include <string.h>
 
 extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
-  void *context);
+                                               void *context);
 extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
   void *context)
 {
