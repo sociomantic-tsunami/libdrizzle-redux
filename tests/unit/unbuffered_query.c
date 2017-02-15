@@ -80,14 +80,14 @@ int main(int argc, char *argv[])
   ret = drizzle_select_db(con, "test_unbuff");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_unbuff");
 
-  drizzle_query(con, "create table test_unbuff.t1 (a int)", 0, &ret);
+  drizzle_query(con, "CREATE TABLE test_unbuff.t1 (a INT)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Create table failure\n");
     return EXIT_FAILURE;
   }
 
-  drizzle_query(con, "insert into test_unbuff.t1 values (1),(2),(3)", 0, &ret);
+  drizzle_query(con, "INSERT INTO test_unbuff.t1 VALUES (1),(2),(3)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Insert failure\n");
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   }
 
   drizzle_result_st *result =
-      drizzle_query(con, "select * from test_unbuff.t1", 0, &ret);
+      drizzle_query(con, "SELECT * FROM test_unbuff.t1", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Select failure\n");
