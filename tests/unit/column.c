@@ -40,10 +40,10 @@
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 const drizzle_column_type_t column_types[] = {
   DRIZZLE_COLUMN_TYPE_DECIMAL,

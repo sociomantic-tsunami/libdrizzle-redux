@@ -35,16 +35,16 @@
  *
  */
 
-#include <yatl/lite.h>
 #include "tests/unit/common.h"
+#include <yatl/lite.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <inttypes.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* We've chosen the floats so that the are exactly representable in a normal
  * binary floating-point format, so we should get exact results out. However,

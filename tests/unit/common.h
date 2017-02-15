@@ -37,8 +37,8 @@
 
 #pragma once
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
 

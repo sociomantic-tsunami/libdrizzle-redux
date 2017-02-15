@@ -38,9 +38,9 @@
 #include <yatl/lite.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 int main(int argc, char *argv[])
 {

@@ -39,8 +39,8 @@
 
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
