@@ -89,7 +89,19 @@ int main(int argc, char *argv[])
 
   SKIP_IF_(drizzle_server_version_number(con) < 50604, "Test requires MySQL 5.6.4 or higher");
 
-  CHECKED_QUERY("create table test_datetime.dt1 (a int primary key not null, b date, c year(4), d timestamp(0), e timestamp(6), f time(0), g time(6), h datetime(0), i datetime(6))");
+  CHECKED_QUERY("CREATE TABLE test_datetime.dt1"
+    "("
+      "a INT PRIMARY KEY NOT NULL,"
+      "b DATE,"
+      "c YEAR(4),"
+      "d TIMESTAMP(0),"
+      "e TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6),"
+      "f TIME(0),"
+      "g TIME(6),"
+      "h DATETIME(0),"
+      "i DATETIME(6)"
+    ")");
+
   rows_in_table = 0;
 
   /* Insert rows with pk 1 and 2 */
