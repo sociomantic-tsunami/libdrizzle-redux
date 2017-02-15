@@ -52,12 +52,12 @@
 
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
 #include <libdrizzle-5.1/constants.h>
+#include <libdrizzle-5.1/libdrizzle.h>
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
   void *context);

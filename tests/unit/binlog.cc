@@ -35,15 +35,13 @@
  *
  */
 
-
-#include <yatl/lite.h>
-
 #include <libdrizzle-5.1/libdrizzle.h>
-
-#include "tests/unit/common.h"
+#include <yatl/lite.h>
 
 #include <cstdio>
 #include <cstdlib>
+
+#include "tests/unit/common.h"
 
 void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
 {

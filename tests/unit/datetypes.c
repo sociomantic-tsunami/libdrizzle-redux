@@ -37,15 +37,15 @@
 
 #define _GNU_SOURCE
 
-#include <yatl/lite.h>
 #include "tests/unit/common.h"
+#include <yatl/lite.h>
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define CHECKED_QUERY(cmd) \
   result = drizzle_query(con, cmd, 0, &driz_ret); \

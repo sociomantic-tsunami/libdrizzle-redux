@@ -37,11 +37,11 @@
 
 #include <yatl/lite.h>
 
+#include <inttypes.h>
 #include <libdrizzle-5.1/libdrizzle.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <inttypes.h>
 
 #define CHECKED_QUERY(cmd) \
   drizzle_query(con, cmd, 0, &ret); \

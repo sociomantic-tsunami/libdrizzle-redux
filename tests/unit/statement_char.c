@@ -37,12 +37,12 @@
 
 #include <yatl/lite.h>
 
+#include <inttypes.h>
 #include <libdrizzle-5.1/libdrizzle.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <inttypes.h>
 #include <string.h>
 
 int main(int argc, char *argv[])
