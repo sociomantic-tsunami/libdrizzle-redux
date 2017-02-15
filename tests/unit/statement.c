@@ -67,27 +67,32 @@ int main(int argc, char *argv[])
     char error[DRIZZLE_MAX_ERROR_SIZE];
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
+             drizzle_strerror(ret));
   }
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)",
+             drizzle_error(con), drizzle_strerror(ret));
 
   drizzle_query(con, "DROP SCHEMA IF EXISTS test_stmt", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt (%s)",
+             drizzle_error(con));
 
   drizzle_query(con, "CREATE SCHEMA test_stmt", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt (%s)",
+             drizzle_error(con));
 
   ret = drizzle_select_db(con, "test_stmt");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_stmt");
 
   drizzle_query(con, "create table test_stmt.t1 (a int)", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "create table test_stmt.t1 (a int): %s", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "create table test_stmt.t1 (a int): %s",
+             drizzle_error(con));
 
   drizzle_query(con, "insert into test_stmt.t1 values (1),(2),(3)", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  const char *query= "select * from test_stmt.t1 where a > ?";
-  stmt= drizzle_stmt_prepare(con, query, strlen(query), &ret);
+  const char *query = "select * from test_stmt.t1 where a > ?";
+  stmt = drizzle_stmt_prepare(con, query, strlen(query), &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   /* Query should have 1 param */
@@ -151,7 +156,8 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE test_stmt.t1");
 
   drizzle_query(con, "DROP SCHEMA IF EXISTS test_stmt", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_stmt (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_stmt (%s)",
+             drizzle_error(con));
 
   ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));

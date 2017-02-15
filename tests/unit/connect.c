@@ -61,9 +61,11 @@ int main(int argc, char *argv[])
     char error[DRIZZLE_MAX_ERROR_SIZE];
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
+             drizzle_strerror(ret));
   }
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect() : %s", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect() : %s",
+             drizzle_error(con));
 
   drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
@@ -75,7 +77,8 @@ int main(int argc, char *argv[])
   while (--limit)
   {
     ret = drizzle_connect(con);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con),
+               drizzle_strerror(ret));
 
     drizzle_query(con, "SELECT 1", 0, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));

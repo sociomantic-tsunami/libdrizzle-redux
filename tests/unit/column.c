@@ -121,10 +121,12 @@ int main(int argc, char *argv[])
   drizzle_return_t driz_ret;
 
   set_up_connection();
-  CHECKED_QUERY("SET CHARACTER SET latin1"); /* Or any other one-byte-per-character character set */
+  CHECKED_QUERY("SET CHARACTER SET latin1"); /* Or any other one-byte-per-character
+                                                character set */
   set_up_schema("test_column");
 
-  CHECKED_QUERY("create table test_column.t1 (a int primary key auto_increment, b varchar(255), c timestamp default current_timestamp)");
+  CHECKED_QUERY("create table test_column.t1 (a int primary key auto_increment, "
+                "b varchar(255), c timestamp default current_timestamp)");
 
   CHECKED_QUERY("insert into test_column.t1 (b) values ('this'),('is'),('war')");
 
@@ -148,21 +150,29 @@ int main(int argc, char *argv[])
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
-      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_column"), 0, "Column has bad DB name");
-      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
-        switch (cur_column) {
-            case 1:
-                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG, "Column type wrong");
-                break;
-            case 2:
-                ASSERT_EQ_(drizzle_column_max_size(column), 255, "Column max size wrong %zu != 255", (size_t)drizzle_column_max_size(column));
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_column"), 0,
+                 "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0,
+                 "Column had bad table name");
+      switch (cur_column) {
+      case 1:
+        ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG,
+                   "Column type wrong");
+        break;
+      case 2:
+        ASSERT_EQ_(drizzle_column_max_size(column), 255,
+                   "Column max size wrong %zu != 255",
+                   (size_t)drizzle_column_max_size(column));
 
-                ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI, "Column charset wrong, %d != %d", drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
-                break;
-            case 3:
-                ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP, "Column type wrong");
-                break;
-        }
+        ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI,
+                   "Column charset wrong, %d != %d", drizzle_column_charset(column),
+                   DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
+        break;
+      case 3:
+        ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_TIMESTAMP,
+                   "Column type wrong");
+        break;
+      }
     }
     ASSERT_EQ_(cur_column, 3, "Wrong column count");
   }
@@ -179,8 +189,8 @@ int main(int argc, char *argv[])
   for (i = 0; i < 30; i++)
   {
     ASSERT_STREQ_(drizzle_column_type_str(column_types[i]), column_type_names[i],
-      "Column type 'DRIZZLE_COLUMN_TYPE_%s' resolved to wrong name: '%s'",
-      column_type_names[i], drizzle_column_type_str(column_types[i]));
+                  "Column type 'DRIZZLE_COLUMN_TYPE_%s' resolved to wrong name: '%s'",
+                  column_type_names[i], drizzle_column_type_str(column_types[i]));
   }
 
   return EXIT_SUCCESS;

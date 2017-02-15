@@ -60,17 +60,24 @@ extern void set_up_connection(void);
 
 extern void close_connection_on_exit(void);
 
-/* For unit tests that make tables, etc.: delete-and-recreate the schema on setup, and delete the schema on teardown. */
-extern void set_up_schema(const char* schema);
-extern void tear_down_schema(const char* schema);
+/* For unit tests that make tables, etc.: delete-and-recreate the schema on
+ * setup, and delete the schema on teardown. */
+extern void set_up_schema(const char *schema);
+extern void tear_down_schema(const char *schema);
 
-/* Perform a query; assign the result to 'result' and the returncode to 'driz_ret'; assert that the returncode is DRIZZLE_RETURN_OK. */
-#define CHECKED_QUERY(cmd) result = drizzle_query(con, cmd, 0, &driz_ret); \
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), cmd);
+/* Perform a query; assign the result to 'result' and the returncode to
+ * 'driz_ret'; assert that the returncode is DRIZZLE_RETURN_OK. */
+#define CHECKED_QUERY(cmd) \
+  result = drizzle_query(con, cmd, 0, &driz_ret); \
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", \
+             drizzle_strerror(driz_ret), drizzle_error(con), cmd);
 
-/* Call a libdrizzle function that just returns a drizzle_return_t. Assign the return to 'driz_ret' and assert that it is DRIZZLE_RETURN_OK. */
-#define CHECK(s) driz_ret = (s); \
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, in \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), #s);
+/* Call a libdrizzle function that just returns a drizzle_return_t. Assign the
+ * return to 'driz_ret' and assert that it is DRIZZLE_RETURN_OK. */
+#define CHECK(s) \
+  driz_ret = (s); \
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, in \"%s\"", \
+             drizzle_strerror(driz_ret), drizzle_error(con), #s);
 
 #ifdef __cplusplus
 } /* extern "C" */

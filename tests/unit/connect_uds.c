@@ -57,9 +57,11 @@ int main(int argc, char *argv[])
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   drizzle_return_t ret = drizzle_connect(con);
-  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)",
+           drizzle_error(con), drizzle_strerror(ret));
   atexit(close_connection_on_exit);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret), getenv("MYSQL_SOCK"));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret),
+             getenv("MYSQL_SOCK"));
 
   drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));

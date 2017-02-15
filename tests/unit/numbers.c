@@ -46,10 +46,17 @@
 #include <inttypes.h>
 #include <math.h>
 
-/* We've chosen the floats so that the are exactly representable in a normal binary floating-point format, so we should get exact results out. However, some compilers (pretty reasonably) warn when doing exact equality tests of floats. This gets around that. */
-#define FLOAT_EQ_EXACT(a, b) ( isfinite(a) && isfinite(b) && !(a < b) && !(a > b) )
+/* We've chosen the floats so that the are exactly representable in a normal
+ * binary floating-point format, so we should get exact results out. However,
+ * some compilers (pretty reasonably) warn when doing exact equality tests of
+ * floats. This gets around that. */
+#define FLOAT_EQ_EXACT(a, b) \
+  (isfinite(a) && isfinite(b) && !(a < b) && !(a > b))
 
-#define ASSERT_FLOATEQEXACT(a, b) ASSERT_TRUE_(FLOAT_EQ_EXACT(a, b), "Floating-point values %f != %f (difference is %g)", (a), (b), (a)-(b))
+#define ASSERT_FLOATEQEXACT(a, b) \
+  ASSERT_TRUE_(FLOAT_EQ_EXACT(a, b), \
+               "Floating-point values %f != %f (difference is %g)", (a), (b), \
+               (a) - (b))
 
 static const drizzle_column_type_t expected_column_types[9] = {
     DRIZZLE_COLUMN_TYPE_NONE, /* Columns are 1-indexed */
@@ -63,7 +70,9 @@ static const drizzle_column_type_t expected_column_types[9] = {
     DRIZZLE_COLUMN_TYPE_DOUBLE
 };
 
-/* These are close to the maximum value for each integer type. A few bits are cleared in the middle of each value to detect other kinds of scrambling (e.g. inappropriate sign-extension of intermediate results). */
+/* These are close to the maximum value for each integer type. A few bits are
+ * cleared in the middle of each value to detect other kinds of scrambling (e.g.
+ * inappropriate sign-extension of intermediate results). */
 static const intmax_t column_maxes[5] = {
     0x7F,              /*                 127 */
     0x7FAF,            /*               32687 */
@@ -91,20 +100,27 @@ int main(int argc, char *argv[])
   set_up_connection();
   set_up_schema("test_numbers");
 
-  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, b tinyint, c smallint, d mediumint, e int, f bigint, g float, h double(16,13))");
+  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, "
+                "b tinyint, c smallint, d mediumint, e int, f bigint, g float, "
+                "h double(16,13))");
 
   /* Insert rows with pk 1 and 2 */
-  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values (1,1,1,1,1,1,1), (127,32687,8388351,2147352575,9222246136947920895,443664,291.2711110711098);");
+  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values "
+                "(1,1,1,1,1,1,1), "
+                "(127,32687,8388351,2147352575,9222246136947920895,443664, "
+                "291.2711110711098);");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
 
   /* Insert row with pk 3 */
-  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) ( select 0-b, 0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 from t1 where a = 2 );");
+  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) ( select 0-b, "
+                "0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 from t1 where a = 2 );");
   ASSERT_EQ(drizzle_result_affected_rows(result), 1);
 
   /* Insert row with pk 4 - test marshaling values we transmit */
   query = "insert into test_numbers.t1 (b,c,d,e,f,g,h) values (?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
   CHECK(drizzle_stmt_set_tiny(sth, 0, 127, 0));
   CHECK(drizzle_stmt_set_short(sth, 1, 32687, 0));
   CHECK(drizzle_stmt_set_int(sth, 2, 8388351, 0));
@@ -113,9 +129,11 @@ int main(int argc, char *argv[])
   CHECK(drizzle_stmt_set_float(sth, 5, 443664.0f));
   CHECK(drizzle_stmt_set_double(sth, 6, 291.2711110711098l));
   driz_ret = drizzle_stmt_execute(sth);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
   CHECK(drizzle_stmt_close(sth));
 
   /* TODO: Also send some negative values of each type */
@@ -141,17 +159,24 @@ int main(int argc, char *argv[])
     ASSERT_TRUE(cur_row <= 4);
 
     char expected_colA[10];
-    sprintf(expected_colA, "%d", readback_order[cur_row-1]);
-    ASSERT_EQ_(strcmp(row[0], expected_colA), 0, "Retrieved bad row value; row=%d got=%s expected=%s", cur_row, row[0], expected_colA);
+    sprintf(expected_colA, "%d", readback_order[cur_row - 1]);
+    ASSERT_EQ_(strcmp(row[0], expected_colA), 0,
+               "Retrieved bad row value; row=%d got=%s expected=%s", cur_row,
+               row[0], expected_colA);
 
     while ((column= drizzle_column_next(result)))
     {
       cur_column++;
-      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_numbers"), 0, "Column has bad DB name");
-      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0, "Column had bad table name");
+      ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_numbers"), 0,
+                 "Column has bad DB name");
+      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0,
+                 "Column had bad table name");
       ASSERT_EQ(drizzle_column_current(result), cur_column);
       ASSERT_STREQ(drizzle_column_name(column), column_names[cur_column]);
-      ASSERT_EQ_(drizzle_column_type(column), expected_column_types[cur_column], "Column %d has type=%d expected=%d", cur_column, drizzle_column_type(column), expected_column_types[cur_column]);
+      ASSERT_EQ_(drizzle_column_type(column), expected_column_types[cur_column],
+                 "Column %d has type=%d expected=%d", cur_column,
+                 drizzle_column_type(column),
+                 expected_column_types[cur_column]);
     }
     ASSERT_EQ_(cur_column, 8, "Wrong column count");
 
@@ -187,11 +212,14 @@ int main(int argc, char *argv[])
   /* Read the table back, with values sent over the wire in binary form */
   query = "select a,b,c,d,e,f,g,h from test_numbers.t1";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_execute(sth);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
   driz_ret = drizzle_stmt_buffer(sth);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"", drizzle_strerror(driz_ret), drizzle_error(con), query);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, buffering \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), query);
 
   ASSERT_EQ(4, drizzle_stmt_row_count(sth));
   cur_row = 0;
@@ -200,7 +228,9 @@ int main(int argc, char *argv[])
     printf("Row %d\n", cur_row);
 
     int columnA = drizzle_stmt_get_int(sth, 0, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), 1, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK,
+               "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), 1, cur_row);
 
     int cur_column;
     intmax_t col_val, expect_val;
@@ -227,26 +257,35 @@ int main(int argc, char *argv[])
 
       /* These columns are 0-based */
       col_val = drizzle_stmt_get_bigint(sth, cur_column - 1, &driz_ret);
-      ASSERT_EQ_(
-          driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d",
-          drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+      ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d",
+                 drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
       col_strval = drizzle_stmt_get_string(sth, cur_column - 1, &lth, &driz_ret);
       ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
       ASSERT_EQ(lth, strlen(col_strval));
       col_dblval = drizzle_stmt_get_double(sth, cur_column - 1, &driz_ret);
-      ASSERT_TRUE_(driz_ret == DRIZZLE_RETURN_OK || driz_ret == DRIZZLE_RETURN_TRUNCATED, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+      ASSERT_TRUE_(
+          driz_ret == DRIZZLE_RETURN_OK || driz_ret == DRIZZLE_RETURN_TRUNCATED,
+          "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret),
+          drizzle_error(con), cur_column, cur_row);
 
-      printf("  Column %d: %"PRIdMAX"  \"%s\"   %f\n", cur_column, col_val, col_strval, col_dblval);
+      printf("  Column %d: %" PRIdMAX "  \"%s\"   %f\n", cur_column, col_val,
+             col_strval, col_dblval);
 
       if (columnA == 3)
         continue;
 
-      ASSERT_EQ_(expect_val, col_val, "Column %d of row %d: expected %"PRIdMAX", got %"PRIdMAX,
+      ASSERT_EQ_(expect_val, col_val,
+                 "Column %d of row %d: expected %" PRIdMAX ", got %" PRIdMAX,
                  cur_column, cur_row, expect_val, col_val);
       if (cur_column <= 5) {
-        uint32_t col_narrowval = drizzle_stmt_get_int(sth, cur_column-1, &driz_ret);
-        ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
-        ASSERT_EQ_(col_val, col_narrowval, "column %d of row %d: get_bigint returns %"PRIdMAX", get_int returns %"PRId32,
+        uint32_t col_narrowval = drizzle_stmt_get_int(sth, cur_column - 1, &driz_ret);
+        ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK,
+                   "Error (%s): %s, column %d of row %d",
+                   drizzle_strerror(driz_ret), drizzle_error(con), cur_column,
+                   cur_row);
+        ASSERT_EQ_(col_val, col_narrowval,
+                   "column %d of row %d: get_bigint returns %" PRIdMAX
+                   ", get_int returns %" PRId32,
                    cur_column, cur_row, col_val, col_narrowval);
       }
       ASSERT_FLOATEQEXACT((double)expect_val, col_dblval);
@@ -274,16 +313,23 @@ int main(int argc, char *argv[])
     }
 
     col_val = drizzle_stmt_get_int(sth, 6, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED,
+               "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column,
+               cur_row);
     ASSERT_FLOATEQEXACT((float)col_val, trunc(expect_floatval));
 
     col_val = drizzle_stmt_get_bigint(sth, 6, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED,
+               "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column,
+               cur_row);
     ASSERT_FLOATEQEXACT((float)col_val, trunc(expect_floatval));
 
     col_dblval = drizzle_stmt_get_double(sth, 6, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
-    ASSERT_FLOATEQEXACT(col_dblval, expect_floatval);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+               ASSERT_FLOATEQEXACT(col_dblval, expect_floatval);
 
     col_strval = drizzle_stmt_get_string(sth, 6, &lth, &driz_ret);
     ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
@@ -292,27 +338,36 @@ int main(int argc, char *argv[])
            col_dblval);
 
     col_val = drizzle_stmt_get_int(sth, 7, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED,
+               "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column,
+               cur_row);
     ASSERT_FLOATEQEXACT((double)col_val, trunc(expect_dblval));
 
     col_val = drizzle_stmt_get_bigint(sth, 7, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_TRUNCATED,
+               "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column,
+               cur_row);
     ASSERT_FLOATEQEXACT((double)col_val, trunc(expect_dblval));
 
     col_dblval = drizzle_stmt_get_double(sth, 7, &driz_ret);
-    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d", drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
+    ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, column %d of row %d",
+               drizzle_strerror(driz_ret), drizzle_error(con), cur_column, cur_row);
     ASSERT_FLOATEQEXACT(col_dblval, expect_dblval);
 
     col_strval = drizzle_stmt_get_string(sth, 7, &lth, &driz_ret);
     ASSERT_EQ(driz_ret, DRIZZLE_RETURN_OK);
 
-    printf("  Column %d: %"PRIdMAX"  \"%s\"   %f\n", 8, col_val, col_strval, col_dblval);
+    printf("  Column %d: %" PRIdMAX "  \"%s\"   %f\n", 8, col_val, col_strval,
+           col_dblval);
   }
 
   ASSERT_EQ(cur_row, 4);
 
   driz_ret = drizzle_stmt_close(sth);
-  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s", drizzle_strerror(driz_ret), drizzle_error(con));
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s",
+             drizzle_strerror(driz_ret), drizzle_error(con));
 
   drizzle_query(con, "DROP TABLE test_numbers.t1", 0, &driz_ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "DROP TABLE test_numbers.t1");

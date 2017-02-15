@@ -43,7 +43,10 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-#define CHECKED_QUERY(cmd) drizzle_query(con, cmd, 0, &ret); ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", drizzle_strerror(ret), drizzle_error(con), cmd);
+#define CHECKED_QUERY(cmd) \
+  drizzle_query(con, cmd, 0, &ret); \
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "Error (%s): %s, from \"%s\"", \
+             drizzle_strerror(ret), drizzle_error(con), cmd);
 
 int main(int argc, char *argv[])
 {
@@ -65,7 +68,8 @@ int main(int argc, char *argv[])
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
 
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
+             drizzle_strerror(ret));
   }
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
@@ -76,19 +80,30 @@ int main(int argc, char *argv[])
   ret = drizzle_select_db(con, "test_insert");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_insert");
 
-  CHECKED_QUERY("create table test_insert.t1 (a int primary key auto_increment, b int)");
+  CHECKED_QUERY("create table test_insert.t1 ( a int primary key auto_increment,"
+                "b int)");
 
-  drizzle_result_st *result= drizzle_query(con, "insert into test_insert.t1 (b) values (1),(2),(3)", 0, &ret);
-  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "insert into libdrizzle.t1 (b) values (1),(2),(3): %s", drizzle_error(con));
+  drizzle_result_st *result = drizzle_query(
+      con, "insert into test_insert.t1 (b) values (1),(2),(3)", 0, &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK,
+             "insert into libdrizzle.t1 (b) values (1),(2),(3): %s",
+             drizzle_error(con));
   ASSERT_TRUE(result);
 
-  ASSERT_EQ_(drizzle_result_insert_id(result), 1, "Got bad insert_id (expected 1, got %"PRIu64")", drizzle_result_insert_id(result));
+  ASSERT_EQ_(drizzle_result_insert_id(result), 1,
+             "Got bad insert_id (expected 1, got %" PRIu64 ")",
+             drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
-  result= drizzle_query(con, "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6)", 0, &ret);
-  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK, "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6): %s", drizzle_error(con));
+  result = drizzle_query(
+      con, "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6)", 0, &ret);
+  ASSERT_EQ_(ret, DRIZZLE_RETURN_OK,
+             "INSERT INTO test_insert.t1 (b) VALUES (4),(5),(6): %s",
+             drizzle_error(con));
 
-  ASSERT_EQ_(drizzle_result_insert_id(result), 4, "Got bad insert_id (expected 4, got %"PRIu64")", drizzle_result_insert_id(result));
+  ASSERT_EQ_(drizzle_result_insert_id(result), 4,
+             "Got bad insert_id (expected 4, got %" PRIu64 ")",
+             drizzle_result_insert_id(result));
   drizzle_result_free(result);
 
   CHECKED_QUERY("DROP TABLE test_insert.t1");
