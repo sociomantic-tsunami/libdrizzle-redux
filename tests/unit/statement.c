@@ -47,20 +47,21 @@
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
-  drizzle_stmt_st *stmt= NULL;
+  (void)argc;
+  (void)argv;
+  drizzle_stmt_st *stmt = NULL;
 
   ASSERT_EQ(UINT64_MAX, drizzle_stmt_row_count(stmt));
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
+                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                                        : DRIZZLE_DEFAULT_TCP_PORT,
+                                   getenv("MYSQL_USER"),
+                                   getenv("MYSQL_PASSWORD"),
+                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret= drizzle_connect(con);
+  drizzle_return_t ret = drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
   drizzle_query(con, "CREATE SCHEMA test_stmt", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt (%s)", drizzle_error(con));
 
-  ret= drizzle_select_db(con, "test_stmt");
+  ret = drizzle_select_db(con, "test_stmt");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_stmt");
 
   drizzle_query(con, "create table test_stmt.t1 (a int)", 0, &ret);
@@ -92,7 +93,7 @@ int main(int argc, char *argv[])
   /* Query should have 1 param */
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
-  uint32_t val= 1;
+  uint32_t val = 1;
   ret = drizzle_stmt_set_int(stmt, 0, val, false);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
@@ -106,16 +107,16 @@ int main(int argc, char *argv[])
   uint64_t count = drizzle_stmt_row_count(stmt);
   ASSERT_EQ_(2, count, "%s", drizzle_error(con));
 
-  uint32_t i= 1;
+  uint32_t i = 1;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
     uint32_t res_val;
-    const char* char_val;
+    const char *char_val;
     char comp_val[3];
     size_t len;
-    res_val= drizzle_stmt_get_int(stmt, 0, &ret);
+    res_val = drizzle_stmt_get_int(stmt, 0, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int");
-    char_val= drizzle_stmt_get_string(stmt, 0, &len, &ret);
+    char_val = drizzle_stmt_get_string(stmt, 0, &len, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
     i++;
     if (res_val != i)
@@ -123,14 +124,14 @@ int main(int argc, char *argv[])
       printf("Retrieved unexpected int value\n");
       return EXIT_FAILURE;
     }
-    res_val= drizzle_stmt_get_int_from_name(stmt, "a", &ret);
+    res_val = drizzle_stmt_get_int_from_name(stmt, "a", &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int (char col name)");
     if (res_val != i)
     {
       printf("Rerieved unexpected int value with char col name\n");
       return EXIT_FAILURE;
     }
-    snprintf(comp_val, 3, "%"PRIu32, i);
+    snprintf(comp_val, 3, "%" PRIu32, i);
     if (strcmp(comp_val, char_val) != 0)
     {
       printf("Retrieved unexpected string value\n");
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
   drizzle_query(con, "DROP SCHEMA IF EXISTS test_stmt", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_stmt (%s)", drizzle_error(con));
 
-  ret= drizzle_quit(con);
+  ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;

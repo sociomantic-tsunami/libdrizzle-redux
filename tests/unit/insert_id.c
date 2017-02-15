@@ -47,17 +47,18 @@
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
+                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                                        : DRIZZLE_DEFAULT_TCP_PORT,
+                                   getenv("MYSQL_USER"),
+                                   getenv("MYSQL_PASSWORD"),
+                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret= drizzle_connect(con);
+  drizzle_return_t ret = drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
 
   CHECKED_QUERY("CREATE SCHEMA test_insert");
 
-  ret= drizzle_select_db(con, "test_insert");
+  ret = drizzle_select_db(con, "test_insert");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_insert");
 
   CHECKED_QUERY("create table test_insert.t1 (a int primary key auto_increment, b int)");
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
 
   CHECKED_QUERY("DROP SCHEMA test_insert");
 
-  ret= drizzle_quit(con);
+  ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;

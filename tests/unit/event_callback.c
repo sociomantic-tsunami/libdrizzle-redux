@@ -83,36 +83,36 @@ extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
   char cxt_a[] = "Context is everything";
   int cxt_b = 0;
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") :
-                                    DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
+                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                                        : DRIZZLE_DEFAULT_TCP_PORT,
+                                   getenv("MYSQL_USER"),
+                                   getenv("MYSQL_PASSWORD"),
+                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   // Set drizzle dummy context
-  drizzle_set_context(con, (void*)&cxt_a);
-  ASSERT_NOT_NULL_(drizzle_context(con) , "Drizzle context is null");
+  drizzle_set_context(con, (void *)&cxt_a);
+  ASSERT_NOT_NULL_(drizzle_context(con), "Drizzle context is null");
 
   // Set user defined callback function event_watch_fn
-  drizzle_set_event_watch_fn(con, drizzle_event_callback, (void*)&cxt_b);
+  drizzle_set_event_watch_fn(con, drizzle_event_callback, (void *)&cxt_b);
 
-  drizzle_return_t driz_ret= drizzle_connect(con);
+  drizzle_return_t driz_ret = drizzle_connect(con);
   SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s",
     drizzle_strerror(driz_ret));
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con),
     drizzle_strerror(driz_ret));
 
-  driz_ret= drizzle_quit(con);
+  driz_ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
-  ASSERT_EQ_(cxt_b > 0, true,  "Unexpected number of event callbacks, Got '%d', "
+  ASSERT_EQ_(cxt_b > 0, true, "Unexpected number of event callbacks, Got '%d', "
     "Expected '1' or more", cxt_b);
 
   printf("\nEvent callback was invoked %d times\n", cxt_b);

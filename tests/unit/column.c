@@ -113,8 +113,8 @@ const char* column_type_names[] = {
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
   drizzle_row_t row;
   int num_fields;
   drizzle_result_st *result;
@@ -131,16 +131,16 @@ int main(int argc, char *argv[])
   CHECKED_QUERY("select * from test_column.t1");
 
   drizzle_result_buffer(result);
-  num_fields= drizzle_result_column_count(result);
+  num_fields = drizzle_result_column_count(result);
 
   ASSERT_EQ_(num_fields, 3, "Retrieved bad number of fields");
 
-  int i= 0;
+  int i = 0;
   drizzle_column_st *column;
   while ((row = drizzle_row_next(result)))
   {
     drizzle_column_seek(result, 0);
-    int cur_column= 0;
+    int cur_column = 0;
     i++;
     char buf[10];
     snprintf(buf, sizeof(buf), "%d", i);
