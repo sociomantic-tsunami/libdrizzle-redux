@@ -60,15 +60,10 @@
 
 static const drizzle_column_type_t expected_column_types[9] = {
     DRIZZLE_COLUMN_TYPE_NONE, /* Columns are 1-indexed */
-    DRIZZLE_COLUMN_TYPE_LONG,
-    DRIZZLE_COLUMN_TYPE_TINY,
-    DRIZZLE_COLUMN_TYPE_SHORT,
-    DRIZZLE_COLUMN_TYPE_INT24,
-    DRIZZLE_COLUMN_TYPE_LONG,
-    DRIZZLE_COLUMN_TYPE_LONGLONG,
-    DRIZZLE_COLUMN_TYPE_FLOAT,
-    DRIZZLE_COLUMN_TYPE_DOUBLE
-};
+    DRIZZLE_COLUMN_TYPE_LONG,  DRIZZLE_COLUMN_TYPE_TINY,
+    DRIZZLE_COLUMN_TYPE_SHORT, DRIZZLE_COLUMN_TYPE_INT24,
+    DRIZZLE_COLUMN_TYPE_LONG,  DRIZZLE_COLUMN_TYPE_LONGLONG,
+    DRIZZLE_COLUMN_TYPE_FLOAT, DRIZZLE_COLUMN_TYPE_DOUBLE};
 
 /* These are close to the maximum value for each integer type. A few bits are
  * cleared in the middle of each value to detect other kinds of scrambling (e.g.
@@ -82,8 +77,7 @@ static const intmax_t column_maxes[5] = {
 };
 
 static const char *column_names[9] = {
-    NULL,
-    "a", "b", "c", "d", "e", "f", "g", "h"
+  NULL, "a", "b", "c", "d", "e",  "f", "g", "h"
 };
 
 int main(int argc, char *argv[])
@@ -241,18 +235,18 @@ int main(int argc, char *argv[])
 
     for (cur_column = 2; cur_column <= 6; cur_column ++) {
       switch (columnA) {
-        case 3:
-          expect_val = ( 0 - column_maxes[cur_column-2] );
-          break;
-        case 1:
-          expect_val = 1;
-          break;
-        case 2:
-        case 4:
-          expect_val = column_maxes[cur_column-2];
-          break;
-        default:
-          ASSERT_FALSE_(1, "Row %d has column.a = %u", cur_row, columnA);
+      case 3:
+        expect_val = (0 - column_maxes[cur_column - 2]);
+        break;
+      case 1:
+        expect_val = 1;
+        break;
+      case 2:
+      case 4:
+        expect_val = column_maxes[cur_column - 2];
+        break;
+      default:
+        ASSERT_FALSE_(1, "Row %d has column.a = %u", cur_row, columnA);
       }
 
       /* These columns are 0-based */
@@ -297,19 +291,19 @@ int main(int argc, char *argv[])
     float expect_floatval = 0.0f;
     double expect_dblval = 0.0f;
     switch (columnA) {
-      case 1:
-        expect_floatval = 1.0f;
-        expect_dblval = 1.0f;
-        break;
-      case 2:
-      case 4:
-        expect_floatval = 443664.0f;
-        expect_dblval = 291.2711110711098l;
-        break;
-      case 3:
-        expect_floatval = 443665.0f;
-        expect_dblval = 292.2711110711098l;
-        break;
+    case 1:
+      expect_floatval = 1.0f;
+      expect_dblval = 1.0f;
+      break;
+    case 2:
+    case 4:
+      expect_floatval = 443664.0f;
+      expect_dblval = 291.2711110711098l;
+      break;
+    case 3:
+      expect_floatval = 443665.0f;
+      expect_dblval = 292.2711110711098l;
+      break;
     }
 
     col_val = drizzle_stmt_get_int(sth, 6, &driz_ret);
