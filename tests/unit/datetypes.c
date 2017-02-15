@@ -111,19 +111,19 @@ int main(int argc, char *argv[])
   rows_in_table = 0;
 
   /* Insert rows with pk 1 and 2 */
-  CHECKED_QUERY("insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) "
-                "values (1, '1970-01-01', '2112', '2013-03-13 09:22:00.001',"
+  CHECKED_QUERY("INSERT INTO test_datetime.dt1 (a,b,c,d,e,f,g,h,i) "
+                "VALUES (1, '1970-01-01', '2112', '2013-03-13 09:22:00.001',"
                 "'2013-03-13 09:22:00.001', '6:15:03', '23:59:59.75',"
                 "'1642-12-25 12:15:01', '1642-12-25 12:12:00.125'),"
-                "(2, '84-02-29', '12', now(), now(), '3 6:15:03',"
+                "(2, '84-02-29', '12', NOW(), NOW(), '3 6:15:03',"
                 "'23:59:59.0625', '1642-12-25 12:15:01', '1642-12-25 "
                 "12:12:00.000000')");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
   rows_in_table += 2;
 
   /* Insert row with pk 3 and 4 - test marshaling values we transmit */
-  query = "insert into test_datetime.dt1 (a,b,c,d,e,f,g,h,i) "
-          "values (?,?,?,?,?,?,?,?,?)";
+  query = "INSERT INTO test_datetime.dt1 (a,b,c,d,e,f,g,h,i) "
+          "VALUES (?,?,?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), query);
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
   CHECK(drizzle_stmt_close(sth));
 
   /* Read the table back, with values sent over the wire in text form */
-  CHECKED_QUERY("select * from test_datetime.dt1 order by a");
+  CHECKED_QUERY("SELECT * FROM test_datetime.dt1 ORDER BY a");
 
   drizzle_result_buffer(result);
   num_fields = drizzle_result_column_count(result);
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
 
   /* Read the table back, with values sent over the wire in binary form */
-  query = "select a,b,c,d,e,f,g,h,i from test_datetime.dt1 order by a";
+  query = "SELECT a,b,c,d,e,f,g,h,i FROM test_datetime.dt1 ORDER BY a";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), query);
@@ -333,7 +333,7 @@ int main(int argc, char *argv[])
     char query_buf[128];
     int VARIABLE_IS_NOT_USED unused;
     unused = snprintf(query_buf, 128,
-                      "select a, %s, cast(%s as char) from test_datetime.dt1",
+                      "SELECT a, %s, CAST(%s as char) FROM test_datetime.dt1",
                       col_name, col_name);
     query = query_buf;
 

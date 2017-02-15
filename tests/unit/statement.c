@@ -84,14 +84,14 @@ int main(int argc, char *argv[])
   ret = drizzle_select_db(con, "test_stmt");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_stmt");
 
-  drizzle_query(con, "create table test_stmt.t1 (a int)", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "create table test_stmt.t1 (a int): %s",
+  drizzle_query(con, "CREATE TABLE test_stmt.t1 (a INT)", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE TABLE test_stmt.t1 (a INT): %s",
              drizzle_error(con));
 
-  drizzle_query(con, "insert into test_stmt.t1 values (1),(2),(3)", 0, &ret);
+  drizzle_query(con, "INSERT INTO test_stmt.t1 VALUES (1),(2),(3)", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  const char *query = "select * from test_stmt.t1 where a > ?";
+  const char *query = "SELECT * FROM test_stmt.t1 where a > ?";
   stmt = drizzle_stmt_prepare(con, query, strlen(query), &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 

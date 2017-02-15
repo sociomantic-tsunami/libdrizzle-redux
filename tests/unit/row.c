@@ -80,21 +80,21 @@ int main(int argc, char *argv[])
   ret = drizzle_select_db(con, "test_row");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_row");
 
-  drizzle_query(con, "create table test_row.t1 (a int)", 0, &ret);
+  drizzle_query(con, "CREATE TABLE test_row.t1 (a INT)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Create table failure\n");
     return EXIT_FAILURE;
   }
 
-  drizzle_query(con, "insert into test_row.t1 values (1),(2),(3)", 0, &ret);
+  drizzle_query(con, "INSERT INTO test_row.t1 VALUES (1),(2),(3)", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Insert failure\n");
     return EXIT_FAILURE;
   }
 
-  drizzle_result_st *result = drizzle_query(con, "select * from test_row.t1", 0, &ret);
+  drizzle_result_st *result = drizzle_query(con, "SELECT * FROM test_row.t1", 0, &ret);
   if (ret != DRIZZLE_RETURN_OK)
   {
     printf("Select failure\n");

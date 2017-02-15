@@ -99,13 +99,13 @@ int main(int argc, char *argv[])
   driz_ret = drizzle_select_db(con, "test_nulls");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "USE test_nulls");
 
-  CHECKED_QUERY("create table test_nulls.t1 (a int, b int, c int, d int, e "
-                "int, f int, g int, h int, i int, j int, k int)");
+  CHECKED_QUERY("CREATE TABLE test_nulls.t1 (a INT, b INT, c INT, d INT, e "
+                "INT, f INT, g INT, h INT, i INT, j INT, k INT)");
 
 #define NCOLS 11
 
   char *querybuf = calloc(256 + 60 * 64, 1);
-  strcpy(querybuf, "insert into test_nulls.t1 values ");
+  strcpy(querybuf, "INSERT INTO test_nulls.t1 values ");
   char *p = querybuf + strlen(querybuf);
 
   for (int sym = 0; sym < 64; sym++) {
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
   CHECKED_QUERY(querybuf);
 
 #ifdef TEST_PREPARED_STATEMENTS
-  strcpy(querybuf, "insert into test_nulls.t1 values (?,?,?,?,?,?,?,?,?,?,?)");
+  strcpy(querybuf, "INSERT INTO test_nulls.t1 VALUES (?,?,?,?,?,?,?,?,?,?,?)");
   sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
   table_size = 64;
 #endif
 
-  CHECKED_QUERY("select a,b,c,d,e,f,g,h,i,j,k from test_nulls.t1 order by e");
+  CHECKED_QUERY("SELECT a,b,c,d,e,f,g,h,i,j,k FROM test_nulls.t1 ORDER BY e");
   drizzle_result_buffer(result);
   num_fields = drizzle_result_column_count(result);
   ASSERT_EQ_(num_fields, NCOLS, "Bad number of fields, expected %d, got %d", 11,
@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
 
 #ifdef TEST_PREPARED_STATEMENTS
-  strcpy(querybuf, "select a,b,c,d,e,f,g,h,i,j,k from test_nulls.t1 order by e");
+  strcpy(querybuf, "SELECT a,b,c,d,e,f,g,h,i,j,k FROM test_nulls.t1 ORDER BY e");
   sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), querybuf);

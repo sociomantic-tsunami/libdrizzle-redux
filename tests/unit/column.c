@@ -125,12 +125,12 @@ int main(int argc, char *argv[])
                                                 character set */
   set_up_schema("test_column");
 
-  CHECKED_QUERY("create table test_column.t1 (a int primary key auto_increment, "
-                "b varchar(255), c timestamp default current_timestamp)");
+  CHECKED_QUERY("CREATE TABLE test_column.t1 (a INT PRIMARY KEY AUTO_INCREMENT, "
+		"b VARCHAR(255), c TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
 
-  CHECKED_QUERY("insert into test_column.t1 (b) values ('this'),('is'),('war')");
+  CHECKED_QUERY("INSERT INTO test_column.t1 (b) VALUES ('this'),('is'),('war')");
 
-  CHECKED_QUERY("select * from test_column.t1");
+  CHECKED_QUERY("SELECT * FROM test_column.t1");
 
   drizzle_result_buffer(result);
   num_fields = drizzle_result_column_count(result);

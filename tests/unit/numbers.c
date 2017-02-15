@@ -100,24 +100,24 @@ int main(int argc, char *argv[])
   set_up_connection();
   set_up_schema("test_numbers");
 
-  CHECKED_QUERY("create table test_numbers.t1 (a int primary key auto_increment, "
-                "b tinyint, c smallint, d mediumint, e int, f bigint, g float, "
-                "h double(16,13))");
+  CHECKED_QUERY("CREATE TABLE test_numbers.t1 (a INT PRIMARY KEY AUTO_INCREMENT, "
+                "b TINYINT, c SMALLINT, d MEDIUMINT, e INT, f BIGINT, g FLOAT, "
+                "h DOUBLE(16,13))");
 
   /* Insert rows with pk 1 and 2 */
-  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) values "
+  CHECKED_QUERY("INSERT INTO test_numbers.t1 (b,c,d,e,f,g,h) VALUES "
                 "(1,1,1,1,1,1,1), "
                 "(127,32687,8388351,2147352575,9222246136947920895,443664, "
                 "291.2711110711098);");
   ASSERT_EQ(drizzle_result_affected_rows(result), 2);
 
   /* Insert row with pk 3 */
-  CHECKED_QUERY("insert into test_numbers.t1 (b,c,d,e,f,g,h) ( select 0-b, "
-                "0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 from t1 where a = 2 );");
+  CHECKED_QUERY("INSERT INTO test_numbers.t1 (b,c,d,e,f,g,h) ( SELECT 0-b, "
+                "0-c, 0-d, 0-e, 0-f, g+1.015625, h+1 FROM t1 WHERE a = 2 );");
   ASSERT_EQ(drizzle_result_affected_rows(result), 1);
 
   /* Insert row with pk 4 - test marshaling values we transmit */
-  query = "insert into test_numbers.t1 (b,c,d,e,f,g,h) values (?,?,?,?,?,?,?)";
+  query = "INSERT INTO test_numbers.t1 (b,c,d,e,f,g,h) VALUES (?,?,?,?,?,?,?)";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), query);
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
   /* TODO: Also send some negative values of each type */
 
   /* Read the table back, with values sent over the wire in text form */
-  CHECKED_QUERY("select * from test_numbers.t1 order by b, a");
+  CHECKED_QUERY("SELECT * FROM test_numbers.t1 ORDER BY b, a");
 
   drizzle_result_buffer(result);
   num_fields = drizzle_result_column_count(result);
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
   drizzle_result_free(result);
 
   /* Read the table back, with values sent over the wire in binary form */
-  query = "select a,b,c,d,e,f,g,h from test_numbers.t1";
+  query = "SELECT a,b,c,d,e,f,g,h FROM test_numbers.t1";
   sth = drizzle_stmt_prepare(con, query, strlen(query), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
              drizzle_strerror(driz_ret), drizzle_error(con), query);
