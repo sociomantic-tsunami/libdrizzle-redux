@@ -48,7 +48,8 @@
 void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
 {
   (void)context;
-  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "%s(%s)", drizzle_error(connection), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "%s(%s)", drizzle_error(connection),
+             drizzle_strerror(ret));
 }
 
 void binlog_event(drizzle_binlog_event_st *event, void *context)
@@ -60,11 +61,13 @@ void binlog_event(drizzle_binlog_event_st *event, void *context)
    * timestamps will have weird values that shoud fail this after several
    * events.  Also rotate event doesn't have a timestamp so need to add 0
    * to this test */
-  ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)), "Bad timestamp retrieved: %u", timestamp);
+  ASSERT_FALSE_(((timestamp < 1325376000) && (timestamp != 0)),
+                "Bad timestamp retrieved: %u", timestamp);
 
   /* An event higher than the max known is bad, either we don't know about
    * new events or type is corrupted */
-  ASSERT_FALSE_((drizzle_binlog_event_type(event) >= DRIZZLE_EVENT_TYPE_END), "Bad event type: %d", drizzle_binlog_event_type(event));
+  ASSERT_FALSE_((drizzle_binlog_event_type(event) >= DRIZZLE_EVENT_TYPE_END),
+                "Bad event type: %d", drizzle_binlog_event_type(event));
 }
 
 int main(int argc, char *argv[])
@@ -82,8 +85,10 @@ int main(int argc, char *argv[])
   binlog = drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
   ret = drizzle_binlog_start(binlog, 0, binlog_file, 0);
 
-  SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
-  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "Drizzle binlog start failure: %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)",
+           drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_EOF, ret, "Drizzle binlog start failure: %s(%s)",
+             drizzle_error(con), drizzle_strerror(ret));
 
   free(binlog_file);
   return EXIT_SUCCESS;
