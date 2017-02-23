@@ -71,12 +71,12 @@ refer to `compiling.rst`_ or build the documentation, cf. below.
 
 **Linking libdrizzle-redux**::
 
-    gcc app.c -oapp -ldrizzle-redux -lpthread
+    g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
 
 If **libdrizzle-redux** is installed alongside other versions of libdrizzle,
 the linking should be done with the full name of the dynamic library, e.g.::
 
-    gcc app.c -oapp -l:libdrizzle-redux.so.9 -lpthread
+    g++ app.c -oapp -l:libdrizzle-redux.so.9 -lssl -lcrypto -pthread
 
 **Building documentation**
 
