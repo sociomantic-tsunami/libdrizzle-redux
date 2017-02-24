@@ -52,8 +52,8 @@
 
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
-#include <libdrizzle-5.1/constants.h>
+#include <libdrizzle-redux/libdrizzle.h>
+#include <libdrizzle-redux/constants.h>
 
 #include <stdio.h>
 #include <string.h>
