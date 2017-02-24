@@ -39,7 +39,16 @@ you will need to install %{name}-devel.
 
 %install
 %{__rm} -rf %{buildroot}
-%{__make} install  DESTDIR="%{buildroot}" AM_INSTALL_PROGRAM_FLAGS=""
+%{__make} install DESTDIR="%{buildroot}" AM_INSTALL_PROGRAM_FLAGS=""
+%define rpm_include_path "$RPM_BUILD_ROOT/usr/include/include/libdrizzle-redux"
+# If the path to the header files has the form `include/include/libdrizzle-redux`
+# rename the directory to `include/libdrizzle-redux`
+if test -d %{rpm_include_path}
+then
+    tmp_include_path=`echo %{rpm_include_path} | sed 's/include\/include/include/'`
+    mv %{rpm_include_path} ${tmp_include_path}
+    rm -rf %{rpm_include_path}
+fi
 mkdir -p $RPM_BUILD_ROOT/
 
 %check
@@ -60,33 +69,33 @@ mkdir -p $RPM_BUILD_ROOT/
 %files devel
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING
-%{_includedir}/libdrizzle-5.1/binlog.h
-%{_includedir}/libdrizzle-5.1/column.h
-%{_includedir}/libdrizzle-5.1/column_client.h
-%{_includedir}/libdrizzle-5.1/conn.h
-%{_includedir}/libdrizzle-5.1/conn_client.h
-%{_includedir}/libdrizzle-5.1/constants.h
-%{_includedir}/libdrizzle-5.1/drizzle.h
-%{_includedir}/libdrizzle-5.1/drizzle_client.h
-%{_includedir}/libdrizzle-5.1/error.h
-%{_includedir}/libdrizzle-5.1/field_client.h
-%{_includedir}/libdrizzle-5.1/libdrizzle.h
-%{_includedir}/libdrizzle-5.1/query.h
-%{_includedir}/libdrizzle-5.1/result.h
-%{_includedir}/libdrizzle-5.1/result_client.h
-%{_includedir}/libdrizzle-5.1/return.h
-%{_includedir}/libdrizzle-5.1/row_client.h
-%{_includedir}/libdrizzle-5.1/ssl.h
-%{_includedir}/libdrizzle-5.1/statement.h
-%{_includedir}/libdrizzle-5.1/structs.h
-%{_includedir}/libdrizzle-5.1/verbose.h
-%{_includedir}/libdrizzle-5.1/version.h
-%{_includedir}/libdrizzle-5.1/visibility.h
+%{_includedir}/libdrizzle-redux/binlog.h
+%{_includedir}/libdrizzle-redux/column.h
+%{_includedir}/libdrizzle-redux/column_client.h
+%{_includedir}/libdrizzle-redux/conn.h
+%{_includedir}/libdrizzle-redux/conn_client.h
+%{_includedir}/libdrizzle-redux/constants.h
+%{_includedir}/libdrizzle-redux/drizzle.h
+%{_includedir}/libdrizzle-redux/drizzle_client.h
+%{_includedir}/libdrizzle-redux/error.h
+%{_includedir}/libdrizzle-redux/field_client.h
+%{_includedir}/libdrizzle-redux/libdrizzle.h
+%{_includedir}/libdrizzle-redux/query.h
+%{_includedir}/libdrizzle-redux/result.h
+%{_includedir}/libdrizzle-redux/result_client.h
+%{_includedir}/libdrizzle-redux/return.h
+%{_includedir}/libdrizzle-redux/row_client.h
+%{_includedir}/libdrizzle-redux/ssl.h
+%{_includedir}/libdrizzle-redux/statement.h
+%{_includedir}/libdrizzle-redux/structs.h
+%{_includedir}/libdrizzle-redux/verbose.h
+%{_includedir}/libdrizzle-redux/version.h
+%{_includedir}/libdrizzle-redux/visibility.h
 
 %changelog
 * Tue Feb 07 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.2
-- Remove blank pages from generated pdf doc 
-- Fix allocation bug in drizzle_binlog_get_filename 
+- Remove blank pages from generated pdf doc
+- Fix allocation bug in drizzle_binlog_get_filename
 
 * Fri Dec 16 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.1
 - Fix binary compatibility issue
