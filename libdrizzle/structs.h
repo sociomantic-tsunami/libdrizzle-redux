@@ -149,8 +149,50 @@ struct drizzle_uds_st
 
 /**
  * @ingroup drizzle_con
+ *
+ * Options for the socket connection
  */
 
+struct drizzle_socket_options_st
+{
+  public:
+    int wait_timeout;
+    int keepalive;
+    int keepidle;
+    int keepcnt;
+    int keepintvl;
+
+  /**
+   * Constructor
+   *
+   * @param[in] _wait_timeout The timeout (in seconds) for setsockopt calls with
+   *  option values: SO_SNDTIMEO, SO_RCVTIMEO, SO_LINGER
+   * @param[in] _keepalive The flag which disables/enables keepalive
+   * @param[in] _keepidle The time (in seconds) the connection needs to remain
+   *  idle before TCP starts sending keepalive probes
+   * @param[in] _keepcnt The maximum number of keepalive probes TCP should send
+   *  before dropping the connection.
+   * @param[in] _keepintvl The time (in seconds) between individual keepalive
+   *  probes
+   */
+    drizzle_socket_options_st(
+      int _wait_timeout = DRIZZLE_DEFAULT_SOCKET_TIMEOUT,
+      int _keepalive = 1,
+      int _keepidle = 5,
+      int _keepcnt = 3,
+      int _keepintvl = 3)
+    {
+      this->wait_timeout = _wait_timeout;
+      this->keepalive = _keepalive;
+      this->keepidle = _keepidle;
+      this->keepcnt = _keepcnt;
+      this->keepintvl = _keepintvl;
+    }
+};
+
+/**
+ * @ingroup drizzle_con
+ */
 struct drizzle_options_st
 {
   bool non_blocking;
@@ -204,6 +246,7 @@ struct drizzle_st
   } state;
 
   drizzle_options_st options;
+  drizzle_socket_options_st socket_options;
   drizzle_socket_t socket_type;
   drizzle_status_t status;
   uint32_t max_packet_size;

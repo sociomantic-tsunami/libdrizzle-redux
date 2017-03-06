@@ -571,6 +571,7 @@ typedef struct drizzle_tcp_st drizzle_tcp_st;
 typedef struct drizzle_uds_st drizzle_uds_st;
 typedef struct drizzle_st drizzle_st;
 typedef struct drizzle_options_st drizzle_options_st;
+typedef struct drizzle_socket_options_st drizzle_socket_options_st;
 typedef struct drizzle_result_st drizzle_result_st;
 typedef struct drizzle_column_st drizzle_column_st;
 typedef struct drizzle_binlog_st drizzle_binlog_st;
