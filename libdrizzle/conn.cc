@@ -220,6 +220,38 @@ void drizzle_options_destroy(drizzle_options_st *options)
   delete options;
 }
 
+drizzle_socket_options_st *drizzle_socket_options_create(int wait_timeout,
+                                                         int keepidle,
+                                                         int keepcnt,
+                                                         int keepintvl)
+{
+  return new (std::nothrow) drizzle_socket_options_st(wait_timeout, keepidle,
+    keepcnt, keepintvl);
+}
+
+void drizzle_socket_set_keepalive(drizzle_st *con, int keepalive)
+{
+  if (con == NULL)
+  {
+    return;
+  }
+  con->socket_options.keepalive = keepalive;
+}
+
+void drizzle_socket_options_destroy(drizzle_socket_options_st *options)
+{
+  delete options;
+}
+
+void drizzle_socket_set_options(drizzle_st *con, drizzle_socket_options_st *options)
+{
+  if (con == NULL)
+  {
+    return;
+  }
+  con->socket_options = *options;
+}
+
 void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
 {
   if (options == NULL)

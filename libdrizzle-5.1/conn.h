@@ -141,6 +141,51 @@ DRIZZLE_API
 void drizzle_options_destroy(drizzle_options_st *options);
 
 /**
+ * Create a new socket options object with the specified values
+ *
+ * @param[in] _wait_timeout The timeout (in seconds) for setsockopt calls with
+ *  option values: SO_SNDTIMEO, SO_RCVTIMEO, SO_LINGER
+ * @param[in] _keepidle The time (in seconds) the connection needs to remain
+ *  idle before TCP starts sending keepalive probes
+ * @param[in] _keepcnt The maximum number of keepalive probes TCP should send
+ *  before dropping the connection.
+ * @param[in] _keepintvl The time (in seconds) between individual keepalive probes
+ * @return The new socket options object
+ */
+DRIZZLE_API
+drizzle_socket_options_st *drizzle_socket_options_create(int wait_timeout,
+                                                         int keepidle,
+                                                         int keepcnt,
+                                                         int keepintvl);
+
+/**
+ * Sets/Unsets keepalive option on a connection object's socket
+ *
+ * @param[in] con Connection structure previously initialized with
+ *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] keep_alive Set to 1 (enabled) or 0 (disabled)
+ */
+DRIZZLE_API
+void drizzle_socket_set_keepalive(drizzle_st *con, int keepalive);
+
+/**
+ * Destroys a socket options object
+ * @param[in] options The options object to be destroyed
+ */
+DRIZZLE_API
+void drizzle_socket_options_destroy(drizzle_socket_options_st *options);
+
+/**
+ * Sets socket options for a connection object
+ *
+ * @param[in] con Connection structure previously initialized with
+ *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] options The options object to set
+ */
+DRIZZLE_API
+void drizzle_socket_set_options(drizzle_st *con, drizzle_socket_options_st *options);
+
+/**
  * Sets/unsets non-blocking connect option
  *
  * @param[in,out] options The options object to modify
