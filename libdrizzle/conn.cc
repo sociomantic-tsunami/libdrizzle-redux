@@ -220,6 +220,76 @@ void drizzle_options_destroy(drizzle_options_st *options)
   delete options;
 }
 
+void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
+                                int keepidle, int keepcnt, int keepintvl)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->wait_timeout = wait_timeout;
+  options->keepidle = keepidle;
+  options->keepcnt = keepcnt;
+  options->keepintvl = keepintvl;
+}
+
+void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
+  int value)
+{
+  if (con == NULL)
+  {
+    return;
+  }
+
+  switch (option)
+  {
+    case DRIZZLE_SOCKET_OPTION_TIMEOUT:
+      con->options.wait_timeout = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPIDLE:
+      con->options.keepidle = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPCNT:
+      con->options.keepcnt = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPINTVL:
+      con->options.keepintvl = value;
+      break;
+
+    default:
+      break;
+  }
+}
+
+int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+{
+  if (con == NULL)
+  {
+    return -1;
+  }
+
+  switch (option)
+  {
+    case DRIZZLE_SOCKET_OPTION_TIMEOUT:
+      return con->options.wait_timeout;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPIDLE:
+      return con->options.keepidle;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPCNT:
+      return con->options.keepcnt;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPINTVL:
+      return con->options.keepintvl;
+
+    default:
+      return -1;
+  }
+}
+
 void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
 {
   if (options == NULL)
