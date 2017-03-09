@@ -141,6 +141,61 @@ DRIZZLE_API
 void drizzle_options_destroy(drizzle_options_st *options);
 
 /**
+ * Sets several options for the socket connection
+ *
+ * @param[in] options An initialized options structure
+ * @param[in] wait_timeout The timeout (in seconds) for setsockopt calls with
+ *  option values: SO_SNDTIMEO, SO_RCVTIMEO, SO_LINGER
+ * @param[in] keepidle The time (in seconds) the connection needs to remain
+ *  idle before TCP starts sending keepalive probes
+ * @param[in] keepcnt The maximum number of keepalive probes TCP should send
+ *  before dropping the connection.
+ * @param[in] keepintvl The time (in seconds) between individual keepalive probes
+ * @return The new socket options object
+ */
+DRIZZLE_API
+void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
+                                int keepidle, int keepcnt, int keepintvl);
+
+/**
+ * Sets the value of a socket option. The available options to set are:
+ *
+ *  DRIZZLE_SOCKET_OPTION_TIMEOUT : The timeout (in seconds) for setsockopt calls
+ *                                  with option values: SO_SNDTIMEO, SO_RCVTIMEO,
+ *                                  SO_LINGER
+ *
+ *  DRIZZLE_SOCKET_OPTION_KEEPIDLE : The time (in seconds) the connection needs
+ *                                   to remain idle before TCP starts sending
+ *                                   keepalive probes
+ *
+ *  DRIZZLE_SOCKET_OPTION_KEEPCNT : The maximum number of keepalive probes TCP
+ *                                  should send before dropping the connection.
+ *
+ *  DRIZZLE_SOCKET_OPTION_KEEPINTVL : The time (in seconds) between individual
+ *                                    keepalive probes
+ *
+ * @param[in] con Connection structure previously initialized with
+ *                drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] option the option to set the value for
+ * @param[in] value the value to set
+ */
+DRIZZLE_API
+void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
+                               int value);
+
+/**
+ * Gets the value of a socket option. See drizzle_socket_set_options() for a
+ * description of the available options
+ *
+ * @param[in] con Connection structure previously initialized with
+ *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] option option to get the value for
+ * @return The value of the option, or -1 if the specified option doesn't exist
+ */
+DRIZZLE_API
+int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option);
+
+/**
  * Sets/unsets non-blocking connect option
  *
  * @param[in,out] options The options object to modify
