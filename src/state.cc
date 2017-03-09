@@ -42,7 +42,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 drizzle_return_t drizzle_state_loop(drizzle_st *con)
 {

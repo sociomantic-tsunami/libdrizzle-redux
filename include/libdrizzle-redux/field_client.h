@@ -89,7 +89,7 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
  * allocates 'new-size + 1' bytes.
  *
  * For further details please refer to the inline documentation in
- * libdrizzle/field.cc
+ * src/field.cc
  *
  * @param[in]  result  A result object
  * @param[in]  total   The total size of the field, to be written to by the function

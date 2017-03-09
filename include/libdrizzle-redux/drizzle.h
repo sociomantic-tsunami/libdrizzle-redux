@@ -39,7 +39,7 @@
 #pragma once
 
 #ifndef DRIZZLE_CLIENT_INTERFACE
-# error "You need to include libdrizzle-5.1/drizzle_client.h in your application"
+# error "You need to include libdrizzle-redux/drizzle_client.h in your application"
 #endif
 
 /**
@@ -59,11 +59,11 @@ typedef int in_port_t;
 # include <netdb.h>
 #endif
 
-#include <libdrizzle-5.1/constants.h>
-#include <libdrizzle-5.1/structs.h>
-#include <libdrizzle-5.1/conn.h>
-#include <libdrizzle-5.1/result.h>
-#include <libdrizzle-5.1/column.h>
+#include <libdrizzle-redux/constants.h>
+#include <libdrizzle-redux/structs.h>
+#include <libdrizzle-redux/conn.h>
+#include <libdrizzle-redux/result.h>
+#include <libdrizzle-redux/column.h>
 
 #ifdef  __cplusplus
 extern "C" {

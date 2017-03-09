@@ -12,10 +12,10 @@
 
 #include "config.h"
 
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 #if defined(WIN32) || defined(__MINGW32__)
-#include "libdrizzle/poll.h"
+#include "src/poll.h"
 
 #include <sys/time.h>
 #include <strings.h>

@@ -44,7 +44,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 #ifndef MSG_NOSIGNAL
 # define MSG_NOSIGNAL 0
