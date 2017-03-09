@@ -47,15 +47,39 @@ int main(int argc, char *argv[])
   (void)argc;
   (void)argv;
 
-  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
-                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
-                                                        : DRIZZLE_DEFAULT_TCP_PORT,
-                                   getenv("MYSQL_USER"),
-                                   getenv("MYSQL_PASSWORD"),
-                                   getenv("MYSQL_SCHEMA"), 0);
+  drizzle_options_st *opts = drizzle_options_create();
+  drizzle_socket_set_options(opts, 10, 5, 3, 3);
+
+  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
+                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") 
+                                                       : DRIZZLE_DEFAULT_TCP_PORT,
+                                  getenv("MYSQL_USER"),
+                                  getenv("MYSQL_PASSWORD"),
+                                  getenv("MYSQL_SCHEMA"), opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret = drizzle_connect(con);
+  int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
+  ASSERT_EQ_(10, opt_val, "unexpected value for socket option TIMEOUT: %d != 10",
+    opt_val);
+
+  opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_KEEPIDLE);
+  ASSERT_EQ_(5, opt_val, "unexpected value for socket option KEEPIDLE: %d != 5",
+    opt_val);
+
+  opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_KEEPCNT);
+  ASSERT_EQ_(3, opt_val, "unexpected value for socket option KEEPCNT: %d != 3",
+    opt_val);
+
+  opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_KEEPINTVL);
+  ASSERT_EQ_(3, opt_val, "unexpected value for socket option KEEPINTVL: %d != 3",
+    opt_val);
+
+  drizzle_socket_set_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT, 20);
+  opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
+  ASSERT_EQ_(20, opt_val, "unexpected value for socket option KEEPALIVE: %d != 20",
+    opt_val);
+
+  drizzle_return_t ret= drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
