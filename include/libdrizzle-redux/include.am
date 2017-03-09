@@ -1,0 +1,26 @@
+# vim:ft=automake
+# included from Top Level Makefile.am
+# All paths should be given relative to the root
+
+nobase_include_HEADERS+= include/libdrizzle-redux/binlog.h
+nobase_include_HEADERS+= include/libdrizzle-redux/column.h
+nobase_include_HEADERS+= include/libdrizzle-redux/column_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/conn.h
+nobase_include_HEADERS+= include/libdrizzle-redux/conn_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/constants.h
+nobase_include_HEADERS+= include/libdrizzle-redux/drizzle.h
+nobase_include_HEADERS+= include/libdrizzle-redux/drizzle_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/error.h
+nobase_include_HEADERS+= include/libdrizzle-redux/field_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/libdrizzle.h
+nobase_include_HEADERS+= include/libdrizzle-redux/query.h
+nobase_include_HEADERS+= include/libdrizzle-redux/result.h
+nobase_include_HEADERS+= include/libdrizzle-redux/result_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/return.h
+nobase_include_HEADERS+= include/libdrizzle-redux/row_client.h
+nobase_include_HEADERS+= include/libdrizzle-redux/ssl.h
+nobase_include_HEADERS+= include/libdrizzle-redux/statement.h
+nobase_include_HEADERS+= include/libdrizzle-redux/structs.h
+nobase_include_HEADERS+= include/libdrizzle-redux/verbose.h
+nobase_include_HEADERS+= include/libdrizzle-redux/visibility.h
+nobase_include_HEADERS+= include/libdrizzle-redux/version.h
