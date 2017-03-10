@@ -1583,7 +1583,7 @@ function execute_job {
         make_universe
         ;;
       'jenkins')
-        make_for_continuus_integration
+        make_for_continuous_integration
         ;;
       *)
         run_configure_if_required
