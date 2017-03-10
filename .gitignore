@@ -18,9 +18,9 @@ configure
 deb/install
 .deps
 docs/conf.py
-libdrizzle/.*
+src/.*
 libdrizzle-redux-config
-libdrizzle-*/version.h
+version.h
 libtool
 m4/libtool.m4
 m4/lt~obsolete.m4

@@ -38,49 +38,77 @@
 
 /**
  * @file
- * @brief Connection Definitions for Unix Domain Sockets
+ * @brief State machine definitions
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
-const char *drizzle_uds(const drizzle_st *con)
+drizzle_return_t drizzle_state_loop(drizzle_st *con)
 {
   if (con == NULL)
   {
-    return NULL;
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  if (con->socket_type == DRIZZLE_CON_SOCKET_UDS)
+  while (con->has_state() == false)
   {
-    if (con->socket.uds.path_buffer[0] != 0)
+    drizzle_return_t ret= con->current_state();
+    if (ret != DRIZZLE_RETURN_OK)
     {
-      return con->socket.uds.path_buffer;
-    }
+      if (ret != DRIZZLE_RETURN_IO_WAIT && ret != DRIZZLE_RETURN_PAUSE &&
+          ret != DRIZZLE_RETURN_ERROR_CODE)
+      {
+        drizzle_close(con);
+      }
 
-    return DRIZZLE_DEFAULT_UDS;
+      return ret;
+    }
   }
 
-  return NULL;
+  return DRIZZLE_RETURN_OK;
 }
 
-void drizzle_set_uds(drizzle_st *con, const char *uds)
+drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 {
   if (con == NULL)
   {
-    return;
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
-  con->socket_type= DRIZZLE_CON_SOCKET_UDS;
+  drizzle_log_debug(con, __func__);
 
-  drizzle_reset_addrinfo(con);
-
-  if (uds == NULL)
+  if (con->buffer_size < 4)
   {
-    con->socket.uds.path_buffer[0]= 0;
+    con->push_state(drizzle_state_read);
+    return DRIZZLE_RETURN_OK;
   }
-  else
+
+  con->packet_size= drizzle_get_byte3(con->buffer_ptr);
+
+  if (con->buffer_size < (con->packet_size + 4))
   {
-    strncpy(con->socket.uds.path_buffer, uds, sizeof(con->socket.uds.path_buffer));
+    con->push_state(drizzle_state_read);
+    return DRIZZLE_RETURN_OK;
   }
+
+  if (con->packet_number != con->buffer_ptr[3])
+  {
+    drizzle_set_error(con, __func__,
+                      "bad packet number:%u:%u", con->packet_number,
+                      con->buffer_ptr[3]);
+    return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
+  }
+
+  drizzle_log_debug(con, "buffer_size= %zu, packet_size= %zu, packet_number= %u",
+                    con->buffer_size, con->packet_size, con->packet_number);
+
+  con->packet_number++;
+
+  con->buffer_ptr+= 4;
+  con->buffer_size-= 4;
+
+  con->pop_state();
+
+  return DRIZZLE_RETURN_OK;
 }

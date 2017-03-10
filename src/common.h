@@ -42,7 +42,7 @@
 
 #pragma once
 
-#include <libdrizzle-5.1/drizzle_client.h>
+#include <libdrizzle-redux/drizzle_client.h>
 
 #include <cassert>
 #include <new>
@@ -52,7 +52,7 @@
 #endif
 
 #if defined(_WIN32) || defined(__MINGW32__)
-# include "libdrizzle/windows.hpp"
+# include "src/windows.hpp"
 # define get_socket_errno() WSAGetLastError()
 
 #else
@@ -71,7 +71,7 @@
 # include <poll.h>
 typedef struct pollfd pollfd_t;
 #else
-# include "libdrizzle/poll.h"
+# include "src/poll.h"
 #endif
 
 #include <stddef.h>
@@ -81,16 +81,16 @@ typedef struct pollfd pollfd_t;
 #include <stdlib.h>
 #include <string.h>
 
-#include "libdrizzle/structs.h"
-#include "libdrizzle/drizzle_local.h"
-#include "libdrizzle/conn_local.h"
-#include "libdrizzle/pack.h"
-#include "libdrizzle/state.h"
-#include "libdrizzle/sha1.h"
-#include "libdrizzle/statement_local.h"
-#include "libdrizzle/column.h"
-#include "libdrizzle/binlog.h"
-#include "libdrizzle/handshake_client.h"
-#include "libdrizzle/result.h"
+#include "src/structs.h"
+#include "src/drizzle_local.h"
+#include "src/conn_local.h"
+#include "src/pack.h"
+#include "src/state.h"
+#include "src/sha1.h"
+#include "src/statement_local.h"
+#include "src/column.h"
+#include "src/binlog.h"
+#include "src/handshake_client.h"
+#include "src/result.h"
 
 #include <memory.h>

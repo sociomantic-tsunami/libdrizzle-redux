@@ -1,5 +1,9 @@
-/* Drizzle Client Library
- * Copyright (C) 2012-2013 Drizzle Developer Group
+/* vim:expandtab:shiftwidth=2:tabstop=2:smarttab:
+ *
+ * Drizzle Client & Protocol Library
+ *
+ * Copyright (C) 2008-2013 Drizzle Developer Group
+ * Copyright (C) 2008 Eric Day (eday@oddments.org)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +33,54 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
-#pragma once
+/**
+ * @file
+ * @brief Connection Definitions for Unix Domain Sockets
+ */
 
-#include <libdrizzle-5.1/drizzle_client.h>
+#include "config.h"
+#include "src/common.h"
+
+const char *drizzle_uds(const drizzle_st *con)
+{
+  if (con == NULL)
+  {
+    return NULL;
+  }
+
+  if (con->socket_type == DRIZZLE_CON_SOCKET_UDS)
+  {
+    if (con->socket.uds.path_buffer[0] != 0)
+    {
+      return con->socket.uds.path_buffer;
+    }
+
+    return DRIZZLE_DEFAULT_UDS;
+  }
+
+  return NULL;
+}
+
+void drizzle_set_uds(drizzle_st *con, const char *uds)
+{
+  if (con == NULL)
+  {
+    return;
+  }
+
+  con->socket_type= DRIZZLE_CON_SOCKET_UDS;
+
+  drizzle_reset_addrinfo(con);
+
+  if (uds == NULL)
+  {
+    con->socket.uds.path_buffer[0]= 0;
+  }
+  else
+  {
+    strncpy(con->socket.uds.path_buffer, uds, sizeof(con->socket.uds.path_buffer));
+  }
+}

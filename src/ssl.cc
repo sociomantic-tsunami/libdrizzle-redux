@@ -37,9 +37,9 @@
 
 #include "config.h"
 
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
-#include <libdrizzle-5.1/ssl.h>
+#include <libdrizzle-redux/ssl.h>
 
 #if defined(USE_OPENSSL)
 # include <openssl/ssl.h>
