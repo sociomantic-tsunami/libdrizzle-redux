@@ -145,8 +145,8 @@ function rebuild_host_os {
   fi
 }
 
-#  values: darwin,fedora,rhel,ubuntu,debian,opensuse
 # Validate the distribution name, or toss an error
+# values: darwin, fedora, rhel, ubuntu, debian, suse, opensuse
 function set_VENDOR_DISTRIBUTION {
   local dist="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
   case "$dist" in
@@ -189,19 +189,13 @@ function set_VENDOR_RELEASE {
   case $VENDOR_DISTRIBUTION in
     darwin)
       case $release in
-        10.6*)
-          VENDOR_RELEASE='snow_leopard'
-          ;;
-        10.7*)
-          VENDOR_RELEASE='mountain'
-          ;;
-        mountain)
-          VENDOR_RELEASE='mountain'
-          ;;
-        10.8.*)
-          echo "mountain_lion"
-          VENDOR_RELEASE='mountain_lion'
-          ;;
+        10.6*)              VENDOR_RELEASE='snow_leopard'  ;;
+        10.7*)              VENDOR_RELEASE='lion'          ;;
+        10.8.*)             VENDOR_RELEASE='mountain_lion' ;;
+        10.9.*)             VENDOR_RELEASE='mavericks'     ;;
+        10.10.*)            VENDOR_RELEASE='yosemite'      ;;
+        10.11.*)            VENDOR_RELEASE='el_capitan'    ;;
+        10.12.*)            VENDOR_RELEASE='sierra'        ;;
         *)
           echo $VENDOR_RELEASE
           VENDOR_RELEASE='unknown'
@@ -228,6 +222,10 @@ function set_VENDOR_RELEASE {
         VENDOR_RELEASE="quantal"
       elif [[ "x$VENDOR_RELEASE" == 'x13.04' ]]; then
         VENDOR_RELEASE="raring"
+      elif [[ "x$VENDOR_RELEASE" == 'x14.04' ]]; then
+        VENDOR_RELEASE="trusty"
+      elif [[ "x$VENDOR_RELEASE" == 'x16.04' ]]; then
+        VENDOR_RELEASE="xenial"
       fi
       ;;
     opensuse)
@@ -243,7 +241,8 @@ function set_VENDOR_RELEASE {
 }
 
 
-#  Valid values are: apple, redhat, centos, canonical, oracle, suse
+#  Valid values are: apple, redhat, centos, canonical, ubuntu, debian, oracle,
+#  opensuse, suse
 function set_VENDOR {
   local vendor="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
@@ -304,6 +303,12 @@ function set_VENDOR {
       if [[ "x$VENDOR_RELEASE" == 'xprecise' ]]; then
         AUTORECONF_REBUILD_HOST=true
       elif [[ "x$VENDOR_RELEASE" == 'xquantal' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xraring' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xtrusty' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xxenial' ]]; then
         AUTORECONF_REBUILD_HOST=true
       fi
       ;;
@@ -1652,11 +1657,13 @@ function main {
   #   UNAME_MACHINE_ARCH= uname -m
   #   VENDOR= apple, redhat, centos, canonical
   #   VENDOR_RELEASE=
-  #                  RHEL{rhel,Tikanga,Santiago}
-  #                  Ubuntu{ubuntu,Lucid,Maverick,Natty,Oneiric,Precise,Quantal}
-  #                  Fedora{fedora,Verne,Beefy}
-  #                  OSX{osx,lion,snow,mountain}
-  #   VENDOR_DISTRIBUTION= darwin,fedora,rhel,ubuntu
+  #                  RHEL{rhel, Tikanga, Santiago}
+  #                  Ubuntu{ubuntu, Lucid, Maverick, Natty, Oneiric, Precise,
+  #                         Quantal, Raring, Trusty, Xenial}
+  #                  Fedora{fedora, Verne, Beefy}
+  #                  OSX{snow_leopard, lion, mountain_lion, mavericks, yosemite,
+  #                      el_capitan, sierra}
+  #   VENDOR_DISTRIBUTION= darwin, fedora, rhel, ubuntu
   #   UNAME_KERNEL= Linux, Darwin,...
   #   UNAME_KERNEL_RELEASE= Linux, Darwin,...
   local UNAME_MACHINE_ARCH=unknown
