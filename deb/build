@@ -95,6 +95,6 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --depends libdrizzle-redux \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
-    install/usr/include/=/usr/include/ \
+    install/usr/include/=/usr/ \
     $so_libname=/usr/lib/ \
     install/usr/lib/libdrizzle-redux.a=/usr/lib/
