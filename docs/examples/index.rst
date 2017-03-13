@@ -6,4 +6,5 @@ Code Examples
    buffered
    unbuffered
    statement
+   event_callback
    binlog

@@ -69,9 +69,53 @@ void drizzle_set_error(drizzle_st *con, const char *function, const char *format
  */
 void drizzle_free(drizzle_st *con);
 
+/* Create a copy of drizzle_st instance
+ *
+ * @params[out] drizzle the target instance
+ * @params[in] from the instance to clone
+ * @return a newly allocated and configured copy of a drizzle connection
+ */
 drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from);
 
+/*
+ * Initialize the shared ssl object, by calling pthread_once
+ *
+ * @params[in] initialized drizzle connection object
+ * @return true if the call to pthread_once was successful, false otherwise
+ */
 bool drizzle_library_init(drizzle_st*);
+
+/**
+ * Initialize a result struct and add it to the connection object's result list
+ *
+ * @param[in] con initialized drizzle connection object
+ * @return a newly allocated result object
+ */
+drizzle_result_st *drizzle_result_create(drizzle_st *con);
+
+/*
+ * Convert a char array to hex
+ *
+ * @param[out] to the destination string
+ * @param[in] from the source string
+ * @param[in] from_size the length of the source string
+ *
+ * @return true if the conversion succeeded, false if 'to' or 'from' are NULL or
+ * from_size = 0
+ */
+bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size);
+
+/*
+ * Create the hash of a password
+ *
+ * @param[out] to the destination string
+ * @param[in] from the source string
+ * @param[in] from_size the length of the source string
+ *
+ * @return true if the hash was generated successfully, false if 'to' or 'from'
+ * are NULL or 'from_size' = 0
+ */
+bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);
 
 /**
  * Log a message.
@@ -82,12 +126,6 @@ bool drizzle_library_init(drizzle_st*);
  * @param[in] args Variable argument list that has been initialized.
  */
 void drizzle_log(drizzle_st *con, drizzle_verbose_t verbose, const char *format, va_list args);
-
-/**
- * Initialize a result structure.
- */
-drizzle_result_st *drizzle_result_create(drizzle_st *con);
-
 
 /**
  * Log a fatal message, see drizzle_log() for argument details.
@@ -103,11 +141,6 @@ static inline void drizzle_log_fatal(drizzle_st *con, const char *format, ...)
     va_end(args);
   }
 }
-
-bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size);
-
-bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size);
-
 
 /**
  * Log an error message, see drizzle_log() for argument details.

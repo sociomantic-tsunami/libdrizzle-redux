@@ -1403,11 +1403,15 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     { }
     else if (write_size == -1)
     {
-      if (errno == EAGAIN
-#ifdef EWOULDBLOCK
-          || errno == EWOULDBLOCK
+
+// workaround for  Werror=logical-op compile time error
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602#c16
+#if EAGAIN == EWOULDBLOCK
+  #define EAGAIN_OR_WOULDBLOCK(e) (e == EAGAIN)
+#else
+  #define EAGAIN_OR_WOULDBLOCK(e) (e == EAGAIN || e == EWOULDBLOCK)
 #endif
-          )
+      if ( EAGAIN_OR_WOULDBLOCK(errno) )
       {
         ret= drizzle_set_events(con, POLLOUT);
         if (ret != DRIZZLE_RETURN_OK)

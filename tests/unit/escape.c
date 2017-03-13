@@ -45,15 +45,16 @@
 
 int main(int argc, char* argv[])
 {
-  const char* in= "escape \"this\"\n";
+  const char *in = "escape \"this\"\n";
 
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
   // Test for data too long
   char *out;
-  uint64_t out_len= drizzle_escape_string(NULL, &out, in, strlen(in));
-  ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17, (unsigned int)(out_len));
+  uint64_t out_len = drizzle_escape_string(NULL, &out, in, strlen(in));
+  ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17,
+             (unsigned int)(out_len));
 
   free(out);
 

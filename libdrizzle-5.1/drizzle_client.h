@@ -91,13 +91,12 @@ extern "C" {
  * @param[in] password Password to use while establishing the connection.
  * @param[in] db Initial database to connect to.
  * @param[in] options Drizzle connection options to add.
- * @return Same return as drizzle_create().
+ * @return newly allocated and configured connection object
  */
 DRIZZLE_API
-  drizzle_st *drizzle_create(const char *host, in_port_t port,
-                             const char *user, const char *password,
-                             const char *db,
-                             drizzle_options_st *options);
+drizzle_st *drizzle_create(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db, drizzle_options_st *options);
 
 /** @} */
 

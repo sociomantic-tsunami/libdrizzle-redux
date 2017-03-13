@@ -38,7 +38,7 @@
 #include "common.h"
 #include <yatl/lite.h>
 
-drizzle_st *con= NULL;
+drizzle_st *con = NULL;
 
 void close_connection_on_exit(void)
 {
@@ -46,9 +46,10 @@ void close_connection_on_exit(void)
     return;
   }
 
-  drizzle_return_t ret= drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s", drizzle_strerror(ret));
-  con= NULL;
+  drizzle_return_t ret = drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_quit() : %s",
+             drizzle_strerror(ret));
+  con = NULL;
 }
 
 /* Common connection setup used by the unit tests.
@@ -58,24 +59,26 @@ void set_up_connection(void)
 {
   drizzle_return_t driz_ret;
   const char *verbosity;
-  
+
   ASSERT_NULL_(con, "con opened twice?");
 
-  con= drizzle_create(getenv("MYSQL_SERVER"),
-                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), 0);
+  con = drizzle_create(getenv("MYSQL_SERVER"),
+                       getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                            : DRIZZLE_DEFAULT_TCP_PORT,
+                       getenv("MYSQL_USER"), getenv("MYSQL_PASSWORD"),
+                       getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   verbosity = getenv("DRIZZLE_TEST_VERBOSE");
   if (verbosity)
     drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
-  
-  driz_ret= drizzle_connect(con);
-  SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s", drizzle_strerror(driz_ret));
+
+  driz_ret = drizzle_connect(con);
+  SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s",
+           drizzle_strerror(driz_ret));
   atexit(close_connection_on_exit);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con), drizzle_strerror(driz_ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con),
+             drizzle_strerror(driz_ret));
 }
 
 void set_up_schema(const char *schema)
@@ -101,4 +104,3 @@ void tear_down_schema(const char *schema)
   snprintf(sch_query, 127, "DROP SCHEMA IF EXISTS %s", schema);
   CHECKED_QUERY(sch_query);
 }
-
