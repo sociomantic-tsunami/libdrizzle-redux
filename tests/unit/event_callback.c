@@ -52,64 +52,70 @@
 
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
 #include <libdrizzle-5.1/constants.h>
+#include <libdrizzle-5.1/libdrizzle.h>
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
-  void *context);
+                                               void *context);
 extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
   void *context)
 {
   ASSERT_TRUE((events != -1));
-  int* cxt_ptr = (int*) drizzle_context(con);
-  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle connection context is null");
-  ASSERT_EQ_(1, cxt_ptr[0], "Invalid drizzle context: Got '%d', Expected '1'",
-    cxt_ptr[0]);
+  char* char_ptr = (char*) drizzle_context(con);
+  ASSERT_NOT_NULL_(char_ptr, "Drizzle connection context is null");
+  ASSERT_STREQ_("Context is everything", char_ptr,
+    "Invalid drizzle context: Got '%s', Expected 'Context is everything'",
+    char_ptr);
+  printf("%s\n", char_ptr);
 
-  cxt_ptr = (int*)context;
-  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle Event Callback context is null");
+  int* cxt_ptr = (int*)context;
+
+  ASSERT_NOT_NULL_(cxt_ptr, "Drizzle event callback context is null");
   (*cxt_ptr)++;
+  printf("Drizzle event callback number %d\n", cxt_ptr[0]);
 
   return DRIZZLE_RETURN_OK;
 }
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
-  int cxt_a = 1;
+  char cxt_a[] = "Context is everything";
   int cxt_b = 0;
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") :
-                                    DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
+                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                                        : DRIZZLE_DEFAULT_TCP_PORT,
+                                   getenv("MYSQL_USER"),
+                                   getenv("MYSQL_PASSWORD"),
+                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   // Set drizzle dummy context
-  drizzle_set_context(con, (void*)&cxt_a);
-  ASSERT_NOT_NULL_(drizzle_context(con) , "Drizzle context is null");
+  drizzle_set_context(con, (void *)&cxt_a);
+  ASSERT_NOT_NULL_(drizzle_context(con), "Drizzle context is null");
 
   // Set user defined callback function event_watch_fn
-  drizzle_set_event_watch_fn(con, drizzle_event_callback, (void*)&cxt_b);
+  drizzle_set_event_watch_fn(con, drizzle_event_callback, (void *)&cxt_b);
 
-  drizzle_return_t driz_ret= drizzle_connect(con);
+  drizzle_return_t driz_ret = drizzle_connect(con);
   SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s",
     drizzle_strerror(driz_ret));
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con),
     drizzle_strerror(driz_ret));
 
-  driz_ret= drizzle_quit(con);
+  driz_ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
-  ASSERT_EQ_(cxt_b > 0, true,  "Unexpected number of event callbacks, Got '%d', "
+  ASSERT_EQ_(cxt_b > 0, true, "Unexpected number of event callbacks, Got '%d', "
     "Expected '1' or more", cxt_b);
+
+  printf("\nEvent callback was invoked %d times\n", cxt_b);
 
   return EXIT_SUCCESS;
 }
