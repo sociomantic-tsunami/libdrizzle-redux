@@ -54,6 +54,9 @@ int main(int argc, char *argv[])
                                   getenv("MYSQL_SCHEMA"), 0);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
+  drizzle_socket_options_st *opts = drizzle_socket_options_create(10, 5, 3, 3);
+  drizzle_socket_set_options(con, opts);
+
   drizzle_return_t ret= drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {

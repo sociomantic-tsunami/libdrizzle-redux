@@ -38,7 +38,7 @@
 #pragma once
 
 #ifdef __cplusplus
-struct drizzle_st;
+struct drizzle_socket_options_st;
 struct drizzle_tcp_st;
 struct drizzle_uds_st;
 struct drizzle_st;
