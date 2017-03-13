@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[5.4.2],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[5.4.3],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -30,7 +30,7 @@ AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 
 #shared library versioning
-LIBDRIZZLE_LIBRARY_VERSION=10:1:0
+LIBDRIZZLE_LIBRARY_VERSION=10:2:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
