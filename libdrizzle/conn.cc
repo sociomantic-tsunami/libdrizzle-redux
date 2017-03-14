@@ -220,6 +220,76 @@ void drizzle_options_destroy(drizzle_options_st *options)
   delete options;
 }
 
+void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
+                                int keepidle, int keepcnt, int keepintvl)
+{
+  if (options == NULL)
+  {
+    return;
+  }
+  options->wait_timeout = wait_timeout;
+  options->keepidle = keepidle;
+  options->keepcnt = keepcnt;
+  options->keepintvl = keepintvl;
+}
+
+void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
+  int value)
+{
+  if (con == NULL)
+  {
+    return;
+  }
+
+  switch (option)
+  {
+    case DRIZZLE_SOCKET_OPTION_TIMEOUT:
+      con->options.wait_timeout = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPIDLE:
+      con->options.keepidle = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPCNT:
+      con->options.keepcnt = value;
+      break;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPINTVL:
+      con->options.keepintvl = value;
+      break;
+
+    default:
+      break;
+  }
+}
+
+int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+{
+  if (con == NULL)
+  {
+    return -1;
+  }
+
+  switch (option)
+  {
+    case DRIZZLE_SOCKET_OPTION_TIMEOUT:
+      return con->options.wait_timeout;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPIDLE:
+      return con->options.keepidle;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPCNT:
+      return con->options.keepcnt;
+
+    case DRIZZLE_SOCKET_OPTION_KEEPINTVL:
+      return con->options.keepintvl;
+
+    default:
+      return -1;
+  }
+}
+
 void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
 {
   if (options == NULL)
@@ -1234,7 +1304,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
       if (con->buffer_allocation >= DRIZZLE_MAX_BUFFER_SIZE)
       {
         drizzle_set_error(con, __func__,
-                          "buffer too small:%zu", con->packet_size + 4);
+                          "buffer too small:%" PRIu32 , con->packet_size + 4);
         return DRIZZLE_RETURN_INTERNAL_ERROR;
       }
       // Shift data to beginning of the buffer then resize
@@ -1251,7 +1321,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
         return DRIZZLE_RETURN_MEMORY;
       }
       con->buffer= realloc_buffer;
-      drizzle_log_debug(con, "buffer resized to: %zu", con->buffer_allocation);
+      drizzle_log_debug(con, "buffer resized to: %" PRIu32, con->buffer_allocation);
       con->buffer_ptr= con->buffer;
       available_buffer= con->buffer_allocation - con->buffer_size;
     }
@@ -1271,7 +1341,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "read fd=%d avail= %zd recv=%zd ssl= %d errno=%s",
+    drizzle_log_debug(con, "read fd=%d avail= %" PRIu64 " recv=%" PRIi32 " ssl= %d errno=%s",
                       con->fd, available_buffer, read_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1331,7 +1401,7 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 
       case EINVAL:
         {
-          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%zd",
+          drizzle_log_debug(con, "EINVAL fd=%d buffer=%p available_buffer=%" PRIu64,
                             con->fd, (char *)con->buffer_ptr + con->buffer_size, available_buffer);
         }
         break;
@@ -1394,7 +1464,7 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
     errno= translate_windows_error();
 #endif // defined _WIN32 || defined __CYGWIN__
 
-    drizzle_log_debug(con, "write fd=%d return=%zd ssl=%d errno=%s",
+    drizzle_log_debug(con, "write fd=%d return=%" PRIi64 " ssl=%d errno=%s",
                       con->fd, write_size,
                       (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) ? 1 : 0,
                       strerror(errno));
@@ -1469,6 +1539,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 {
   struct linger linger;
   struct timeval waittime;
+  const socklen_t optlen_int = sizeof(int);
 
   assert(con);
   if (con == NULL)
@@ -1500,9 +1571,9 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   int ret= 1;
 
 #ifdef _WIN32
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&ret, optlen_int);
 #else
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, &ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, &ret, optlen_int);
 #endif /* _WIN32 */
 
   if (ret == -1 && errno != EOPNOTSUPP)
@@ -1512,7 +1583,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 
   linger.l_onoff= 1;
-  linger.l_linger= DRIZZLE_DEFAULT_SOCKET_TIMEOUT;
+  linger.l_linger= con->options.wait_timeout;
 
 #ifdef _WIN32
   ret= setsockopt(con->fd, SOL_SOCKET, SO_LINGER, (const char*)&linger,
@@ -1528,7 +1599,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_ERRNO;
   }
 
-  waittime.tv_sec= DRIZZLE_DEFAULT_SOCKET_TIMEOUT;
+  waittime.tv_sec= con->options.wait_timeout;
   waittime.tv_usec= 0;
 
 #ifdef _WIN32
@@ -1560,11 +1631,67 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_ERRNO;
   }
 
+  ret = 1;
+#ifdef _WIN32
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&ret, optlen_int);
+#else
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE,&ret, optlen_int);
+#endif /* _WIN32 */
+
+  if (ret == -1 && errno != ENOPROTOOPT)
+  {
+    drizzle_set_error(con, __func__,
+                      "setsockopt:SO_KEEPALIVE:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+
+#ifdef _WIN32
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
+                  (const char*)&con->options.keepidle, optlen_int);
+#else
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
+                  &con->options.keepidle, optlen_int);
+#endif /* _WIN32 */
+
+  if (ret == -1 && errno != EOPNOTSUPP)
+  {
+    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPIDLE:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+
+#ifdef _WIN32
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT,
+                  (const char*)&con->options.keepcnt, optlen_int);
+#else
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT, &con->options.keepcnt,
+                  optlen_int);
+#endif /* _WIN32 */
+
+  if (ret == -1 && errno != EOPNOTSUPP)
+  {
+    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPCNT:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+
+#ifdef _WIN32
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
+                  (const char*)&con->options.keepintvl, optlen_int);
+#else
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
+                  &con->options.keepintvl, optlen_int);
+#endif /* _WIN32 */
+
+  if (ret == -1 && errno != EOPNOTSUPP)
+  {
+    drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPINTVL:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+
   ret= DRIZZLE_DEFAULT_SOCKET_SEND_SIZE;
 #ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, (const char*)&ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, (const char*)&ret, optlen_int);
 #else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, &ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, &ret, optlen_int);
 #endif /* _WIN32 */
   if (ret == -1)
   {
@@ -1574,9 +1701,9 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   ret= DRIZZLE_DEFAULT_SOCKET_RECV_SIZE;
 #ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, (const char*)&ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, (const char*)&ret, optlen_int);
 #else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, &ret, (socklen_t)sizeof(int));
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, &ret, optlen_int);
 #endif /* _WIN32 */
   if (ret == -1)
   {
@@ -1585,7 +1712,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 
 #if defined(SO_NOSIGPIPE)
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret), sizeof(int));
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_NOSIGPIPE, static_cast<void *>(&ret),
+                  optlen_int);
 
   if (ret == -1)
   {

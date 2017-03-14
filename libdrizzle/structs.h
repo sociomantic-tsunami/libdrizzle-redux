@@ -160,6 +160,10 @@ struct drizzle_options_st
   bool multi_statements;
   bool auth_plugin;
   drizzle_socket_owner socket_owner;
+  int wait_timeout;
+  int keepidle;  // default value under linux: 7200
+  int keepcnt;   // default value under linux: 75
+  int keepintvl; // default value under linux: 9
 
   drizzle_options_st() :
     non_blocking(false),
@@ -168,7 +172,11 @@ struct drizzle_options_st
     interactive(false),
     multi_statements(false),
     auth_plugin(false),
-    socket_owner(DRIZZLE_SOCKET_OWNER_NATIVE)
+    socket_owner(DRIZZLE_SOCKET_OWNER_NATIVE),
+    wait_timeout(DRIZZLE_DEFAULT_SOCKET_TIMEOUT),
+    keepidle(7200),
+    keepcnt(75),
+    keepintvl(9)
   { }
 };
 

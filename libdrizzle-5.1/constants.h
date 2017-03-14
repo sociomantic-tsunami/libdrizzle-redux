@@ -291,6 +291,18 @@ typedef enum
   DRIZZLE_SOCKET_OWNER_CLIENT
 } drizzle_socket_owner;
 
+/**
+ * @ingroup drizzle_con
+ * Available options to set for the socket connection
+ */
+typedef enum
+{
+  DRIZZLE_SOCKET_OPTION_KEEPIDLE=4,
+  DRIZZLE_SOCKET_OPTION_KEEPCNT,
+  DRIZZLE_SOCKET_OPTION_KEEPINTVL,
+  DRIZZLE_SOCKET_OPTION_TIMEOUT
+} drizzle_socket_option;
+
 typedef enum
 {
   DRIZZLE_EVENT_POSITION_TIMESTAMP= 0,
