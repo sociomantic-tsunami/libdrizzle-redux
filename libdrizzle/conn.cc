@@ -68,7 +68,8 @@
  */
 static drizzle_return_t _setsockopt(drizzle_st *con);
 
-static void connect_failed_try_next(drizzle_st *con, const char *func, const char *msg);
+static void connect_failed_try_next(drizzle_st *con, const char *file, uint line,
+  const char *function, const char *msg);
 
 static void __closesocket(socket_t& fd)
 {
@@ -1234,7 +1235,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     }
 
       /* Failed connection. Try the next address. */
-      connect_failed_try_next(con, __func__, msg);
+      connect_failed_try_next(con, __FILE_LINE_FUNC__, msg);
       return DRIZZLE_RETURN_OK;
     }
   }
@@ -1243,7 +1244,7 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
     /* Failed connection. Try the next address. */
       con->revents= 0;
       con->pop_state();
-    connect_failed_try_next(con, __func__, "Invalid file descriptor");
+    connect_failed_try_next(con, __FILE_LINE_FUNC__, "Invalid file descriptor");
       return DRIZZLE_RETURN_OK;
   } else {
     con->revents= 0;
@@ -1771,7 +1772,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   return DRIZZLE_RETURN_OK;
 }
 
-static void connect_failed_try_next(drizzle_st *con, const char *func, const char *msg)
+static void connect_failed_try_next(drizzle_st *con, const char *file, uint line,
+  const char *function, const char *msg)
 {
   char hostbuf[NI_MAXHOST], servbuf[NI_MAXSERV];
   struct addrinfo *aip = con->addrinfo_next;
