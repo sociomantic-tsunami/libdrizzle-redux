@@ -162,16 +162,24 @@ Functions
 
 .. c:function:: void drizzle_binlog_get_filename(drizzle_st *con, char *filename, int file_index)
 
-   Get the name of a binlog-file
+   Get the name and size of a binlog file in bytes
 
    Queries the database for a list of binlog files and copies the filename to
    the passed buffer
-   If the file_index is invalid or no binlog files exist filename will contain an
-   empty string
-   A valid file_index is in the range [-1 to (number of binlog files -1)]
 
-   The memory (de)allocation of the filename buffer must be done by the client
+   If the file_index is invalid or no binlog files exist filename will contain
+   an empty string.
+   A valid file_index is in the range [-1 to (number of binlog files -1)]
+   The end_position will hold the size of the binlog file and can be used to
+   start reading from the end of the binlog file when parsed to
+   :c:func:`drizzle_binlog_start()`
+
+   The filename parameter is allocated by the function and needs to be
+   freed by the application when finished with. This is the case, regardless of
+   the return status of the function.
 
    :param con: Drizzle structure previously initialized with :c:func:`drizzle_create`
    :param filename: Buffer to copy filename to
-   :param file_index: Index of the binlog to retrieve
+   :param end_position: Variable to save the size of the binlog file into
+   :param file_index: Index of the binlog to retrieve.
+   :returns: Standard drizzle return value
