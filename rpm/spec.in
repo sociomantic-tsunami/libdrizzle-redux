@@ -84,6 +84,11 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Tue Mar 14 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.5.0
+- Update bootstrap script
+- Use TCP keep alive to prevent connection freezing on slow connections
+- Use integral types fmt specifiers from cinttypes header
+
 * Mon Mar 13 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.3
 - Add example for using event callback function
 - Restructure readme for semantic versioning
