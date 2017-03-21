@@ -99,7 +99,11 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
     return DRIZZLE_RETURN_OK;
   }
 
-  if (con->packet_size < 46)
+  if (drizzle_check_unpack_error(con))
+  {
+    return DRIZZLE_RETURN_ERROR_CODE;
+  }
+  else if (con->packet_size < 46)
   {
     drizzle_set_error(con, __func__,
                       "bad packet size:>=46:%" PRIu32, con->packet_size);
