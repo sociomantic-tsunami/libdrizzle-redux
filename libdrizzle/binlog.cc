@@ -297,29 +297,11 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
     return DRIZZLE_RETURN_EOF;
   }
-  else if (con->buffer_ptr[0] == 255)
+  else if (drizzle_check_unpack_error(con))
   {
-    con->result->error_code= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->error_code= con->result->error_code;
-    /* Byte 3 is always a '#' character, skip it. */
-    memcpy(con->result->sqlstate, con->buffer_ptr + 4,
-           DRIZZLE_MAX_SQLSTATE_SIZE);
-    con->result->sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE]= 0;
-    memcpy(con->sqlstate, con->result->sqlstate,
-           DRIZZLE_MAX_SQLSTATE_SIZE + 1);
-    con->buffer_ptr+= 9;
-    con->buffer_size-= 9;
-    con->packet_size-= 9;
-
-    snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
-             (int)con->packet_size, con->buffer_ptr);
-    con->last_error[DRIZZLE_MAX_ERROR_SIZE-1]= 0;
     snprintf(con->result->info, DRIZZLE_MAX_INFO_SIZE, "%.*s",
-             (int)con->packet_size, con->buffer_ptr);
+             (int)con->packet_size, con->last_error);
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
-    con->buffer_ptr+= con->packet_size;
-    con->buffer_size-= con->packet_size;
-    con->packet_size= 0;
 
     con->pop_state();
     con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
