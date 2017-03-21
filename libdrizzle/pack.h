@@ -96,6 +96,17 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
 unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
                            drizzle_return_t *ret_ptr);
 
+/**
+ * Check if a MySQL ERR_Packet has been received, i.e. the first byte of the
+ * received packet is 0xFF.
+ * If an error packet was received the error_code and error message are set
+ *
+ * @param[in] con Drizzle structure previously initialized with
+ *  drizzle_create() or drizzle_clone().
+ * @return True if an error packet was received, false otherwise
+ */
+bool drizzle_check_unpack_error(drizzle_st *con);
+
 /** @} */
 
 #ifdef __cplusplus
