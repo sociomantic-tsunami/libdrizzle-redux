@@ -158,6 +158,13 @@ Functions
    :param result: A result object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
+.. c:function:: size_t drizzle_result_row_size(drizzle_result_st *result)
+
+   Get result row packet size in bytes.
+
+   :param result: Caller allocated structure.
+   :returns: size in bytes else 0
+
 .. c:function:: drizzle_result_st* drizzle_column_drizzle_result(drizzle_column_st *column)
 
    Gets a result set for a given column object
@@ -269,6 +276,14 @@ Functions
    :c:func:`drizzle_column_read` to get the column data
 
    :param result: A result object
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_column_skip_all(drizzle_result_st *result)
+
+   Skips all columns in a result set when using :c:func:`drizzle_column_read`
+   to get the column data
+
+   :param result: pointer to the structure to read from.
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
 .. c:function:: void drizzle_column_free(drizzle_column_st *column)
