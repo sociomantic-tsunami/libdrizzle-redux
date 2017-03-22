@@ -48,7 +48,8 @@ Functions
 
 .. c:function:: ssize_t drizzle_escape_string(drizzle_st *con, char **to, const const char *from, const size_t from_size)
 
-   Escape a string for an SQL query.  The ``to`` parameter is allocated by the function and needs to be freed by the application when finished with.
+   Escape a string for an SQL query. The ``to`` parameter is allocated by the
+   function and needs to be freed by the application when finished with.
 
    :param con: a connection object
    :param to: the destination string
@@ -347,7 +348,7 @@ Functions
 .. c:function:: uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 
    Reads the next row header and returns the row number for unbuffered row
-   reads.  Use :c:func:`drizzle_field_read` or :c:func:`drizzle_field_buffer`
+   reads. Use :c:func:`drizzle_field_read` or :c:func:`drizzle_field_buffer`
    to get the field data after this call.
 
    :param result: A result object
@@ -414,7 +415,7 @@ Functions
 
 .. c:function:: drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset, size_t *size, size_t *total, drizzle_return_t *ret_ptr)
 
-   Reads the next field from the network buffer.  Useful for large blobs
+   Reads the next field from the network buffer. Useful for large blobs
    without buffering the entire blob.
 
    :param result: A result object

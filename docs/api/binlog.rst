@@ -172,6 +172,6 @@ Functions
 
    The memory (de)allocation of the filename buffer must be done by the client
 
-   :param con: Drizzle structure previously initialized with drizzle_create() or drizzle_clone()
+   :param con: Drizzle structure previously initialized with :c:func:`drizzle_create` or :c:func:`drizzle_clone`
    :param filename: Buffer to copy filename to
    :param file_index: Index of the binlog to retrieve
