@@ -22,7 +22,9 @@ Functions
 
 .. c:function:: drizzle_st* drizzle_create(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_options_st *options)
 
-   Creates a connection connection object.  If a path beginning with ``/`` is given as the host the library will connect as a UDS socket.  Otherwise a TCP/IP connection is made.
+   Creates a connection connection object. If a path beginning with ``/`` is
+   given as the host the library will connect as a UDS socket. Otherwise a
+   TCP/IP connection is made.
 
    .. note::
       a connection does not happen until the first query or an explicit :c:func:`drizzle_connect` call is made
@@ -82,8 +84,7 @@ Functions
 
    Set a custom I/O event watcher function for a drizzle structure
 
-   :param drizzle: Drizzle structure previously initialized with
-    :c:func:`drizzle_create` or :c:func:`drizzle_clone`
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create` or :c:func:`drizzle_clone`
    :param function: Function to call when there is an I/O event, in the form of :c:func:`drizzle_event_watch_fn`
    :param context: Argument to pass into the callback function.
 
@@ -266,8 +267,7 @@ Functions
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
 
-.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options,
-   drizzle_socket_owner owner)
+.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner owner)
 
    Sets the owner of the socket connection
 
@@ -398,7 +398,7 @@ Functions
    Open connection to the specified server
 
    :param con: A connection object
-   :returns: A :c:type:`drizzle_return_t` status.  :py:const:`DRIZZLE_RETURN_OK` upon success
+   :returns: A :c:type:`drizzle_return_t` status. :py:const:`DRIZZLE_RETURN_OK` upon success
 
 .. c:function:: drizzle_return_t drizzle_wait(drizzle_st *con)
 
@@ -418,7 +418,8 @@ Functions
 
 .. c:function:: drizzle_return_t drizzle_close(drizzle_st *con)
 
-   Gracefully disconnect from a server (leaves the connection object available for a reconnect
+   Gracefully disconnect from a server (leaves the connection object available
+   for a reconnect)
 
    :param con: A connection object
    :returns: A :c:type:`drizzle_return_t` response for the quit command sent to the server
@@ -463,7 +464,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
-.. c:function:: const char *drizzle_strerror(const drizzle_return_t ret);
+.. c:function:: const char *drizzle_strerror(const drizzle_return_t ret)
 
    Get detailed error description
 
@@ -489,10 +490,7 @@ Libdrizzle Redux library.
    The format of a function to register or deregister interest in file descriptor
    events
 
-   :param con: Connection that has changed the events it is interested in.
-    Use drizzle_fd() to get the file descriptor.
-   :param events: A bit mask of POLLIN | POLLOUT, specifying if the
-    connection is waiting for read or write events.
-   :param context: Application context pointer registered with
-    :c:func:`drizzle_set_event_watch_fn`
-   :returns: DRIZZLE_RETURN_OK if successful.
+   :param con: Connection that has changed the events it is interested in. Use :c:func:`drizzle_fd` to get the file descriptor.
+   :param events: A bit mask of POLLIN | POLLOUT, specifying if the connection is waiting for read or write events.
+   :param context: Application context pointer registered with :c:func:`drizzle_set_event_watch_fn`
+   :returns: :py:const:`DRIZZLE_RETURN_OK` if successful.
