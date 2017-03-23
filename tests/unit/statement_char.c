@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
              drizzle_error(con));
 
   drizzle_query(con,
-	        "INSERT INTO test_stmt_ch.t1 VALUES ('hello'),('drizzle'),('people')", 
+	        "INSERT INTO test_stmt_ch.t1 VALUES ('hello'),('drizzle'),('people')",
 		0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
