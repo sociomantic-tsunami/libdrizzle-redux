@@ -52,16 +52,33 @@ int main(int argc, char* argv[])
 
   // Test for data too long
   char *out;
-  uint64_t out_len = drizzle_escape_string(NULL, &out, in, strlen(in));
+  uint64_t out_len = drizzle_escape_str(NULL, &out, in, strlen(in), false);
   ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17,
              (unsigned int)(out_len));
 
   free(out);
 
-  out_len= drizzle_escape_string(NULL, &out, in, strlen(in));
+  out_len= drizzle_escape_str(NULL, &out, in, strlen(in), false);
   ASSERT_EQ_(out_len, 17, "Bad hex length output %u", (unsigned int)(out_len));
   ASSERT_EQ_(0, strcmp(out, "escape \\\"this\\\"\\n"), "Bad hex data output");
 
+  free(out);
+
+  const char *with_meta = "This will trip % LIKE _ up";
+  out_len = drizzle_escape_str(NULL, &out, with_meta, strlen(with_meta), false);
+  ASSERT_EQ_(out_len, 26, "Bad hex length output %u", (unsigned int)(out_len));
+  ASSERT_EQ_(0, strcmp(out, with_meta), "Bad hex data output");
+  free(out);
+
+  out_len = drizzle_escape_str(NULL, &out, with_meta, strlen(with_meta), true);
+  ASSERT_EQ_(out_len, 28, "Bad hex length output %u", (unsigned int)(out_len));
+  ASSERT_EQ_(0, strcmp(out, "This will trip \\% LIKE \\_ up"), "Bad hex data output");
+  free(out);
+
+  const char *tricky = "This\tis \\\\\b tricky";
+  out_len = drizzle_escape_str(NULL, &out, tricky, strlen(tricky), false);
+  ASSERT_EQ_(out_len, 22, "Bad hex length output %u", (unsigned int)(out_len));
+  ASSERT_EQ_(0, strcmp(out, "This\\tis \\\\\\\\\\b tricky"), "Bad hex data output");
   free(out);
 
   return EXIT_SUCCESS;
