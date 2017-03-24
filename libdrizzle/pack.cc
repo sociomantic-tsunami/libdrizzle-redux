@@ -481,3 +481,28 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
 
   return DRIZZLE_RETURN_OK;
 }
+
+bool drizzle_check_unpack_error(drizzle_st *con)
+{
+  // Check if the first byte is 0xFF, i.e. we received an error packet
+  if (con->buffer_ptr[0] != 255)
+    return false;
+
+  con->error_code= drizzle_get_byte2(con->buffer_ptr + 1);
+  /* Byte 3 is always a '#' character, skip it. */
+  memcpy(con->sqlstate, con->buffer_ptr + 4, DRIZZLE_MAX_SQLSTATE_SIZE);
+  con->buffer_ptr+= 9;
+  con->buffer_size-= 9;
+  con->packet_size-= 9;
+
+  snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
+           (int)con->packet_size-1, con->buffer_ptr);
+
+  drizzle_set_error(con, __func__, " %s", con->last_error);
+
+  con->buffer_ptr+= con->packet_size;
+  con->buffer_size-= con->packet_size;
+  con->packet_size= 0;
+
+  return true;
+}

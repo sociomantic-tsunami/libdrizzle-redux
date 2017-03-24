@@ -48,7 +48,8 @@ Functions
 
 .. c:function:: ssize_t drizzle_escape_string(drizzle_st *con, char **to, const const char *from, const size_t from_size)
 
-   Escape a string for an SQL query.  The ``to`` parameter is allocated by the function and needs to be freed by the application when finished with.
+   Escape a string for an SQL query. The ``to`` parameter is allocated by the
+   function and needs to be freed by the application when finished with.
 
    :param con: a connection object
    :param to: the destination string
@@ -157,6 +158,13 @@ Functions
 
    :param result: A result object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: size_t drizzle_result_row_size(drizzle_result_st *result)
+
+   Get result row packet size in bytes.
+
+   :param result: Caller allocated structure.
+   :returns: size in bytes else 0
 
 .. c:function:: drizzle_result_st* drizzle_column_drizzle_result(drizzle_column_st *column)
 
@@ -271,6 +279,14 @@ Functions
    :param result: A result object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
+.. c:function:: drizzle_return_t drizzle_column_skip_all(drizzle_result_st *result)
+
+   Skips all columns in a result set when using :c:func:`drizzle_column_read`
+   to get the column data
+
+   :param result: pointer to the structure to read from.
+   :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
+
 .. c:function:: void drizzle_column_free(drizzle_column_st *column)
 
    Frees a column when using :c:func:`drizzle_column_read` to get the column
@@ -332,7 +348,7 @@ Functions
 .. c:function:: uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 
    Reads the next row header and returns the row number for unbuffered row
-   reads.  Use :c:func:`drizzle_field_read` or :c:func:`drizzle_field_buffer`
+   reads. Use :c:func:`drizzle_field_read` or :c:func:`drizzle_field_buffer`
    to get the field data after this call.
 
    :param result: A result object
@@ -399,7 +415,7 @@ Functions
 
 .. c:function:: drizzle_field_t drizzle_field_read(drizzle_result_st *result, size_t *offset, size_t *size, size_t *total, drizzle_return_t *ret_ptr)
 
-   Reads the next field from the network buffer.  Useful for large blobs
+   Reads the next field from the network buffer. Useful for large blobs
    without buffering the entire blob.
 
    :param result: A result object

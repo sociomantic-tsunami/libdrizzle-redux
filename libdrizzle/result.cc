@@ -464,19 +464,11 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
     con->packet_size-= 5;
     ret= DRIZZLE_RETURN_OK;
   }
-  else if (con->buffer_ptr[0] == 255)
+  else if (drizzle_check_unpack_error(con))
   {
-    con->result->error_code= drizzle_get_byte2(con->buffer_ptr + 1);
-    con->error_code= con->result->error_code;
-    /* Byte 3 is always a '#' character, skip it. */
-    memcpy(con->result->sqlstate, con->buffer_ptr + 4,
+    memcpy(con->result->sqlstate, con->sqlstate,
            DRIZZLE_MAX_SQLSTATE_SIZE);
     con->result->sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE]= 0;
-    memcpy(con->sqlstate, con->result->sqlstate,
-           DRIZZLE_MAX_SQLSTATE_SIZE + 1);
-    con->buffer_ptr+= 9;
-    con->buffer_size-= 9;
-    con->packet_size-= 9;
     ret= DRIZZLE_RETURN_ERROR_CODE;
   }
   else
