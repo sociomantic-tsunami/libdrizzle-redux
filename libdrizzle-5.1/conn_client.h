@@ -55,8 +55,7 @@ extern "C" {
 /**
  * Connect to server.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Standard drizzle return value.
  */
 DRIZZLE_API
@@ -65,8 +64,7 @@ drizzle_return_t drizzle_connect(drizzle_st *con);
 /**
  * Send quit command to server for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return ret_ptr Standard drizzle return value.
  */
 DRIZZLE_API
@@ -75,8 +73,7 @@ drizzle_return_t drizzle_quit(drizzle_st *con);
 /**
  * Select a new default database for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] db Default database to select.
  * @return Standard drizzle return value
  */
@@ -86,8 +83,7 @@ drizzle_return_t drizzle_select_db(drizzle_st *con, const char *db);
 /**
  * Send a shutdown message to the server.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.
@@ -111,8 +107,7 @@ drizzle_result_st *drizzle_kill(drizzle_st *con,
 /**
  * Send a ping request to the server.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[out] ret_ptr Standard drizzle return value.
  * @return On success, a pointer to the (possibly allocated) structure. On
  *  failure this will be NULL.

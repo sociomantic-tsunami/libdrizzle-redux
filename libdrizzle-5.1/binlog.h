@@ -214,8 +214,7 @@ const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_typ
  * The filename parameter is allocated by the function and needs to be
  * freed by the application when finished with.
  *
- * @param[in] con Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] con Drizzle structure previously initialized with drizzle_create().
  * @param[in,out] filename buffer to copy filename to
  * @param[in] file_index index of the binlog to retrieve.
  */

@@ -41,7 +41,7 @@ Functions
 
    Get file descriptor for connection.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :returns: File descriptor of connection, or -1 if not active.
 
 .. c:function:: int drizzle_timeout(const drizzle_st *con)
@@ -84,7 +84,7 @@ Functions
 
    Set a custom I/O event watcher function for a drizzle structure
 
-   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create` or :c:func:`drizzle_clone`
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :param function: Function to call when there is an I/O event, in the form of :c:func:`drizzle_event_watch_fn`
    :param context: Argument to pass into the callback function.
 
@@ -92,7 +92,7 @@ Functions
 
    Set events to be watched for a connection.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param events: Bitfield of poll() events to watch.
    :returns: Standard drizzle return value.
 
@@ -101,7 +101,7 @@ Functions
    Set events that are ready for a connection. This is used with the external
    event callbacks. See :c:func:`drizzle_set_event_watch_fn`.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param revents: Bitfield of poll() events that were detected.
    :returns: Standard drizzle return value.
 
@@ -170,7 +170,7 @@ Functions
 
       :py:const:`DRIZZLE_SOCKET_OPTION_KEEPINTVL` : The time (in seconds) between individual keepalive probes
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param option: the option to set the value for
    :param value: the value to set
 
@@ -179,7 +179,7 @@ Functions
    Gets the value of a socket option. See :c:func:`drizzle_socket_set_options`
    for a description of the available options
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param option: option to get the value for
    :returns: The value of the option, or -1 if the specified option doesn't exist
 
@@ -313,21 +313,21 @@ Functions
 
    Get application context pointer for a connection.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :returns: Application context with this connection.
 
 .. c:function:: void drizzle_set_context(drizzle_st *con, void *context)
 
    Set application context pointer for a connection.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param context: Application context to use with this connection.
 
 .. c:function:: void drizzle_set_context_free_fn(drizzle_st *con, drizzle_context_free_fn *function)
 
    Set callback function when the context pointer should be freed.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :param function: Function to call to clean up connection context.
 
 .. c:function:: uint8_t drizzle_protocol_version(const drizzle_st *con)
@@ -362,7 +362,7 @@ Functions
 
    Get scramble buffer for a connection.
 
-   :param con: Connection structure previously initialized with :c:func:`drizzle_create`, :c:func:`drizzle_clone`, or related functions.
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
    :returns: Scramble buffer for connection.
 
 .. c:function:: drizzle_capabilities_t drizzle_capabilities(const drizzle_st *con)
@@ -404,16 +404,14 @@ Functions
 
    Wait for I/O on connections.
 
-   :param drizzle: Drizzle structure previously initialized with
-                   :c:func:`drizzle_create` or :c:func:`drizzle_clone`.
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :returns: Standard drizzle return value.
 
 .. c:function:: drizzle_st *drizzle_ready(drizzle_st *con)
 
    Get next connection that is ready for I/O.
 
-   :param drizzle: Drizzle structure previously initialized with
-                   :c:func:`drizzle_create` or :c:func:`drizzle_clone`.
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :returns: Connection that is ready for I/O, or NULL if there are none.
 
 .. c:function:: drizzle_return_t drizzle_close(drizzle_st *con)

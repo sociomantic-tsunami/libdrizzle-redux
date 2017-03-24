@@ -56,8 +56,7 @@ extern "C" {
 /**
  * Get file descriptor for connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return File descriptor of connection, or -1 if not active.
  */
 DRIZZLE_API
@@ -66,8 +65,7 @@ int drizzle_fd(const drizzle_st *con);
 /**
  * Close a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  */
 DRIZZLE_API
 void drizzle_close(drizzle_st *con);
@@ -75,8 +73,7 @@ void drizzle_close(drizzle_st *con);
 /**
  * Set events to be watched for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] events Bitfield of poll() events to watch.
  * @return Standard drizzle return value.
  */
@@ -87,8 +84,7 @@ drizzle_return_t drizzle_set_events(drizzle_st *con, short events);
  * Set events that are ready for a connection. This is used with the external
  * event callbacks. See drizzle_set_event_watch_fn().
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] revents Bitfield of poll() events that were detected.
  * @return Standard drizzle return value.
  */
@@ -98,8 +94,7 @@ drizzle_return_t drizzle_set_revents(drizzle_st *con, short revents);
 /**
  * Return an error string for last error encountered.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Pointer to static buffer in library that holds an error string.
  */
 DRIZZLE_API
@@ -108,8 +103,7 @@ const char *drizzle_error(const drizzle_st *con);
 /**
  * Get server defined error code for the last result read.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return An error code given back in the server response.
  */
 DRIZZLE_API
@@ -118,8 +112,7 @@ uint16_t drizzle_error_code(const drizzle_st *con);
 /**
  * Get SQL state code for the last result read.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return A SQLSTATE code given back in the server response.
  */
 DRIZZLE_API
@@ -174,8 +167,7 @@ void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
  *  DRIZZLE_SOCKET_OPTION_KEEPINTVL : The time (in seconds) between individual
  *                                    keepalive probes
  *
- * @param[in] con Connection structure previously initialized with
- *                drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] option the option to set the value for
  * @param[in] value the value to set
  */
@@ -187,8 +179,7 @@ void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
  * Gets the value of a socket option. See drizzle_socket_set_options() for a
  * description of the available options
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] option option to get the value for
  * @return The value of the option, or -1 if the specified option doesn't exist
  */
@@ -325,8 +316,7 @@ drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *option
 /**
  * Get TCP host for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Host this connection is configured for, or NULL if not set.
  */
 DRIZZLE_API
@@ -335,8 +325,7 @@ const char *drizzle_host(const drizzle_st *con);
 /**
  * Get TCP port for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Port this connection is configured for, 0 if not set.
  */
 DRIZZLE_API
@@ -345,8 +334,7 @@ in_port_t drizzle_port(const drizzle_st *con);
 /**
  * Get username for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return User associated with this connection.
  */
 DRIZZLE_API
@@ -355,8 +343,7 @@ const char *drizzle_user(const drizzle_st *con);
 /**
  * Get database for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Database associated with this connection.
  */
 DRIZZLE_API
@@ -365,8 +352,7 @@ const char *drizzle_db(const drizzle_st *con);
 /**
  * Get application context pointer for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Application context with this connection.
  */
 DRIZZLE_API
@@ -375,8 +361,7 @@ void *drizzle_context(const drizzle_st *con);
 /**
  * Set application context pointer for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] context Application context to use with this connection.
  */
 DRIZZLE_API
@@ -385,8 +370,7 @@ void drizzle_set_context(drizzle_st *con, void *context);
 /**
  * Set callback function when the context pointer should be freed.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @param[in] function Function to call to clean up connection context.
  */
 DRIZZLE_API
@@ -396,8 +380,7 @@ void drizzle_set_context_free_fn(drizzle_st *con,
 /**
  * Get protocol version for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Protocol version for connection.
  */
 DRIZZLE_API
@@ -406,8 +389,7 @@ uint8_t drizzle_protocol_version(const drizzle_st *con);
 /**
  * Get server version string for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Server version string for connection.
  */
 DRIZZLE_API
@@ -416,8 +398,7 @@ const char *drizzle_server_version(const drizzle_st *con);
 /**
  * Get server version number for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Server version number for connection.
  */
 DRIZZLE_API
@@ -426,8 +407,7 @@ uint32_t drizzle_server_version_number(const drizzle_st *con);
 /**
  * Get thread ID for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Thread ID for connection.
  */
 DRIZZLE_API
@@ -436,8 +416,7 @@ uint32_t drizzle_thread_id(const drizzle_st *con);
 /**
  * Get scramble buffer for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Scramble buffer for connection.
  */
 DRIZZLE_API
@@ -446,8 +425,7 @@ const unsigned char *drizzle_scramble(const drizzle_st *con);
 /**
  * Get capabilities for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Capabilities for connection.
  */
 DRIZZLE_API
@@ -456,8 +434,7 @@ drizzle_capabilities_t drizzle_capabilities(const drizzle_st *con);
 /**
  * Get character set for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Character set for connection.
  */
 DRIZZLE_API
@@ -466,8 +443,7 @@ drizzle_charset_t drizzle_charset(const drizzle_st *con);
 /**
  * Get status for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Status for connection.
  */
 DRIZZLE_API
@@ -476,8 +452,7 @@ drizzle_status_t drizzle_status(const drizzle_st *con);
 /**
  * Get max packet size for a connection.
  *
- * @param[in] con Connection structure previously initialized with
- *  drizzle_create(), drizzle_clone(), or related functions.
+ * @param[in] con Connection structure previously initialized with drizzle_create().
  * @return Max packet size for connection.
  */
 DRIZZLE_API

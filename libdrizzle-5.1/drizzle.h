@@ -111,8 +111,7 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose);
 /**
  * Get current socket I/O activity timeout value.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @return Timeout in milliseconds to wait for I/O activity. A negative value
  *  means an infinite timeout.
  */
@@ -122,8 +121,7 @@ int drizzle_timeout(const drizzle_st *con);
 /**
  * Set socket I/O activity timeout for connections in a Drizzle structure.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @param[in] timeout Milliseconds to wait for I/O activity. A negative value
  *  means an infinite timeout.
  */
@@ -134,7 +132,7 @@ void drizzle_set_timeout(drizzle_st *con, int timeout);
  * Get current verbosity threshold for logging messages.
  *
  * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ *  drizzle_create().
  * @return Current verbosity threshold.
  */
 DRIZZLE_API
@@ -146,7 +144,7 @@ drizzle_verbose_t drizzle_verbose(const drizzle_st *con);
  * messages are printed to STDOUT.
  *
  * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ *  drizzle_create().
  * @param[in] verbose Verbosity threshold of what to log.
  */
 DRIZZLE_API
@@ -157,8 +155,7 @@ void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose);
  * for log messages that are above the verbosity threshold set with
  * drizzle_set_verbose().
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @param[in] function Function to call when there is a logging message.
  * @param[in] context Argument to pass into the callback function.
  */
@@ -177,8 +174,7 @@ void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
  * interested. To resume processing, the libdrizzle function that returned
  * DRIZZLE_RETURN_IO_WAIT should be called again. See drizzle_event_watch_fn().
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @param[in] function Function to call when there is an I/O event.
  * @param[in] context Argument to pass into the callback function.
  */
@@ -191,8 +187,7 @@ void drizzle_set_event_watch_fn(drizzle_st *drizzle,
 /**
  * Wait for I/O on connections.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @return Standard drizzle return value.
  */
 DRIZZLE_API
@@ -201,8 +196,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con);
 /**
  * Get next connection that is ready for I/O.
  *
- * @param[in] drizzle Drizzle structure previously initialized with
- *  drizzle_create() or drizzle_clone().
+ * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
  * @return Connection that is ready for I/O, or NULL if there are none.
  */
 DRIZZLE_API
