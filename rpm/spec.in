@@ -84,6 +84,11 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Fri Mar 24 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.5.1
+- Minor fixes
+- Add missing API functions to the rst documentation
+- Bugfix: check for error packet in internal handshake function
+
 * Tue Mar 14 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.5.0
 - Update bootstrap script
 - Use TCP keep alive to prevent connection freezing on slow connections

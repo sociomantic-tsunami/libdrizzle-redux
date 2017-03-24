@@ -51,6 +51,7 @@ EXTRA_DIST+= COPYING
 maintainer-clean-local:
 	-rm Makefile.in
 	-rm aclocal.m4
+	-rm build-aux/compile
 	-rm build-aux/config.guess
 	-rm build-aux/config.sub
 	-rm build-aux/depcomp
