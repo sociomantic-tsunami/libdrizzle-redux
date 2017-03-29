@@ -57,7 +57,7 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                    (unsigned char *)query, size, size, ret_ptr);
 }
 
-ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *from, const size_t from_size)
+ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from, const size_t from_size, bool is_pattern)
 {
   (void)con;
   const char *end;
@@ -92,6 +92,12 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *f
       case 0:
         newchar= '0';
         break;
+      case '\b':
+        newchar= 'b';
+        break;
+      case '\t':
+        newchar= 't';
+        break;
       case '\n':
         newchar= 'n';
         break;
@@ -110,6 +116,14 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *f
       case '"':
         newchar= '"';
         break;
+      case '%':
+          if (is_pattern)
+              newchar = '%';
+          break;
+      case '_':
+          if (is_pattern)
+              newchar = '_';
+          break;
       default:
         break;
       }
@@ -144,6 +158,11 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *f
   *to= 0;
 
   return to_size;
+}
+
+ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *from, const size_t from_size)
+{
+    return drizzle_escape_str(con, destination, from, from_size, false);
 }
 
 bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size)

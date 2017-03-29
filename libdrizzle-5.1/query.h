@@ -78,6 +78,9 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
  * Escape a string for an SQL query. The to parameter is allocated by the
  * function and needs to be freed by the application when finished with.
  *
+ * This function does not escape '%' or '_', if you need to, call
+ * drizzle_escape_str with `is_pattern` set to `true`.
+ *
  * @param[in] con a connection object
  * @param[in,out] to the destination string
  * @param[in] from the source string
@@ -87,6 +90,31 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
  */
 DRIZZLE_API
 ssize_t drizzle_escape_string(drizzle_st *con, char **to, const char *from, const size_t from_size);
+
+/**
+ * Escape a string for an SQL query, optionally for pattern matching.
+ *
+ * This function escapes the following characters:
+ * '\0' (0x00), '\'' (0x27), '"' (0x22), '\b' (0x08), '\n' (0x0A),
+ * '\r' (0x0D), '\t' (0x09), '\Z' (0x26), '\\' (0x5C).
+ * In case `is_pattern` is set to `true`, '%' (0x25) and '_' (0x5F)
+ * will be escaped as well.
+ *
+ * The to parameter is allocated by the function and needs to be freed by
+ * the application when finished with.
+ *
+ * @param[in] con a connection object
+ * @param[in,out] to the destination string
+ * @param[in] from the source string
+ * @param[in] from_size the length of the source string
+ * @param[in] is_pattern whether to escape '%' and '_'.
+ *                       If set to `true`, they will be escaped,
+ *                       so the string can be used in a LIKE clause for example.
+ * @return the length of the ‘to’ string or -1 upon error due to empty
+ *         parameters or overflow
+ */
+DRIZZLE_API
+ssize_t drizzle_escape_str(drizzle_st *con, char **to, const char *from, const size_t from_size, bool is_pattern);
 
 /** @} */
 
