@@ -43,7 +43,7 @@
 
 #include "config.h"
 
-#include <libdrizzle/common.h>
+#include "src/common.h"
 
 drizzle_result_st *drizzle_query(drizzle_st *con,
                                  const char *query, size_t size,

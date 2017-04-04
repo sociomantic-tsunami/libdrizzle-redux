@@ -36,7 +36,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, size_t size, drizzle_return_t *ret_ptr)
 {

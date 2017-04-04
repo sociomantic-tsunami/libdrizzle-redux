@@ -35,7 +35,7 @@
  *
  */
 
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 
 #include <cstddef>
 #include <cstdlib>

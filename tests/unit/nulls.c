@@ -48,7 +48,7 @@
 
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

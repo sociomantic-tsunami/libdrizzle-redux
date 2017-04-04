@@ -1,8 +1,5 @@
-/*
- * Drizzle Client & Protocol Library
- *
- * Copyright (C) 2008-2013 Drizzle Developer Group
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+/* Drizzle Client Library
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,65 +29,8 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
-/**
- * @file
- * @brief System Include Files
  */
 
 #pragma once
 
-#include <libdrizzle-5.1/drizzle_client.h>
-
-#include <cassert>
-#include <new>
-
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
-
-#if defined(_WIN32) || defined(__MINGW32__)
-# include "libdrizzle/windows.hpp"
-# define get_socket_errno() WSAGetLastError()
-
-#else
-# include <netinet/tcp.h>
-# include <sys/uio.h>
-# include <unistd.h>
-# include <cerrno>
-# define INVALID_SOCKET -1
-# define SOCKET_ERROR -1
-# define closesocket(a) close(a)
-# define get_socket_errno() errno
-
-#endif // defined(_WIN32) || defined(__MINGW32__)
-
-#if defined(HAVE_POLL_H) && HAVE_POLL_H
-# include <poll.h>
-typedef struct pollfd pollfd_t;
-#else
-# include "libdrizzle/poll.h"
-#endif
-
-#include <stddef.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "libdrizzle/structs.h"
-#include "libdrizzle/drizzle_local.h"
-#include "libdrizzle/conn_local.h"
-#include "libdrizzle/pack.h"
-#include "libdrizzle/state.h"
-#include "libdrizzle/sha1.h"
-#include "libdrizzle/statement_local.h"
-#include "libdrizzle/column.h"
-#include "libdrizzle/binlog.h"
-#include "libdrizzle/handshake_client.h"
-#include "libdrizzle/result.h"
-
-#include <memory.h>
+#include <libdrizzle-redux/drizzle_client.h>

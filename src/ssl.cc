@@ -2,8 +2,7 @@
  *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2008-2013 Drizzle Developer Group
- * Copyright (C) 2008 Eric Day (eday@oddments.org)
+ * Copyright (C) 2012-2013 Drizzle Developer Group
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,80 +35,65 @@
  *
  */
 
-/**
- * @file
- * @brief State machine definitions
- */
-
 #include "config.h"
-#include "libdrizzle/common.h"
 
-drizzle_return_t drizzle_state_loop(drizzle_st *con)
+#include "src/common.h"
+
+#include <libdrizzle-redux/ssl.h>
+
+#if defined(USE_OPENSSL)
+# include <openssl/ssl.h>
+
+drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 {
-  if (con == NULL)
+  con->ssl_context= SSL_CTX_new(TLSv1_client_method());
+
+  if (cipher)
   {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot set the SSL cipher list");
+    return DRIZZLE_RETURN_SSL_ERROR;
   }
 
-  while (con->has_state() == false)
+  if (SSL_CTX_load_verify_locations((SSL_CTX*)con->ssl_context, ca, capath) != 1)
   {
-    drizzle_return_t ret= con->current_state();
-    if (ret != DRIZZLE_RETURN_OK)
-    {
-      if (ret != DRIZZLE_RETURN_IO_WAIT && ret != DRIZZLE_RETURN_PAUSE &&
-          ret != DRIZZLE_RETURN_ERROR_CODE)
-      {
-        drizzle_close(con);
-      }
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot load the SSL certificate authority file");
+    return DRIZZLE_RETURN_SSL_ERROR;
+  }
 
-      return ret;
+  if (cert)
+  {
+    if (SSL_CTX_use_certificate_file((SSL_CTX*)con->ssl_context, cert, SSL_FILETYPE_PEM) != 1)
+    {
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot load the SSL certificate file");
+      return DRIZZLE_RETURN_SSL_ERROR;
+    }
+
+    if (!key)
+      key= cert;
+
+    if (SSL_CTX_use_PrivateKey_file((SSL_CTX*)con->ssl_context, key, SSL_FILETYPE_PEM) != 1)
+    {
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot load the SSL key file");
+      return DRIZZLE_RETURN_SSL_ERROR;
+    }
+
+    if (SSL_CTX_check_private_key((SSL_CTX*)con->ssl_context) != 1)
+    {
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "Error validating the SSL private key");
+      return DRIZZLE_RETURN_SSL_ERROR;
     }
   }
 
+  con->ssl= SSL_new((SSL_CTX*)con->ssl_context);
+
   return DRIZZLE_RETURN_OK;
 }
 
-drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
+#else
+
+drizzle_return_t drizzle_set_ssl(drizzle_st*, const char*, const char*, const char*, const char*, const char*)
 {
-  if (con == NULL)
-  {
-    return DRIZZLE_RETURN_INVALID_ARGUMENT;
-  }
-
-  __LOG_LOCATION__
-
-  if (con->buffer_size < 4)
-  {
-    con->push_state(drizzle_state_read);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  con->packet_size= drizzle_get_byte3(con->buffer_ptr);
-
-  if (con->buffer_size < (con->packet_size + 4))
-  {
-    con->push_state(drizzle_state_read);
-    return DRIZZLE_RETURN_OK;
-  }
-
-  if (con->packet_number != con->buffer_ptr[3])
-  {
-    drizzle_set_error(con, __FILE_LINE_FUNC__,
-                      "bad packet number:%u:%u", con->packet_number,
-                      con->buffer_ptr[3]);
-    return DRIZZLE_RETURN_BAD_PACKET_NUMBER;
-  }
-
-  drizzle_log_debug(con, __FILE_LINE_FUNC__,
-    "buffer_size= %" PRIu64 ", packet_size= %" PRIu32 ", packet_number= %" PRIu8,
-    con->buffer_size, con->packet_size, con->packet_number);
-
-  con->packet_number++;
-
-  con->buffer_ptr+= 4;
-  con->buffer_size-= 4;
-
-  con->pop_state();
-
-  return DRIZZLE_RETURN_OK;
+  return DRIZZLE_RETURN_INVALID_ARGUMENT;
 }
+
+#endif

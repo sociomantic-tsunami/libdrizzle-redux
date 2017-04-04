@@ -40,7 +40,7 @@
 #include "tests/unit/common.h"
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 
 #include <inttypes.h>
 #include <stdio.h>
