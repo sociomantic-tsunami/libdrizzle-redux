@@ -52,20 +52,20 @@
 #include <sys/types.h>
 
 /* Visibility must come first */
-#include <libdrizzle-5.1/visibility.h>
+#include <libdrizzle-redux/visibility.h>
 
-#include <libdrizzle-5.1/drizzle.h>
-#include <libdrizzle-5.1/conn_client.h>
-#include <libdrizzle-5.1/query.h>
-#include <libdrizzle-5.1/result_client.h>
-#include <libdrizzle-5.1/column_client.h>
-#include <libdrizzle-5.1/row_client.h>
-#include <libdrizzle-5.1/field_client.h>
-#include <libdrizzle-5.1/error.h>
-#include <libdrizzle-5.1/ssl.h>
-#include <libdrizzle-5.1/binlog.h>
-#include <libdrizzle-5.1/statement.h>
-#include <libdrizzle-5.1/version.h>
+#include <libdrizzle-redux/drizzle.h>
+#include <libdrizzle-redux/conn_client.h>
+#include <libdrizzle-redux/query.h>
+#include <libdrizzle-redux/result_client.h>
+#include <libdrizzle-redux/column_client.h>
+#include <libdrizzle-redux/row_client.h>
+#include <libdrizzle-redux/field_client.h>
+#include <libdrizzle-redux/error.h>
+#include <libdrizzle-redux/ssl.h>
+#include <libdrizzle-redux/binlog.h>
+#include <libdrizzle-redux/statement.h>
+#include <libdrizzle-redux/version.h>
 
 #ifdef __cplusplus
 extern "C" {

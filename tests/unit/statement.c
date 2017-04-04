@@ -38,7 +38,7 @@
 #include <yatl/lite.h>
 
 #include <inttypes.h>
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

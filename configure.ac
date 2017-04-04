@@ -27,7 +27,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
-AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
+AC_CONFIG_SRCDIR([src/drizzle.cc])
 
 # Shared library versioning
 #
@@ -137,13 +137,17 @@ AX_ENDIAN
 AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
+# Append the -./Iinclude to compiler flags
+AX_APPEND_COMPILE_FLAGS([-I./include], [CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I./include], [CFLAGS])
+
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
 
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 libdrizzle-5.1/version.h
+                 include/libdrizzle-redux/version.h
                  ])
 
 AC_OUTPUT

@@ -64,8 +64,8 @@
 extern "C" {
 #endif
 
-#include "libdrizzle/datetime.h"
-#include "libdrizzle/packet.h"
+#include "src/datetime.h"
+#include "src/packet.h"
 
 #if defined _WIN32 || defined __CYGWIN__
 typedef SOCKET socket_t;

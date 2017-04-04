@@ -42,7 +42,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 /*
  * Common definitions

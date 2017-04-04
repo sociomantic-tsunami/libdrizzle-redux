@@ -22,7 +22,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"

@@ -36,7 +36,7 @@
  */
 
 #include "config.h"
-#include "libdrizzle/common.h"
+#include "src/common.h"
 
 #include <zlib.h>
 #include <inttypes.h>
