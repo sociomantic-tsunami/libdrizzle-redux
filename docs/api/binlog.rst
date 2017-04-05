@@ -171,7 +171,7 @@ Functions
    an empty string.
    A valid file_index is in the range [-1 to (number of binlog files -1)]
    The end_position will hold the size of the binlog file and can be used to
-   start reading from the end of the binlog file when parsed to
+   start reading from the end of the binlog file when passed to
    :c:func:`drizzle_binlog_start()`
 
    The filename parameter is allocated by the function and needs to be

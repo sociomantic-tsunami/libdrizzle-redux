@@ -213,7 +213,8 @@ const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_typ
  * [-1 to (number of binlog files -1)]
  *
  * The end_position will hold the size of the binlog file and can be used to
- * start reading from the end of the binlog file when parsed to binlog_start
+ * start reading from the end of the binlog file when passed to
+ * drizzle_binlog_start
  *
  * The filename parameter is allocated by the function and needs to be
  * freed by the application when finished with. This is the case, regardless of
