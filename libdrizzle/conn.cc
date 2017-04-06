@@ -233,7 +233,7 @@ void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
   options->keepintvl = keepintvl;
 }
 
-void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
+void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option,
   int value)
 {
   if (con == NULL)
@@ -264,7 +264,7 @@ void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
   }
 }
 
-int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option)
 {
   if (con == NULL)
   {

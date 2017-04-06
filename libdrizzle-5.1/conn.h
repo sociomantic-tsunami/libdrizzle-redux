@@ -172,7 +172,7 @@ void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout,
  * @param[in] value the value to set
  */
 DRIZZLE_API
-void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
+void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option,
                                int value);
 
 /**
@@ -184,7 +184,7 @@ void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option,
  * @return The value of the option, or -1 if the specified option doesn't exist
  */
 DRIZZLE_API
-int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option);
+int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option);
 
 /**
  * Sets/unsets non-blocking connect option
