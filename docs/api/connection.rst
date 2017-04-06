@@ -155,7 +155,7 @@ Functions
    :param keepcnt: The maximum number of keepalive probes TCP should send before dropping the connection.
    :param keepintvl: The time (in seconds) between individual keepalive probes
 
-.. c:function:: void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option, int value)
+.. c:function:: void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option, int value)
 
    Sets the value of a socket option.
 
@@ -174,7 +174,7 @@ Functions
    :param option: the option to set the value for
    :param value: the value to set
 
-.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option)
 
    Gets the value of a socket option. See :c:func:`drizzle_socket_set_options`
    for a description of the available options
