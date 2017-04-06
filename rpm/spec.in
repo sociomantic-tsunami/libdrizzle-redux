@@ -93,6 +93,12 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-redux/visibility.h
 
 %changelog
+* Wed Apr 05 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.0
+- Reorganization of the project layout
+- Extended logging with filename, linenumber and function-name
+- Improved drizzle_binlog_get_filename to return end position of binlog file
+- Improved documentation for ABI versioning
+
 * Wed Mar 29 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.0
 - Remove outdated reference to drizzle_clone from documentation
 - Expand and fix string escaping capabilities
