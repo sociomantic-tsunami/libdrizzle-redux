@@ -399,7 +399,7 @@ bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
 }
 
 void drizzle_options_set_socket_owner(drizzle_options_st *options,
-                   drizzle_socket_owner owner)
+                   drizzle_socket_owner_t owner)
 {
   if (options == NULL)
   {
@@ -408,7 +408,7 @@ void drizzle_options_set_socket_owner(drizzle_options_st *options,
   options->socket_owner = owner;
 }
 
-drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options)
 {
   if (options == NULL)
   {

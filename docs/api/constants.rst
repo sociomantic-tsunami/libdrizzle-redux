@@ -741,7 +741,7 @@ Connection
 
       SSL connection is established
 
-.. c:type:: drizzle_socket_owner
+.. c:type:: drizzle_socket_owner_t
 
    Owner of socket connection
 

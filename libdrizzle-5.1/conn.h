@@ -302,7 +302,7 @@ bool drizzle_options_get_auth_plugin(drizzle_options_st *options);
  */
 DRIZZLE_API
 void drizzle_options_set_socket_owner(drizzle_options_st *options,
-                                      drizzle_socket_owner owner);
+                                      drizzle_socket_owner_t owner);
 
 /**
  * Gets the owner of the socket connection
@@ -311,7 +311,7 @@ void drizzle_options_set_socket_owner(drizzle_options_st *options,
  * @return The owner of the socket
  */
 DRIZZLE_API
-drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options);
+drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options);
 
 /**
  * Get TCP host for a connection.
