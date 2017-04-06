@@ -159,7 +159,7 @@ struct drizzle_options_st
   bool interactive;
   bool multi_statements;
   bool auth_plugin;
-  drizzle_socket_owner socket_owner;
+  drizzle_socket_owner_t socket_owner;
   int wait_timeout;
   int keepidle;  // default value under linux: 7200
   int keepcnt;   // default value under linux: 75

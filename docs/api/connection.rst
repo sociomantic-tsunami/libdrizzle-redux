@@ -267,14 +267,14 @@ Functions
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
 
-.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner owner)
+.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner_t owner)
 
    Sets the owner of the socket connection
 
    :param options: The options object to modify
    :param owner: The owner of the socket connection
 
-.. c:function:: drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+.. c:function:: drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options)
 
    Gets the owner of the socket connection
 
