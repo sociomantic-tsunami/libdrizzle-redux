@@ -5,14 +5,16 @@ Description |BuildStatus|_
 C connector. It is designed to allow you to connect to and query a
 **MySQL** database server using a simple API.
 
-Libdrizzle-redux in the sociomantic tsunami repository is a fork of the official
-**v5.1.4 Felmingham** at https://launchpad.net/libdrizzle.
+**Libdrizzle-redux** is a fork of the official **v5.1.4 Felmingham** release available at  https://launchpad.net/libdrizzle.
 
 The primary reason for the fork is that development of the upstream stopped in 2013
-which meant that crucial fixes and enhancements  were not included in the latest
+which meant that crucial fixes and enhancements were not included in the latest
 stable release **v5.1.4 Felmingham**.
 
-We hope that continuing the development of libdrizzle-redux can benefit current
+The repository was released under the `Tsunami programme`_ created by `Sociomantic Labs`_
+in order to support developers who want to contribute to the open source community.
+
+We hope that continuing the development of **libdrizzle-redux** can benefit current
 and future users of the library.
 
 For more details on new features please refer to the
@@ -31,10 +33,13 @@ Maintained Major Branches
    :header: "Major", "Initial release date", "Supported until"
    :widths: 5, 15, 12
 
-   `v5.x.x`_, `v5.2.0`_: 2016-03-31, TBA - 6 months after next major release
+   `v5.x.x`_, `v5.2.0`_: 2016-03-31, 2017-10-06
+   `v6.x.x`_, `v6.0.0`_: 2017-04-06, TBA - 6 months after next major release
 
 .. _v5.x.x: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v5.x.x
 .. _v5.2.0: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v5.2.0
+.. _v6.x.x: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v6.x.x
+.. _v6.0.0: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v6.0.0
 
 Releases
 ========
@@ -94,3 +99,5 @@ Documentation can be generated in several formats::
 .. _All: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/
 .. _here: https://github.com/sociomantic-tsunami/neptune/blob/master/doc/library-user.rst
 .. _compiling.rst: https://github.com/andreas-bok-sociomantic/libdrizzle-redux/blob/v5.4.x/docs/compiling.rst
+.. _Tsunami programme: https://github.com/sociomantic-tsunami
+.. _Sociomantic Labs: https://www.sociomantic.com
