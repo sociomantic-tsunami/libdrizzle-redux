@@ -749,6 +749,34 @@ Connection
 
    .. py:data:: DRIZZLE_SOCKET_OWNER_CLIENT
 
+.. c:type:: (deprecated) drizzle_socket_owner
+
+   typedef of :c:type:`drizzle_socket_owner_t`
+
+.. c:type:: drizzle_socket_option_t
+
+   An ENUM of socket connection options
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPIDLE
+
+      The socket connection timeout
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPCNT
+
+      Number of probes before dropping connection
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPINTVL
+
+      TCP interval between probes
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_TIMEOUT
+
+      TCP Keep-alive timeout
+
+.. c:type:: (deprecated) drizzle_socket_option
+
+   typedef of :c:type:`drizzle_socket_option_t`
+
 Query
 -----
 
