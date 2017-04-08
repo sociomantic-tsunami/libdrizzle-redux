@@ -105,8 +105,10 @@ fpm -s dir -t deb -n "$dist_pkgname" -v "$pkgversion" \
     --depends libgcc1 \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
+    --after-install after_install.sh \
     $so_libname.$libversion=/usr/lib/$dist_pkgname.so.$libversion \
     $libdir/$dist_so_libname.$lib_major=/usr/lib/
+
 
 # libdrizzle-redux debug package
 genchangelog "$dist_pkgname-dbg" "$pkgversion" "$pkgmaint" > "$changelog"
