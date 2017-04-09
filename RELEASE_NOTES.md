@@ -12,5 +12,17 @@ openssl<sup>1</sup> | >=v1.x
 <sup>1</sup> openssl is needed if libdrizzle-redux is compiled with support for
 SSL connections.
 
+Migration Notes
+===============
+
+The library is now built in a separate toplevel directory `build`.
+The modified build process is as follows:
+
+    mkdir build && cd build
+    autoreconf -fi ..
+    ../configure
+    make
+    make install
+
 New Features
 ============
