@@ -11,11 +11,11 @@
 aclocal.m4
 aminclude.am
 autom4te.cache/
+build/
 build-aux/
 config.h
 config.in
 configure
-deb/install
 .deps
 docs/conf.py
 src/.*

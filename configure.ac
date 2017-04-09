@@ -138,8 +138,8 @@ AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
 # Append the -./Iinclude to compiler flags
-AX_APPEND_COMPILE_FLAGS([-I./include], [CXXFLAGS])
-AX_APPEND_COMPILE_FLAGS([-I./include], [CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I$srcdir/include -I$srcdir -I./ -I./include], [CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I$srcdir/include -I$srcdir -I./ -I./include], [CFLAGS])
 
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
@@ -147,7 +147,7 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 include/libdrizzle-redux/version.h
+                 $srcdir/include/libdrizzle-redux/version.h
                  ])
 
 AC_OUTPUT
