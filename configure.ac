@@ -8,7 +8,7 @@
 
 AC_INIT([libdrizzle-redux6],[6.0.7],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux6],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
-AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_AUX_DIR([build/build-aux])
 
 AC_CANONICAL_TARGET
 
@@ -147,8 +147,8 @@ AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
 # Append the -./Iinclude to compiler flags
-AX_APPEND_COMPILE_FLAGS([-I./include], [CXXFLAGS])
-AX_APPEND_COMPILE_FLAGS([-I./include], [CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I$srcdir/include -I$srcdir -I./ -I./include], [CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I$srcdir/include -I$srcdir -I./ -I./include], [CFLAGS])
 
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
@@ -156,8 +156,9 @@ AX_AM_JOBSERVER([yes])
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  pkg/rpm/spec
-                 include/libdrizzle-redux/version.h
+                 include/libdrizzle-redux/version.h:$srcdir/include/libdrizzle-redux/version.h.in
                  ])
+AC_CONFIG_FILES([pkg/deb/build:$srcdir/pkg/deb/build],[chmod +x pkg/deb/build])
 
 AC_OUTPUT
 

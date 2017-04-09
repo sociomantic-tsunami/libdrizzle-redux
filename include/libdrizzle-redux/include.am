@@ -24,3 +24,5 @@ nobase_include_HEADERS+= include/libdrizzle-redux/structs.h
 nobase_include_HEADERS+= include/libdrizzle-redux/verbose.h
 nobase_include_HEADERS+= include/libdrizzle-redux/visibility.h
 nobase_include_HEADERS+= include/libdrizzle-redux/version.h
+
+EXTRA_DIST+=include/libdrizzle-redux/version.h.in
