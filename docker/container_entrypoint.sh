@@ -22,14 +22,19 @@ install_dependencies()
 }
 
 # install dependencies
-#chmod +x /usr/local/bin/install_dependencies.sh
 install_dependencies
 
 # configure and compile the project
 # run make targets specified in env MAKE_TARGET
-if [[ ! -e ./configure ]]; then
-    autoreconf -fi
-    ./configure
+if [[ ! -d ./build ]]; then
+    mkdir build
+fi
+
+cd build
+
+if [[ ! -e ../configure ]]; then
+    autoreconf -fi ..
+    ../configure
 fi
 
 make ${MAKE_TARGET//:/ }

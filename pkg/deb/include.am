@@ -4,10 +4,12 @@
 #
 # Makefile for building deb package
 
+EXTRA_DIST+=pkg/deb/build
+
 .PHONY: clean-deb deb install-deb release-deb
 
 deb: clean-deb
-	./configure --prefix=/usr
+	${abs_top_srcdir}/configure --prefix=/usr --srcdir=${abs_top_srcdir}
 	$(MAKE) DESTDIR=${abs_builddir}/pkg/deb/install install
 	pkg/deb/build $(PACKAGE)
 
@@ -23,4 +25,4 @@ release-deb:
 	git tag -a -m "$$msg" $$version
 
 clean-deb:
-	-rm -rf pkg/deb/*.deb pkg/deb/install
+	-rm -rf ${abs_builddir}/pkg/deb/*.deb ${abs_builddir}/pkg/deb/install
