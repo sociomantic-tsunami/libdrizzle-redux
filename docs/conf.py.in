@@ -138,7 +138,7 @@ html_static_path = ['_static']
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -221,6 +221,8 @@ latex_logo = '_static/logo.png'
 latex_elements = {
     'classoptions': 'openany,oneside', 'babel' : '\\usepackage[english]{babel}'
 }
+
+epub_exclude_files = ['.doctrees/compiling.doctree', '.doctrees/examples/statement.doctree']
 
 # -- Options for manual page output --------------------------------------------
 
