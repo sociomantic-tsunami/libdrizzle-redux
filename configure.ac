@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[5.2.0],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[6.0.0],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -21,21 +21,48 @@ AC_CANONICAL_BUILD
 AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
+AX_ENABLE_SSL
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
-AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
+AC_CONFIG_SRCDIR([src/drizzle.cc])
 
-#shared library versioning
-LIBDRIZZLE_LIBRARY_VERSION=9:0:0
+# Shared library versioning
+#
+# The following explanation considers library changes and ABI compatibility from
+# the users' perspective and how they relate to the shared library version.(§)
+#
+# Programs using the previous version may use the new version as drop-in
+# replacement, and programs using the new version can also work with the
+# previous one. In other words, no recompiling nor relinking is needed.
+# In this case:
+#     bump revision only, don’t touch current nor age.
+#
+# Programs using the previous version may use the new version as drop-in
+# replacement, but programs using the new version may use APIs not present in
+# the previous one. In other words, a program linking against the new version
+# may fail with “unresolved symbols” if linking against the old version at
+# runtime. In this case:
+#     set revision to 0, bump current and age.
+#
+# Programs may need to be changed, recompiled, relinked in order to use the
+# new version:
+#     bump current, set revision and age to 0.
+#
+# (§) The explanation is taken from this blogpost:
+# http://blog.asleson.org/index.php/2014/07/08/libtool-library-versioning-version-info-currentrevisionage/
+#
+LIBDRIZZLE_LIBRARY_VERSION=13:0:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
 #                 current:revision:age
 #                  |        |     |
 #                  |        |     +- increment if interfaces have been added
-#                  |        |        set to zero if interfaces have been removed or changed
+#                  |        |        set to zero if interfaces have been removed
+#                                    or changed
 #                  |        +- increment if source code has changed
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
@@ -49,6 +76,7 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
+AX_CXX_COMPILE_STDCXX_11
 
 AX_PLATFORM
 AX_ASSERT
@@ -58,13 +86,16 @@ AX_CXX_CINTTYPES
 CONFIG_EXTRA
 SOCKET_SEND_FLAGS
 
+# Checks for latex
+ACLTX_PROG_LATEX
+ACLTX_PROG_PDFLATEX
+ACLTX_PROG_KPSEWHICH
+
 # Checks for programs.
 AX_PROG_SPHINX_BUILD
 
 # Checks for libraries.
 AX_CXX_GCC_ABI_DEMANGLE
-
-AS_IF([test "x${TARGET_WINDOWS}" != "xtrue"],[AX_CHECK_OPENSSL])
 
 AC_PATH_ZLIB
 
@@ -106,13 +137,17 @@ AX_ENDIAN
 AX_HEX_VERSION([LIBDRIZZLE],[$VERSION])
 AX_HARDEN_COMPILER_FLAGS
 
+# Append the -./Iinclude to compiler flags
+AX_APPEND_COMPILE_FLAGS([-I./include], [CXXFLAGS])
+AX_APPEND_COMPILE_FLAGS([-I./include], [CFLAGS])
+
 AX_CREATE_GENERIC_CONFIG
 AX_AM_JOBSERVER([yes])
 
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  rpm/spec
-                 libdrizzle-5.1/version.h
+                 include/libdrizzle-redux/version.h
                  ])
 
 AC_OUTPUT

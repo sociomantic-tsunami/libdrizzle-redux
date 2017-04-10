@@ -15,6 +15,9 @@ Alternatively you can build and customize::
    make
    make install
 
+Please check the `RELEASE NOTES`_ for a list of dependencies specific to the
+version of the library you are trying to compile.
+
 .. _test-suite:
 
 Running the Test Suite
@@ -32,11 +35,11 @@ The test suite uses system environment variables to find the MySQL server:
 * ``MYSQL_SCHEMA`` - The default database for the MySQL connection (default empty)
 
 The test suite can then be run using ``make check`` or ``make distcheck`` for
-testing a source distribution rather than the straight bzr branch.
+testing a source distribution rather than the straight git branch.
 
 To test with valgrind you can run the following::
 
-   TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check
+``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
 Building For Windows (cross-compile)
 ------------------------------------
@@ -68,12 +71,13 @@ The test suite can be run in wine, to do this follow these steps:
 
    #. Open the ``~/.wine/system.reg`` file for editing
    #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
-   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin`` directory using the ``Z:`` drive. 
-      For Fedora 18 64bit this makes the entry::
+   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin``
+      directory using the ``Z:`` drive. For Fedora 18 64bit this makes the entry
 
-         "PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"
+      ``"PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"``
 
-#. Run the test suite as follows (see :ref:``test-suite`` for more details and needed environment variables when running the test suite)::
+#. Run the test suite as follows (see `Running the Test Suite`_ for more details
+   and needed environment variables when running the test suite)::
 
       WINEARCH=win32 TESTS_ENVIRONMENT=wine make check
 
@@ -83,6 +87,8 @@ Linking Your Application
 To link your app to libdrizzle-redux you need to provide the following to GCC,
 this assumes that the library is in your library and include paths::
 
-   gcc app.c -oapp -ldrizzle-redux -lssl
+   gcc app.c -oapp -ldrizzle-redux -lpthread
 
-A tool called :program:``libdrizzle-redux-config`` is included to also assist with this.
+A tool called **libdrizzle-redux_config** is included to also assist with this.
+
+.. _RELEASE NOTES: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases

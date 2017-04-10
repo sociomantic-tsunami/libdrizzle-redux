@@ -37,62 +37,68 @@
 
 #include <yatl/lite.h>
 
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <inttypes.h>
 #include <string.h>
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
   drizzle_stmt_st *stmt;
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi("MYSQL_PORT") : DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), 0);
+  drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
+                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                                        : DRIZZLE_DEFAULT_TCP_PORT,
+                                   getenv("MYSQL_USER"),
+                                   getenv("MYSQL_PASSWORD"),
+                                   getenv("MYSQL_SCHEMA"), 0);
 
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret= drizzle_connect(con);
+  drizzle_return_t ret = drizzle_connect(con);
   if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
 
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error, drizzle_strerror(ret));
+    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
+             drizzle_strerror(ret));
   }
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect(): %s(%s)",
+             drizzle_error(con), drizzle_strerror(ret));
 
   drizzle_query(con, "DROP SCHEMA IF EXISTS test_stmt_ch", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt_ch (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt_ch (%s)",
+             drizzle_error(con));
 
   drizzle_query(con, "CREATE SCHEMA test_stmt_ch", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt_ch (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE SCHEMA test_stmt_ch (%s)",
+             drizzle_error(con));
 
-  ret= drizzle_select_db(con, "test_stmt_ch");
+  ret = drizzle_select_db(con, "test_stmt_ch");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_stmt_ch");
 
-  drizzle_query(con, "create table test_stmt_ch.t1 (a varchar(50))", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "create table test_stmt_ch.t1 (a int): %s", drizzle_error(con));
+  drizzle_query(con, "CREATE TABLE test_stmt_ch.t1 (a VARCHAR(50))", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE TABLE test_stmt_ch.t1 (a INT): %s",
+             drizzle_error(con));
 
-  drizzle_query(con, "insert into test_stmt_ch.t1 values ('hello'),('drizzle'),('people')", 0, &ret);
+  drizzle_query(con,
+	        "INSERT INTO test_stmt_ch.t1 VALUES ('hello'),('drizzle'),('people')",
+		0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
-  const char *query= "select * from test_stmt_ch.t1 where a = ?";
-  stmt= drizzle_stmt_prepare(con, query, strlen(query), &ret);
+  const char *query = "SELECT * FROM test_stmt_ch.t1 WHERE a = ?";
+  stmt = drizzle_stmt_prepare(con, query, strlen(query), &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   /* Query should have 1 param */
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
-  char val[]= "hello";
+  char val[] = "hello";
   ret = drizzle_stmt_set_string(stmt, 0, val, strlen(val));
   if (ret != DRIZZLE_RETURN_OK)
   {
@@ -118,12 +124,12 @@ int main(int argc, char *argv[])
     printf("Retrieved bad row count\n");
     return EXIT_FAILURE;
   }
-  uint32_t i= 0;
+  uint32_t i = 0;
   while (drizzle_stmt_fetch(stmt) != DRIZZLE_RETURN_ROW_END)
   {
-    const char* char_val;
+    const char *char_val;
     size_t len;
-    char_val= drizzle_stmt_get_string(stmt, 0, &len, &ret);
+    char_val = drizzle_stmt_get_string(stmt, 0, &len, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
     i++;
     if (strncmp(val, char_val, len) != 0)
@@ -139,15 +145,17 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   ret = drizzle_stmt_close(stmt);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_close() %s", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_close() %s",
+             drizzle_error(con));
 
   drizzle_query(con, "DROP TABLE test_stmt_ch.t1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE test_stmt_ch.t1");
 
   drizzle_query(con, "DROP SCHEMA IF EXISTS test_stmt_ch", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_stmt_ch (%s)", drizzle_error(con));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP SCHEMA test_stmt_ch (%s)",
+             drizzle_error(con));
 
-  ret= drizzle_quit(con);
+  ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
 
   return EXIT_SUCCESS;

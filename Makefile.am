@@ -38,8 +38,8 @@ TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 include yatl/include.am
 include tests/include.am
 include m4/include.am
-include libdrizzle/include.am
-include libdrizzle-5.1/include.am
+include src/include.am
+include include/libdrizzle-redux/include.am
 include rpm/include.am
 include deb/include.am
 include docs/include.am
@@ -51,6 +51,7 @@ EXTRA_DIST+= COPYING
 maintainer-clean-local:
 	-rm Makefile.in
 	-rm aclocal.m4
+	-rm build-aux/compile
 	-rm build-aux/config.guess
 	-rm build-aux/config.sub
 	-rm build-aux/depcomp

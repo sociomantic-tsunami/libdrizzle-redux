@@ -1,15 +1,15 @@
 # vim:ft=automake
 # included from Top Level Makefile.am
 # All paths should be given relative to the root
-# 
-# Makefile for building deb package 
+#
+# Makefile for building deb package
 
 .PHONY: clean-deb deb install-deb release-deb
 
 deb: clean-deb
 	./configure --prefix=/usr
 	$(MAKE) DESTDIR=${abs_builddir}/deb/install install
-	deb/build ${LIBDRIZZLE_LIBRARY_VERSION}
+	deb/build
 
 release-deb:
 	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \

@@ -1,24 +1,24 @@
 #!/bin/bash
-# 
+#
 # Copyright (C) 2012-2013 Brian Aker
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 # notice, this list of conditions and the following disclaimer.
-# 
+#
 #     * Redistributions in binary form must reproduce the above
 # copyright notice, this list of conditions and the following disclaimer
 # in the documentation and/or other materials provided with the
 # distribution.
-# 
+#
 #     * The names of its contributors may not be used to endorse or
 # promote products derived from this software without specific prior
 # written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -47,7 +47,7 @@ command_not_found_handle ()
 {
   warn "$@: command not found"
 
-  #if $DEBUG; then 
+  #if $DEBUG; then
     echo ""
     echo "Stack trace:"
     local frame=0
@@ -60,36 +60,32 @@ command_not_found_handle ()
   return 127
 }
 
-function error ()
-{ 
+function error {
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
 }
 
-function die ()
-{ 
+function die {
   echo "$BASH_SOURCE:$BASH_LINENO: $@" >&2
-  exit 1; 
+  exit 1;
 }
 
-function warn ()
-{ 
+function warn {
   echo "$BASH_SOURCE:$BASH_LINENO: $@"
   #echo "$BASH_SOURCE:$BASH_LINENO: $@" >&1
 }
 
-function nassert ()
-{
+function nassert {
   local param_name=\$"$1"
   local param_value="$(eval "expr \"$param_name\" ")"
 
   if [ -n "$param_value" ]; then
-    echo "$bash_source:$bash_lineno: assert($param_name) had value of "$param_value"" >&2
+    echo "$bash_source:$bash_lineno: assert($param_name) had value of"\
+         "\"$param_value\"" >&2
     exit 1
   fi
 }
 
-function assert ()
-{
+function assert {
   local param_name=\$"$1"
   local param_value="$(eval "expr \"$param_name\" ")"
 
@@ -99,32 +95,28 @@ function assert ()
   fi
 }
 
-function assert_file ()
-{
+function assert_file {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
-    exit 1; 
+    exit 1;
   fi
 }
 
-function assert_no_file ()
-{
+function assert_no_file {
   if [ -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) file exists: $2" >&2
     exit 1;
   fi
 }
 
-function assert_no_directory ()
-{
+function assert_no_directory {
   if [ -d "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) directory exists: $2" >&2
     exit 1;
   fi
 }
 
-function assert_exec_file ()
-{
+function assert_exec_file {
   if [ ! -f "$1" ]; then
     echo "$BASH_SOURCE:$BASH_LINENO: assert($1) does not exist: $2" >&2
     exit 1;
@@ -136,14 +128,16 @@ function assert_exec_file ()
   fi
 }
 
-function command_exists ()
-{
+function command_exists {
   type "$1" &> /dev/null ;
 }
 
-function rebuild_host_os ()
-{
-  HOST_OS="${UNAME_MACHINE_ARCH}-${VENDOR}-${VENDOR_DISTRIBUTION}-${VENDOR_RELEASE}-${UNAME_KERNEL}-${UNAME_KERNEL_RELEASE}"
+function rebuild_host_os {
+  HOST_OS=$(printf "%s-%s-%s-%s-%s-%s" \
+    "${UNAME_MACHINE_ARCH}" "${VENDOR}" \
+    "${VENDOR_DISTRIBUTION}" "${VENDOR_RELEASE}" \
+    "${UNAME_KERNEL}" "${UNAME_KERNEL_RELEASE}")
+
   if [ -z "$1" ]; then
     if $verbose; then
       echo "HOST_OS=$HOST_OS"
@@ -151,11 +145,10 @@ function rebuild_host_os ()
   fi
 }
 
-# Validate the distribution name, or toss an erro
-#  values: darwin,fedora,rhel,ubuntu,debian,opensuse
-function set_VENDOR_DISTRIBUTION ()
-{
-  local dist="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+# Validate the distribution name, or toss an error
+# values: darwin, fedora, rhel, ubuntu, debian, suse, opensuse
+function set_VENDOR_DISTRIBUTION {
+  local dist="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
   case "$dist" in
     darwin)
       VENDOR_DISTRIBUTION='darwin'
@@ -184,12 +177,11 @@ function set_VENDOR_DISTRIBUTION ()
   esac
 }
 
-# Validate a Vendor's release name/number 
-function set_VENDOR_RELEASE ()
-{
-  local release="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+# Validate a Vendor's release name/number
+function set_VENDOR_RELEASE {
+  local release="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
-  if $verbose; then 
+  if $verbose; then
     echo "VENDOR_DISTRIBUTION:$VENDOR_DISTRIBUTION"
     echo "VENDOR_RELEASE:$release"
   fi
@@ -197,19 +189,13 @@ function set_VENDOR_RELEASE ()
   case $VENDOR_DISTRIBUTION in
     darwin)
       case $release in
-        10.6*)
-          VENDOR_RELEASE='snow_leopard'
-          ;;
-        10.7*)
-          VENDOR_RELEASE='mountain'
-          ;;
-        mountain)
-          VENDOR_RELEASE='mountain'
-          ;;
-        10.8.*)
-          echo "mountain_lion"
-          VENDOR_RELEASE='mountain_lion'
-          ;;
+        10.6*)              VENDOR_RELEASE='snow_leopard'  ;;
+        10.7*)              VENDOR_RELEASE='lion'          ;;
+        10.8.*)             VENDOR_RELEASE='mountain_lion' ;;
+        10.9.*)             VENDOR_RELEASE='mavericks'     ;;
+        10.10.*)            VENDOR_RELEASE='yosemite'      ;;
+        10.11.*)            VENDOR_RELEASE='el_capitan'    ;;
+        10.12.*)            VENDOR_RELEASE='sierra'        ;;
         *)
           echo $VENDOR_RELEASE
           VENDOR_RELEASE='unknown'
@@ -236,6 +222,10 @@ function set_VENDOR_RELEASE ()
         VENDOR_RELEASE="quantal"
       elif [[ "x$VENDOR_RELEASE" == 'x13.04' ]]; then
         VENDOR_RELEASE="raring"
+      elif [[ "x$VENDOR_RELEASE" == 'x14.04' ]]; then
+        VENDOR_RELEASE="trusty"
+      elif [[ "x$VENDOR_RELEASE" == 'x16.04' ]]; then
+        VENDOR_RELEASE="xenial"
       fi
       ;;
     opensuse)
@@ -251,10 +241,10 @@ function set_VENDOR_RELEASE ()
 }
 
 
-#  Valid values are: apple, redhat, centos, canonical, oracle, suse
-function set_VENDOR ()
-{
-  local vendor="$(echo "$1" | tr '[A-Z]' '[a-z]')"
+#  Valid values are: apple, redhat, centos, canonical, ubuntu, debian, oracle,
+#  opensuse, suse
+function set_VENDOR {
+  local vendor="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   case $vendor in
     apple)
@@ -314,54 +304,58 @@ function set_VENDOR ()
         AUTORECONF_REBUILD_HOST=true
       elif [[ "x$VENDOR_RELEASE" == 'xquantal' ]]; then
         AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xraring' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xtrusty' ]]; then
+        AUTORECONF_REBUILD_HOST=true
+      elif [[ "x$VENDOR_RELEASE" == 'xxenial' ]]; then
+        AUTORECONF_REBUILD_HOST=true
       fi
       ;;
   esac
 
 }
 
-function determine_target_platform ()
-{
+function determine_target_platform {
   UNAME_MACHINE_ARCH="$(uname -m 2>/dev/null)" || UNAME_MACHINE_ARCH=unknown
   UNAME_KERNEL="$(uname -s 2>/dev/null)"  || UNAME_SYSTEM=unknown
   UNAME_KERNEL_RELEASE="$(uname -r 2>/dev/null)" || UNAME_KERNEL_RELEASE=unknown
 
-  if [[ -x '/usr/bin/sw_vers' ]]; then 
+  if [[ -x '/usr/bin/sw_vers' ]]; then
     local _VERSION="$(/usr/bin/sw_vers -productVersion)"
-    set_VENDOR 'apple' 'darwin' $_VERSION
+    set_VENDOR 'apple' 'darwin' "$_VERSION"
   elif [[ $(uname) == 'Darwin' ]]; then
     set_VENDOR 'apple' 'darwin' 'mountain'
-  elif [[ -f '/etc/fedora-release' ]]; then 
+  elif [[ -f '/etc/fedora-release' ]]; then
     local fedora_version="$(cat /etc/fedora-release | awk ' { print $3 } ')"
-    set_VENDOR 'redhat' 'fedora' $fedora_version
+    set_VENDOR 'redhat' 'fedora' "$fedora_version"
   elif [[ -f '/etc/centos-release' ]]; then
     local centos_version="$(cat /etc/centos-release | awk ' { print $7 } ')"
-    set_VENDOR 'centos' 'rhel' $centos_version
+    set_VENDOR 'centos' 'rhel' "$centos_version"
   elif [[ -f '/etc/SuSE-release' ]]; then
     local suse_distribution="$(head -1 /etc/SuSE-release | awk ' { print $1 } ')"
     local suse_version="$(head -1 /etc/SuSE-release | awk ' { print $2 } ')"
-    set_VENDOR 'suse' $suse_distribution $suse_version
+    set_VENDOR 'suse' "$suse_distribution" "$suse_version"
   elif [[ -f '/etc/redhat-release' ]]; then
     local rhel_version="$(cat /etc/redhat-release | awk ' { print $7 } ')"
     local _vendor="$(rpm -qf /etc/redhat-release)"
-    set_VENDOR $_vendor 'rhel' $rhel_version
-  elif [[ -f '/etc/os-release' ]]; then 
+    set_VENDOR "$_vendor" 'rhel' "$rhel_version"
+  elif [[ -f '/etc/os-release' ]]; then
     source '/etc/os-release'
-    set_VENDOR $ID $ID $VERSION_ID
-  elif [[ -x '/usr/bin/lsb_release' ]]; then 
+    set_VENDOR "$ID" "$ID" "$VERSION_ID"
+  elif [[ -x '/usr/bin/lsb_release' ]]; then
     local _ID="$(/usr/bin/lsb_release -s -i)"
     local _VERSION="$(/usr/bin/lsb_release -s -r)"
-    set_VENDOR $_ID $_ID $_VERSION_ID
-  elif [[ -f '/etc/lsb-release' ]]; then 
+    set_VENDOR "$_ID" "$_ID" "$_VERSION_ID"
+  elif [[ -f '/etc/lsb-release' ]]; then
     source '/etc/lsb-release'
-    set_VENDOR 'canonical' $DISTRIB_ID $DISTRIB_CODENAME
+    set_VENDOR 'canonical' "$DISTRIB_ID" "$DISTRIB_CODENAME"
   fi
 
   rebuild_host_os
 }
 
-function run_configure ()
-{
+function run_configure {
   # We will run autoreconf if we are required
   run_autoreconf_if_required
 
@@ -377,32 +371,33 @@ function run_configure ()
 
   local BUILD_DIR="$1"
   if [[ -n "$BUILD_DIR" ]]; then
-    rm -r -f $BUILD_DIR
-    mkdir -p $BUILD_DIR
-    safe_pushd $BUILD_DIR
+    rm -r -f "$BUILD_DIR"
+    mkdir -p "$BUILD_DIR"
+    safe_pushd "$BUILD_DIR"
   fi
 
   # Arguments for configure
-  local BUILD_CONFIGURE_ARG='' 
+  local BUILD_CONFIGURE_ARG=''
 
-  # If debug is set we enable both debug and asssert, otherwise we see if this is a VCS checkout and if so enable assert
+  # If debug is set we enable both debug and assert, otherwise we see if this
+  # is a VCS checkout and if so enable assert
   # Set ENV ASSERT in order to enable assert.
   # If we are doing a valgrind run, we always compile with assert disabled
   if $valgrind_run; then
     BUILD_CONFIGURE_ARG="--enable-assert=no $BUILD_CONFIGURE_ARG"
   else
-    if $debug; then 
+    if $debug; then
       BUILD_CONFIGURE_ARG="--enable-debug --enable-assert $BUILD_CONFIGURE_ARG"
     elif [[ -n "$VCS_CHECKOUT" ]]; then
       BUILD_CONFIGURE_ARG="--enable-assert $BUILD_CONFIGURE_ARG"
     fi
   fi
 
-  if [[ -n "$CONFIGURE_ARG" ]]; then 
+  if [[ -n "$CONFIGURE_ARG" ]]; then
     BUILD_CONFIGURE_ARG="$CONFIGURE_ARG $BUILD_CONFIGURE_ARG"
   fi
 
-  if [[ -n "$PREFIX_ARG" ]]; then 
+  if [[ -n "$PREFIX_ARG" ]]; then
     BUILD_CONFIGURE_ARG="$PREFIX_ARG $BUILD_CONFIGURE_ARG"
   fi
 
@@ -410,12 +405,14 @@ function run_configure ()
   # If we are executing on OSX use CLANG, otherwise only use it if we find it in the ENV
   case $HOST_OS in
     *-darwin-*)
-      eval "CC=clang CXX=clang++ ./configure $BUILD_CONFIGURE_ARG" || die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
+      eval "CC=clang CXX=clang++ ./configure $BUILD_CONFIGURE_ARG" || \
+      die "Cannot execute CC=clang CXX=clang++ configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     rhel-5*)
       command_exists 'gcc44' || die "Could not locate gcc44"
-      eval "CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG" || die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
+      eval "CC=gcc44 CXX=gcc44 $top_srcdir/configure $BUILD_CONFIGURE_ARG" || \
+      die "Cannot execute CC=gcc44 CXX=gcc44 configure $BUILD_CONFIGURE_ARG"
       ret=$?
       ;;
     *)
@@ -433,8 +430,7 @@ function run_configure ()
   fi
 }
 
-function setup_gdb_command ()
-{
+function setup_gdb_command {
   GDB_TMPFILE=$(mktemp /tmp/gdb.XXXXXXXXXX)
   echo 'set logging overwrite on' > "$GDB_TMPFILE"
   echo 'set logging on' >> "$GDB_TMPFILE"
@@ -445,16 +441,16 @@ function setup_gdb_command ()
   GDB_COMMAND="gdb -f -batch -x $GDB_TMPFILE"
 }
 
-function setup_valgrind_command ()
-{
+function setup_valgrind_command {
   VALGRIND_PROGRAM="$(type -p valgrind)"
   if [[ -n "$VALGRIND_PROGRAM" ]]; then
-    VALGRIND_COMMAND="$VALGRIND_PROGRAM --error-exitcode=1 --leak-check=yes --malloc-fill=A5 --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
+    VALGRIND_COMMAND="$VALGRIND_PROGRAM "\
+                     "--error-exitcode=1 --leak-check=yes --malloc-fill=A5 "\
+                     " --free-fill=DE --xml=yes --xml-file=\"valgrind-%p.xml\""
   fi
 }
 
-function save_BUILD ()
-{
+function save_BUILD {
   if [[ -n "$OLD_CONFIGURE" ]]; then
     die "OLD_CONFIGURE($OLD_CONFIGURE) was set on push, programmer error!"
   fi
@@ -492,8 +488,7 @@ function save_BUILD ()
   fi
 }
 
-function restore_BUILD ()
-{
+function restore_BUILD {
   if [[ -n "$OLD_CONFIGURE" ]]; then
     CONFIGURE=$OLD_CONFIGURE
   fi
@@ -523,8 +518,7 @@ function restore_BUILD ()
   export -n CC CXX
 }
 
-function safe_pushd ()
-{
+function safe_pushd {
   pushd "$1" &> /dev/null ;
 
   if [ -n "$BUILD_DIR" ]; then
@@ -534,8 +528,7 @@ function safe_pushd ()
   fi
 }
 
-function safe_popd ()
-{
+function safe_popd {
   local directory_to_delete="$(pwd)"
   popd &> /dev/null ;
   if [ $? -eq 0 ]; then
@@ -547,8 +540,7 @@ function safe_popd ()
   fi
 }
 
-function make_valgrind ()
-{
+function make_valgrind {
   # If the env VALGRIND_COMMAND is set then we assume it is valid
   local valgrind_was_set=false
   if [[ -z "$VALGRIND_COMMAND" ]]; then
@@ -599,14 +591,13 @@ function make_valgrind ()
   fi
 }
 
-function make_install_system ()
-{
+function make_install_system {
   local INSTALL_LOCATION="$(mktemp -d /tmp/XXXXXXXXXX)"
 
   save_BUILD
   PREFIX_ARG="--prefix=$INSTALL_LOCATION"
 
-  if [ ! -d $INSTALL_LOCATION ] ; then
+  if [ ! -d "$INSTALL_LOCATION" ] ; then
     die "ASSERT temp directory not found '$INSTALL_LOCATION'"
   fi
 
@@ -618,7 +609,7 @@ function make_install_system ()
 
   make_target 'uninstall'
 
-  rm -r -f $INSTALL_LOCATION
+  rm -r -f "$INSTALL_LOCATION"
   make 'distclean'
 
   if [ -f 'Makefile' ]; then
@@ -629,8 +620,7 @@ function make_install_system ()
   safe_popd
 }
 
-function make_darwin_malloc ()
-{
+function make_darwin_malloc {
   run_configure_if_required
 
   old_MallocGuardEdges=$MallocGuardEdges
@@ -648,8 +638,7 @@ function make_darwin_malloc ()
 }
 
 # This will reset our environment, and make sure built files are available.
-function make_for_snapshot ()
-{
+function make_for_snapshot {
   # Lets make sure we have a clean environment
   assert_no_file 'Makefile'
   assert_no_file 'configure'
@@ -664,8 +653,7 @@ function make_for_snapshot ()
   assert_exec_file 'configure'
 }
 
-function check_mingw ()
-{
+function check_mingw {
   command_exists 'mingw64-configure'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -681,8 +669,7 @@ function check_mingw ()
   return 0
 }
 
-function check_clang ()
-{
+function check_clang {
   command_exists 'clang'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -692,8 +679,7 @@ function check_clang ()
   return 0
 }
 
-function check_clang_analyzer ()
-{
+function check_clang_analyzer {
   command_exists 'scan-build'
   ret=$?
   if [ "$ret" -ne 0 ]; then
@@ -703,8 +689,7 @@ function check_clang_analyzer ()
   return 0
 }
 
-function make_skeleton ()
-{
+function make_skeleton {
   run_configure
   ret=$?
 
@@ -736,8 +721,7 @@ function make_skeleton ()
   return $ret
 }
 
-function make_for_mingw ()
-{
+function make_for_mingw {
   if ! check_mingw; then
     return 1
   fi
@@ -763,8 +747,7 @@ function make_for_mingw ()
   return $ret
 }
 
-function make_for_clang ()
-{
+function make_for_clang {
   if ! check_clang; then
     return 1
   fi
@@ -791,8 +774,7 @@ function make_for_clang ()
   return $ret
 }
 
-function make_for_clang_analyzer ()
-{
+function make_for_clang_analyzer {
   if ! check_clang; then
     return 1
   fi
@@ -827,8 +809,7 @@ function make_for_clang_analyzer ()
 }
 
 # If we are locally testing, we should make sure the environment is setup correctly
-function check_for_jenkins ()
-{
+function check_for_jenkins {
   if ! $jenkins_build_environment; then
     echo "Not inside of jenkins, simulating environment"
 
@@ -842,8 +823,7 @@ function check_for_jenkins ()
   fi
 }
 
-function make_universe ()
-{
+function make_universe {
   make_for_snapshot
   make_valgrind
   make_gdb
@@ -860,23 +840,21 @@ function make_universe ()
   make_install_system
 }
 
-function check_snapshot ()
-{
+function check_snapshot {
   if [ -n "$BOOTSTRAP_SNAPSHOT_CHECK" ]; then
     assert_file "$BOOTSTRAP_SNAPSHOT_CHECK" 'snapshot check failed'
   fi
 }
 
-function make_for_continuus_integration ()
-{
+function make_for_continuus_integration {
   # Setup the environment if we are local
   check_for_jenkins
 
-  # No matter then evironment, we should not have a Makefile at this point
+  # No matter then environment, we should not have a Makefile at this point
   assert_no_file 'Makefile'
 
   # Platforms which require bootstrap should have some setup done before we hit this stage.
-  # If we are building locally, skip this step, unless we are just testing locally. 
+  # If we are building locally, skip this step, unless we are just testing locally.
   if $BOOTSTRAP_SNAPSHOT; then
     if $BOOTSTRAP_SNAPSHOT; then
       assert_file 'configure'
@@ -904,8 +882,7 @@ function make_for_continuus_integration ()
 }
 
 # The point to this test is to test bootstrap.sh itself
-function self_test ()
-{
+function self_test {
   # We start off with a clean env
   make_maintainer_clean
 
@@ -915,16 +892,14 @@ function self_test ()
 #  eval "./bootstrap.sh maintainer-clean" || die "failed 'maintainer-clean'"
 }
 
-function make_install_html ()
-{
+function make_install_html {
   run_configure_if_required
   assert_file 'configure'
 
   make_target 'install-html'
 }
 
-function make_gdb ()
-{
+function make_gdb {
   save_BUILD
 
   if command_exists 'gdb'; then
@@ -966,8 +941,7 @@ function make_gdb ()
 
 # $1 target to compile
 # $2 to die, or not to die, based on contents
-function make_target ()
-{
+function make_target {
   if [ -z "$1" ]; then
     die "Programmer error, no target provided for make"
   fi
@@ -1004,13 +978,11 @@ function make_target ()
   return $ret
 }
 
-function make_distcheck ()
-{
+function make_distcheck {
   make_target 'distcheck'
 }
 
-function make_rpm ()
-{
+function make_rpm {
   if command_exists 'rpmbuild'; then
     if [ -f 'rpm.am' -o -d 'rpm' ]; then
       run_configure_if_required
@@ -1024,8 +996,7 @@ function make_rpm ()
   fi
 }
 
-function make_maintainer_clean ()
-{
+function make_maintainer_clean {
   run_configure_if_required
   make_target 'maintainer-clean' 'no_error'
 
@@ -1035,25 +1006,21 @@ function make_maintainer_clean ()
   assert_no_directory 'autom4te.cache'
 }
 
-function make_check ()
-{
+function make_check {
   make_target 'check'
 }
 
-function make_jenkins_default ()
-{
+function make_jenkins_default {
   run_configure
   make_target 'all'
 }
 
-function make_default ()
-{
+function make_default {
   run_configure_if_required
   make_target 'all'
 }
 
-function run_configure_if_required () 
-{
+function run_configure_if_required {
   run_autoreconf_if_required
 
   if [ ! -f 'Makefile' ]; then
@@ -1063,15 +1030,13 @@ function run_configure_if_required ()
   assert_file 'Makefile' 'configure did not produce a Makefile'
 }
 
-function run_make_maintainer_clean_if_possible () 
-{
+function run_make_maintainer_clean_if_possible {
   if [ -f 'Makefile' ]; then
     make_maintainer_clean
   fi
 }
 
-function run_autoreconf_if_required () 
-{
+function run_autoreconf_if_required {
   if [ ! -x 'configure' ]; then
     run_autoreconf
   fi
@@ -1080,15 +1045,15 @@ function run_autoreconf_if_required ()
   bash -n configure
 }
 
-function run_autoreconf () 
-{
+function run_autoreconf {
   if [[ -z "$AUTORECONF" ]]; then
     die "Programmer error, tried to call run_autoreconf () but AUTORECONF was not set"
   fi
 
   if $use_libtool; then
-    assert $BOOTSTRAP_LIBTOOLIZE
-    run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
+    assert "$BOOTSTRAP_LIBTOOLIZE"
+    run "$BOOTSTRAP_LIBTOOLIZE" '--copy' '--install' '--force' || \
+    die "Cannot execute $BOOTSTRAP_LIBTOOLIZE"
   fi
 
   run "$AUTORECONF" "$AUTORECONF_ARGS" || die "Cannot execute $AUTORECONF"
@@ -1096,8 +1061,7 @@ function run_autoreconf ()
   eval 'bash -n configure' || die "autoreconf generated a malformed configure"
 }
 
-function run ()
-{
+function run {
   if $verbose; then
     echo "\`$@' $ARGS"
   fi
@@ -1107,10 +1071,9 @@ function run ()
   fi
 
   eval "$@" "$ARGS"
-} 
+}
 
-function parse_command_line_options ()
-{
+function parse_command_line_options {
   local SHORTOPTS=':apcmt:dvh'
 
   nassert MAKE_TARGET
@@ -1174,8 +1137,7 @@ function parse_command_line_options ()
   fi
 }
 
-function determine_vcs ()
-{
+function determine_vcs {
   if [[ -d '.git' ]]; then
     VCS_CHECKOUT=git
   elif [[ -d '.bzr' ]]; then
@@ -1193,18 +1155,16 @@ function determine_vcs ()
   fi
 }
 
-function require_libtoolise ()
-{
+function require_libtoolise {
   grep '^[         ]*A[CM]_PROG_LIBTOOL' configure.ac >/dev/null \
     && use_libtool=true
   grep '^[         ]*LT_INIT' configure.ac >/dev/null \
     && use_libtool=true
 }
 
-function autoreconf_setup ()
-{
+function autoreconf_setup {
   # Set ENV MAKE in order to override "make"
-  if [[ -z "$MAKE" ]]; then 
+  if [[ -z "$MAKE" ]]; then
     if command_exists 'gmake'; then
       MAKE="$(type -p gmake)"
     else
@@ -1212,7 +1172,7 @@ function autoreconf_setup ()
         MAKE="$(type -p make)"
       fi
     fi
-    
+
     if [ "$VCS_CHECKOUT" ]; then
       if $debug; then
         MAKE="$MAKE --warn-undefined-variables"
@@ -1324,15 +1284,14 @@ function autoreconf_setup ()
   run "$AUTORECONF" '--help'  &> /dev/null    || die "Failed to run AUTORECONF:$AUTORECONF"
 }
 
-function print_setup ()
-{
+function print_setup {
   local saved_debug_status=$debug
   if $debug; then
     disable_debug
   fi
 
-  echo '----------------------------------------------' 
-  echo 'BOOTSTRAP ENV' 
+  echo '----------------------------------------------'
+  echo 'BOOTSTRAP ENV'
   echo "AUTORECONF=$AUTORECONF"
   echo "HOST_OS=$HOST_OS"
   echo "VENDOR=$VENDOR"
@@ -1400,15 +1359,14 @@ function print_setup ()
     echo "DEBUG=true"
   fi
 
-  echo '----------------------------------------------' 
+  echo '----------------------------------------------'
 
   if $saved_debug_status; then
     enable_debug
   fi
 }
 
-function make_clean_option ()
-{
+function make_clean_option {
   run_configure_if_required
 
   make_maintainer_clean
@@ -1420,8 +1378,7 @@ function make_clean_option ()
   fi
 }
 
-function make_for_autoreconf ()
-{
+function make_for_autoreconf {
   if [ -f 'Makefile' ]; then
     make_maintainer_clean
   fi
@@ -1494,8 +1451,7 @@ function check_make_target()
   return $ret
 }
 
-function execute_job ()
-{
+function execute_job {
   determine_target_platform
 
   determine_vcs
@@ -1512,9 +1468,9 @@ function execute_job ()
   fi
 
   if $print_setup_opt -o  $debug; then
-    echo 
+    echo
     print_setup
-    echo 
+    echo
 
     # Exit if all we were looking for were the currently used options
     if $print_setup_opt; then
@@ -1526,7 +1482,7 @@ function execute_job ()
   local OLD_TESTS_ENVIRONMENT=
 
   # Set ENV PREFIX in order to set --prefix for ./configure
-  if [[ -n "$PREFIX" ]]; then 
+  if [[ -n "$PREFIX" ]]; then
     PREFIX_ARG="--prefix=$PREFIX"
   fi
 
@@ -1540,8 +1496,7 @@ function execute_job ()
   local MAKE_TARGET_ARRAY
   MAKE_TARGET_ARRAY=( $MAKE_TARGET )
 
-  for target in "${MAKE_TARGET_ARRAY[@]}"
-  do
+  for target in "${MAKE_TARGET_ARRAY[@]}"; do
     # If we are running inside of Jenkins, we want to only run some of the possible tests
     if $jenkins_build_environment; then
       check_make_target $target
@@ -1621,14 +1576,14 @@ function execute_job ()
         make_darwin_malloc
         ;;
       'valgrind')
-        make_maintainer_clean 
+        make_maintainer_clean
         make_valgrind
         ;;
       'universe')
         make_universe
         ;;
       'jenkins')
-        make_for_continuus_integration
+        make_for_continuous_integration
         ;;
       *)
         run_configure_if_required
@@ -1647,10 +1602,9 @@ function execute_job ()
   done
 }
 
-function main ()
-{
+function main {
   # Are we running inside of Jenkins?
-  if [[ -n "$JENKINS_HOME" ]]; then 
+  if [[ -n "$JENKINS_HOME" ]]; then
     declare -r jenkins_build_environment=true
   else
     declare -r jenkins_build_environment=false
@@ -1665,7 +1619,7 @@ function main ()
   local use_libtool=false
   local verbose=false
 
-  #getop variables
+  #getopt variables
   local opt_debug=false
   local opt_verbose=false
 
@@ -1702,12 +1656,14 @@ function main ()
   # Variables for determine_target_platform () and rebuild_host_os ()
   #   UNAME_MACHINE_ARCH= uname -m
   #   VENDOR= apple, redhat, centos, canonical
-  #   VENDOR_RELEASE=  
-  #                  RHEL{rhel,Tikanga,Santiago}
-  #                  Ubuntu{ubuntu,Lucid,Maverick,Natty,Oneiric,Precise,Quantal}
-  #                  Fedora{fedora,Verne,Beefy}
-  #                  OSX{osx,lion,snow,mountain}
-  #   VENDOR_DISTRIBUTION= darwin,fedora,rhel,ubuntu
+  #   VENDOR_RELEASE=
+  #                  RHEL{rhel, Tikanga, Santiago}
+  #                  Ubuntu{ubuntu, Lucid, Maverick, Natty, Oneiric, Precise,
+  #                         Quantal, Raring, Trusty, Xenial}
+  #                  Fedora{fedora, Verne, Beefy}
+  #                  OSX{snow_leopard, lion, mountain_lion, mavericks, yosemite,
+  #                      el_capitan, sierra}
+  #   VENDOR_DISTRIBUTION= darwin, fedora, rhel, ubuntu
   #   UNAME_KERNEL= Linux, Darwin,...
   #   UNAME_KERNEL_RELEASE= Linux, Darwin,...
   local UNAME_MACHINE_ARCH=unknown
@@ -1728,14 +1684,14 @@ function main ()
   if [ -z "$MAKE_TARGET" ]; then
     if $jenkins_build_environment; then
       if [[ -n "$label" ]]; then
-        check_make_target $label
+        check_make_target "$label"
         if [ $? -eq 0 ]; then
           MAKE_TARGET="$label"
         fi
       fi
 
       if [[ -n "$LABEL" ]]; then
-        check_make_target $LABEL
+        check_make_target "$LABEL"
         if [ $? -eq 0 ]; then
           MAKE_TARGET="$LABEL"
         fi
@@ -1756,16 +1712,15 @@ function main ()
   exit $ret
 }
 
-function set_branch ()
-{
-  if [ -z "$BRANCH" ]; then 
-    if [ -z "$CI_PROJECT_TEAM" ]; then 
+function set_branch {
+  if [ -z "$BRANCH" ]; then
+    if [ -z "$CI_PROJECT_TEAM" ]; then
       die "Variable CI_PROJECT_TEAM has not been set"
     fi
-    if [ -z "$PROJECT" ]; then 
+    if [ -z "$PROJECT" ]; then
       die "Variable PROJECT has not been set"
     fi
-    if [ -z "$BUILD_TAG" ]; then 
+    if [ -z "$BUILD_TAG" ]; then
       die "Variable BUILD_TAG has not been set"
     fi
 
@@ -1773,13 +1728,12 @@ function set_branch ()
     export BRANCH
   fi
 
-  if [ -z "$BRANCH" ]; then 
+  if [ -z "$BRANCH" ]; then
     die "Missing values required to build BRANCH variable."
   fi
 }
 
-function merge ()
-{
+function merge {
   if [ -z "$VCS_CHECKOUT" ]; then
     die "Merges require VCS_CHECKOUT."
   fi
@@ -1788,18 +1742,17 @@ function merge ()
 
   if [[ "$VCS_CHECKOUT" == 'bzr' ]]; then
     if test -n "$BRANCH_TO_MERGE"; then
-      bzr merge $BRANCH_TO_MERGE
+      bzr merge "$BRANCH_TO_MERGE"
       bzr commit --message="Merge $BRANCH_TO_MERGE Build: $BUILD_TAG" --unchanged
     fi
 
     bzr push "$BRANCH"
   elif [[ -n "$VCS_CHECKOUT" ]]; then
-    die "Merge attempt occured, current VCS setup does not support this"
+    die "Merge attempt occurred, current VCS setup does not support this"
   fi
 }
 
-function enable_debug ()
-{
+function enable_debug {
   if ! $debug; then
     local caller_loc="$(caller)"
     if [[ -n "$1" ]]; then
@@ -1812,8 +1765,7 @@ function enable_debug ()
   fi
 }
 
-function usage ()
-{
+function usage {
   cat << EOF
   Usage: $program_name [OPTION]..
 
@@ -1824,14 +1776,12 @@ function usage ()
 EOF
 }
 
-function disable_debug ()
-{
+function disable_debug {
   set +x
   debug=false
 }
 
-function bootstrap ()
-{
+function bootstrap {
   local env_debug_enabled=false
   local debug=false
 
@@ -1873,7 +1823,8 @@ function bootstrap ()
     source '.bootstrap'
   fi
 
-  # We do this in order to protect the case where DEBUG that came from the ENV (i.e. it overrides what is found in .bootstrap
+  # We do this in order to protect the case where DEBUG that came from the ENV
+  # (i.e. it overrides what is found in .bootstrap
   if $env_debug_enabled; then
     enable_debug
   elif [[ -n "$DEBUG" ]]; then

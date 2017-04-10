@@ -39,27 +39,29 @@
 
 #include "tests/unit/common.h"
 
-#include <libdrizzle-5.1/libdrizzle.h>
+#include <libdrizzle-redux/libdrizzle.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 int main(int argc, char *argv[])
 {
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
-  con= drizzle_create(getenv("MYSQL_SOCK"),
-                      0,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), 0);
+  con = drizzle_create(getenv("MYSQL_SOCK"),
+                       0, getenv("MYSQL_USER"),
+                       getenv("MYSQL_PASSWORD"),
+                       getenv("MYSQL_SCHEMA"), 0);
+
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
-  drizzle_return_t ret= drizzle_connect(con);
-  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+  drizzle_return_t ret = drizzle_connect(con);
+  SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)",
+           drizzle_error(con), drizzle_strerror(ret));
   atexit(close_connection_on_exit);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret), getenv("MYSQL_SOCK"));
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s socket: %s", drizzle_strerror(ret),
+             getenv("MYSQL_SOCK"));
 
   drizzle_query(con, "SELECT 1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
@@ -67,11 +69,12 @@ int main(int argc, char *argv[])
   // Now that we know everything is good... lets push it.
   drizzle_close(con);
 
-  int limit= 20;
+  int limit = 20;
   while (--limit)
   {
-    ret= drizzle_connect(con);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con), drizzle_strerror(ret));
+    ret = drizzle_connect(con);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con),
+               drizzle_strerror(ret));
 
     drizzle_query(con, "SELECT 1", 0, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));

@@ -1,4 +1,4 @@
-Summary: libdrizzle
+Summary: Simplified API to MySQL databases
 Name: @PACKAGE@
 Version: @VERSION@
 Release: 1
@@ -7,9 +7,11 @@ Group: System Environment/Libraries
 BuildRequires: zlib-devel openssl-devel
 URL: https://github.com/sociomantic-tsunami/libdrizzle-redux
 
-Packager: Brian Aker <brian@tangent.org>
+%define packager_name %(git config user.name)
+%define packager_email %(git config user.email)
+Packager: %{packager_name} <%{packager_email}>
 
-Source: libdrizzle-redux-%{version}.tar.gz 
+Source: libdrizzle-redux-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
@@ -24,7 +26,7 @@ Requires: %{name} = %{version}-%{release}
 
 %description devel
 This package contains the header files and development libraries
-for %{name}. If you like to develop programs using %{name}, 
+for %{name}. If you like to develop programs using %{name},
 you will need to install %{name}-devel.
 
 %prep
@@ -32,13 +34,21 @@ you will need to install %{name}-devel.
 
 %configure
 
-
 %build
 %{__make} %{?_smp_mflags}
 
 %install
 %{__rm} -rf %{buildroot}
-%{__make} install  DESTDIR="%{buildroot}" AM_INSTALL_PROGRAM_FLAGS=""
+%{__make} install DESTDIR="%{buildroot}" AM_INSTALL_PROGRAM_FLAGS=""
+%define rpm_include_path "$RPM_BUILD_ROOT/usr/include/include/libdrizzle-redux"
+# If the path to the header files has the form `include/include/libdrizzle-redux`
+# rename the directory to `include/libdrizzle-redux`
+if test -d %{rpm_include_path}
+then
+    tmp_include_path=`echo %{rpm_include_path} | sed 's/include\/include/include/'`
+    mv %{rpm_include_path} ${tmp_include_path}
+    rm -rf %{rpm_include_path}
+fi
 mkdir -p $RPM_BUILD_ROOT/
 
 %check
@@ -49,7 +59,7 @@ mkdir -p $RPM_BUILD_ROOT/
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING 
+%doc AUTHORS COPYING
 %{_libdir}/libdrizzle-redux.a
 %{_libdir}/libdrizzle-redux.la
 %{_libdir}/libdrizzle-redux.so
@@ -58,30 +68,114 @@ mkdir -p $RPM_BUILD_ROOT/
 
 %files devel
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING 
-%{_includedir}/libdrizzle-5.1/binlog.h
-%{_includedir}/libdrizzle-5.1/column.h
-%{_includedir}/libdrizzle-5.1/column_client.h
-%{_includedir}/libdrizzle-5.1/conn.h
-%{_includedir}/libdrizzle-5.1/conn_client.h
-%{_includedir}/libdrizzle-5.1/constants.h
-%{_includedir}/libdrizzle-5.1/drizzle.h
-%{_includedir}/libdrizzle-5.1/drizzle_client.h
-%{_includedir}/libdrizzle-5.1/error.h
-%{_includedir}/libdrizzle-5.1/field_client.h
-%{_includedir}/libdrizzle-5.1/libdrizzle.h
-%{_includedir}/libdrizzle-5.1/query.h
-%{_includedir}/libdrizzle-5.1/result.h
-%{_includedir}/libdrizzle-5.1/result_client.h
-%{_includedir}/libdrizzle-5.1/return.h
-%{_includedir}/libdrizzle-5.1/row_client.h
-%{_includedir}/libdrizzle-5.1/ssl.h
-%{_includedir}/libdrizzle-5.1/statement.h
-%{_includedir}/libdrizzle-5.1/structs.h
-%{_includedir}/libdrizzle-5.1/verbose.h
-%{_includedir}/libdrizzle-5.1/version.h
-%{_includedir}/libdrizzle-5.1/visibility.h
+%doc AUTHORS COPYING
+%{_includedir}/libdrizzle-redux/binlog.h
+%{_includedir}/libdrizzle-redux/column.h
+%{_includedir}/libdrizzle-redux/column_client.h
+%{_includedir}/libdrizzle-redux/conn.h
+%{_includedir}/libdrizzle-redux/conn_client.h
+%{_includedir}/libdrizzle-redux/constants.h
+%{_includedir}/libdrizzle-redux/drizzle.h
+%{_includedir}/libdrizzle-redux/drizzle_client.h
+%{_includedir}/libdrizzle-redux/error.h
+%{_includedir}/libdrizzle-redux/field_client.h
+%{_includedir}/libdrizzle-redux/libdrizzle.h
+%{_includedir}/libdrizzle-redux/query.h
+%{_includedir}/libdrizzle-redux/result.h
+%{_includedir}/libdrizzle-redux/result_client.h
+%{_includedir}/libdrizzle-redux/return.h
+%{_includedir}/libdrizzle-redux/row_client.h
+%{_includedir}/libdrizzle-redux/ssl.h
+%{_includedir}/libdrizzle-redux/statement.h
+%{_includedir}/libdrizzle-redux/structs.h
+%{_includedir}/libdrizzle-redux/verbose.h
+%{_includedir}/libdrizzle-redux/version.h
+%{_includedir}/libdrizzle-redux/visibility.h
 
 %changelog
-* Wed April 1 2016 Ben Palmer <ben.palmer@sociomantic.com> - 5.2.0
-- Project Moving
+* Wed Apr 05 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.0
+- Reorganization of the project layout
+- Extended logging with filename, linenumber and function-name
+- Improved drizzle_binlog_get_filename to return end position of binlog file
+- Improved documentation for ABI versioning
+
+* Wed Mar 29 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.0
+- Remove outdated reference to drizzle_clone from documentation
+- Expand and fix string escaping capabilities
+
+* Fri Mar 24 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.5.1
+- Minor fixes
+- Add missing API functions to the rst documentation
+- Bugfix: check for error packet in internal handshake function
+
+* Tue Mar 14 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.5.0
+- Update bootstrap script
+- Use TCP keep alive to prevent connection freezing on slow connections
+- Use integral types fmt specifiers from cinttypes header
+
+* Mon Mar 13 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.3
+- Add example for using event callback function
+- Restructure readme for semantic versioning
+- Various formatting fixes in unittests
+- Fix bug in datatypes unittest for TIMESTAMP definition in CREATE TABLE stmt
+- Adds c++11 compile flags if compiler supports it
+- Fix compile error -Werror=logical-op for GCC v6.x
+- Formatting and doc fixes
+
+* Tue Feb 07 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.2
+- Remove blank pages from generated pdf doc
+- Fix allocation bug in drizzle_binlog_get_filename
+
+* Fri Dec 16 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.1
+- Fix binary compatibility issue
+- Documentation added for new functions in v5.4.0
+
+* Fri Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.4.0
+- Adds the ability to actually configure and use OpenSSL
+- Possibility to specify the consumer of the socket mysql writes binlog data to
+- Adds function to get the name binlog event type as string
+- Adds function to get the name of a column type as string
+- Adds function to get the filename of a binary log
+- Add make target which checks for latex support
+- Documentation fixes
+
+* Fri Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.3.4
+- Fix broken travis-ci build
+
+* Fri Dec 02 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.3.3
+- Fix .travis.yml file after travis-ci build environment update
+
+* Tue Oct 11 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.2
+- Fix incorrect rpm spec file
+
+* Wed Sep 21 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.1
+- Minor fixes to documentation, syntax and formatting
+- Fix library version for deb packaging
+- Update current and previous changelog for rpm packaging
+
+* Fri Sep 16 2016 Andreas Bok Andersen <andreas.bok@sociomantic.com - 5.3.0
+- Modify drizzle_binlog_start() so binlog data can be read with a non-blocking connection
+- Update hardcoded repo location
+- Fix version number in configure script
+- Update readme and doc
+- Change location of generated documentation to top-level folder sphinx-build
+- Restructure man page doc generation
+- Bugfix where calls to drizzle_connect() would always block regardless of the non_blocking option being set to true
+- Optimization of drizzle_field_buffer() so an array of drizzle_field_t pointers are used to buffer fields
+- Minor fixes to .gitignore
+- Fixed integer underflow when processing large result sets using prepared statements
+- Use func macro when logging functions
+- Update README with reasons for a sociomantic-tsunami fork
+- Whitespace fixes
+- Add continuous integration testing for clang compiler
+- Fix linter warnings in bootstrap.sh
+- Fix travis-ci build config for environment variables
+- Add travis-ci build status to README
+- Add unittest for event_watch_fn callback function
+- Improve documentation for binlog code example
+
+* Fri Apr 01 2016 Ben Palmer <ben.palmer@sociomantic.com - 5.2.0
+- Add callback function for poll events to client api
+- Move project repo to https://github.com/sociomantic-tsunami/libdrizzle-redux
+- Remove obsolete dependencies from deb packages
+- Rename library to libdrizzle-redux

@@ -59,6 +59,9 @@ epub: docs/conf.py
 	@echo
 	@echo "Build finished. The epub file is in $(SPHINX_BUILDDIR)/epub."
 
+latex-package-check: latex
+	docs/latex_check_packages.sh
+
 latex: docs/conf.py
 	PYTHONPATH=${top_srcdir}/docs  $(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(SPHINX_BUILDDIR)/latex
 	@echo

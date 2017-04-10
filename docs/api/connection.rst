@@ -22,7 +22,9 @@ Functions
 
 .. c:function:: drizzle_st* drizzle_create(const char *host, in_port_t port, const char *user, const char *password, const char *db, drizzle_options_st *options)
 
-   Creates a connection connection object.  If a path beginning with ``/`` is given as the host the library will connect as a UDS socket.  Otherwise a TCP/IP conection is made.
+   Creates a connection connection object. If a path beginning with ``/`` is
+   given as the host the library will connect as a UDS socket. Otherwise a
+   TCP/IP connection is made.
 
    .. note::
       a connection does not happen until the first query or an explicit :c:func:`drizzle_connect` call is made
@@ -34,6 +36,13 @@ Functions
    :param db: The default DB to connect to on the server
    :param options: A pointer to a :c:type:`drizzle_options_st` created using :c:func:`drizzle_options_create` or :c:type:`NULL`
    :returns: A newly allocated and setup connection object
+
+.. c:function:: int drizzle_fd(const drizzle_st *con)
+
+   Get file descriptor for connection.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :returns: File descriptor of connection, or -1 if not active.
 
 .. c:function:: int drizzle_timeout(const drizzle_st *con)
 
@@ -75,10 +84,26 @@ Functions
 
    Set a custom I/O event watcher function for a drizzle structure
 
-   :param drizzle: Drizzle structure previously initialized with
-    :c:func:`drizzle_create` or :c:func:`drizzle_clone`
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :param function: Function to call when there is an I/O event, in the form of :c:func:`drizzle_event_watch_fn`
    :param context: Argument to pass into the callback function.
+
+.. c:function:: drizzle_return_t drizzle_set_events(drizzle_st *con, short events)
+
+   Set events to be watched for a connection.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param events: Bitfield of poll() events to watch.
+   :returns: Standard drizzle return value.
+
+.. c:function:: drizzle_return_t drizzle_set_revents(drizzle_st *con, short revents)
+
+   Set events that are ready for a connection. This is used with the external
+   event callbacks. See :c:func:`drizzle_set_event_watch_fn`.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param revents: Bitfield of poll() events that were detected.
+   :returns: Standard drizzle return value.
 
 .. c:function:: const char* drizzle_error(const drizzle_st *con)
 
@@ -119,6 +144,44 @@ Functions
    Destroys a connection options object
 
    :param options: The options object to be destroyed
+
+.. c:function:: void drizzle_socket_set_options(drizzle_options_st *options, int wait_timeout, int keepidle, int keepcnt, int keepintvl)
+
+   Sets several options for the socket connection
+
+   :param options: An initialized options structure
+   :param wait_timeout: The timeout (in seconds) for setsockopt calls with option values: SO_SNDTIMEO, SO_RCVTIMEO, SO_LINGER
+   :param keepidle: The time (in seconds) the connection needs to remain idle before TCP starts sending keepalive probes
+   :param keepcnt: The maximum number of keepalive probes TCP should send before dropping the connection.
+   :param keepintvl: The time (in seconds) between individual keepalive probes
+
+.. c:function:: void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option, int value)
+
+   Sets the value of a socket option.
+
+   .. note::
+      The available options to set are:
+
+      :py:const:`DRIZZLE_SOCKET_OPTION_TIMEOUT` : The timeout (in seconds) for setsockopt calls with option values: SO_SNDTIMEO, SO_RCVTIMEO, SO_LINGER
+
+      :py:const:`DRIZZLE_SOCKET_OPTION_KEEPIDLE` : The time (in seconds) the connection needs to remain idle before TCP starts sending keepalive probes
+
+      :py:const:`DRIZZLE_SOCKET_OPTION_KEEPCNT` : The maximum number of keepalive probes TCP should send before dropping the connection.
+
+      :py:const:`DRIZZLE_SOCKET_OPTION_KEEPINTVL` : The time (in seconds) between individual keepalive probes
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param option: the option to set the value for
+   :param value: the value to set
+
+.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+
+   Gets the value of a socket option. See :c:func:`drizzle_socket_set_options`
+   for a description of the available options
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param option: option to get the value for
+   :returns: The value of the option, or -1 if the specified option doesn't exist
 
 .. c:function:: void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
 
@@ -194,7 +257,7 @@ Functions
 
    Sets/unsets the auth plugin connect option
 
-   :param options: The optoins object to modify
+   :param options: The options object to modify
    :param state: Set to true/false
 
 .. c:function:: bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
@@ -203,7 +266,21 @@ Functions
 
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
-   
+
+.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner owner)
+
+   Sets the owner of the socket connection
+
+   :param options: The options object to modify
+   :param owner: The owner of the socket connection
+
+.. c:function:: drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+
+   Gets the owner of the socket connection
+
+   :param options: The options object to get the value from
+   :returns: The owner of the socket connection
+
 .. c:function:: const char* drizzle_host(const drizzle_st *con)
 
    Gets the host name from a TCP/IP connection
@@ -231,6 +308,27 @@ Functions
 
    :param con: A connection object
    :returns: A string containing the DB name
+
+.. c:function:: void *drizzle_context(const drizzle_st *con)
+
+   Get application context pointer for a connection.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :returns: Application context with this connection.
+
+.. c:function:: void drizzle_set_context(drizzle_st *con, void *context)
+
+   Set application context pointer for a connection.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param context: Application context to use with this connection.
+
+.. c:function:: void drizzle_set_context_free_fn(drizzle_st *con, drizzle_context_free_fn *function)
+
+   Set callback function when the context pointer should be freed.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :param function: Function to call to clean up connection context.
 
 .. c:function:: uint8_t drizzle_protocol_version(const drizzle_st *con)
 
@@ -260,9 +358,16 @@ Functions
    :param con: A connection object
    :returns: The server thread ID
 
+.. c:function:: const unsigned char *drizzle_scramble(const drizzle_st *con)
+
+   Get scramble buffer for a connection.
+
+   :param con: Connection structure previously initialized with :c:func:`drizzle_create`.
+   :returns: Scramble buffer for connection.
+
 .. c:function:: drizzle_capabilities_t drizzle_capabilities(const drizzle_st *con)
 
-   Gets the server capabilites for a connection
+   Gets the server capabilities for a connection
 
    :param con: A connection object
    :returns: A bit field of capabilities
@@ -293,11 +398,26 @@ Functions
    Open connection to the specified server
 
    :param con: A connection object
-   :returns: A :c:type:`drizzle_return_t` status.  :py:const:`DRIZZLE_RETURN_OK` upon success
+   :returns: A :c:type:`drizzle_return_t` status. :py:const:`DRIZZLE_RETURN_OK` upon success
+
+.. c:function:: drizzle_return_t drizzle_wait(drizzle_st *con)
+
+   Wait for I/O on connections.
+
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
+   :returns: Standard drizzle return value.
+
+.. c:function:: drizzle_st *drizzle_ready(drizzle_st *con)
+
+   Get next connection that is ready for I/O.
+
+   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
+   :returns: Connection that is ready for I/O, or NULL if there are none.
 
 .. c:function:: drizzle_return_t drizzle_close(drizzle_st *con)
 
-   Gracefully disconnect from a server (leaves the connection object available for a reconnect
+   Gracefully disconnect from a server (leaves the connection object available
+   for a reconnect)
 
    :param con: A connection object
    :returns: A :c:type:`drizzle_return_t` response for the quit command sent to the server
@@ -342,6 +462,12 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A newly allocated result object
 
+.. c:function:: const char *drizzle_strerror(const drizzle_return_t ret)
+
+   Get detailed error description
+
+   :param ret: A libdrizzle return value
+   :returns: description of libdrizzle error
 
 Callback Functions
 ------------------
@@ -362,10 +488,7 @@ Libdrizzle Redux library.
    The format of a function to register or deregister interest in file descriptor
    events
 
-   :param con: Connection that has changed the events it is interested in.
-    Use drizzle_fd() to get the file descriptor.
-   :param events: A bit mask of POLLIN | POLLOUT, specifying if the
-    connection is waiting for read or write events.
-   :param context: Application context pointer registered with
-    :c:func:`drizzle_set_event_watch_fn`
-   :returns: DRIZZLE_RETURN_OK if successful.
+   :param con: Connection that has changed the events it is interested in. Use :c:func:`drizzle_fd` to get the file descriptor.
+   :param events: A bit mask of POLLIN | POLLOUT, specifying if the connection is waiting for read or write events.
+   :param context: Application context pointer registered with :c:func:`drizzle_set_event_watch_fn`
+   :returns: :py:const:`DRIZZLE_RETURN_OK` if successful.

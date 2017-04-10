@@ -6,7 +6,7 @@ Introduction
 
 In this example :c:func:`drizzle_query` is used to send a select query to a
 MySQL server.  The first thing that is sent back in the results is a list of
-columns, so this list needs to be retieved.  The simplist way of doing this is
+columns, so this list needs to be retrieved.  The simplest way of doing this is
 to buffer the column data using :c:func:`drizzle_column_buffer`.
 
 The number of columns is retrieved using :c:func:`drizzle_result_column_count`.
@@ -24,7 +24,7 @@ Code
 
 .. code-block:: c
 
-    #include <libdrizzle-5.1/libdrizzle.h>
+    #include <libdrizzle-redux/libdrizzle.h>
     #include <stdio.h>
     #include <stdlib.h>
 

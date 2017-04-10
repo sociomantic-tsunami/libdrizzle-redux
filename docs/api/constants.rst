@@ -46,7 +46,7 @@ Return
    Function return status ENUM
 
    .. py:data:: DRIZZLE_RETURN_OK
-   
+
       Return is OK
 
    .. py:data:: DRIZZLE_RETURN_IO_WAIT
@@ -101,7 +101,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_NO_SCRAMBLE
 
-      No password scrable received (usually if server is expecting an auth
+      No password scramble received (usually if server is expecting an auth
       plugin but client didn't use one)
 
    .. py:data:: DRIZZLE_RETURN_AUTH_FAILED
@@ -150,7 +150,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_SSL_ERROR
 
-      An error occured during SSL handshake
+      An error occurred during SSL handshake
 
    .. py:data:: DRIZZLE_RETURN_EOF
 
@@ -158,7 +158,7 @@ Return
 
    .. py:data:: DRIZZLE_RETURN_STMT_ERROR
 
-      A prepared statment error has occurred
+      A prepared statement error has occurred
 
    .. py:data:: DRIZZLE_RETURN_BINLOG_CRC
 
@@ -181,7 +181,7 @@ Connection
 
 .. c:type:: drizzle_charset_t
 
-   An ENUM of the possible character set with colation ID
+   An ENUM of the possible character set with collation ID
 
    .. py:data:: DRIZZLE_CHARSET_BIG5_CHINESE_CI
 
@@ -730,6 +730,25 @@ Connection
       :py:const:`DRIZZLE_CAPABILITIES_PROTOCOL_41`,
       :py:const:`DRIZZLE_CAPABILITIES_SECURE_CONNECTION`
 
+.. c:type:: drizzle_ssl_state_t
+
+   An enum of SSL States
+   .. py:data:: DRIZZLE_SSL_STATE_NONE
+
+      SSL connection is not initialized
+
+   .. py:data:: DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE
+
+      SSL connection is established
+
+.. c:type:: drizzle_socket_owner
+
+   Owner of socket connection
+
+   .. py:data:: DRIZZLE_SOCKET_OWNER_NATIVE
+
+   .. py:data:: DRIZZLE_SOCKET_OWNER_CLIENT
+
 Query
 -----
 
@@ -802,6 +821,10 @@ Query
 
    .. py:data:: DRIZZLE_COLUMN_TYPE_STRING
    .. py:data:: DRIZZLE_COLUMN_TYPE_GEOMETRY
+
+.. c:type::  drizzle_column_options_t
+
+   .. py:data:: DRIZZLE_COLUMN_UNUSED
 
 .. c:type:: drizzle_column_flags_t
 
@@ -887,36 +910,25 @@ Query
    .. py:data:: DRIZZLE_COLUMN_FLAGS_IN_ADD_INDEX
    .. py:data:: DRIZZLE_COLUMN_FLAGS_RENAMED
 
+.. c:type:: drizzle_result_options_t
+
+   An ENUM used to the indicate the state of a result
+
+   .. py:data:: DRIZZLE_RESULT_NONE
+   .. py:data:: DRIZZLE_RESULT_SKIP_COLUMN
+   .. py:data:: DRIZZLE_RESULT_BUFFER_COLUMN
+   .. py:data:: DRIZZLE_RESULT_BUFFER_ROW
+   .. py:data:: DRIZZLE_RESULT_EOF_PACKET
+   .. py:data:: DRIZZLE_RESULT_ROW_BREAK
+   .. py:data:: DRIZZLE_RESULT_BINARY_ROWS
+
+
 Prepared Statement
 ------------------
 
 .. c:type:: drizzle_stmt_state_t
 
    An internal state for prepared statements
-
-.. c:type:: drizzle_bind_options_t
-
-   An ENUM of prepared statement element options intended to be used in a bitmask
-   
-   .. py:data:: DRIZZLE_BIND_OPTION_NONE
-
-      Empty options
-
-   .. py:data:: DRIZZLE_BIND_OPTION_NULL
-
-      Element is a NULL
-
-   .. py:data:: DRIZZLE_BIND_OPTION_UNSIGNED
-
-      Element is an unsigned integer
-
-   .. py:data:: DRIZZLE_BIND_OPTION_TRUNCATED
-
-      Element has been truncated
-
-   .. py:data:: DRIZZLE_BIND_OPTION_LONG_DATA
-
-      Element is to be sent using :c:func:`drizzle_stmt_send_long_data`
 
 Binlog
 ------
@@ -1036,7 +1048,7 @@ Binlog
 
    .. py:data:: DRIZZLE_EVENT_TYPE_HEARTBEAT
 
-      Repliaction heartbeat event
+      Replication heartbeat event
 
    .. py:data:: DRIZZLE_EVENT_TYPE_IGNORABLE
 
@@ -1060,3 +1072,18 @@ Binlog
 
    .. py:data:: DRIZZLE_EVENT_TYPE_PREVIOUS_GTIDS
 
+.. c:type:: drizzle_binlog_event_positions_t
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_TIMESTAMP
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_TYPE
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_SERVERID
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_LENGTH
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_NEXT
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_FLAGS
+
+   .. py:data:: DRIZZLE_EVENT_POSITION_EXTRA_FLAGS
