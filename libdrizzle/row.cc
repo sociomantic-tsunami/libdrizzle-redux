@@ -126,6 +126,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
     return NULL;
   }
 
+  memset(result->field_sizes, 0, sizeof(size_t) * result->column_count);
   while (1)
   {
     field= drizzle_field_buffer(result, &total, ret_ptr);
