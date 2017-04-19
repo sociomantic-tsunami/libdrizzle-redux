@@ -84,6 +84,13 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Wed Apr 12 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.1
+- Improve error message for latex package check
+- Fix epub doc configuration
+- Bugfix: clear "result->field_sizes" before buffering fields
+- Improve documentation for ABI versioning
+- Documentation available at libdrizle-redux.readthedocs.io
+
 * Wed Mar 29 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.0
 - Remove outdated reference to drizzle_clone from documentation
 - Expand and fix string escaping capabilities

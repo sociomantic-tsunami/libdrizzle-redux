@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[5.6.0],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[5.6.1],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -29,15 +29,40 @@ AC_CONFIG_HEADERS([config.h:config.in])dnl Keep filename to 8.3 for MS-DOS.
 
 AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 
-#shared library versioning
-LIBDRIZZLE_LIBRARY_VERSION=12:0:2
+# Shared library versioning
+#
+# The following explanation considers library changes and ABI compatibility from
+# the users' perspective and how they relate to the shared library version.(§)
+#
+# Programs using the previous version may use the new version as drop-in
+# replacement, and programs using the new version can also work with the
+# previous one. In other words, no recompiling nor relinking is needed.
+# In this case:
+#     bump revision only, don’t touch current nor age.
+#
+# Programs using the previous version may use the new version as drop-in
+# replacement, but programs using the new version may use APIs not present in
+# the previous one. In other words, a program linking against the new version
+# may fail with “unresolved symbols” if linking against the old version at
+# runtime. In this case:
+#     set revision to 0, bump current and age.
+#
+# Programs may need to be changed, recompiled, relinked in order to use the
+# new version:
+#     bump current, set revision and age to 0.
+#
+# (§) The explanation is taken from this blogpost:
+# http://blog.asleson.org/index.php/2014/07/08/libtool-library-versioning-version-info-currentrevisionage/
+#
+LIBDRIZZLE_LIBRARY_VERSION=12:1:2
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
 #                 current:revision:age
 #                  |        |     |
 #                  |        |     +- increment if interfaces have been added
-#                  |        |        set to zero if interfaces have been removed or changed
+#                  |        |        set to zero if interfaces have been removed
+#                                    or changed
 #                  |        +- increment if source code has changed
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
