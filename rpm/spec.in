@@ -93,6 +93,13 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-redux/visibility.h
 
 %changelog
+* Thu Apr 20 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.1
+- Improve error message for latex package check
+- Fix epub doc configuration
+- Bugfix: clear "result->field_sizes" before buffering fields
+- Improve documentation for ABI versioning
+- Documentation available at libdrizle-redux.readthedocs.io
+
 * Wed Apr 05 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.0
 - Reorganization of the project layout
 - Extended logging with filename, linenumber and function-name

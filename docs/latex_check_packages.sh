@@ -91,6 +91,7 @@ if [[ $FAILED > 0 ]]; then
   # Print list of missing packages if any
   echo "Found $FAILED missing packages."
   echo ${MISSING[@]} | sed 's/ /\n/g'
+  echo "It is recommended to install 'texlive-latex-extra' to get the missing packages"
 else
   echo "Found no missing packages"
 fi

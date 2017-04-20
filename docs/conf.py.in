@@ -222,6 +222,8 @@ latex_elements = {
     'classoptions': 'openany,oneside', 'babel' : '\\usepackage[english]{babel}'
 }
 
+epub_exclude_files = ['.doctrees/compiling.doctree', '.doctrees/examples/statement.doctree']
+
 # -- Options for manual page output --------------------------------------------
 
 ##
