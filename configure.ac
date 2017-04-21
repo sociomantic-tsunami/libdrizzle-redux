@@ -16,6 +16,12 @@ AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE(1.11 no-define color-tests -Wno-portability subdir-objects foreign tar-ustar m4_ifndef([AM_WITH_REGEX], [serial-tests]))
 AC_PREREQ([2.68])
 
+# Define the api level of the package.
+AC_SUBST([API_LEVEL],[6])
+
+# Add the api level to the name of the generated tar file
+AC_SUBST([PACKAGE_TARNAME],[$PACKAGE_NAME$API_LEVEL])
+
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
 AC_ARG_PROGRAM
