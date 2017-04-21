@@ -1,8 +1,14 @@
 #!/bin/sh
+#
+# script using fpm <https://github.com/jordansissel/fpm> to build libdrizzle-redux
+# runtime, debugging and development deb packages
+
 set -e
 
+# cd to the directory containing the deb `build` script
 cd `dirname $0`
 
+# function to automatically generate changelog
 genchangelog()
 {
     echo "$1 ($2) `lsb_release -sc`; urgency=low"
@@ -14,28 +20,29 @@ genchangelog()
     echo " -- $3  `LANG=C date -R`"
 }
 
+# generate package version from `git describe` and `lsb_release` info
 pkgversion=$(git describe --dirty | cut -c2- |
              sed 's/-\([0-9]\+\)-\(g[0-9a-f]\+\)/+\1~\2/' |
              sed 's/\(~g[0-9a-f]\+\)-dirty$/-dirty\1/' |
              sed 's/-dirty/~dirty.'`date +%Y%m%d%H%M%S`'/'
             )-$(lsb_release -cs)
 
+# get package maintainer info
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 
+# package name
 pkgname=libdrizzle-redux
 so_filename=libdrizzle-redux.so
 
 version_number=`find ./install/usr/lib/ ! -type l -name "$so_filename.*"`
 
-if [ $(echo $version_number | wc -l) != 1 ]; then
+if [ ! -e $version_number ]; then
     echo "'.so' file not found"
     exit 1
 fi
 
 libversion=`echo $version_number | grep -o -P -e "([0-9]+\.?)+$"`
 lib_major=$(echo $libversion | cut -f1 -d .)
-lib_minor=$(echo $libversion | cut -f2 -d .)
-lib_patch=$(echo $libversion | cut -f3 -d .)
 
 changelog=`mktemp`
 trap "rm -f '$changelog'; exit 1" INT TERM QUIT
