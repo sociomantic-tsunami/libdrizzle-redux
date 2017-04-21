@@ -2,6 +2,14 @@
 #
 # script using fpm <https://github.com/jordansissel/fpm> to build libdrizzle-redux
 # runtime, debugging and development deb packages
+#
+# Usage: ./build [api_level]
+#
+#     api_level        the api level for the package
+#
+# The `api_level` will be appended to the `package_name` for the generated
+# packages, i.e. running `./build 6` would generate a packages named
+# `libdrizzle-redux6`, `libdrizzle-redux6-dbg`, `libdrizzle-redux6-dev`.
 
 set -e
 
@@ -32,10 +40,27 @@ pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 
 # package name
 pkgname=libdrizzle-redux
-so_filename=libdrizzle-redux.so
 
-version_number=`find ./install/usr/lib/ ! -type l -name "$so_filename.*"`
+# library .so name
+so_libname=$pkgname.so
 
+# get the api level for the package from the cmd args
+api_level=""
+if [ $# -eq 1 -a ! -z "$1" ]; then
+    api_level=$1
+fi
+
+# the package name used in the distribution
+dist_pkgname=$pkgname$api_level
+
+# the so library name used in the distribution
+dist_so_libname=$dist_pkgname.so
+
+# relative path to the directory with library files to install
+libdir="./install/usr/lib"
+
+# get the ABI library version from the generated .so file
+version_number=`find $libdir ! -type l -name "$so_libname.*"`
 if [ ! -e $version_number ]; then
     echo "'.so' file not found"
     exit 1
@@ -44,15 +69,29 @@ fi
 libversion=`echo $version_number | grep -o -P -e "([0-9]+\.?)+$"`
 lib_major=$(echo $libversion | cut -f1 -d .)
 
+# create temp file to write changelog to
 changelog=`mktemp`
 trap "rm -f '$changelog'; exit 1" INT TERM QUIT
 
-so_libname="./install/usr/lib/$so_filename"
+# (re)create symbolic links with the distributed package name, dist_pkgname
+cd $libdir
+touch $dist_so_libname.$libversion
+ln -sf $dist_so_libname.$libversion $dist_so_libname.$lib_major
+ln -sf $dist_so_libname.$lib_major $dist_so_libname
+cd -
 
-genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
+# prepend the relative file path to so_libname
+so_libname="$libdir/$so_libname"
+
+# create a copy of the library file
 cp $so_libname.$libversion $so_libname.$libversion.full
-strip  $so_libname.$libversion
-fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+
+# strip symbols from the library file
+strip $so_libname.$libversion
+
+# libdrizzle-redux runtime package
+genchangelog "$dist_pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
+fpm -s dir -t deb -n "$dist_pkgname" -v "$pkgversion" \
     --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
@@ -66,16 +105,16 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --depends libgcc1 \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
-    $so_libname.$libversion=/usr/lib/ \
-    $so_libname.$lib_major=/usr/lib/
+    $so_libname.$libversion=/usr/lib/$dist_pkgname.so.$libversion \
+    $libdir/$dist_so_libname.$lib_major=/usr/lib/
 
-pkgname=libdrizzle-redux-dbg
-genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
-build_id=`readelf -n install/usr/lib/libdrizzle-redux.so.$libversion | \
+# libdrizzle-redux debug package
+genchangelog "$dist_pkgname-dbg" "$pkgversion" "$pkgmaint" > "$changelog"
+build_id=`readelf -n $so_libname.$libversion | \
     sed -n 's/^.*Build ID: \([a-f0-9]\{40\}\).*$/\1/p'`
 debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
-fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+fpm -s dir -t deb -n "$dist_pkgname-dbg" -v "$pkgversion" \
     --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
@@ -83,14 +122,14 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --vendor 'Sociomantic Labs GmbH' \
     --license 'Simplified BSD License' \
     --category debug \
-    --depends libdrizzle-redux \
+    --depends $dist_pkgname \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
     $so_libname.$libversion.debug=/usr/lib/debug/.build-id/$debug_file
 
-pkgname=libdrizzle-redux-dev
-genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
-fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+# libdrizzle-redux development package
+genchangelog "$dist_pkgname-dev" "$pkgversion" "$pkgmaint" > "$changelog"
+fpm -s dir -t deb -n "$dist_pkgname-dev" -v "$pkgversion" \
     --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
@@ -98,9 +137,9 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --vendor 'Sociomantic Labs GmbH' \
     --license 'Simplified BSD License' \
     --category libdevel \
-    --depends libdrizzle-redux \
+    --depends $dist_pkgname \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
-    install/usr/include/=/usr/ \
-    $so_libname=/usr/lib/ \
-    install/usr/lib/libdrizzle-redux.a=/usr/lib/
+    install/usr/include/include/=/usr/include/$pkgname/$dist_pkgname/ \
+    $libdir/$dist_so_libname=/usr/lib/ \
+    $libdir/$pkgname.a=/usr/lib/$dist_pkgname.a
