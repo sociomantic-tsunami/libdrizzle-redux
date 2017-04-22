@@ -1,7 +1,10 @@
 #!/bin/sh
 set -e
 
-cd `dirname $0`
+cd $1
+deb_script_path=`dirname $0`
+
+echo $script_path
 
 genchangelog()
 {

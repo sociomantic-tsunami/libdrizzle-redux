@@ -61,8 +61,9 @@ To build **libdrizzle-redux** you can invoke bootstrap script::
 
 Alternatively you can build and customize::
 
-    autoreconf -fi
-    ./configure
+    mkdir build && cd build
+    autoreconf -fi ..
+    ../configure --srcdir=..
     make
     make install
 
