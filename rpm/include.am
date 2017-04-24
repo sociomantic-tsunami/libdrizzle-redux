@@ -2,8 +2,8 @@
 
 rpm-build: rpm/spec dist
 	@rm -f *.rpm
-	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm
-	@rm -f ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm
+	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)$(API_LEVEL)-$(VERSION)*.rpm
+	@rm -f ~/rpmbuild/SRPMS/$(PACKAGE)$(API_LEVEL)-$(VERSION)*.rpm
 	@mkdir -p ~/rpmbuild/BUILD/
 	@mkdir -p ~/rpmbuild/RPMS/i386/
 	@mkdir -p ~/rpmbuild/RPMS/i686/
@@ -12,11 +12,11 @@ rpm-build: rpm/spec dist
 	@mkdir -p ~/rpmbuild/SOURCES/
 	@mkdir -p ~/rpmbuild/SPECS/
 	@mkdir -p ~/rpmbuild/SRPMS/
-	@cp $(PACKAGE)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
+	@cp $(PACKAGE)$(API_LEVEL)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
 	@rpmbuild -ba --clean rpm/spec
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)$(API_LEVEL)-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)$(API_LEVEL)-devel-$(VERSION)*.rpm .
+	@cp ~/rpmbuild/SRPMS/$(PACKAGE)$(API_LEVEL)-$(VERSION)*.rpm .
 
 rpm-sign: rpm-build
 	@rpm --addsign *.rpm
