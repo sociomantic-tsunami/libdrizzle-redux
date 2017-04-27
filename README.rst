@@ -71,10 +71,20 @@ refer to `compiling.rst`_ or build the documentation, cf. below.
 
 **Linking libdrizzle-redux**::
 
+Ensure the library is in your library and include paths. For releases prior to
+version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
+``-ldrizzle-redux``::
+
     g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
 
-If **libdrizzle-redux** is installed alongside other versions of libdrizzle,
-the linking should be done with the full name of the dynamic library, e.g.::
+From version ``v6.0.2`` and later the API level of the library is appended to
+the installed library name. Thus, linking against ``libdrizzle-redux v6.0.2``
+requires the flag ``-ldrizzle-redux6``::
+
+    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
+
+Another option is to link against libdrizzle-redux using the full name of the
+dynamic library, e.g.::
 
     g++ app.c -oapp -l:libdrizzle-redux.so.9 -lssl -lcrypto -pthread
 
