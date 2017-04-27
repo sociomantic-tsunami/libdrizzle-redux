@@ -141,3 +141,8 @@ nodist_EXTRA_tests_unit_statement_char_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/statement_char
 noinst_PROGRAMS+= tests/unit/statement_char
 
+tests_unit_statement_nulls_SOURCES= tests/unit/statement_nulls.c tests/unit/common.c
+tests_unit_statement_nulls_LDADD= libdrizzle/libdrizzle-redux.la
+nodist_EXTRA_tests_unit_statement_nulls_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/statement_nulls
+noinst_PROGRAMS+= tests/unit/statement_nulls
