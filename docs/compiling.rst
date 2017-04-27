@@ -84,10 +84,17 @@ The test suite can be run in wine, to do this follow these steps:
 Linking Your Application
 ------------------------
 
-To link your app to libdrizzle-redux you need to provide the following to GCC,
-this assumes that the library is in your library and include paths::
+Ensure the library is in your library and include paths. For releases prior to
+version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
+``-ldrizzle-redux``::
 
-   gcc app.c -oapp -ldrizzle-redux -lpthread
+    g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
+
+From version ``v6.0.2`` and later the API level of the library is appended to
+the installed library name. Thus, linking against ``libdrizzle-redux v6.0.2``
+requires the flag ``-ldrizzle-redux6``::
+
+    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
 
 A tool called **libdrizzle-redux_config** is included to also assist with this.
 
