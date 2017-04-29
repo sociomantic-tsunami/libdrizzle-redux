@@ -1634,7 +1634,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   ret = 1;
 #ifdef _WIN32
   ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&ret, optlen_int);
-#else
+#elif defined HAVE_SO_KEEPALIVE
   ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE,&ret, optlen_int);
 #endif /* _WIN32 */
 
@@ -1648,7 +1648,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #ifdef _WIN32
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
                   (const char*)&con->options.keepidle, optlen_int);
-#else
+#elif defined HAVE_TCP_KEEPIDLE
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
                   &con->options.keepidle, optlen_int);
 #endif /* _WIN32 */
@@ -1662,7 +1662,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #ifdef _WIN32
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT,
                   (const char*)&con->options.keepcnt, optlen_int);
-#else
+#elif defined HAVE_TCP_KEEPCNT
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT, &con->options.keepcnt,
                   optlen_int);
 #endif /* _WIN32 */
@@ -1676,7 +1676,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 #ifdef _WIN32
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
                   (const char*)&con->options.keepintvl, optlen_int);
-#else
+#elif defined HAVE_TCP_KEEPINTVL
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
                   &con->options.keepintvl, optlen_int);
 #endif /* _WIN32 */
