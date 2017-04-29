@@ -121,6 +121,9 @@ AC_CHECK_HEADERS([windows.h])
 AC_CHECK_HEADERS([winsock2.h])
 AC_CHECK_HEADERS([ws2tcpip.h])
 
+# Check for setsockopt support
+AX_CHECK_SETSOCKOPT
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_TYPES([in_port_t])
 AC_TYPE_SSIZE_T
