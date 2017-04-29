@@ -61,6 +61,28 @@ Attention!
   We apologize for any inconveniences and promise to look into the issue as soon
   as possible.
 
+**Supported compilers**
+
+.. csv-table::
+  :header: "Compiler","Version"
+
+   gcc, >=4.8.x
+   llvm clang, >=3.3
+   apple clang, >=5.0 (clang-500.2.75)
+
+**Other Dependencies**
+
+.. csv-table::
+   :header: "Dependency", "Version"
+
+   autoconf, >=2.61
+   zlib1g-dev, >=0.13.x
+   libtool, >=2.x
+   libssl-dev [1]_, >=v1.x
+
+.. [1] openssl is needed if libdrizzle-redux is compiled with support for
+       SSL connections.
+
 To build **libdrizzle-redux** you can invoke bootstrap script::
 
     bootstrap.sh
