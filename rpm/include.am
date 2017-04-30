@@ -29,6 +29,14 @@ clean-rpm:
 
 rpm: rpm-build
 
+docker-rpm:
+	@sed -i 's/%{__make} check/#%{__make} check/g' "rpm/spec.in"
+	autoreconf -fi
+	$(SHELL) ./configure
+	$(MAKE) rpm
+	$(MAKE) clean-rpm
+	@sed -i 's/#%{__make} check/%{__make} check/g' "rpm/spec.in"
+
 release: rpm-sign
 
 auto-rpmbuild:

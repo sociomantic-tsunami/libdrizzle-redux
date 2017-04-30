@@ -53,6 +53,7 @@ before_script:
 ## Build steps
 #  - compile project
 #  - run all tests with 'make check'
+#  - build rpm package in docker container
 #
 #  Please note that test fails on first error as default
 #  To skip errors and fail silently set environment variable:
@@ -63,4 +64,6 @@ script:
   - make
   - make check
   - make deb
+  - docker build -f docker/Dockerfile -t centos:7 .
+  - docker run --rm -v $PWD:/home centos:7 make docker-rpm
 
