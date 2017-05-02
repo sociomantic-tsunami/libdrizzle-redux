@@ -55,6 +55,12 @@ move from the previous version to the one listed.
 Building libdrizzle-redux
 =========================
 
+Attention!
+----------
+  Building the library using MinGW is unfortunately broken at the moment.
+  We apologize for any inconveniences and promise to look into the issue as soon
+  as possible.
+
 To build **libdrizzle-redux** you can invoke bootstrap script::
 
     bootstrap.sh

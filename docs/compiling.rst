@@ -41,8 +41,13 @@ To test with valgrind you can run the following::
 
 ``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
-Building For Windows (cross-compile)
-------------------------------------
+Building For Windows (cross-compile) [BROKEN]
+---------------------------------------------
+
+.. attention::
+   Building the library using MinGW is unfortunately broken at the moment.
+   We apologize for any inconveniences and promise to look into the issue as soon
+   as possible.
 
 The bootstrap script can go into MinGW mode to cross compile for 32bit Windows
 targets.  To do this you need to follow the following steps (this guide assumes
