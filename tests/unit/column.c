@@ -40,7 +40,6 @@
 
 #include <libdrizzle-5.1/libdrizzle.h>
 
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,7 +120,7 @@ int main(int argc, char *argv[])
         break;
       case 2:
         ASSERT_EQ_(drizzle_column_max_size(column), 255,
-                   "Column max size wrong %" PRIu64 " != 255",
+                   "Column max size wrong %lu != 255",
                    drizzle_column_max_size(column));
 
         ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI,
