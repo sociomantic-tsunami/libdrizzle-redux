@@ -76,10 +76,12 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
-AX_CXX_COMPILE_STDCXX_11
 
 AX_PLATFORM
 AX_ASSERT
+
+# Checks c++ 11 support
+AX_CXX_COMPILE_STDCXX([11],[],[optional])
 
 # Specialty checks
 AX_CXX_CINTTYPES
@@ -120,6 +122,9 @@ AC_CHECK_HEADERS([sys/socket.h])
 AC_CHECK_HEADERS([windows.h])
 AC_CHECK_HEADERS([winsock2.h])
 AC_CHECK_HEADERS([ws2tcpip.h])
+
+# Check for setsockopt support
+AX_CHECK_SETSOCKOPT
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_TYPES([in_port_t])

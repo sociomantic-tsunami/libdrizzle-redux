@@ -392,7 +392,6 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
   drizzle_return_t ret= DRIZZLE_RETURN_OK;
   uint16_t column_counter= 0, current_column= 0;
   drizzle_row_t row;
-  drizzle_column_st *column;
 
   if (stmt == NULL)
   {
@@ -422,11 +421,12 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
   {
     return DRIZZLE_RETURN_ROW_END;
   }
-  drizzle_column_seek(stmt->execute_result, 0);
 
   for (column_counter = 0; column_counter < stmt->execute_result->column_count; column_counter++)
   {
     drizzle_bind_st *param= &stmt->result_params[column_counter];
+    drizzle_column_st *column= drizzle_column_index(stmt->execute_result, column_counter);
+
     /* if this row is null in the result bitmap, skip first 2 bits */
     if (stmt->execute_result->null_bitmap[(column_counter+2)/8] & (1 << ((column_counter+2) % 8)))
     {
@@ -439,7 +439,6 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
       uint16_t short_data;
       uint32_t long_data;
       uint64_t longlong_data;
-      column= drizzle_column_next(stmt->execute_result);
       param->type= column->type;
       param->options.is_null= false;
       param->length= stmt->execute_result->field_sizes[current_column];

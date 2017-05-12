@@ -303,6 +303,7 @@ drizzle_return_t drizzle_state_row_read(drizzle_st *con)
     con->result->row_count++;
     con->result->row_current++;
     con->result->field_current= 0;
+    con->result->field_current_read= 0;
   }
 
   con->pop_state();
