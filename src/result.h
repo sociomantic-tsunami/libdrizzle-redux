@@ -65,6 +65,7 @@ struct drizzle_result_st
   uint64_t row_current;
 
   uint16_t field_current;         /* field index */
+  uint16_t field_current_read;    /* index of the field currently being read */
   uint64_t field_total;           /* total length of the field currently being read */
   uint64_t field_offset;          /* offset within field of most recently read field fragment (0 if first/only fragment) */
   uint32_t field_size;            /* size of most recently read field value or fragment of field value; max 2^24 */
@@ -102,6 +103,7 @@ struct drizzle_result_st
     row_count(0),
     row_current(0),
     field_current(0),
+    field_current_read(0),
     field_total(0),
     field_offset(0),
     field_size(0),
