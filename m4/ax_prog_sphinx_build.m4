@@ -38,6 +38,9 @@ AC_DEFUN([AX_PROG_SPHINX_BUILD],
                             AS_IF([test $? -eq 0], ,[SPHINXBUILD=])
                             rm -rf conftest.d ])
                       ])
+                      AS_IF([test -e "version_file"],
+                            [rm version_file])
+
                ])
 
          AS_IF([test -n "${SPHINXBUILD}"],

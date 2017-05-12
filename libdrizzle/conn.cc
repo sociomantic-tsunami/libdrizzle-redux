@@ -1541,6 +1541,16 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   struct timeval waittime;
   const socklen_t optlen_int = sizeof(int);
 
+#if defined _WIN32
+  typedef const char* sockopt_value_t;
+  typedef const char* sockopt_linger_t;
+  typedef const char* sockopt_timeval_t;
+#else
+  typedef int* sockopt_value_t ;
+  typedef struct linger* sockopt_linger_t;
+  typedef struct timeval* sockopt_timeval_t;
+#endif
+
   assert(con);
   if (con == NULL)
   {
@@ -1570,11 +1580,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
 
   int ret= 1;
 
-#ifdef _WIN32
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&ret, optlen_int);
-#else
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, &ret, optlen_int);
-#endif /* _WIN32 */
+  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_NODELAY, (sockopt_value_t)&ret,
+    optlen_int);
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
@@ -1585,13 +1592,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   linger.l_onoff= 1;
   linger.l_linger= con->options.wait_timeout;
 
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_LINGER, (const char*)&linger,
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_LINGER, (sockopt_linger_t)&linger,
                   (socklen_t)sizeof(struct linger));
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_LINGER, &linger,
-                  (socklen_t)sizeof(struct linger));
-#endif /* _WIN32 */
 
   if (ret == -1)
   {
@@ -1602,13 +1604,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   waittime.tv_sec= con->options.wait_timeout;
   waittime.tv_usec= 0;
 
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&waittime,
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDTIMEO, (sockopt_timeval_t)&waittime,
                   (socklen_t)sizeof(struct timeval));
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDTIMEO, &waittime,
-                  (socklen_t)sizeof(struct timeval));
-#endif /* _WIN32 */
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
@@ -1616,13 +1613,8 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     return DRIZZLE_RETURN_ERRNO;
   }
 
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&waittime,
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVTIMEO, (sockopt_timeval_t)&waittime,
                   (socklen_t)sizeof(struct timeval));
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVTIMEO, &waittime,
-                  (socklen_t)sizeof(struct timeval));
-#endif /* _WIN32 */
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
@@ -1632,11 +1624,10 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 
   ret = 1;
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE, (const char*)&ret, optlen_int);
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE,&ret, optlen_int);
-#endif /* _WIN32 */
+
+#ifdef HAVE_SO_KEEPALIVE
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_KEEPALIVE, (sockopt_value_t)&ret,
+    optlen_int);
 
   if (ret == -1 && errno != ENOPROTOOPT)
   {
@@ -1644,55 +1635,42 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
                       "setsockopt:SO_KEEPALIVE:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
+#endif /* HAVE_SO_KEEPALIVE */
 
-#ifdef _WIN32
+#ifdef HAVE_TCP_KEEPIDLE
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
-                  (const char*)&con->options.keepidle, optlen_int);
-#else
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPIDLE,
-                  &con->options.keepidle, optlen_int);
-#endif /* _WIN32 */
-
+                  (sockopt_value_t)&con->options.keepidle, optlen_int);
   if (ret == -1 && errno != EOPNOTSUPP)
   {
     drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPIDLE:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
+#endif /* HAVE_TCP_KEEPIDLE */
 
-#ifdef _WIN32
+#ifdef HAVE_TCP_KEEPCNT
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT,
-                  (const char*)&con->options.keepcnt, optlen_int);
-#else
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPCNT, &con->options.keepcnt,
-                  optlen_int);
-#endif /* _WIN32 */
-
+                  (sockopt_value_t)&con->options.keepcnt, optlen_int);
   if (ret == -1 && errno != EOPNOTSUPP)
   {
     drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPCNT:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
+#endif /* HAVE_TCP_KEEPCNT */
 
-#ifdef _WIN32
+#ifdef HAVE_TCP_KEEPINTVL
   ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
-                  (const char*)&con->options.keepintvl, optlen_int);
-#else
-  ret= setsockopt(con->fd, IPPROTO_TCP, TCP_KEEPINTVL,
-                  &con->options.keepintvl, optlen_int);
-#endif /* _WIN32 */
+                  (sockopt_value_t)&con->options.keepintvl, optlen_int);
+
 
   if (ret == -1 && errno != EOPNOTSUPP)
   {
     drizzle_set_error(con, __func__, "setsockopt:TCP_KEEPINTVL:%s", strerror(errno));
     return DRIZZLE_RETURN_ERRNO;
   }
+#endif /* HAVE_TCP_KEEPINTVL */
 
   ret= DRIZZLE_DEFAULT_SOCKET_SEND_SIZE;
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, (const char*)&ret, optlen_int);
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, &ret, optlen_int);
-#endif /* _WIN32 */
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_SNDBUF, (sockopt_value_t)&ret, optlen_int);
   if (ret == -1)
   {
     drizzle_set_error(con, __func__, "setsockopt:SO_SNDBUF:%s", strerror(errno));
@@ -1700,11 +1678,7 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
   }
 
   ret= DRIZZLE_DEFAULT_SOCKET_RECV_SIZE;
-#ifdef _WIN32
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, (const char*)&ret, optlen_int);
-#else
-  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, &ret, optlen_int);
-#endif /* _WIN32 */
+  ret= setsockopt(con->fd, SOL_SOCKET, SO_RCVBUF, (sockopt_value_t)&ret, optlen_int);
   if (ret == -1)
   {
     drizzle_set_error(con, __func__, "setsockopt:SO_RCVBUF:%s", strerror(errno));
