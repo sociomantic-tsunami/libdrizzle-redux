@@ -86,6 +86,49 @@ The test suite can be run in wine, to do this follow these steps:
 
       WINEARCH=win32 TESTS_ENVIRONMENT=wine make check
 
+
+Building For OSX (clang and gcc)
+--------------------------------
+
+You can compile the source code with the ``clang`` compiler provided by
+**Xcode Command Line Tools**.
+Alternatively you can use Homebrew_ to install a specific ``gcc`` or ``clang``
+compiler. Regardless of the choice of compiler, you will need to install **Xcode**
+and the **Xcode Command Line Tools**.
+
+Compatible compilers:
+
++-----------------------+----------+
+| Compiler              | Version  |
++-----------------------+----------+
+| GNU gcc               | ">= 4.5" |
++-----------------------+----------+
+| Apple LLVM clang [#]_ | ">= 6.1" |
++-----------------------+----------+
+| LLVM clang            | ">= 3.3" |
++-----------------------+----------+
+
+.. [#] The version listed for Apple LLVM is the compiler used in the OS X builds
+       on Travis CI. However earlier versions should be compatible as long as
+       they support C++11 features, i.e. Apple LLVM 5.0, Xcode 5.0 and later.
+
+#. Install the dependencies specified in the `RELEASE NOTES`_ of the latest minor release.
+
+#. Ensure **OpenSSL** headers are linked by creating a symlink::
+
+      ln -sf "$(brew --prefix openssl)/include/openssl" /usr/local/include/openssl
+
+   or pass the OpenSSL directory to ``configure`` using ``--with-openssl``::
+
+      ./configure --with-openssl=$(brew --prefix openssl)
+
+#. Optionally set the C and C++ compiler before running ``configure``, e.g.::
+
+      autoreconf -fi
+      CC=gcc-4.9 CXX=g++-4.9 ./configure
+      make
+
+
 Linking Your Application
 ------------------------
 
@@ -97,3 +140,4 @@ this assumes that the library is in your library and include paths::
 A tool called **libdrizzle-redux_config** is included to also assist with this.
 
 .. _RELEASE NOTES: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases
+.. _Homebrew: http://brew.sh
