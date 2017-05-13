@@ -55,6 +55,34 @@ move from the previous version to the one listed.
 Building libdrizzle-redux
 =========================
 
+Attention!
+----------
+  Building the library using MinGW is unfortunately broken at the moment.
+  We apologize for any inconveniences and promise to look into the issue as soon
+  as possible.
+
+**Supported compilers**
+
+.. csv-table::
+  :header: "Compiler","Version"
+
+   gcc, >=4.8.x
+   llvm clang, >=3.3
+   apple clang, >=5.0 (clang-500.2.75)
+
+**Other Dependencies**
+
+.. csv-table::
+   :header: "Dependency", "Version"
+
+   autoconf, >=2.61
+   zlib1g-dev, >=0.13.x
+   libtool, >=2.x
+   libssl-dev [1]_, >=v1.x
+
+.. [1] openssl is needed if libdrizzle-redux is compiled with support for
+       SSL connections.
+
 To build **libdrizzle-redux** you can invoke bootstrap script::
 
     bootstrap.sh
@@ -71,10 +99,20 @@ refer to `compiling.rst`_ or build the documentation, cf. below.
 
 **Linking libdrizzle-redux**::
 
+Ensure the library is in your library and include paths. For releases prior to
+version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
+``-ldrizzle-redux``::
+
     g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
 
-If **libdrizzle-redux** is installed alongside other versions of libdrizzle,
-the linking should be done with the full name of the dynamic library, e.g.::
+From version ``v6.0.2`` and later the API level of the library is appended to
+the installed library name. Thus, linking against ``libdrizzle-redux v6.0.2``
+requires the flag ``-ldrizzle-redux6``::
+
+    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
+
+Another option is to link against libdrizzle-redux using the full name of the
+dynamic library, e.g.::
 
     g++ app.c -oapp -l:libdrizzle-redux.so.9 -lssl -lcrypto -pthread
 

@@ -41,8 +41,13 @@ To test with valgrind you can run the following::
 
 ``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
-Building For Windows (cross-compile)
-------------------------------------
+Building For Windows (cross-compile) [BROKEN]
+---------------------------------------------
+
+.. attention::
+   Building the library using MinGW is unfortunately broken at the moment.
+   We apologize for any inconveniences and promise to look into the issue as soon
+   as possible.
 
 The bootstrap script can go into MinGW mode to cross compile for 32bit Windows
 targets.  To do this you need to follow the following steps (this guide assumes
@@ -84,10 +89,17 @@ The test suite can be run in wine, to do this follow these steps:
 Linking Your Application
 ------------------------
 
-To link your app to libdrizzle-redux you need to provide the following to GCC,
-this assumes that the library is in your library and include paths::
+Ensure the library is in your library and include paths. For releases prior to
+version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
+``-ldrizzle-redux``::
 
-   gcc app.c -oapp -ldrizzle-redux -lpthread
+    g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
+
+From version ``v6.0.2`` and later the API level of the library is appended to
+the installed library name. Thus, linking against ``libdrizzle-redux v6.0.2``
+requires the flag ``-ldrizzle-redux6``::
+
+    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
 
 A tool called **libdrizzle-redux_config** is included to also assist with this.
 

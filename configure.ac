@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[6.0.1],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[6.0.2],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -15,6 +15,12 @@ AC_CANONICAL_TARGET
 # Automake version before 1.13 (when the serial-tests option was dnl still the default) still defined the badly obsolete macro.  'AM_PROG_INSTALL'.
 AM_INIT_AUTOMAKE(1.11 no-define color-tests -Wno-portability subdir-objects foreign tar-ustar m4_ifndef([AM_WITH_REGEX], [serial-tests]))
 AC_PREREQ([2.68])
+
+# Define the api level of the package.
+AC_SUBST([API_LEVEL],[6])
+
+# Add the api level to the name of the generated tar file
+AC_SUBST([PACKAGE_TARNAME],[$PACKAGE_NAME$API_LEVEL])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -54,7 +60,7 @@ AC_CONFIG_SRCDIR([src/drizzle.cc])
 # (§) The explanation is taken from this blogpost:
 # http://blog.asleson.org/index.php/2014/07/08/libtool-library-versioning-version-info-currentrevisionage/
 #
-LIBDRIZZLE_LIBRARY_VERSION=13:1:0
+LIBDRIZZLE_LIBRARY_VERSION=13:2:0
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |
@@ -76,10 +82,12 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
-AX_CXX_COMPILE_STDCXX_11
 
 AX_PLATFORM
 AX_ASSERT
+
+# Checks c++ 11 support
+AX_CXX_COMPILE_STDCXX([11],[],[optional])
 
 # Specialty checks
 AX_CXX_CINTTYPES
@@ -120,6 +128,9 @@ AC_CHECK_HEADERS([sys/socket.h])
 AC_CHECK_HEADERS([windows.h])
 AC_CHECK_HEADERS([winsock2.h])
 AC_CHECK_HEADERS([ws2tcpip.h])
+
+# Check for setsockopt support
+AX_CHECK_SETSOCKOPT
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_TYPES([in_port_t])

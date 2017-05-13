@@ -402,9 +402,21 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
 {
   drizzle_return_t ret;
 
-  switch(con->result->column_buffer[con->result->field_current].type)
+  /* Skip NULL fields */
+  while (con->result->null_bitmap[(con->result->field_current_read + 2) / 8] &
+         (1 << ((con->result->field_current_read + 2) % 8)))
+  {
+    con->result->field_current_read++;
+  }
+
+  switch(con->result->column_buffer[con->result->field_current_read].type)
   {
     case DRIZZLE_COLUMN_TYPE_NULL:
+      /* This should not happen since NULL fields are masked by `null_bitmap`, but cover it anyway */
+      drizzle_set_error(con, __FILE_LINE_FUNC__,
+        "Unexpected column type: DRIZZLE_COLUMN_TYPE_NULL");
+      con->result->field_size= 0;
+      return DRIZZLE_RETURN_UNEXPECTED_DATA;
       break;
     case DRIZZLE_COLUMN_TYPE_TINY:
       con->result->field_size= 1;
@@ -462,6 +474,7 @@ drizzle_return_t drizzle_state_binary_field_read(drizzle_st *con)
   con->result->field_total= con->result->field_size;
 
   con->result->field_current++;
+  con->result->field_current_read++;
   con->pop_state();
   return DRIZZLE_RETURN_OK;
 }
