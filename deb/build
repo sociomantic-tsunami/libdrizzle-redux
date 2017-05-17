@@ -35,6 +35,9 @@ pkgversion=$(git describe --dirty | cut -c2- |
              sed 's/-dirty/~dirty.'`date +%Y%m%d%H%M%S`'/'
             )-$(lsb_release -cs)
 
+# major and minor version substring
+pkg_major_minor=$(echo $pkgversion | grep -Poe '^(\.?\d+){2}')
+
 # get package maintainer info
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 
@@ -140,6 +143,6 @@ fpm -s dir -t deb -n "$dist_pkgname-dev" -v "$pkgversion" \
     --depends $dist_pkgname \
     --deb-changelog "$changelog" \
     --deb-no-default-config-files \
-    install/usr/include/include/=/usr/include/$pkgname/$dist_pkgname/ \
+    install/usr/include/include/=/usr/include/$pkgname-$pkg_major_minor/ \
     $libdir/$dist_so_libname=/usr/lib/ \
     $libdir/$pkgname.a=/usr/lib/$dist_pkgname.a
