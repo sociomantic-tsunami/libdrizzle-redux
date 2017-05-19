@@ -19,50 +19,50 @@ noinst_HEADERS+= src/statement_local.h
 noinst_HEADERS+= src/structs.h
 noinst_HEADERS+= src/windows.hpp
 
-lib_LTLIBRARIES+= src/libdrizzle-redux.la
-src_libdrizzle_redux_la_SOURCES=
-src_libdrizzle_redux_la_LIBADD=
-src_libdrizzle_redux_la_LDFLAGS=
-src_libdrizzle_redux_la_CFLAGS= -DBUILDING_LIBDRIZZLE
-src_libdrizzle_redux_la_CXXFLAGS= -DBUILDING_LIBDRIZZLE
+lib_LTLIBRARIES+= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_SOURCES=
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD=
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LDFLAGS=
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CFLAGS= -DBUILDING_LIBDRIZZLE
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CXXFLAGS= -DBUILDING_LIBDRIZZLE
 
-src_libdrizzle_redux_la_CFLAGS+= @OPENSSL_INCLUDES@
-src_libdrizzle_redux_la_CXXFLAGS+= @OPENSSL_INCLUDES@
-src_libdrizzle_redux_la_LDFLAGS+= @OPENSSL_LDFLAGS@
-src_libdrizzle_redux_la_LIBADD+= @OPENSSL_LIBS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CFLAGS+= @OPENSSL_INCLUDES@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CXXFLAGS+= @OPENSSL_INCLUDES@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LDFLAGS+= @OPENSSL_LDFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD+= @OPENSSL_LIBS@
 
-src_libdrizzle_redux_la_CFLAGS+= @PTHREAD_CFLAGS@
-src_libdrizzle_redux_la_CXXFLAGS+= @PTHREAD_CFLAGS@
-src_libdrizzle_redux_la_LIBADD+= @PTHREAD_LIBS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CFLAGS+= @PTHREAD_CFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CXXFLAGS+= @PTHREAD_CFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD+= @PTHREAD_LIBS@
 
-src_libdrizzle_redux_la_CFLAGS+= @ZLIB_CFLAGS@
-src_libdrizzle_redux_la_CXXFLAGS+= @ZLIB_CFLAGS@
-src_libdrizzle_redux_la_LDFLAGS+= @ZLIB_LDFLAGS@
-src_libdrizzle_redux_la_LIBADD+= @ZLIB_LIBS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CFLAGS+= @ZLIB_CFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_CXXFLAGS+= @ZLIB_CFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LDFLAGS+= @ZLIB_LDFLAGS@
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD+= @ZLIB_LIBS@
 
 if BUILD_WIN32
-src_libdrizzle_redux_la_LIBADD+= -lmingw32
-src_libdrizzle_redux_la_LIBADD+= -lws2_32
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD+= -lmingw32
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LIBADD+= -lws2_32
 endif
 
-src_libdrizzle_redux_la_SOURCES+= src/binlog.cc
-src_libdrizzle_redux_la_SOURCES+= src/command.cc
-src_libdrizzle_redux_la_SOURCES+= src/conn_uds.cc
-src_libdrizzle_redux_la_SOURCES+= src/error.cc
-src_libdrizzle_redux_la_SOURCES+= src/handshake.cc
-src_libdrizzle_redux_la_SOURCES+= src/query.cc
-src_libdrizzle_redux_la_SOURCES+= src/row.cc
-src_libdrizzle_redux_la_SOURCES+= src/ssl.cc
-src_libdrizzle_redux_la_SOURCES+= src/column.cc
-src_libdrizzle_redux_la_SOURCES+= src/conn.cc
-src_libdrizzle_redux_la_SOURCES+= src/drizzle.cc
-src_libdrizzle_redux_la_SOURCES+= src/field.cc
-src_libdrizzle_redux_la_SOURCES+= src/pack.cc
-src_libdrizzle_redux_la_SOURCES+= src/poll.cc
-src_libdrizzle_redux_la_SOURCES+= src/result.cc
-src_libdrizzle_redux_la_SOURCES+= src/sha1.cc
-src_libdrizzle_redux_la_SOURCES+= src/state.cc
-src_libdrizzle_redux_la_SOURCES+= src/statement.cc
-src_libdrizzle_redux_la_SOURCES+= src/statement_param.cc
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_SOURCES+= src/binlog.cc	\
+	src/command.cc	\
+	src/conn_uds.cc \
+	src/error.cc	\
+	src/handshake.cc \
+	src/query.cc	\
+	src/row.cc		\
+	src/ssl.cc		\
+	src/column.cc	\
+	src/conn.cc		\
+	src/drizzle.cc	\
+	src/field.cc	\
+	src/pack.cc		\
+	src/poll.cc		\
+	src/result.cc	\
+	src/sha1.cc		\
+	src/state.cc	\
+	src/statement.cc \
+	src/statement_param.cc
 
-src_libdrizzle_redux_la_LDFLAGS+= -version-info ${LIBDRIZZLE_LIBRARY_VERSION}
+src_libdrizzle_redux@LIBDRIZZLE_MAJOR@_la_LDFLAGS+= -version-info ${LIBDRIZZLE_LIBRARY_VERSION}

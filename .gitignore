@@ -19,7 +19,7 @@ deb/install
 .deps
 docs/conf.py
 src/.*
-libdrizzle-redux-config
+libdrizzle-redux?-config
 version.h
 libtool
 m4/libtool.m4
