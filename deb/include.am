@@ -9,7 +9,7 @@
 deb: clean-deb
 	./configure --prefix=/usr
 	$(MAKE) DESTDIR=${abs_builddir}/deb/install install
-	deb/build $(API_LEVEL)
+	deb/build $(PACKAGE)
 
 release-deb:
 	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \

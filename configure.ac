@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[6.0.2],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux6],[6.0.2],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux6],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -15,12 +15,6 @@ AC_CANONICAL_TARGET
 # Automake version before 1.13 (when the serial-tests option was dnl still the default) still defined the badly obsolete macro.  'AM_PROG_INSTALL'.
 AM_INIT_AUTOMAKE(1.11 no-define color-tests -Wno-portability subdir-objects foreign tar-ustar m4_ifndef([AM_WITH_REGEX], [serial-tests]))
 AC_PREREQ([2.68])
-
-# Define the api level of the package.
-AC_SUBST([API_LEVEL],[6])
-
-# Add the api level to the name of the generated tar file
-AC_SUBST([PACKAGE_TARNAME],[$PACKAGE_NAME$API_LEVEL])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
@@ -73,6 +67,10 @@ LIBDRIZZLE_LIBRARY_VERSION=13:2:0
 #                  |           set to zero if current is incremented
 #                  +- increment if interfaces have been added, removed or changed
 AC_SUBST([LIBDRIZZLE_LIBRARY_VERSION])
+
+# This is used to allow multiple major (SemVer-wise) to be installed concurrently
+LIBDRIZZLE_MAJOR=6
+AC_SUBST([LIBDRIZZLE_MAJOR])
 
 LT_PREREQ([2.2])
 LT_INIT
