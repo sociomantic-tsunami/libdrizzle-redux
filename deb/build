@@ -112,7 +112,7 @@ fpm -s dir -t deb -n "$dist_pkgname" -v "$pkgversion" \
 genchangelog "$dist_pkgname-dbg" "$pkgversion" "$pkgmaint" > "$changelog"
 build_id=`readelf -n $so_libname.$libversion | \
     sed -n 's/^.*Build ID: \([a-f0-9]\{40\}\).*$/\1/p'`
-debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
+debug_file=`echo $build_id | cut -b1-2`/`echo $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$dist_pkgname-dbg" -v "$pkgversion" \
     --architecture all \
