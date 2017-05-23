@@ -93,6 +93,10 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Tue May 23 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.3
+- Correctly set the SONAME for libdrizzle-redux6 (2017-05-23)
+- Fix printf usage in deb/build (2017-05-23)
+
 * Fri May 12 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.2
 - Add unittest for prepared statement with buffering (2017-05-10)
 - Bugfix: skip NULL fields when reading from MySQL (2017-05-10)
