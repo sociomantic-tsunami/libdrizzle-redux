@@ -1,5 +1,5 @@
 Summary: Simplified API to MySQL databases
-Name: @PACKAGE@@API_LEVEL@
+Name: @PACKAGE@
 Version: @VERSION@
 Release: 1
 License: BSD
@@ -45,9 +45,9 @@ you will need to install %{name}-devel.
 # rename the directory to `include/libdrizzle-redux`
 if test -d %{rpm_include_path}
 then
-    tmp_include_path=`echo %{rpm_include_path} | sed 's/include\/include/include/'`
-    mv %{rpm_include_path} ${tmp_include_path}
-    rm -rf %{rpm_include_path}
+    tmp_include_path=$RPM_BUILD_ROOT/usr/include/%{header_install_path}
+    mkdir -p $tmp_include_path
+    mv %{rpm_include_path} ${tmp_include_path}/
 fi
 mkdir -p $RPM_BUILD_ROOT/
 
@@ -60,39 +60,43 @@ mkdir -p $RPM_BUILD_ROOT/
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING
-%{_libdir}/libdrizzle-redux.a
-%{_libdir}/libdrizzle-redux.la
-%{_libdir}/libdrizzle-redux.so
-%{_libdir}/libdrizzle-redux.so.*
-%{_bindir}/libdrizzle-redux-config
+%{_libdir}/%{name}.a
+%{_libdir}/%{name}.la
+%{_libdir}/%{name}.so
+%{_libdir}/%{name}.so.*
+%{_bindir}/%{name}-config
 
 %files devel
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING
-%{_includedir}/libdrizzle-redux/binlog.h
-%{_includedir}/libdrizzle-redux/column.h
-%{_includedir}/libdrizzle-redux/column_client.h
-%{_includedir}/libdrizzle-redux/conn.h
-%{_includedir}/libdrizzle-redux/conn_client.h
-%{_includedir}/libdrizzle-redux/constants.h
-%{_includedir}/libdrizzle-redux/drizzle.h
-%{_includedir}/libdrizzle-redux/drizzle_client.h
-%{_includedir}/libdrizzle-redux/error.h
-%{_includedir}/libdrizzle-redux/field_client.h
-%{_includedir}/libdrizzle-redux/libdrizzle.h
-%{_includedir}/libdrizzle-redux/query.h
-%{_includedir}/libdrizzle-redux/result.h
-%{_includedir}/libdrizzle-redux/result_client.h
-%{_includedir}/libdrizzle-redux/return.h
-%{_includedir}/libdrizzle-redux/row_client.h
-%{_includedir}/libdrizzle-redux/ssl.h
-%{_includedir}/libdrizzle-redux/statement.h
-%{_includedir}/libdrizzle-redux/structs.h
-%{_includedir}/libdrizzle-redux/verbose.h
-%{_includedir}/libdrizzle-redux/version.h
-%{_includedir}/libdrizzle-redux/visibility.h
+%{_includedir}/%{name}/libdrizzle-redux/binlog.h
+%{_includedir}/%{name}/libdrizzle-redux/column.h
+%{_includedir}/%{name}/libdrizzle-redux/column_client.h
+%{_includedir}/%{name}/libdrizzle-redux/conn.h
+%{_includedir}/%{name}/libdrizzle-redux/conn_client.h
+%{_includedir}/%{name}/libdrizzle-redux/constants.h
+%{_includedir}/%{name}/libdrizzle-redux/drizzle.h
+%{_includedir}/%{name}/libdrizzle-redux/drizzle_client.h
+%{_includedir}/%{name}/libdrizzle-redux/error.h
+%{_includedir}/%{name}/libdrizzle-redux/field_client.h
+%{_includedir}/%{name}/libdrizzle-redux/libdrizzle.h
+%{_includedir}/%{name}/libdrizzle-redux/query.h
+%{_includedir}/%{name}/libdrizzle-redux/result.h
+%{_includedir}/%{name}/libdrizzle-redux/result_client.h
+%{_includedir}/%{name}/libdrizzle-redux/return.h
+%{_includedir}/%{name}/libdrizzle-redux/row_client.h
+%{_includedir}/%{name}/libdrizzle-redux/ssl.h
+%{_includedir}/%{name}/libdrizzle-redux/statement.h
+%{_includedir}/%{name}/libdrizzle-redux/structs.h
+%{_includedir}/%{name}/libdrizzle-redux/verbose.h
+%{_includedir}/%{name}/libdrizzle-redux/version.h
+%{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Tue May 23 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.3
+- Correctly set the SONAME for libdrizzle-redux6 (2017-05-23)
+- Fix printf usage in deb/build (2017-05-23)
+
 * Fri May 12 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.2
 - Add unittest for prepared statement with buffering (2017-05-10)
 - Bugfix: skip NULL fields when reading from MySQL (2017-05-10)
