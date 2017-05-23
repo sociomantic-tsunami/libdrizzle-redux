@@ -95,12 +95,28 @@ version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
 
     g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
 
-From version ``v6.0.2`` and later the API level of the library is appended to
-the installed library name. Thus, linking against ``libdrizzle-redux v6.0.2``
-requires the flag ``-ldrizzle-redux6``::
+From version ``v6.0.3`` and later the API level of the library is appended to
+the installed library name [1]_. This is also reflected in the install path for
+development headers which now follows the pattern::
 
-    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
+    /<include-prefix>/libdrizzle-redux[MAJOR_VERSION]/libdrizzle-redux
+
+Thus, linking against ``libdrizzle-redux v6.0.3`` requires the flag
+``-ldrizzle-redux6`` and if headers are included to add
+``-I/<prefix>/libdrizzle-redux6``, e.g.::
+
+    g++ app.c -oapp -I/usr/include/libdrizzle-redux6 -ldrizzle-redux6 -lssl -lcrypto -pthread
+
+Another option is to link against libdrizzle-redux using the full name of the
+dynamic library, e.g.::
+
+    g++ app.c -oapp -I/usr/include/libdrizzle-redux6 -l:libdrizzle-redux6.so.13 -lssl -lcrypto -pthread
 
 A tool called **libdrizzle-redux_config** is included to also assist with this.
 
 .. _RELEASE NOTES: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases
+
+.. rubric:: Footnotes
+
+.. [1] v6.0.2 added the major version to the package name and the library file
+       but the release is deprecated since the linking did not work correctly.
