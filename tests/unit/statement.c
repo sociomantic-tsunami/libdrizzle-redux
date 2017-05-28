@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   ASSERT_EQ(UINT64_MAX, drizzle_stmt_row_count(stmt));
 
   drizzle_st *con = drizzle_create(getenv("MYSQL_SERVER"),
-                                   getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                                   getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
                                                         : DRIZZLE_DEFAULT_TCP_PORT,
                                    getenv("MYSQL_USER"),
                                    getenv("MYSQL_PASSWORD"),
