@@ -84,6 +84,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Tue May 30 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.3
+- Fix invalid parsing of MYSQL_PORT env variable (2017-05-28)
+
 * Fri May 12 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v5.6.2
 - Add unittest for prepared statement with buffering (2017-05-10)
 - Bugfix: skip NULL fields when reading from MySQL (2017-05-10)
