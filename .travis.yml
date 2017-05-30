@@ -13,19 +13,47 @@ dist: trusty
 
 services:
  - mysql
+ - docker
 
-## The following environment variables are required for
-#  running unittests
-#  Environment variables can be defined in the repository, but
-#  are overridden by values in .travis.yml.
+## Environment variables
 #
-#  Please refer to the section 'script' for info on
-#  SKIP_TEST_ON_ERROR
+#  The 'global' section defines variables which are added to every row in the
+#  build matrix, i.e. every build configuration.
+#  In turn, variables defined in the 'matrix' section each triggers a separate
+#  build.
+#
+#  Please note that test fails on first error as default
+#  To skip errors and fail silently set environment variable:
+#    SKIP_TEST_ON_ERROR=1
 env:
-  - MYSQL_SERVER=127.0.0.1 \
-    MYSQL_PASSWORD='' \
-    MYSQL_USER=root \
-    SKIP_TEST_ON_ERROR=0
+  global:
+    - MYSQL_SERVER=127.0.0.1
+      MYSQL_PASSWORD=''
+      MYSQL_USER=root
+      MYSQL_PORT=3306
+      DIST_PACKAGE_TARGET=DEB
+      SKIP_TEST_ON_ERROR=0
+  matrix:
+    - DIST_PACKAGE_TARGET=DEB
+    - DIST_PACKAGE_TARGET=RPM
+
+## Build matrix
+#
+#  The 'os', 'compiler' and 'env' settings are expanded into 3 jobs:
+#
+#  | os     | compiler | DIST_PACKAGE_TARGET |
+#  |--------|----------|---------------------|
+#  | linux  | clang    | DEB                 |
+#  | linux  | gcc      | DEB                 |
+#  | linux* | gcc      | RPM                 |
+#
+#  * the RPM package is built in a docker container running centos7
+matrix:
+  fast_finish: true
+  exclude:
+    - os: linux
+      compiler: clang
+      env: DIST_PACKAGE_TARGET=RPM
 
 ## Defines packages to be installed by apt
 #  2016/12/01 - mysql-5.6 was added to the default stack
@@ -36,31 +64,14 @@ env:
 #  apt:
 #    packages:
 
+## Install dependencies
 before_install:
-  - gem install fpm
-  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
+  - ./travis_configure.sh before_install
 
-## This script runs before the compiling
-#  1. Stop MySQL server
-#  2. Enable replication in mysql config file
-#  3. Start MySQL server
-#  4. Print mysql config for debug purposes
+## Prepare build system for tests
 before_script:
-  - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
-  - sudo service mysql restart
-  - mysqld --print-defaults
+  - ./travis_configure.sh before_script
 
-## Build steps
-#  - compile project
-#  - run all tests with 'make check'
-#
-#  Please note that test fails on first error as default
-#  To skip errors and fail silently set environment variable:
-#    SKIP_TEST_ON_ERROR=1
+## Run tests, and packaging scripts
 script:
-  - autoreconf -fi
-  - ./configure
-  - make
-  - make check
-  - make deb
-
+  - ./travis_configure.sh run_tests
