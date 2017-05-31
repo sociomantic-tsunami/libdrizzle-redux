@@ -63,7 +63,7 @@ void set_up_connection(void)
   ASSERT_NULL_(con, "con opened twice?");
 
   con = drizzle_create(getenv("MYSQL_SERVER"),
-                       getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
+                       getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
                                             : DRIZZLE_DEFAULT_TCP_PORT,
                        getenv("MYSQL_USER"), getenv("MYSQL_PASSWORD"),
                        getenv("MYSQL_SCHEMA"), 0);
