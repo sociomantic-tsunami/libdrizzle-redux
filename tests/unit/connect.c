@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
   drizzle_socket_set_options(opts, 10, 5, 3, 3);
 
   con= drizzle_create(getenv("MYSQL_SERVER"),
-                      getenv("MYSQL_PORT") ? atoi("MYSQL_PORT")
-                                           : DRIZZLE_DEFAULT_TCP_PORT,
-                      getenv("MYSQL_USER"),
-                      getenv("MYSQL_PASSWORD"),
-                      getenv("MYSQL_SCHEMA"), opts);
+                                  getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
+                                                       : DRIZZLE_DEFAULT_TCP_PORT,
+                                  getenv("MYSQL_USER"),
+                                  getenv("MYSQL_PASSWORD"),
+                                  getenv("MYSQL_SCHEMA"), opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
