@@ -23,10 +23,10 @@ print_error_msg ()
 
 # Script which is run before the installation script is called
 #
-# Installs fpm on needed for deb packaging
-#
-# Other build configurations are not handled in this function
-#
+# Installs dependencies
+# linux:
+#   deb:
+#     - fpm
 # Returns 0
 before_install()
 {
@@ -85,7 +85,8 @@ before_script()
 #
 # - configures and compiles the project
 # - runs all unittests with 'make check'
-# - generates deb or rpm package depending on the current build configuration
+# - for builds on linux, a deb or rpm package is generated depending on the
+#   current build configuration.
 #
 # Returns 0 or 1 if called with an invalid build configuration
 run_tests()
@@ -104,7 +105,6 @@ run_tests()
             print_error_msg "Invalid build configuration"
             return 1
         fi
-
     fi
 
     return 0
