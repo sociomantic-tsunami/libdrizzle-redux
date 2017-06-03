@@ -62,8 +62,9 @@ before_install()
 # Returns 0
 enable_mysqlbinlog()
 {
-    sudo sed -i -e 's/^# *server.id.*$/server_id=1/g' $1
-    sudo sed -i -e 's/^# *log.bin.*$/log_bin=mysql-bin/g' $1
+    echo "[mysqld]" | sudo tee -a "$1"
+    echo "server-id=1" | sudo tee -a "$1"
+    echo "log_bin=mysql_binlog" | sudo tee -a "$1"
 
     return 0
 }
@@ -93,10 +94,7 @@ before_script()
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         # Creates a MySQL config file with binary logging enabled and
         # starts the MySQL server
-        mysql_conf="$HOME/.my.cnf"
-        echo "[mysqld]" > $mysql_conf
-        echo "log_bin = mysql_bin" >> $mysql_conf
-        echo "server_id = 1" >> $mysql_conf
+        enable_mysqlbinlog "$HOME/.my.cnf"
 
         mysql.server start
     else
