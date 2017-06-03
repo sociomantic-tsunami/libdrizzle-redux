@@ -27,6 +27,8 @@ print_error_msg ()
 # linux:
 #   deb:
 #     - fpm
+# osx:
+#   - sed, (libtool), openssl, mysql
 # Returns 0
 before_install()
 {
@@ -34,6 +36,19 @@ before_install()
         if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
             gem install fpm
         fi
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew install gnu-sed
+        xcode_version=`xcodebuild -version | grep 'Xcode' | cut -f 2 -d ' '`
+        # reinstall libtool on osx_image xcode6.x to ensure gsed is found by
+        # glibtoolize
+        if [[ "$xcode_version" == 6.* ]]; then
+            brew reinstall libtool
+        fi
+        brew install openssl
+        brew install mysql
+    else
+        print_error_msg "Invalid build configuration"
+        return 1
     fi
 
     return 0
@@ -75,7 +90,18 @@ before_script()
             print_error_msg "Invalid build configuration"
             return 1
         fi
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        # Creates a MySQL config file with binary logging enabled and
+        # starts the MySQL server
+        mysql_conf="$HOME/.my.cnf"
+        echo "[mysqld]" > $mysql_conf
+        echo "log_bin = mysql_bin" >> $mysql_conf
+        echo "server_id = 1" >> $mysql_conf
 
+        mysql.server start
+    else
+        print_error_msg "Invalid build configuration"
+        return 1
     fi
 
     return 0
@@ -105,6 +131,14 @@ run_tests()
             print_error_msg "Invalid build configuration"
             return 1
         fi
+    elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        autoreconf -fi
+        # Pass the root of the openssl installation directory
+        ./configure --with-openssl=$(brew --prefix openssl)
+        make check
+    else
+        print_error_msg "Invalid build configuration"
+        return 1
     fi
 
     return 0
