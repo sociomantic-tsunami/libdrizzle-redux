@@ -101,11 +101,11 @@ Compatible compilers:
 +-----------------------+----------+
 | Compiler              | Version  |
 +-----------------------+----------+
-| GNU gcc               | ">= 4.5" |
+| GNU gcc               |  >= 4.5  |
 +-----------------------+----------+
-| Apple LLVM clang [#]_ | ">= 6.1" |
+| LLVM clang            |  >= 3.3  |
 +-----------------------+----------+
-| LLVM clang            | ">= 3.3" |
+| Apple LLVM clang [#]_ |  >= 6.1  |
 +-----------------------+----------+
 
 .. [#] The version listed for Apple LLVM is the compiler used in the OS X builds

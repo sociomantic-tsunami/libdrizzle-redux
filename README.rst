@@ -66,9 +66,14 @@ Attention!
 .. csv-table::
   :header: "Compiler","Version"
 
-   gcc, >=4.8.x
-   llvm clang, >=3.3
-   apple clang, >=5.0 (clang-500.2.75)
+   GNU gcc, >=4.5.x
+   LLVM clang, >=3.3
+   Apple LLVM clang [#]_ , >=6.1
+
+.. [#] The version listed for Apple LLVM is the compiler used in the OS X builds
+       on Travis CI. However earlier versions should be compatible as long as
+       they support C++11 features, i.e. Apple LLVM 5.0, Xcode 5.0 and later.
+
 
 **Other Dependencies**
 
@@ -78,9 +83,9 @@ Attention!
    autoconf, >=2.61
    zlib1g-dev, >=0.13.x
    libtool, >=2.x
-   libssl-dev [1]_, >=v1.x
+   libssl-dev [#]_, >=v1.x
 
-.. [1] openssl is needed if libdrizzle-redux is compiled with support for
+.. [#] openssl is needed if libdrizzle-redux is compiled with support for
        SSL connections.
 
 To build **libdrizzle-redux** you can invoke bootstrap script::
