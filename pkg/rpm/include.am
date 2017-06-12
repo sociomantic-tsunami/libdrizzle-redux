@@ -1,7 +1,7 @@
 # vim:ft=automake
 
-rpm-build: rpm/spec dist
-	@rm -f *.rpm
+rpm-build: pkg/rpm/spec dist
+	@rm -f ./pkg/rpm/*.rpm
 	@rm -f ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm
 	@rm -f ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm
 	@mkdir -p ~/rpmbuild/BUILD/
@@ -13,23 +13,23 @@ rpm-build: rpm/spec dist
 	@mkdir -p ~/rpmbuild/SPECS/
 	@mkdir -p ~/rpmbuild/SRPMS/
 	@cp $(PACKAGE)-$(VERSION).tar.gz ~/rpmbuild/SOURCES/
-	@rpmbuild -ba --clean rpm/spec
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm .
-	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm .
+	@rpmbuild -ba --clean pkg/rpm/spec
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-$(VERSION)*.rpm ./pkg/rpm
+	@cp ~/rpmbuild/RPMS/x86_64/$(PACKAGE)-devel-$(VERSION)*.rpm ./pkg/rpm
+	@cp ~/rpmbuild/SRPMS/$(PACKAGE)-$(VERSION)*.rpm ./pkg/rpm
 
 rpm-sign: rpm-build
-	@rpm --addsign *.rpm
-	@rpm --checksig *.rpm
+	@rpm --addsign pkg/rpm/*.rpm
+	@rpm --checksig ./pkg/rpm/*.rpm
 
 clean-rpm:
 	@rm -f *.tar.gz
-	@rm -f *.src.rpm
-	@rm -f *.rpm
+	@rm -f pkg/rpm/*.src.rpm
+	@rm -f pkg/rpm/*.rpm
 
 rpm: rpm-build
 
 release: rpm-sign
 
 auto-rpmbuild:
-	@auto-br-rpmbuild -ba rpm/spec
+	@auto-br-rpmbuild -ba ./pkg/rpm/spec
