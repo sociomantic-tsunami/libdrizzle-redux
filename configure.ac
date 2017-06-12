@@ -147,7 +147,7 @@ AX_AM_JOBSERVER([yes])
 
 AC_CONFIG_FILES([Makefile
                  docs/conf.py
-                 rpm/spec
+                 pkg/rpm/spec
                  libdrizzle-5.1/version.h
                  ])
 
