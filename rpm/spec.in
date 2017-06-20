@@ -45,7 +45,7 @@ you will need to install %{name}-devel.
 # rename the directory to `include/libdrizzle-redux`
 if test -d %{rpm_include_path}
 then
-    tmp_include_path=$RPM_BUILD_ROOT/usr/include/%{header_install_path}
+    tmp_include_path=$RPM_BUILD_ROOT/usr/include/%{name}
     mkdir -p $tmp_include_path
     mv %{rpm_include_path} ${tmp_include_path}/
 fi
