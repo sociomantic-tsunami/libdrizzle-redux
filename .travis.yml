@@ -37,14 +37,16 @@ services:
 #  To speed up installation of brew formulas on osx auto update for homebrew is
 #  turned off by setting HOMEBREW_NO_AUTO_UPDATE=1
 env:
+env:
   global:
     - MYSQL_SERVER=127.0.0.1
-      MYSQL_PASSWORD=''
-      MYSQL_USER=root
-      MYSQL_PORT=3306
-      DIST_PACKAGE_TARGET=DEB
-      SKIP_TEST_ON_ERROR=0
-      HOMEBREW_NO_AUTO_UPDATE=1
+    - MYSQL_PASSWORD=''
+    - MYSQL_USER=root
+    - MYSQL_PORT=3306
+    - DIST_PACKAGE_TARGET=DEB
+    - SKIP_TEST_ON_ERROR=0
+    - HOMEBREW_NO_AUTO_UPDATE=1
+    - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
   matrix:
     - DIST_PACKAGE_TARGET=DEB
     - DIST_PACKAGE_TARGET=RPM
@@ -93,3 +95,12 @@ before_script:
 ## Run tests, and packaging scripts
 script:
   - ./travis_configure.sh run_tests
+
+# Deploy debian packages to bintray when building for a git tag
+deploy:
+    provider: script
+    script: beaver bintray upload -N deb/*.deb
+    skip_cleanup: true
+    on:
+        tags: true
+        condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc'
