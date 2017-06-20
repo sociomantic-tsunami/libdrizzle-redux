@@ -84,6 +84,12 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Tue Jun 20 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.4
+- Bug: fix travis deploy script (2017-06-20)
+- Advance submodule beaver (2017-06-19)
+- Use beaver to upload Debian packages to bintray (2017-06-16)
+- deb: Don't set architecture to all (2017-06-15)
+
 * Tue May 30 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.3
 - Fix invalid parsing of MYSQL_PORT env variable (2017-05-28)
 
