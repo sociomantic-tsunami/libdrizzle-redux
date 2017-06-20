@@ -93,7 +93,7 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
-* Tue May 31 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.4
+* Wed May 31 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.4
 - Fix invalid parsing of MYSQL_PORT env variable (2017-05-28)
 
 * Tue May 23 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.3
