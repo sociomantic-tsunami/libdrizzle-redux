@@ -45,7 +45,7 @@ you will need to install %{name}-devel.
 # rename the directory to `include/libdrizzle-redux`
 if test -d %{rpm_include_path}
 then
-    tmp_include_path=$RPM_BUILD_ROOT/usr/include/%{header_install_path}
+    tmp_include_path=$RPM_BUILD_ROOT/usr/include/%{name}
     mkdir -p $tmp_include_path
     mv %{rpm_include_path} ${tmp_include_path}/
 fi
@@ -93,7 +93,14 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
-* Tue May 31 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.4
+* Tue Jun 20 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.5
+- Bug: fix errors in rpm/spec.in file (2017-06-20)
+- Bug: fix travis deploy script (2017-06-20)
+- Advance submodule beaver (2017-06-19)
+- Use beaver to upload Debian packages to bintray (2017-06-16)
+- deb: Don't set architecture to all (2017-06-15)
+
+* Wed May 31 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.4
 - Fix invalid parsing of MYSQL_PORT env variable (2017-05-28)
 
 * Tue May 23 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> v6.0.3

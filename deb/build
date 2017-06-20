@@ -94,7 +94,6 @@ strip $so_libname.$libversion
 # libdrizzle-redux runtime package
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
-    --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
     --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
@@ -117,7 +116,6 @@ build_id=`readelf -n $so_libname.$libversion | \
 debug_file=`echo $build_id | cut -b1-2`/`echo $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname-dbg" -v "$pkgversion" \
-    --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
     --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
@@ -135,7 +133,6 @@ fpm -s dir -t deb -n "$pkgname-dbg" -v "$pkgversion" \
 #       /usr/include/libdrizzle-redux[MAJOR]/libdrizzle-redux
 genchangelog "$pkgname-dev" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname-dev" -v "$pkgversion" \
-    --architecture all \
     --maintainer "$pkgmaint" \
     --description "Simplified API to MySQL databases" \
     --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \

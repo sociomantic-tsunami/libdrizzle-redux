@@ -22,10 +22,13 @@ services:
 #  Please refer to the section 'script' for info on
 #  SKIP_TEST_ON_ERROR
 env:
-  - MYSQL_SERVER=127.0.0.1 \
-    MYSQL_PASSWORD='' \
-    MYSQL_USER=root \
-    SKIP_TEST_ON_ERROR=0
+  global:
+    - MYSQL_SERVER=127.0.0.1
+    - MYSQL_PASSWORD=''
+    - MYSQL_USER=root
+    - SKIP_TEST_ON_ERROR=0
+    - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+
 
 ## Defines packages to be installed by apt
 #  2016/12/01 - mysql-5.6 was added to the default stack
@@ -38,6 +41,11 @@ env:
 
 before_install:
   - gem install fpm
+  - if [[ -n "$TRAVIS_TAG" ]]; then
+        curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
+        chmod a+x /tmp/jfrog ;
+        sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
+      fi
   - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
 
 ## This script runs before the compiling
@@ -64,3 +72,11 @@ script:
   - make check
   - make deb
 
+# Deploy debian packages to bintray when building for a git tag
+deploy:
+    provider: script
+    script: beaver bintray upload -N deb/*.deb
+    skip_cleanup: true
+    on:
+        tags: true
+        condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc'
