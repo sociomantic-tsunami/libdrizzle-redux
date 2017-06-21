@@ -18,6 +18,8 @@ compiler:
 ## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
 dist: trusty
 
+group: edge
+
 ## Services started on the build environment
 services:
  - mysql
