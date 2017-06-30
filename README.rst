@@ -34,10 +34,13 @@ Maintained Major Branches
    :header: "Major", "Initial release date", "Supported until"
    :widths: 5, 15, 12
 
-   `v5.x.x`_, `v5.2.0`_: 2016-03-31, TBA - 6 months after next major release
+   `v5.x.x`_, `v5.2.0`_: 2016-03-31, 2017-10-06
+   `v6.x.x`_, `v6.0.0`_: 2017-04-06, TBA - 6 months after next major release
 
 .. _v5.x.x: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v5.x.x
 .. _v5.2.0: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v5.2.0
+.. _v6.x.x: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v6.x.x
+.. _v6.0.0: https://github.com/sociomantic-tsunami/libdrizzle-redux/tree/v6.0.0
 
 Releases
 ========
