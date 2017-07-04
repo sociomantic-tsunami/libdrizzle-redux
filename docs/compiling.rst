@@ -41,52 +41,6 @@ To test with valgrind you can run the following::
 
 ``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
-Building For Windows (cross-compile) [BROKEN]
----------------------------------------------
-
-.. attention::
-   Building the library using MinGW is unfortunately broken at the moment.
-   We apologize for any inconveniences and promise to look into the issue as soon
-   as possible.
-
-The bootstrap script can go into MinGW mode to cross compile for 32bit Windows
-targets.  To do this you need to follow the following steps (this guide assumes
-you are running 64bit Fedora but other Linux based operating systems should be
-similar).
-
-#. Install MinGW, you will need these packages::
-
-      mingw32-gcc
-      mingw32-gcc-c++
-      mingw32-zlib
-
-#. Tell bootstrap to build using MinGW::
-
-      ./bootstrap.sh mingw
-
-The test suite can be run in wine, to do this follow these steps:
-
-#. Install wine, you will need to install the ``wine`` package
-
-#. Setup wine to find the MinGW dlls as follows:
-
-   #. Run wine as follows to create the required wine home directory::
-
-         WINEARCH=win32 wine
-
-   #. Open the ``~/.wine/system.reg`` file for editing
-   #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
-   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin``
-      directory using the ``Z:`` drive. For Fedora 18 64bit this makes the entry
-
-      ``"PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"``
-
-#. Run the test suite as follows (see `Running the Test Suite`_ for more details
-   and needed environment variables when running the test suite)::
-
-      WINEARCH=win32 TESTS_ENVIRONMENT=wine make check
-
-
 Building For OSX (clang and gcc)
 --------------------------------
 
