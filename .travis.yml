@@ -46,7 +46,6 @@ env:
     - MYSQL_PORT=3306
     - DIST_PACKAGE_TARGET=DEB
     - SKIP_TEST_ON_ERROR=0
-    - HOMEBREW_NO_AUTO_UPDATE=1
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
   matrix:
     - DIST_PACKAGE_TARGET=DEB
