@@ -77,10 +77,20 @@ int main(int argc, char *argv[])
 
   set_up_connection();
 
+  binlog = drizzle_binlog_init(NULL, binlog_event, binlog_error, NULL, true);
+  ASSERT_NULL_(binlog, "Drizzle connection is null");
+
+  binlog = drizzle_binlog_init(con, NULL, binlog_error, NULL, true);
+  ASSERT_NULL_(binlog, "Binlog event callback function is NULL");
+
+  binlog = drizzle_binlog_init(con, binlog_event, NULL, NULL, true);
+  ASSERT_NULL_(binlog, "Binlog error callback function is NULL");
+
   char *binlog_file;
   drizzle_binlog_get_filename(con, &binlog_file, -1);
 
   binlog = drizzle_binlog_init(con, binlog_event, binlog_error, NULL, true);
+  ASSERT_NOT_NULL_(binlog, "Binlog object creation error");
   ret = drizzle_binlog_start(binlog, 0, binlog_file, 0);
 
   SKIP_IF_(ret == DRIZZLE_RETURN_ERROR_CODE, "Binlog is not open?: %s(%s)",
