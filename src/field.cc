@@ -66,6 +66,16 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
     return 0;
   }
 
+  if (result->binary_rows && (result->field_current == 0))
+  {
+    result->push_state(drizzle_state_binary_null_read);
+    *ret_ptr= drizzle_state_loop(result->con);
+    if (*ret_ptr != DRIZZLE_RETURN_OK)
+    {
+      return 0;
+    }
+  }
+
   if (result->has_state())
   {
     if (result->field_current == (result->column_count - result->null_bitcount))
@@ -82,11 +92,6 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
     {
       result->push_state(drizzle_state_field_read);
     }
-  }
-
-  if (result->binary_rows && (result->field_current == 0))
-  {
-    result->push_state(drizzle_state_binary_null_read);
   }
 
   *ret_ptr= drizzle_state_loop(result->con);
