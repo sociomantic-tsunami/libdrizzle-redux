@@ -39,7 +39,6 @@ services:
 #  To speed up installation of brew formulas on osx auto update for homebrew is
 #  turned off by setting HOMEBREW_NO_AUTO_UPDATE=1
 env:
-env:
   global:
     - MYSQL_SERVER=127.0.0.1
     - MYSQL_PASSWORD=''

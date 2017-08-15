@@ -51,6 +51,16 @@ drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
   {
     return NULL;
   }
+  else if (binlog_fn == NULL)
+  {
+    drizzle_set_error(con, __func__, "binlog event callback function is NULL");
+    return NULL;
+  }
+  else if (error_fn == NULL)
+  {
+    drizzle_set_error(con, __func__, "binlog error callback function is NULL");
+    return NULL;
+  }
 
   drizzle_binlog_st *binlog= new (std::nothrow) drizzle_binlog_st;
   if (binlog == NULL)
