@@ -146,6 +146,23 @@ int main(int argc, char *argv[])
   CHECKED_QUERY(querybuf);
 
 #ifdef TEST_PREPARED_STATEMENTS
+  strcpy(querybuf, "SELECT NULL");
+  sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
+
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
+
+  driz_ret = drizzle_stmt_execute(sth);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, executing \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
+
+  driz_ret = drizzle_stmt_buffer(sth);
+  ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK,
+             "Error (%s): %s, buffering result from query \"%s\"",
+             drizzle_strerror(driz_ret), drizzle_error(con), querybuf);
+
+  ASSERT_EQ(drizzle_stmt_close(sth), DRIZZLE_RETURN_OK);
+
   strcpy(querybuf, "INSERT INTO test_nulls.t1 VALUES (?,?,?,?,?,?,?,?,?,?,?)");
   sth = drizzle_stmt_prepare(con, querybuf, strlen(querybuf), &driz_ret);
   ASSERT_EQ_(driz_ret, DRIZZLE_RETURN_OK, "Error (%s): %s, preparing \"%s\"",
