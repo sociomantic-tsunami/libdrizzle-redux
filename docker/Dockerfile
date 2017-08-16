@@ -7,7 +7,7 @@ MAINTAINER andreas-bok-sociomantic <andreas.bok@sociomantic.com>
 # Set environment variables
 ENV MYSQL_USER=user \
     MYSQL_PASSWORD=pass \
-    MYSQL_ROOT_PASSWORD='' \
+    MYSQL_ROOT_PASSWORD=pass \
     MYSQL_SERVER=127.0.0.1 \
     MYSQL_PORT=3306 \
     MYSQL_DATABASE=test \
