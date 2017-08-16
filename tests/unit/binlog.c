@@ -38,11 +38,10 @@
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <yatl/lite.h>
 
-#include <cstdio>
-#include <cstdlib>
 
 #include "tests/unit/common.h"
 
+void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context);
 void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
 {
   (void)context;
@@ -50,6 +49,7 @@ void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
              drizzle_strerror(ret));
 }
 
+void binlog_event(drizzle_binlog_event_st *event, void *context);
 void binlog_event(drizzle_binlog_event_st *event, void *context)
 {
   (void)context;
