@@ -51,15 +51,19 @@ drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
   {
     return NULL;
   }
-  else if (binlog_fn == NULL)
+
+  if (con->options.socket_owner == DRIZZLE_SOCKET_OWNER_NATIVE)
   {
-    drizzle_set_error(con, __func__, "binlog event callback function is NULL");
-    return NULL;
-  }
-  else if (error_fn == NULL)
-  {
-    drizzle_set_error(con, __func__, "binlog error callback function is NULL");
-    return NULL;
+    if (binlog_fn == NULL)
+    {
+      drizzle_set_error(con, __func__, "binlog event callback function is NULL");
+      return NULL;
+    }
+    else if (error_fn == NULL)
+    {
+      drizzle_set_error(con, __func__, "binlog error callback function is NULL");
+      return NULL;
+    }
   }
 
   drizzle_binlog_st *binlog= new (std::nothrow) drizzle_binlog_st;
@@ -304,7 +308,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
+    if (con->binlog->error_fn != NULL)
+    {
+      con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
+    }
     return DRIZZLE_RETURN_EOF;
   }
   else if (drizzle_check_unpack_error(con))
@@ -314,7 +321,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
 
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
+    if (con->binlog->error_fn != NULL)
+    {
+      con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
+    }
     return DRIZZLE_RETURN_ERROR_CODE;
   }
   else
@@ -331,7 +341,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
         drizzle_set_error(con, __func__,
                           "packet size error:%" PRIu32 ":%" PRIu32, con->packet_size, binlog_event->length);
-        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+        if (con->binlog->error_fn != NULL)
+        {
+          con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+        }
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     if (binlog_event->length <= 27)
@@ -389,7 +402,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
         if (event_crc != binlog_event->checksum)
         {
           drizzle_set_error(con, __func__, "CRC doesn't match: 0x%" PRIX32 ", 0x%" PRIX32, event_crc, binlog_event->checksum);
-          con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
+          if (con->binlog->error_fn != NULL)
+          {
+            con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
+          }
           return DRIZZLE_RETURN_BINLOG_CRC;
         }
       }
@@ -399,13 +415,19 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
       drizzle_set_error(con, __func__,
                         "unexpected data after packet:%" PRIu64, con->buffer_size);
-      con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+      if (con->binlog->error_fn != NULL)
+      {
+        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+      }
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     con->pop_state();
   }
 
-  con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
+  if (con->binlog->binlog_fn != NULL)
+  {
+    con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
+  }
   con->push_state(drizzle_state_binlog_read);
   con->push_state(drizzle_state_packet_read);
 
