@@ -182,6 +182,10 @@ Constants available to the client and internally
 
    From this version and higher automatic checksums is on
 
+.. py:data:: DRIZZLE_BINLOG_MAGIC              "\xFE\x62\x69\x6E"
+
+   The 4-byte header of a binary log file
+
 Return
 ------
 
@@ -1106,10 +1110,6 @@ Prepared Statement
 
 Binlog
 ------
-
-.. c:type:: DRIZZLE_BINLOG_MAGIC
-
-   The 4-byte binlog header string
 
 .. c:type:: drizzle_binlog_event_types_t
 
