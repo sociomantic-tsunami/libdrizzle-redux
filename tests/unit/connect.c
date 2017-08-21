@@ -50,15 +50,16 @@ int main(int argc, char *argv[])
   (void)argc;
   (void)argv;
 
+  const char *host = getenv("MYSQL_SERVER");
+  in_port_t port = getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
+                                        : DRIZZLE_DEFAULT_TCP_PORT;
+  const char *user = getenv("MYSQL_USER");
+  const char *pass = getenv("MYSQL_PASSWORD");
+  const char *db = getenv("MYSQL_SCHEMA");
   drizzle_options_st *opts = drizzle_options_create();
   drizzle_socket_set_options(opts, 10, 5, 3, 3);
 
-  con = drizzle_create(getenv("MYSQL_SERVER"),
-                       getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
-                                            : DRIZZLE_DEFAULT_TCP_PORT,
-                       getenv("MYSQL_USER"),
-                       getenv("MYSQL_PASSWORD"),
-                       getenv("MYSQL_SCHEMA"), opts);
+  con = drizzle_create(host, port, user, pass, db, opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
