@@ -92,7 +92,7 @@ before_script()
             mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
         elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
             # build a docker image with Centos 7 and MySQL
-            docker build -t centos7_mysql56 -f docker/Dockerfile .
+            docker build -t centos7_mysql56 -f docker/Dockerfile.centos.7 .
         else
             print_error_msg "Invalid build configuration"
             return 1
