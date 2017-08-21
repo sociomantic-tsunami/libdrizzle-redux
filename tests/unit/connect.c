@@ -45,6 +45,40 @@
 drizzle_st *con;
 drizzle_return_t driz_ret;
 
+/**
+ * Test connection errors
+ *
+ * Creates a drizzle struct with the specified connection settings. Performs a
+ * call to drizzle_connect and afterwards tests the expected return value and
+ * error string with the actual values
+
+ * @param[in]  host            host
+ * @param[in]  port            port
+ * @param[in]  user            user
+ * @param[in]  password        password
+ * @param[in]  db              database
+ * @param[in]  ret_expected    expected return value
+ * @param[in]  error_expected  expected error string
+ * @param[in]  timeout         connection timeout
+ */
+void test_connection_error(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db, drizzle_return_t ret_expected,
+                           const char *error_expected, int timeout);
+
+void test_connection_error(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db, drizzle_return_t ret_expected,
+                           const char *error_expected, int timeout)
+{
+  con = drizzle_create(host, port, user, password, db, NULL);
+  drizzle_set_timeout(con, timeout);
+  driz_ret = drizzle_connect(con);
+  ASSERT_EQ(driz_ret, ret_expected);
+  ASSERT_STREQ(drizzle_error(con), error_expected);
+  drizzle_quit(con);
+}
+
 int main(int argc, char *argv[])
 {
   (void)argc;
