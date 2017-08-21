@@ -324,9 +324,12 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_size--;
     binlog_event->raw_data= con->buffer_ptr;
     binlog_event->timestamp= drizzle_get_byte4(con->buffer_ptr);
-    binlog_event->type= (drizzle_binlog_event_types_t)con->buffer_ptr[4];
-    binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
-    binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
+    binlog_event->type=
+      (drizzle_binlog_event_types_t)con->buffer_ptr[DRIZZLE_EVENT_POSITION_TYPE];
+    binlog_event->server_id= drizzle_get_byte4(
+      con->buffer_ptr + DRIZZLE_EVENT_POSITION_SERVERID);
+    binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(
+      con->buffer_ptr + DRIZZLE_EVENT_POSITION_LENGTH);
     if (con->packet_size != binlog_event->length)
     {
         drizzle_set_error(con, __func__,
@@ -336,8 +339,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     }
     if (binlog_event->length <= 27)
     {
-      binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
-      binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
+      binlog_event->next_pos= drizzle_get_byte4(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_NEXT);
+      binlog_event->flags= drizzle_get_byte2(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_FLAGS);
       con->buffer_ptr+= binlog_event->length;
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
