@@ -359,15 +359,18 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     }
     else
     {
-      binlog_event->length= binlog_event->length -
-                            19 - // Header length
-                            8;   // Fixed rotate length
-      binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
-      binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
+      // Binary log v4: Used in MySQL 5.0 and up
+      // 19 is the fixed Header length
+      uint32_t HEADER_V4_LENGTH = 19;
+      binlog_event->length= binlog_event->length - HEADER_V4_LENGTH;
+      binlog_event->next_pos= drizzle_get_byte4(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_NEXT);
+      binlog_event->flags= drizzle_get_byte2(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_FLAGS);
 
-      con->buffer_ptr+= 27;
-      con->buffer_size-= 27;
-      con->packet_size-= 27;
+      con->buffer_ptr+= HEADER_V4_LENGTH;
+      con->buffer_size-= HEADER_V4_LENGTH;
+      con->packet_size-= HEADER_V4_LENGTH;
       /* 5.6.1 or higher is automatic checksums on */
       if (binlog_event->type == DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION)
       {
