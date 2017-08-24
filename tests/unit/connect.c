@@ -42,20 +42,87 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+drizzle_st *con;
+drizzle_return_t driz_ret;
+
+/**
+ * Test connection errors
+ *
+ * Creates a drizzle struct with the specified connection settings. Performs a
+ * call to drizzle_connect and afterwards tests the expected return value and
+ * error string with the actual values
+
+ * @param[in]  host            host
+ * @param[in]  port            port
+ * @param[in]  user            user
+ * @param[in]  password        password
+ * @param[in]  db              database
+ * @param[in]  ret_expected    expected return value
+ * @param[in]  error_expected  expected error string
+ * @param[in]  timeout         connection timeout
+ */
+void test_connection_error(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db, drizzle_return_t ret_expected,
+                           const char *error_expected, int timeout);
+
+void test_connection_error(const char *host, in_port_t port,
+                           const char *user, const char *password,
+                           const char *db, drizzle_return_t ret_expected,
+                           const char *error_expected, int timeout)
+{
+  con = drizzle_create(host, port, user, password, db, NULL);
+  drizzle_set_timeout(con, timeout);
+  driz_ret = drizzle_connect(con);
+  ASSERT_EQ(driz_ret, ret_expected);
+  ASSERT_STREQ(drizzle_error(con), error_expected);
+  drizzle_quit(con);
+}
+
 int main(int argc, char *argv[])
 {
   (void)argc;
   (void)argv;
 
+  // connection parameters
+  const char *host = getenv("MYSQL_SERVER");
+  in_port_t port = getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
+                                        : DRIZZLE_DEFAULT_TCP_PORT;
+  const char *user = getenv("MYSQL_USER");
+  const char *pass = getenv("MYSQL_PASSWORD");
+  const char *db = getenv("MYSQL_SCHEMA");
+  char error_expected[DRIZZLE_MAX_ERROR_SIZE];
+
+  // invalid host
+  test_connection_error("1.2.3.4", port, "valid_user", "valid_pass", "valid_db",
+    DRIZZLE_RETURN_TIMEOUT, "drizzle_wait:timeout reached", 3);
+
+  // invalid port
+  test_connection_error("localhost", 1234, "valid_user", "valid_pass",
+    "valid_db", DRIZZLE_RETURN_COULD_NOT_CONNECT,
+    "drizzle_state_connect:could not connect", -1);
+
+  // invalid user
+  strcpy(error_expected, "drizzle_check_unpack_error: Access denied for user "
+    "'invalid_user'@'localhost' (using password: YES)");
+  test_connection_error("localhost", port, "invalid_user", "valid_pass",
+    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, error_expected, -1);
+
+  // invalid pass
+  strcpy(error_expected, "drizzle_check_unpack_error: Access denied for user "
+    "'valid_user'@'localhost' (using password: YES)");
+  test_connection_error("localhost", port, "valid_user", "invalid_pass",
+    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, error_expected, -1);
+
+  // invalid schema
+  test_connection_error(host, port, user, pass, "invalid_db",
+    DRIZZLE_RETURN_HANDSHAKE_FAILED,
+    "drizzle_check_unpack_error: Unknown database 'invalid_db'", -1);
+
   drizzle_options_st *opts = drizzle_options_create();
   drizzle_socket_set_options(opts, 10, 5, 3, 3);
 
-  drizzle_st *con= drizzle_create(getenv("MYSQL_SERVER"),
-                                  getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
-                                                       : DRIZZLE_DEFAULT_TCP_PORT,
-                                  getenv("MYSQL_USER"),
-                                  getenv("MYSQL_PASSWORD"),
-                                  getenv("MYSQL_SCHEMA"), opts);
+  con = drizzle_create(host, port, user, pass, db, opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
@@ -79,20 +146,20 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(20, opt_val, "unexpected value for socket option KEEPALIVE: %d != 20",
     opt_val);
 
-  drizzle_return_t ret= drizzle_connect(con);
-  if (ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
+  driz_ret= drizzle_connect(con);
+  if (driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
   {
     char error[DRIZZLE_MAX_ERROR_SIZE];
     strncpy(error, drizzle_error(con), DRIZZLE_MAX_ERROR_SIZE);
     drizzle_quit(con);
-    SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
-             drizzle_strerror(ret));
+    SKIP_IF_(driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)", error,
+             drizzle_strerror(driz_ret));
   }
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_connect() : %s",
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "drizzle_connect() : %s",
              drizzle_error(con));
 
-  drizzle_query(con, "SELECT 1", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
+  drizzle_query(con, "SELECT 1", 0, &driz_ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "SELECT 1 (%s)", drizzle_error(con));
 
   // Now that we know everything is good... lets push it.
   drizzle_close(con);
@@ -100,19 +167,19 @@ int main(int argc, char *argv[])
   int limit = 20;
   while (--limit)
   {
-    ret = drizzle_connect(con);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s(%s)", drizzle_error(con),
-               drizzle_strerror(ret));
+    driz_ret = drizzle_connect(con);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s(%s)", drizzle_error(con),
+               drizzle_strerror(driz_ret));
 
-    drizzle_query(con, "SELECT 1", 0, &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "SELECT 1 (%s)", drizzle_error(con));
+    drizzle_query(con, "SELECT 1", 0, &driz_ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "SELECT 1 (%s)", drizzle_error(con));
 
     // Now that we know everything is good... lets push it.
     drizzle_close(con);
   }
 
-  ret = drizzle_quit(con);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_strerror(ret));
+  driz_ret = drizzle_quit(con);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
 
   return EXIT_SUCCESS;
 }
