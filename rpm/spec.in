@@ -84,6 +84,21 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Thu Aug 24 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.6
+- Minor doc fixes (2017-08-24)
+- Add unittests for invalid connection parameters (2017-08-24)
+- Add function to test connection errors (2017-08-24)
+- Save connection settings to local variables (2017-08-24)
+- Restructure connect unittest (2017-08-24)
+- Bugfix: wrong parsing of server error packet (2017-08-22)
+- Use enum in ptr arithmetic when parsing binlog data (2017-08-22)
+- Bugfix: Invalid parsing of binlog event packet data (2017-08-22)
+- Make deploy step depend on repo slug (2017-08-22)
+- Test initization of binlog with client as socket owner (2017-08-21)
+- Bugfix: Allow callbacks to be NULL with CLIENT as socket owner (2017-08-21)
+- Make binlog unittest compile with GCC (2017-08-21)
+- Minor formatting fix to .travis.yml (2017-08-21)
+
 * Tue Aug 15 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.6.5
 - Add testcase for a SELECT NULL query (2017-08-15)
 - Fix crash when SQL gives a single NULL (2017-08-15)
