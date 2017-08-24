@@ -103,4 +103,5 @@ deploy:
     skip_cleanup: true
     on:
         tags: true
+        repo: sociomantic-tsunami/libdrizzle-redux
         condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc'

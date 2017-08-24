@@ -36,7 +36,7 @@ before_install()
         if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
             gem install fpm -v 1.8.1
 
-            if [[ -n "$TRAVIS_TAG" ]]; then
+            if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
                 curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
                 chmod a+x /tmp/jfrog ;
                 sudo cp /tmp/jfrog /usr/local/bin/jfrog ;

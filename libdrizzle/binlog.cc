@@ -51,15 +51,19 @@ drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
   {
     return NULL;
   }
-  else if (binlog_fn == NULL)
+
+  if (con->options.socket_owner == DRIZZLE_SOCKET_OWNER_NATIVE)
   {
-    drizzle_set_error(con, __func__, "binlog event callback function is NULL");
-    return NULL;
-  }
-  else if (error_fn == NULL)
-  {
-    drizzle_set_error(con, __func__, "binlog error callback function is NULL");
-    return NULL;
+    if (binlog_fn == NULL)
+    {
+      drizzle_set_error(con, __func__, "binlog event callback function is NULL");
+      return NULL;
+    }
+    else if (error_fn == NULL)
+    {
+      drizzle_set_error(con, __func__, "binlog error callback function is NULL");
+      return NULL;
+    }
   }
 
   drizzle_binlog_st *binlog= new (std::nothrow) drizzle_binlog_st;
@@ -304,7 +308,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
+    if (con->binlog->error_fn != NULL)
+    {
+      con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
+    }
     return DRIZZLE_RETURN_EOF;
   }
   else if (drizzle_check_unpack_error(con))
@@ -314,7 +321,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
 
     con->pop_state();
-    con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
+    if (con->binlog->error_fn != NULL)
+    {
+      con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
+    }
     return DRIZZLE_RETURN_ERROR_CODE;
   }
   else
@@ -324,20 +334,28 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_size--;
     binlog_event->raw_data= con->buffer_ptr;
     binlog_event->timestamp= drizzle_get_byte4(con->buffer_ptr);
-    binlog_event->type= (drizzle_binlog_event_types_t)con->buffer_ptr[4];
-    binlog_event->server_id= drizzle_get_byte4(con->buffer_ptr + 5);
-    binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(con->buffer_ptr + 9);
+    binlog_event->type=
+      (drizzle_binlog_event_types_t)con->buffer_ptr[DRIZZLE_EVENT_POSITION_TYPE];
+    binlog_event->server_id= drizzle_get_byte4(
+      con->buffer_ptr + DRIZZLE_EVENT_POSITION_SERVERID);
+    binlog_event->raw_length= binlog_event->length= drizzle_get_byte4(
+      con->buffer_ptr + DRIZZLE_EVENT_POSITION_LENGTH);
     if (con->packet_size != binlog_event->length)
     {
         drizzle_set_error(con, __func__,
                           "packet size error:%" PRIu32 ":%" PRIu32, con->packet_size, binlog_event->length);
-        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+        if (con->binlog->error_fn != NULL)
+        {
+          con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+        }
         return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     if (binlog_event->length <= 27)
     {
-      binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
-      binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
+      binlog_event->next_pos= drizzle_get_byte4(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_NEXT);
+      binlog_event->flags= drizzle_get_byte2(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_FLAGS);
       con->buffer_ptr+= binlog_event->length;
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
@@ -346,15 +364,18 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     }
     else
     {
-      binlog_event->length= binlog_event->length -
-                            19 - // Header length
-                            8;   // Fixed rotate length
-      binlog_event->next_pos= drizzle_get_byte4(con->buffer_ptr + 13);
-      binlog_event->flags= drizzle_get_byte2(con->buffer_ptr + 17);
+      // Binary log v4: Used in MySQL 5.0 and up
+      // 19 is the fixed Header length
+      uint32_t HEADER_V4_LENGTH = 19;
+      binlog_event->length= binlog_event->length - HEADER_V4_LENGTH;
+      binlog_event->next_pos= drizzle_get_byte4(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_NEXT);
+      binlog_event->flags= drizzle_get_byte2(
+        con->buffer_ptr + DRIZZLE_EVENT_POSITION_FLAGS);
 
-      con->buffer_ptr+= 27;
-      con->buffer_size-= 27;
-      con->packet_size-= 27;
+      con->buffer_ptr+= HEADER_V4_LENGTH;
+      con->buffer_size-= HEADER_V4_LENGTH;
+      con->packet_size-= HEADER_V4_LENGTH;
       /* 5.6.1 or higher is automatic checksums on */
       if (binlog_event->type == DRIZZLE_EVENT_TYPE_FORMAT_DESCRIPTION)
       {
@@ -389,7 +410,10 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
         if (event_crc != binlog_event->checksum)
         {
           drizzle_set_error(con, __func__, "CRC doesn't match: 0x%" PRIX32 ", 0x%" PRIX32, event_crc, binlog_event->checksum);
-          con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
+          if (con->binlog->error_fn != NULL)
+          {
+            con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
+          }
           return DRIZZLE_RETURN_BINLOG_CRC;
         }
       }
@@ -399,13 +423,19 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
       drizzle_set_error(con, __func__,
                         "unexpected data after packet:%" PRIu64, con->buffer_size);
-      con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+      if (con->binlog->error_fn != NULL)
+      {
+        con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
+      }
       return DRIZZLE_RETURN_UNEXPECTED_DATA;
     }
     con->pop_state();
   }
 
-  con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
+  if (con->binlog->binlog_fn != NULL)
+  {
+    con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
+  }
   con->push_state(drizzle_state_binlog_read);
   con->push_state(drizzle_state_packet_read);
 

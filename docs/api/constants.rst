@@ -716,11 +716,12 @@ Connection
 
       Verify SSL cert
 
-   .. py:data:: DRIZZLE_CAPABILITIES_REMEBER_OPTIONS
+   .. py:data:: DRIZZLE_CAPABILITIES_REMEMBER_OPTIONS
 
    .. py:data:: DRIZZLE_CAPABILITIES_CLIENT
 
       Enables the following:
+
       :py:const:`DRIZZLE_CAPABILITIES_LONG_PASSWORD`,
       :py:const:`DRIZZLE_CAPABILITIES_FOUND_ROWS`,
       :py:const:`DRIZZLE_CAPABILITIES_LONG_FLAG`,
@@ -733,6 +734,7 @@ Connection
 .. c:type:: drizzle_ssl_state_t
 
    An enum of SSL States
+
    .. py:data:: DRIZZLE_SSL_STATE_NONE
 
       SSL connection is not initialized
