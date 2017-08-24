@@ -7,7 +7,7 @@
 
 noinst_HEADERS+= tests/unit/common.h
 
-tests_unit_binlog_SOURCES= tests/unit/binlog.cc tests/unit/common.c
+tests_unit_binlog_SOURCES= tests/unit/binlog.c tests/unit/common.c
 tests_unit_binlog_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 check_PROGRAMS+= tests/unit/binlog
 noinst_PROGRAMS+= tests/unit/binlog
