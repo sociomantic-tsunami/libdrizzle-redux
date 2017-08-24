@@ -39,11 +39,17 @@
 #include <yatl/lite.h>
 
 drizzle_st *con = NULL;
+drizzle_options_st *opts = NULL;
 
 void close_connection_on_exit(void)
 {
   if (con == NULL) {
     return;
+  }
+
+  if (opts != NULL)
+  {
+    drizzle_options_destroy(opts);
   }
 
   drizzle_return_t ret = drizzle_quit(con);
@@ -66,7 +72,7 @@ void set_up_connection(void)
                        getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
                                             : DRIZZLE_DEFAULT_TCP_PORT,
                        getenv("MYSQL_USER"), getenv("MYSQL_PASSWORD"),
-                       getenv("MYSQL_SCHEMA"), 0);
+                       getenv("MYSQL_SCHEMA"), opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
   verbosity = getenv("DRIZZLE_TEST_VERBOSE");
