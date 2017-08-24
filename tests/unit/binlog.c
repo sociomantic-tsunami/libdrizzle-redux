@@ -38,11 +38,10 @@
 #include <libdrizzle-5.1/libdrizzle.h>
 #include <yatl/lite.h>
 
-#include <cstdio>
-#include <cstdlib>
 
 #include "tests/unit/common.h"
 
+void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context);
 void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
 {
   (void)context;
@@ -50,6 +49,7 @@ void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
              drizzle_strerror(ret));
 }
 
+void binlog_event(drizzle_binlog_event_st *event, void *context);
 void binlog_event(drizzle_binlog_event_st *event, void *context)
 {
   (void)context;
@@ -75,16 +75,29 @@ int main(int argc, char *argv[])
   drizzle_binlog_st *binlog;
   drizzle_return_t ret;
 
+  // Test initialization of binlog with socket owner as client
+  opts = drizzle_options_create();
+  drizzle_options_set_socket_owner(opts, DRIZZLE_SOCKET_OWNER_CLIENT);
+
   set_up_connection();
 
   binlog = drizzle_binlog_init(NULL, binlog_event, binlog_error, NULL, true);
   ASSERT_NULL_(binlog, "Drizzle connection is null");
 
   binlog = drizzle_binlog_init(con, NULL, binlog_error, NULL, true);
-  ASSERT_NULL_(binlog, "Binlog event callback function is NULL");
+  ASSERT_NOT_NULL_(binlog, "Binlog event callback function is NULL");
 
   binlog = drizzle_binlog_init(con, binlog_event, NULL, NULL, true);
-  ASSERT_NULL_(binlog, "Binlog error callback function is NULL");
+  ASSERT_NOT_NULL_(binlog, "Binlog error callback function is NULL");
+
+  // Quit the drizzle connection and test binlog initialization with socket
+  // owner as native
+  close_connection_on_exit();
+
+  opts = drizzle_options_create();
+  drizzle_options_set_socket_owner(opts, DRIZZLE_SOCKET_OWNER_NATIVE);
+
+  set_up_connection();
 
   char *binlog_file;
   drizzle_binlog_get_filename(con, &binlog_file, -1);

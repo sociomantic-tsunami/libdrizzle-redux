@@ -53,6 +53,7 @@ extern "C" {
 #endif
 
 extern drizzle_st *con;
+extern drizzle_options_st *opts;
 
 /* Common connection setup used by the unit tests.
  */

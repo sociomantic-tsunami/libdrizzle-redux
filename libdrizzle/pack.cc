@@ -496,7 +496,7 @@ bool drizzle_check_unpack_error(drizzle_st *con)
   con->packet_size-= 9;
 
   snprintf(con->last_error, DRIZZLE_MAX_ERROR_SIZE, "%.*s",
-           (int)con->packet_size-1, con->buffer_ptr);
+           (int)con->packet_size, con->buffer_ptr);
 
   drizzle_set_error(con, __func__, " %s", con->last_error);
 
