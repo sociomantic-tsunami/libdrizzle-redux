@@ -99,7 +99,7 @@ script:
 # Deploy debian packages to bintray when building for a git tag
 deploy:
     provider: script
-    script: beaver bintray upload -N deb/*.deb
+    script: beaver bintray upload -N pkg/deb/*.deb
     skip_cleanup: true
     on:
         tags: true
