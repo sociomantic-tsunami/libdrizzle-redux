@@ -21,6 +21,10 @@ pkgversion=$(git describe --dirty | cut -c2- |
             )-$(lsb_release -cs)
 
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
+description="Simplified API to MySQL databases"
+url="https://github.com/sociomantic-tsunami/libdrizzle-redux"
+vendor="Sociomantic Labs GmbH"
+license="Simplified BSD License"
 
 pkgname=libdrizzle-redux
 so_filename=libdrizzle-redux.so
@@ -47,10 +51,10 @@ cp $so_libname.$libversion $so_libname.$libversion.full
 strip  $so_libname.$libversion
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category libs \
     --depends zlib1g \
     --depends libstdc++6 \
@@ -70,10 +74,10 @@ debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category debug \
     --depends libdrizzle-redux \
     --deb-changelog "$changelog" \
@@ -84,10 +88,10 @@ pkgname=libdrizzle-redux-dev
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category libdevel \
     --depends libdrizzle-redux \
     --deb-changelog "$changelog" \
