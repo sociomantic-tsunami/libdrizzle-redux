@@ -21,7 +21,7 @@ pkgversion=$(git describe --dirty | cut -c2- |
             )-$(lsb_release -cs)
 
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
-description="Simplified API to MySQL databases"
+description="Simple Asynchronous C API to MySQL databases"
 url="https://github.com/sociomantic-tsunami/libdrizzle-redux"
 vendor="Sociomantic Labs GmbH"
 license="Simplified BSD License"

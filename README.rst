@@ -2,7 +2,7 @@ Description |BuildStatus|_
 ==========================
 
 **Drizzle Redux** is a project which aims to breathe new life into the **libdrizzle**
-C connector. It is designed to allow you to connect to and query a
+C connector. It is designed to allow you to syn- or asynchronously connect to and query a
 **MySQL** database server using a simple API.
 
 **Libdrizzle-redux** is a fork of the official **v5.1.4 Felmingham** release available
