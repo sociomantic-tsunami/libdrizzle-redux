@@ -61,10 +61,10 @@ Building libdrizzle-redux
 **Supported compilers**
 
 .. csv-table::
-  :header: "Compiler","Version"
+  :header: "Compiler","Minimum Required Version","Travis CI"
 
-   GNU gcc, >=4.5.x
-   LLVM clang, >=3.3
+   GNU gcc, >=4.8.x, "4.8.x, 4.9, 5.x"
+   LLVM clang, >=3.3, "3.9, 4.x"
    Apple LLVM clang [#]_ , >=6.1
 
 .. [#] The version listed for Apple LLVM is the compiler used in the OS X builds

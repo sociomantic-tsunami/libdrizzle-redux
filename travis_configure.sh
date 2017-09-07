@@ -5,8 +5,8 @@
 
 set -e
 
-# Script to print error message with the build is and environment variable
-# DIST_PACKAGE_TARGET
+# Script to print error message with the build OS and environment variable
+# MAKE_TARGET
 #
 # $1 error message to show
 #
@@ -16,7 +16,7 @@ print_error_msg ()
     test ! -z "$1" || exit 1
     echo "$1"
     echo "  os:      $TRAVIS_OS_NAME"
-    echo "  package: $DIST_PACKAGE_TARGET"
+    echo "  package: $MAKE_TARGET"
 
     return 0
 }
@@ -33,7 +33,11 @@ print_error_msg ()
 before_install()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
+        if [[ ! -z $CXX_NAME ]]; then
+            sudo apt-fast install -y $CXX_NAME$CXX_VERSION
+        fi
+
+        if [[ "$MAKE_TARGET" =~ deb ]]; then
             gem install fpm -v 1.8.1
 
             if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
@@ -41,6 +45,8 @@ before_install()
                 chmod a+x /tmp/jfrog ;
                 sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
             fi
+        elif [[ "$MAKE_TARGET" =~ (html|epub|man) ]]; then
+            sudo apt-fast install -y "python-sphinx"
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew install gnu-sed
@@ -81,7 +87,10 @@ enable_mysqlbinlog()
 before_script()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
+        if [[ "$MAKE_TARGET" == rpm ]]; then
+            # build a docker image with Centos 7 and MySQL
+            docker build -t centos7_mysql56 -f docker/Dockerfile .
+        elif [[ "$MAKE_TARGET" =~ ^check ]]; then
             # Ensures MySQL is started with binlog enabled. This is done by
             # modifying the default my.cnf file.
             #  1. Enable replication in mysql config file
@@ -90,9 +99,6 @@ before_script()
             enable_mysqlbinlog "/etc/mysql/my.cnf"
             sudo service mysql restart
             mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
-        elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
-            # build a docker image with Centos 7 and MySQL
-            docker build -t centos7_mysql56 -f docker/Dockerfile .
         else
             print_error_msg "Invalid build configuration"
             return 1
@@ -111,29 +117,47 @@ before_script()
     return 0
 }
 
+## Check that make targets are valid
+#
+#  Returns 0 if all targets are valid 1 otherwise
+valid_make_target()
+{
+    for target in ${MAKE_TARGET//:/ }
+    do
+        echo "valid_make_target: $target"
+        if [[ ! "$VALID_TARGETS" =~ $target ]]; then
+            return 1
+        fi
+    done
+
+    return 0
+}
+
 # Invoked by the travis hook script.
 #
-# - configures and compiles the project
-# - runs all unittests with 'make check'
-# - for builds on linux, a deb or rpm package is generated depending on the
-#   current build configuration.
+# Runs scripts depending on the OS and make targets defined for the current
+# build
 #
 # Returns 0 or 1 if called with an invalid build configuration
 run_tests()
 {
+    if [[ valid_make_target -eq 1 ]]; then
+        print_error_msg "Invalid build configuration";
+        return 1
+    fi
+
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
-            autoreconf -fi
-            ./configure
-            make check
-            make deb
-        elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
+        export CC=$CC_NAME$CXX_VERSION
+        export CXX=$CXX_NAME$CXX_VERSION
+
+        if [[ "$MAKE_TARGET" == rpm ]]; then
             docker run -d --name db_container centos7_mysql56
             docker exec -u root db_container sh -c \
                 "autoreconf -fi && ./configure && make rpm"
         else
-            print_error_msg "Invalid build configuration"
-            return 1
+            autoreconf -fi
+            ./configure
+            make ${MAKE_TARGET//:/ }
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         autoreconf -fi

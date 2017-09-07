@@ -10,12 +10,6 @@ sudo: required
 os:
   - linux
 
-## Compilers to use for builds
-compiler:
-  - gcc
-  - clang
-
-## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
 dist: trusty
 
 group: edge
@@ -44,45 +38,73 @@ env:
     - MYSQL_PASSWORD=''
     - MYSQL_USER=root
     - MYSQL_PORT=3306
-    - DIST_PACKAGE_TARGET=DEB
     - SKIP_TEST_ON_ERROR=0
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+    - MAKE_TARGET=check
+    - VALID_TARGETS="check deb html epub rpm man"
+
   matrix:
-    - DIST_PACKAGE_TARGET=DEB
-    - DIST_PACKAGE_TARGET=RPM
+    - CXX_NAME=g++ CC_NAME=gcc CXX_VERSION=-4.9 MAKE_TARGET="$MAKE_TARGET:deb"
+    - CXX_NAME=g++ CC_NAME=gcc CXX_VERSION=-5 MAKE_TARGET="$MAKE_TARGET:html:epub:man"
+    - CXX_NAME=g++ CC_NAME=gcc CXX_VERSION=-6
+    - MAKE_TARGET=rpm
+    - CXX_NAME=clang++ CC_NAME=clang CXX_VERSION=-3.9 MAKE_TARGET="$MAKE_TARGET:deb"
+    - CXX_NAME=clang++ CC_NAME=clang CXX_VERSION=-4.0"
 
 ## Build matrix
 #
 #  The 'os', 'compiler' and 'env' settings are expanded into 3 jobs:
 #
-#  | os     | compiler    | DIST_PACKAGE_TARGET |
+#  | os     | compiler    | MAKE_TARGET         |
 #  |--------|-------------|---------------------|
-#  | linux  | clang       | DEB                 |
-#  | linux  | gcc         | DEB                 |
-#  | linux* | gcc         | RPM                 |
-#  | osx    | clang 6.1.0 |                     |
-#  | osx    | clang 7.3.0 |                     |
-#  | osx    | clang 8.1.0 |                     |
+#  | linux  | gcc   4.8   | check rpm           |
+#  | linux  | gcc   4.9   | check deb           |
+#  | linux  | gcc   5.x   | check html epub man |
+#  | linux* | gcc   6.x   | check               |
+#  | linux  | clang 3.9   | check deb           |
+#  | linux  | clang 4.x   | check               |
+#  | osx    | clang 6.1.0 | check               |
+#  | osx    | clang 7.3.0 | check               |
+#  | osx    | clang 8.1.0 | check               |
 #
-#  For osx, the compiler reported is the Apple LLVM version
+#  *the RPM package is built in a docker container running centos7
 #
-#  * the RPM package is built in a docker container running centos7
+#  Notes about compiler version
+#  ----------------------------
+#  For linux, the compiler is the latest version on the major/minor branch
+#  listed
+#
+#  For osx the compiler reported is the latest Apple LLVM version which is
+#  included in the osx_image used as build environment, cf. the key
+#  'matrix.include.osx_image' in the 'matrix'
+
 matrix:
   fast_finish: true
-  exclude:
-    - os: linux
-      compiler: clang
-      env: DIST_PACKAGE_TARGET=RPM
   include:
     - os: osx
       osx_image: xcode6.4
       compiler: clang
+      env: MAKE_TARGET=$MAKE_TARGET
     - os: osx
       osx_image: xcode7.3.1
       compiler: clang
+      env: MAKE_TARGET=$MAKE_TARGET
     - os: osx
       osx_image: xcode8.3
       compiler: clang
+      env: MAKE_TARGET=$MAKE_TARGET
+
+# Addons to the build environment
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test    # Additional GCC versions
+    - llvm-toolchain-precise-3.9 # clang apt repo for v3.9
+    - llvm-toolchain-trusty-4.0  # clang apt repo for v4.0
+    - sourceline: deb http://ppa.launchpad.net/saiarcot895/myppa/ubuntu trusty main
+      key_url: http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xE6A17451DC058F40
+    packages:
+    - apt-fast                   # wrapper for apt-get with parallel downloads
 
 ## Install dependencies
 before_install:
