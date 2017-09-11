@@ -129,7 +129,10 @@ run_tests()
             make deb
         elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
             docker run -d --name db_container centos7_mysql56
-            docker exec -u root db_container sh -c \
+            docker exec \
+                -e MYSQL_USER=$MYSQL_USER \
+                -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
+                -u root db_container sh -c \
                 "autoreconf -fi && ./configure && make rpm"
         else
             print_error_msg "Invalid build configuration"
