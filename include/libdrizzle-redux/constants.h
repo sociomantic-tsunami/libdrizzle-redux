@@ -289,7 +289,9 @@ typedef enum
 {
   DRIZZLE_SOCKET_OWNER_NATIVE=0,
   DRIZZLE_SOCKET_OWNER_CLIENT
-} drizzle_socket_owner;
+} drizzle_socket_owner_t;
+
+typedef drizzle_socket_owner_t drizzle_socket_owner __attribute__ ((deprecated));
 
 /**
  * @ingroup drizzle_con
@@ -301,7 +303,9 @@ typedef enum
   DRIZZLE_SOCKET_OPTION_KEEPCNT,
   DRIZZLE_SOCKET_OPTION_KEEPINTVL,
   DRIZZLE_SOCKET_OPTION_TIMEOUT
-} drizzle_socket_option;
+} drizzle_socket_option_t;
+
+typedef drizzle_socket_option_t drizzle_socket_option __attribute__ ((deprecated));
 
 typedef enum
 {

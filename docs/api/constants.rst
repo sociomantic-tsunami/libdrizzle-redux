@@ -38,6 +38,154 @@ Library
 
       Everything
 
+Global constants
+----------------
+
+Constants available to the client and internally
+
+.. py:data:: DRIZZLE_DEFAULT_TCP_HOST          "localhost"
+
+   Default socket tcp connection host
+
+.. py:data:: DRIZZLE_DEFAULT_TCP_PORT          3306
+
+   Default socket tcp connection port
+
+.. py:data:: DRIZZLE_MYSQL_TCP_PORT            3306
+
+   Unused
+
+.. py:data:: DRIZZLE_MYSQL_TCP_SERVICE         "mysql"
+
+   Unused
+
+.. py:data:: DRIZZLE_DRIZZLE_TCP_PORT          4427
+
+   Unused
+
+.. py:data:: DRIZZLE_DEFAULT_TCP_SERVICE       "mysql"
+
+   Unused
+
+.. py:data:: DRIZZLE_DRIZZLE_TCP_SERVICE       "drizzle"
+
+   Unused
+
+.. py:data:: DRIZZLE_DEFAULT_UDS               "/tmp/mysql.sock"
+
+   Default path for the Unix Domain Socket
+
+.. py:data:: DRIZZLE_DEFAULT_BACKLOG           64
+
+   Default number of pending connections on the listening queue
+
+.. py:data:: DRIZZLE_MAX_ERROR_SIZE            2048
+
+   Maximum length of a drizzle error message
+
+.. py:data:: DRIZZLE_MAX_USER_SIZE             64
+
+   Maximum length for the database user name
+
+.. py:data:: DRIZZLE_MAX_PASSWORD_SIZE         32
+
+   Maximum length for the database password
+
+.. py:data:: DRIZZLE_MAX_DB_SIZE               64
+
+   Maximum length for the database name
+
+.. py:data:: DRIZZLE_MAX_INFO_SIZE             2048
+
+   Maximum length of a :c:type:`drizzle_result_st` info or error message
+
+.. py:data:: DRIZZLE_MAX_SQLSTATE_SIZE         5
+
+   Maximum length a `MySQL SQLSTATE code`_
+
+.. _MySQL SQLSTATE code: https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html
+
+.. py:data:: DRIZZLE_MAX_CATALOG_SIZE          128
+
+   Maximum length of the catalog name on a :c:type:`drizzle_column_st`
+
+.. py:data:: DRIZZLE_MAX_TABLE_SIZE            128
+
+   Maximum length of the table name on a :c:type:`drizzle_column_st`
+
+.. py:data:: DRIZZLE_MAX_COLUMN_NAME_SIZE      2048
+
+   Maximum length of a :c:type:`drizzle_column_st` column name
+
+.. py:data:: DRIZZLE_MAX_DEFAULT_VALUE_SIZE    2048
+
+   Maximum size of the default value for a column
+
+.. py:data:: DRIZZLE_MAX_PACKET_SIZE           UINT32_MAX
+
+   Maximum packet size for the connection
+
+.. py:data:: DRIZZLE_MAX_BUFFER_SIZE           1024*1024*1024
+
+   Maximum size of the allocated buffer on a :c:type:`drizzle_st`
+
+.. py:data:: DRIZZLE_DEFAULT_BUFFER_SIZE       1024*1024
+
+   Default size of the allocated buffer on a :c:type:`drizzle_st`
+
+.. py:data:: DRIZZLE_BUFFER_COPY_THRESHOLD     8192
+
+   Unused
+
+.. py:data:: DRIZZLE_MAX_SERVER_VERSION_SIZE   32
+
+   Maximum length of the server version string
+
+.. py:data:: DRIZZLE_MAX_SERVER_EXTRA_SIZE     32
+
+   Maximum size of additional data sent after server handshake
+
+.. py:data:: DRIZZLE_MAX_SCRAMBLE_SIZE         20
+
+   Maximum size of the buffer used during authentication if password scrambling
+   is enabled
+
+.. py:data:: DRIZZLE_STATE_STACK_SIZE          8
+
+   Maximum number of states saved on the stack
+
+.. py:data:: DRIZZLE_ROW_GROW_SIZE             8192
+
+   The number of rows to read at a time when buffering a result
+
+.. py:data:: DRIZZLE_DEFAULT_SOCKET_TIMEOUT    10
+
+   The default time in seconds to wait before a setsockopt call times out
+
+.. py:data:: DRIZZLE_DEFAULT_SOCKET_SEND_SIZE  DRIZZLE_DEFAULT_BUFFER_SIZE
+
+   The default size of the socket send buffer
+
+.. py:data:: DRIZZLE_DEFAULT_SOCKET_RECV_SIZE  DRIZZLE_DEFAULT_BUFFER_SIZE
+
+   The default size of the socket receive buffer
+
+.. py:data:: DRIZZLE_MYSQL_PASSWORD_HASH       41
+
+   Unused
+
+.. py:data:: DRIZZLE_BINLOG_CRC32_LEN          4
+
+   Size of the CRC32 checksum appended to each binlog event
+
+.. py:data:: DRIZZLE_BINLOG_CHECKSUM_VERSION   "5.6.1"
+
+   From this version and higher automatic checksums is on
+
+.. py:data:: DRIZZLE_BINLOG_MAGIC              "\xFE\x62\x69\x6E"
+
+   The 4-byte header of a binary log file
+
 Return
 ------
 
@@ -743,13 +891,41 @@ Connection
 
       SSL connection is established
 
-.. c:type:: drizzle_socket_owner
+.. c:type:: drizzle_socket_owner_t
 
    Owner of socket connection
 
    .. py:data:: DRIZZLE_SOCKET_OWNER_NATIVE
 
    .. py:data:: DRIZZLE_SOCKET_OWNER_CLIENT
+
+.. c:type:: (deprecated) drizzle_socket_owner
+
+   typedef of :c:type:`drizzle_socket_owner_t`
+
+.. c:type:: drizzle_socket_option_t
+
+   An ENUM of socket connection options
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPIDLE
+
+      The socket connection timeout
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPCNT
+
+      Number of probes before dropping connection
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_KEEPINTVL
+
+      TCP interval between probes
+
+   .. py:data:: DRIZZLE_SOCKET_OPTION_TIMEOUT
+
+      TCP Keep-alive timeout
+
+.. c:type:: (deprecated) drizzle_socket_option
+
+   typedef of :c:type:`drizzle_socket_option_t`
 
 Query
 -----
@@ -934,10 +1110,6 @@ Prepared Statement
 
 Binlog
 ------
-
-.. c:type:: DRIZZLE_BINLOG_MAGIC
-
-   The 4-byte binlog header string
 
 .. c:type:: drizzle_binlog_event_types_t
 

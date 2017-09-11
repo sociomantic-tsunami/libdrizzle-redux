@@ -8,8 +8,8 @@
 
 deb: clean-deb
 	./configure --prefix=/usr
-	$(MAKE) DESTDIR=${abs_builddir}/deb/install install
-	deb/build $(PACKAGE)
+	$(MAKE) DESTDIR=${abs_builddir}/pkg/deb/install install
+	pkg/deb/build $(PACKAGE)
 
 release-deb:
 	@read -p "Enter version (previous: $$(git describe --abbrev=0)): " version; \
@@ -23,4 +23,4 @@ release-deb:
 	git tag -a -m "$$msg" $$version
 
 clean-deb:
-	-rm -rf deb/*.deb deb/install
+	-rm -rf pkg/deb/*.deb pkg/deb/install

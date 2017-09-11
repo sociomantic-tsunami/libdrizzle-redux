@@ -155,7 +155,7 @@ Functions
    :param keepcnt: The maximum number of keepalive probes TCP should send before dropping the connection.
    :param keepintvl: The time (in seconds) between individual keepalive probes
 
-.. c:function:: void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option option, int value)
+.. c:function:: void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option, int value)
 
    Sets the value of a socket option.
 
@@ -174,7 +174,7 @@ Functions
    :param option: the option to set the value for
    :param value: the value to set
 
-.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option option)
+.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option)
 
    Gets the value of a socket option. See :c:func:`drizzle_socket_set_options`
    for a description of the available options
@@ -267,14 +267,14 @@ Functions
    :param options: The options object to get the value from
    :returns: The state of the auth plugin option
 
-.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner owner)
+.. c:function:: void drizzle_options_set_socket_owner(drizzle_options_st *options, drizzle_socket_owner_t owner)
 
    Sets the owner of the socket connection
 
    :param options: The options object to modify
    :param owner: The owner of the socket connection
 
-.. c:function:: drizzle_socket_owner drizzle_options_get_socket_owner(drizzle_options_st *options)
+.. c:function:: drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options)
 
    Gets the owner of the socket connection
 

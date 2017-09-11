@@ -77,18 +77,17 @@ drizzle_return_t driz_ret;
 void test_connection_error(const char *host, in_port_t port,
                            const char *user, const char *password,
                            const char *db, drizzle_return_t ret_expected,
-                           const char *error_expected, int timeout);
+                           int timeout);
 
 void test_connection_error(const char *host, in_port_t port,
                            const char *user, const char *password,
                            const char *db, drizzle_return_t ret_expected,
-                           const char *error_expected, int timeout)
+                           int timeout)
 {
   con = drizzle_create(host, port, user, password, db, NULL);
   drizzle_set_timeout(con, timeout);
   driz_ret = drizzle_connect(con);
   ASSERT_EQ(driz_ret, ret_expected);
-  ASSERT_STREQ(drizzle_error(con), error_expected);
   drizzle_quit(con);
 }
 
@@ -104,33 +103,26 @@ int main(int argc, char *argv[])
   const char *user = getenv("MYSQL_USER");
   const char *pass = getenv("MYSQL_PASSWORD");
   const char *db = getenv("MYSQL_SCHEMA");
-  char error_expected[DRIZZLE_MAX_ERROR_SIZE];
 
   // invalid host
   test_connection_error("1.2.3.4", port, "valid_user", "valid_pass", "valid_db",
-    DRIZZLE_RETURN_TIMEOUT, "drizzle_wait:timeout reached", 3);
+    DRIZZLE_RETURN_TIMEOUT, 3);
 
   // invalid port
   test_connection_error("localhost", 1234, "valid_user", "valid_pass",
-    "valid_db", DRIZZLE_RETURN_COULD_NOT_CONNECT,
-    "drizzle_state_connect:could not connect", -1);
+    "valid_db", DRIZZLE_RETURN_COULD_NOT_CONNECT, -1);
 
   // invalid user
-  strcpy(error_expected, "drizzle_check_unpack_error: Access denied for user "
-    "'invalid_user'@'localhost' (using password: YES)");
   test_connection_error("localhost", port, "invalid_user", "valid_pass",
-    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, error_expected, -1);
+    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, -1);
 
   // invalid pass
-  strcpy(error_expected, "drizzle_check_unpack_error: Access denied for user "
-    "'valid_user'@'localhost' (using password: YES)");
   test_connection_error("localhost", port, "valid_user", "invalid_pass",
-    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, error_expected, -1);
+    "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, -1);
 
   // invalid schema
   test_connection_error(host, port, user, pass, "invalid_db",
-    DRIZZLE_RETURN_HANDSHAKE_FAILED,
-    "drizzle_check_unpack_error: Unknown database 'invalid_db'", -1);
+    DRIZZLE_RETURN_HANDSHAKE_FAILED, -1);
 
   opts = drizzle_options_create();
   drizzle_socket_set_options(opts, 10, 5, 3, 3);

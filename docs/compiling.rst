@@ -41,50 +41,47 @@ To test with valgrind you can run the following::
 
 ``TESTS_ENVIRONMENT="./libtool --mode=execute valgrind --error-exitcode=1 --leak-check=yes --track-fds=yes --malloc-fill=A5 --free-fill=DE" make check``
 
-Building For Windows (cross-compile) [BROKEN]
----------------------------------------------
+Building For OSX (clang and gcc)
+--------------------------------
 
-.. attention::
-   Building the library using MinGW is unfortunately broken at the moment.
-   We apologize for any inconveniences and promise to look into the issue as soon
-   as possible.
+You can compile the source code with the ``clang`` compiler provided by
+**Xcode Command Line Tools**.
+Alternatively you can use Homebrew_ to install a specific ``gcc`` or ``clang``
+compiler. Regardless of the choice of compiler, you will need to install **Xcode**
+and the **Xcode Command Line Tools**.
 
-The bootstrap script can go into MinGW mode to cross compile for 32bit Windows
-targets.  To do this you need to follow the following steps (this guide assumes
-you are running 64bit Fedora but other Linux based operating systems should be
-similar).
+Compatible compilers:
 
-#. Install MinGW, you will need these packages::
++-----------------------+----------+
+| Compiler              | Version  |
++-----------------------+----------+
+| GNU gcc               |  >= 4.5  |
++-----------------------+----------+
+| LLVM clang            |  >= 3.3  |
++-----------------------+----------+
+| Apple LLVM clang [#]_ |  >= 6.1  |
++-----------------------+----------+
 
-      mingw32-gcc
-      mingw32-gcc-c++
-      mingw32-zlib
+.. [#] The version listed for Apple LLVM is the compiler used in the OS X builds
+       on Travis CI. However earlier versions should be compatible as long as
+       they support C++11 features, i.e. Apple LLVM 5.0, Xcode 5.0 and later.
 
-#. Tell bootstrap to build using MinGW::
+#. Install the dependencies specified in the `RELEASE NOTES`_ of the latest minor release.
 
-      ./bootstrap.sh mingw
+#. Ensure **OpenSSL** headers are linked by creating a symlink::
 
-The test suite can be run in wine, to do this follow these steps:
+      ln -sf "$(brew --prefix openssl)/include/openssl" /usr/local/include/openssl
 
-#. Install wine, you will need to install the ``wine`` package
+   or pass the OpenSSL directory to ``configure`` using ``--with-openssl``::
 
-#. Setup wine to find the MinGW dlls as follows:
+      ./configure --with-openssl=$(brew --prefix openssl)
 
-   #. Run wine as follows to create the required wine home directory::
+#. Optionally set the C and C++ compiler before running ``configure``, e.g.::
 
-         WINEARCH=win32 wine
+      autoreconf -fi
+      CC=gcc-4.9 CXX=g++-4.9 ./configure
+      make
 
-   #. Open the ``~/.wine/system.reg`` file for editing
-   #. Find the section called ``[System\\CurrentControlSet\\Control\\Session Manager\\Environment]``
-   #. Under this find the ``PATH`` setting and add the path to MinGW's ``bin``
-      directory using the ``Z:`` drive. For Fedora 18 64bit this makes the entry
-
-      ``"PATH"=str(2):"C:\\windows\\system32;C:\\windows;C:\\windows\\system32\\wbem;Z:\\usr\\i686-w64-mingw32\\sys-root\\mingw\\bin"``
-
-#. Run the test suite as follows (see `Running the Test Suite`_ for more details
-   and needed environment variables when running the test suite)::
-
-      WINEARCH=win32 TESTS_ENVIRONMENT=wine make check
 
 Linking Your Application
 ------------------------
@@ -93,7 +90,7 @@ Ensure the library is in your library and include paths. For releases prior to
 version ``v6.0.2`` linking your app against libdrizzle-redux requires the flag
 ``-ldrizzle-redux``::
 
-    g++ app.c -oapp -ldrizzle-redux -lssl -lcrypto -pthread
+    g++ app.c -oapp -ldrizzle-redux6 -lssl -lcrypto -pthread
 
 From version ``v6.0.3`` and later the API level of the library is appended to
 the installed library name [1]_. This is also reflected in the install path for
@@ -120,3 +117,4 @@ A tool called **libdrizzle-redux_config** is included to also assist with this.
 
 .. [1] v6.0.2 added the major version to the package name and the library file
        but the release is deprecated since the linking did not work correctly.
+.. _Homebrew: http://brew.sh

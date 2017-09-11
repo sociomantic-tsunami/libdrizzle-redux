@@ -40,8 +40,7 @@ include tests/include.am
 include m4/include.am
 include src/include.am
 include include/libdrizzle-redux/include.am
-include rpm/include.am
-include deb/include.am
+include pkg/include.am
 include docs/include.am
 
 EXTRA_DIST+= AUTHORS
@@ -70,7 +69,7 @@ maintainer-clean-local:
 	-rm m4/lt~obsolete.m4
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
-	-rm -f rpm/@PACKAGE@-*.rpm
-	-rm -f @PACKAGE@-*.deb
+	-rm -f ./pkg/rpm/@PACKAGE@-*.rpm
+	-rm -f ./pkg/deb/@PACKAGE@-*.deb
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@

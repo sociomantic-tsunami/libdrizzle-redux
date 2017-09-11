@@ -15,7 +15,7 @@ Source: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
-Drizzle and MySQL client library.
+Simple Asynchronous C API to MySQL databases.
 
 This package provides the client utilities.
 

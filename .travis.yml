@@ -1,83 +1,107 @@
 language: cpp
 
+## Enable cache for dependencies and directories
+cache: ccache
+
+## Enable sudo
 sudo: required
 
+## Operating Systems to use for builds
 os:
   - linux
 
+## Compilers to use for builds
 compiler:
   - gcc
   - clang
 
+## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
 dist: trusty
 
+group: edge
+
+## Services started on the build environment
 services:
  - mysql
+ - docker
 
-## The following environment variables are required for
-#  running unittests
-#  Environment variables can be defined in the repository, but
-#  are overridden by values in .travis.yml.
+## Environment variables
 #
-#  Please refer to the section 'script' for info on
-#  SKIP_TEST_ON_ERROR
+#  The 'global' section defines variables which are added to every row in the
+#  build matrix, i.e. every build configuration.
+#  In turn, variables defined in the 'matrix' section each triggers a separate
+#  build.
+#
+#  Please note that test fails on first error as default
+#  To skip errors and fail silently set environment variable:
+#    SKIP_TEST_ON_ERROR=1
+#
+#  To speed up installation of brew formulas on osx auto update for homebrew is
+#  turned off by setting HOMEBREW_NO_AUTO_UPDATE=1
 env:
   global:
     - MYSQL_SERVER=127.0.0.1
     - MYSQL_PASSWORD=''
     - MYSQL_USER=root
+    - MYSQL_PORT=3306
+    - DIST_PACKAGE_TARGET=DEB
     - SKIP_TEST_ON_ERROR=0
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+  matrix:
+    - DIST_PACKAGE_TARGET=DEB
+    - DIST_PACKAGE_TARGET=RPM
 
-
-## Defines packages to be installed by apt
-#  2016/12/01 - mysql-5.6 was added to the default stack
-#  for sudo enabled trusty builds,
-#  The section is kept for reference since any additional packages
-#  would still need to go into this section
-#addons:
-#  apt:
-#    packages:
-
-before_install:
-  - gem install fpm -v 1.8.1
-  - if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
-      curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
-      chmod a+x /tmp/jfrog ;
-      sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
-    fi
-  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
-
-## This script runs before the compiling
-#  1. Stop MySQL server
-#  2. Enable replication in mysql config file
-#  3. Start MySQL server
-#  4. Print mysql config for debug purposes
-before_script:
-  - sudo sed  -i 's/\[mysqld\]/[mysqld]\nserver-id = 1\nlog-bin = mysqlbin\nbinlog-format = ROW\n/g' /etc/mysql/my.cnf
-  - sudo service mysql restart
-  - mysqld --print-defaults
-
-## Build steps
-#  - compile project
-#  - run all tests with 'make check'
+## Build matrix
 #
-#  Please note that test fails on first error as default
-#  To skip errors and fail silently set environment variable:
-#    SKIP_TEST_ON_ERROR=1
+#  The 'os', 'compiler' and 'env' settings are expanded into 3 jobs:
+#
+#  | os     | compiler    | DIST_PACKAGE_TARGET |
+#  |--------|-------------|---------------------|
+#  | linux  | clang       | DEB                 |
+#  | linux  | gcc         | DEB                 |
+#  | linux* | gcc         | RPM                 |
+#  | osx    | clang 6.1.0 |                     |
+#  | osx    | clang 7.3.0 |                     |
+#  | osx    | clang 8.1.0 |                     |
+#
+#  For osx, the compiler reported is the Apple LLVM version
+#
+#  * the RPM package is built in a docker container running centos7
+matrix:
+  fast_finish: true
+  exclude:
+    - os: linux
+      compiler: clang
+      env: DIST_PACKAGE_TARGET=RPM
+  include:
+    - os: osx
+      osx_image: xcode6.4
+      compiler: clang
+    - os: osx
+      osx_image: xcode7.3.1
+      compiler: clang
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+
+## Install dependencies
+before_install:
+  - ./travis_configure.sh before_install
+
+## Prepare build system for tests
+before_script:
+  - ./travis_configure.sh before_script
+
+## Run tests, and packaging scripts
 script:
-  - autoreconf -fi
-  - ./configure
-  - make
-  - make check
-  - make deb
+  - ./travis_configure.sh run_tests
 
 # Deploy debian packages to bintray when building for a git tag
 deploy:
     provider: script
-    script: beaver bintray upload -N deb/*.deb
+    script: beaver bintray upload -N pkg/deb/*.deb
     skip_cleanup: true
     on:
         tags: true
         repo: sociomantic-tsunami/libdrizzle-redux
-        condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc'
+        condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc' && $DIST_PACKAGE_TARGET = 'DEB'

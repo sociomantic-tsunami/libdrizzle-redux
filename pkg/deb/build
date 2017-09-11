@@ -58,6 +58,10 @@ pkgversion=$(git describe --dirty | cut -c2- |
 
 # get package maintainer info
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
+description="Simple Asynchronous C API to MySQL databases"
+url="https://github.com/sociomantic-tsunami/libdrizzle-redux"
+vendor="Sociomantic Labs GmbH"
+license="Simplified BSD License"
 
 # the package name used in the distribution
 pkgname=$1
@@ -95,10 +99,10 @@ strip $so_libname.$libversion
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category libs \
     --depends zlib1g \
     --depends libstdc++6 \
@@ -117,10 +121,10 @@ debug_file=`echo $build_id | cut -b1-2`/`echo $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname-dbg" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category debug \
     --depends $pkgname \
     --deb-changelog "$changelog" \
@@ -134,10 +138,10 @@ fpm -s dir -t deb -n "$pkgname-dbg" -v "$pkgversion" \
 genchangelog "$pkgname-dev" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname-dev" -v "$pkgversion" \
     --maintainer "$pkgmaint" \
-    --description "Simplified API to MySQL databases" \
-    --url 'https://github.com/sociomantic-tsunami/libdrizzle-redux' \
-    --vendor 'Sociomantic Labs GmbH' \
-    --license 'Simplified BSD License' \
+    --description "$description" \
+    --url "$url" \
+    --vendor "$vendor" \
+    --license "$license" \
     --category libdevel \
     --depends $pkgname \
     --deb-changelog "$changelog" \
