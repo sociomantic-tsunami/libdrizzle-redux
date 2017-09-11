@@ -93,6 +93,33 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Mon Sep 11 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.0
+- Include 'asynchronous' in library description (2017-09-08)
+- Use variables for common deb package fpm arguments (2017-09-08)
+- travis: Fix wrong deb pkg path argument (2017-09-08)
+- Don't deploy rpm packages to bintray (2017-09-08)
+- Add OS tag to Dockerfile filename (2017-09-08)
+- Move DRIZZLE_BINLOG_MAGIC to constants doc section (2017-09-07)
+- Add rst documentation for constants (2017-09-07)
+- Update submodule beaver (2017-09-07)
+- Remove test of error messages in connect unittest (2017-09-06)
+- Bugfix: Use autoupdate before install for Homebrew (2017-08-18)
+- Add rst documentation for deprecated enums (2017-08-18)
+- Bugfix: Set env variable MYSQL_PASSWORD=pass in dockerfile (2017-08-17)
+- Stop active support for cross-compilation for Windows (2017-07-14)
+- Update README.md (2017-07-03)
+- Update supported compilers section in README.rst (2017-06-30)
+- Add section about compiling on OS X to docs (2017-06-30)
+- Add group:edge to travis.yml (2017-06-30)
+- Change directory layout of packaging (2017-06-12)
+- Improve enabling of binlog (2017-06-06)
+- Add OS X builds to travis ci configuration (2017-06-06)
+- Add minor fixes to travis config scripts (2017-06-06)
+- Add RPM pkg build to ci travis build script (2017-06-02)
+- Add Dockerfile for building rpm package (2017-06-02)
+- Rename and deprecate drizzle_socket_option (2017-05-31)
+- Rename and deprecate drizzle_socket_owner (2017-05-31)
+
 * Thu Aug 24 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.0.7
 - Minor doc fixes (2017-08-24)
 - Add unittests for invalid connection parameters (2017-08-24)
