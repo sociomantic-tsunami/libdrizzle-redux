@@ -59,7 +59,9 @@
 #endif
 
 #ifndef EXIT_SKIP
- #define EXIT_SKIP SKIP_TEST_ON_ERROR ? 77 : EXIT_FAILURE
+ #define EXIT_SKIP (!getenv("DRIZZLE_TEST_EXIT_ERROR_ON_SKIP") ? \
+                    EXIT_FAILURE : atoi(getenv("DRIZZLE_TEST_EXIT_ERROR_ON_SKIP")) ? \
+                    EXIT_FAILURE : 77)
 #endif
 
 static inline bool valgrind_is_caller(void)
