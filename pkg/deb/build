@@ -25,6 +25,7 @@ description="Simple Asynchronous C API to MySQL databases"
 url="https://github.com/sociomantic-tsunami/libdrizzle-redux"
 vendor="Sociomantic Labs GmbH"
 license="Simplified BSD License"
+package="$1"
 
 pkgname=libdrizzle-redux
 so_filename=libdrizzle-redux.so
@@ -50,6 +51,7 @@ genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 cp $so_libname.$libversion $so_libname.$libversion.full
 strip  $so_libname.$libversion
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+    --package "$package" \
     --maintainer "$pkgmaint" \
     --description "$description" \
     --url "$url" \
@@ -73,6 +75,7 @@ build_id=`readelf -n install/usr/lib/libdrizzle-redux.so.$libversion | \
 debug_file=`printf $build_id | cut -b1-2`/`printf $build_id | cut -b3-`.debug
 objcopy --only-keep-debug $so_libname.$libversion.full $so_libname.$libversion.debug
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+    --package "$package" \
     --maintainer "$pkgmaint" \
     --description "$description" \
     --url "$url" \
@@ -87,6 +90,7 @@ fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
 pkgname=libdrizzle-redux-dev
 genchangelog "$pkgname" "$pkgversion" "$pkgmaint" > "$changelog"
 fpm -s dir -t deb -n "$pkgname" -v "$pkgversion" \
+    --package "$package" \
     --maintainer "$pkgmaint" \
     --description "$description" \
     --url "$url" \
