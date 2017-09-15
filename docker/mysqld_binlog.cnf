@@ -1,0 +1,14 @@
+# Custom config file for MySQL to enable replication
+# The settings are combined with the default MySQL mysqld.cnf config file
+# See the section "Using a custom MySQL configuration file" at
+# https://hub.docker.com/_/mysql/ for more information
+
+[mysqld]
+socket                  = /tmp/mysqld.sock
+
+# Replication settings
+server-id               = 1
+log_bin                 = /var/log/mysql/mysql-bin.log
+binlog_format           = ROW
+expire_logs_days        = 10
+max_binlog_size         = 100
