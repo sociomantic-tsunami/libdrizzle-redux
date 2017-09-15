@@ -3,26 +3,20 @@ language: cpp
 ## Enable cache for dependencies and directories
 cache: ccache
 
-## Enable sudo
+## Enable sudo (set explicitly although environment's with docker is sudo
+#  enabled by default
 sudo: required
 
 ## Operating Systems to use for builds
 os:
   - linux
 
-## Compilers to use for builds
-compiler:
-  - gcc
-  - clang
-
 ## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
 dist: trusty
-
 group: edge
 
 ## Services started on the build environment
 services:
- - mysql
  - docker
 
 ## Environment variables
@@ -31,58 +25,55 @@ services:
 #  build matrix, i.e. every build configuration.
 #  In turn, variables defined in the 'matrix' section each triggers a separate
 #  build.
-#
-#  Please note that test fails on first error as default
-#  To skip errors and fail silently set environment variable:
-#    SKIP_TEST_ON_ERROR=1
-#
-#  To speed up installation of brew formulas on osx auto update for homebrew is
-#  turned off by setting HOMEBREW_NO_AUTO_UPDATE=1
 env:
   global:
-    - MYSQL_SERVER=127.0.0.1
+    - COMPILER_VERSION=
+    - DEPLOY_PACKAGE=false
+    - DIST_NAME=ubuntu
+    - DIST_VERSION=xenial
+    - DOCKER_COMPOSE_VERSION=1.16.1
+    - DRIZZLE_TEST_EXIT_ERROR_ON_SKIP=0
+    - MAKE_TARGET=check
     - MYSQL_PASSWORD=''
-    - MYSQL_USER=root
     - MYSQL_PORT=3306
-    - DIST_PACKAGE_TARGET=DEB
-    - SKIP_TEST_ON_ERROR=0
+    - MYSQL_SERVER=127.0.0.1
+    - MYSQL_USER=root
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+    - SKIP_TEST_ON_ERROR=0
   matrix:
-    - DIST_PACKAGE_TARGET=DEB
-    - DIST_PACKAGE_TARGET=RPM
+    - COMPILER_VERSION=4.9 MAKE_TARGET="$MAKE_TARGET:deb" DEPLOY_PACKAGE=true
+    - CXX=clang++ CC=clang COMPILER_VERSION=3.9
+    - DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=rpm
 
 ## Build matrix
 #
-#  The 'os', 'compiler' and 'env' settings are expanded into 3 jobs:
+#  Travis expands the environment variables into 6¹ jobs:
+#  All linux based builds are run in docker containers using docker-compose
 #
-#  | os     | compiler    | DIST_PACKAGE_TARGET |
+#  | os     | compiler    | make targets        |
 #  |--------|-------------|---------------------|
-#  | linux  | clang       | DEB                 |
-#  | linux  | gcc         | DEB                 |
-#  | linux* | gcc         | RPM                 |
+#  | linux  | clang       | check               |
+#  | linux  | gcc         | check deb           |
+#  | linux  | gcc         | rpm                 |
 #  | osx    | clang 6.1.0 |                     |
 #  | osx    | clang 7.3.0 |                     |
 #  | osx    | clang 8.1.0 |                     |
 #
 #  For osx, the compiler reported is the Apple LLVM version
 #
-#  * the RPM package is built in a docker container running centos7
+#  ¹ Due to excessive build times for osx only XCode 7.3.1 has been enabled.
 matrix:
   fast_finish: true
-  exclude:
-    - os: linux
-      compiler: clang
-      env: DIST_PACKAGE_TARGET=RPM
   include:
-    - os: osx
-      osx_image: xcode6.4
-      compiler: clang
+    # - os: osx
+    #   osx_image: xcode6.4
+    #   compiler: clang
     - os: osx
       osx_image: xcode7.3.1
       compiler: clang
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
+    # - os: osx
+    #   osx_image: xcode8.3
+    #   compiler: clang
 
 ## Install dependencies
 before_install:
@@ -96,12 +87,14 @@ before_script:
 script:
   - ./travis_configure.sh run_tests
 
-# Deploy debian packages to bintray when building for a git tag
+## Deploy debian packages to bintray
+##
+## deb package built on ubuntu xenial with gcc
 deploy:
     provider: script
     script: beaver bintray upload -N pkg/deb/*.deb
     skip_cleanup: true
     on:
-        tags: true
-        repo: sociomantic-tsunami/libdrizzle-redux
-        condition: $TRAVIS_OS_NAME = 'linux' && $CC = 'gcc' && $DIST_PACKAGE_TARGET = 'DEB'
+        tags: true # must be a git tag
+        repo: sociomantic-tsunami/libdrizzle-redux # must be upstream
+        condition: $TRAVIS_OS_NAME = 'linux' && $DIST_NAME = 'ubuntu' && $DIST_VERSION = 'xenial' && $CC = 'gcc' && $MAKE_TARGET =~ 'deb' && $DEPLOY_PACKAGE = 'true'

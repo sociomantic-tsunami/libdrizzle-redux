@@ -1,0 +1,50 @@
+# Configuration file to run ci tests in docker containers
+#
+# Defines a database container with MySQL and a container with the environment
+# to build libdrizzle-redux. The latter container runs either ubuntu or centos
+# depending on the travis build configuration.
+#
+# See https://docs.docker.com/compose/overview/ for more information about
+# the format of the docker compose config file
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    env_file:
+      - ./docker/mysql.env
+    container_name: mysql-container
+    volumes:
+      - "mysql_socket:/tmp/"
+      - ./docker/mysqld_binlog.cnf:/etc/mysql/mysql.conf.d/mysqld_binlog.cnf
+
+  libdrizzle:
+    env_file:
+      - ./docker/mysql.env
+      - ./docker/libdrizzle-redux.env
+    environment:
+    # environment variables interpolated from travis
+      COMPILER_VERSION: $COMPILER_VERSION
+      MAKE_TARGET: $MAKE_TARGET
+      DIST_NAME: $DIST_NAME
+      CXX: $CXX
+      CC: $CC
+    build:
+      context: ./
+    depends_on:
+      - db
+    container_name: libdrizzle-redux-container
+    links:
+      - db:database
+    volumes:
+      - "mysql_socket:/tmp/"
+      - ./:/home/libdrizzle-redux/
+      - ./docker/container_entrypoint.sh:/usr/local/bin/container_entrypoint.sh
+    working_dir: /home/libdrizzle-redux/
+    entrypoint:
+      - container_entrypoint.sh
+
+# volume used to share mysql socket between containers
+volumes:
+  mysql_socket: {}
