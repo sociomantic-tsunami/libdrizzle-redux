@@ -70,6 +70,6 @@ maintainer-clean-local:
 	find . -type f -name '*~' -exec rm -f '{}' \;
 	-rm -f @PACKAGE@-*.tar.gz
 	-rm -f ./pkg/rpm/@PACKAGE@-*.rpm
-	-rm -f ./pkg/deb/@PACKAGE@-*.deb
+	-rm -f ./build/pkg/deb/@PACKAGE@-*.deb
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@
