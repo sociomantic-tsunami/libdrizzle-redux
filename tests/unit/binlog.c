@@ -86,9 +86,11 @@ int main(int argc, char *argv[])
 
   binlog = drizzle_binlog_init(con, NULL, binlog_error, NULL, true);
   ASSERT_NOT_NULL_(binlog, "Binlog event callback function is NULL");
+  drizzle_binlog_free(binlog);
 
   binlog = drizzle_binlog_init(con, binlog_event, NULL, NULL, true);
   ASSERT_NOT_NULL_(binlog, "Binlog error callback function is NULL");
+  drizzle_binlog_free(binlog);
 
   // Quit the drizzle connection and test binlog initialization with socket
   // owner as native
