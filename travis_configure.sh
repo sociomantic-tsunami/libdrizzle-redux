@@ -43,6 +43,7 @@ before_install()
             fi
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew update
         brew install gnu-sed
         xcode_version=`xcodebuild -version | grep 'Xcode' | cut -f 2 -d ' '`
         # reinstall libtool on osx_image xcode6.x to ensure gsed is found by
