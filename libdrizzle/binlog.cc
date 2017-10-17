@@ -41,6 +41,7 @@
 #include <zlib.h>
 #include <inttypes.h>
 
+// test ths pr
 drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
                                        drizzle_binlog_fn *binlog_fn,
                                        drizzle_binlog_error_fn *error_fn,
