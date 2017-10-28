@@ -109,15 +109,15 @@ int main(int argc, char *argv[])
     DRIZZLE_RETURN_TIMEOUT, 3);
 
   // invalid port
-  test_connection_error("localhost", 1234, "valid_user", "valid_pass",
+  test_connection_error(host, 1234, "valid_user", "valid_pass",
     "valid_db", DRIZZLE_RETURN_COULD_NOT_CONNECT, -1);
 
   // invalid user
-  test_connection_error("localhost", port, "invalid_user", "valid_pass",
+  test_connection_error(host, port, "invalid_user", "valid_pass",
     "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, -1);
 
   // invalid pass
-  test_connection_error("localhost", port, "valid_user", "invalid_pass",
+  test_connection_error(host, port, "valid_user", "invalid_pass",
     "valid_db", DRIZZLE_RETURN_HANDSHAKE_FAILED, -1);
 
   // invalid schema

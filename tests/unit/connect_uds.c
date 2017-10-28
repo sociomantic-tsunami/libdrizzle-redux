@@ -50,7 +50,9 @@ int main(int argc, char *argv[])
   (void)argv;
 
   con = drizzle_create(getenv("MYSQL_SOCK"),
-                       0, getenv("MYSQL_USER"),
+                       getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
+                                            : DRIZZLE_DEFAULT_TCP_PORT,
+                       getenv("MYSQL_USER"),
                        getenv("MYSQL_PASSWORD"),
                        getenv("MYSQL_SCHEMA"), 0);
 

@@ -6,7 +6,7 @@
 set -e
 
 # Script to print error message with the build is and environment variable
-# DIST_PACKAGE_TARGET
+# MAKE_TARGET
 #
 # $1 error message to show
 #
@@ -15,27 +15,30 @@ print_error_msg ()
 {
     test ! -z "$1" || exit 1
     echo "$1"
-    echo "  os:      $TRAVIS_OS_NAME"
-    echo "  package: $DIST_PACKAGE_TARGET"
+    echo "  os:         $TRAVIS_OS_NAME"
+    echo "  lsb:        $DIST_NAME $DIST_VERSION"
+    echo "  targets:    $MAKE_TARGET"
 
     return 0
 }
 
 # Script which is run before the installation script is called
 #
-# Installs dependencies
-# linux:
-#   deb:
-#     - fpm
-# osx:
+# For linux based builds docker-compose is used to set up the build environment
+#
+# For osx based builds homebrew is used to install required packages:
 #   - sed, (libtool), openssl, mysql
 # Returns 0
 before_install()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
-            gem install fpm -v 1.8.1
+        # build images
+        docker-compose -f ./docker-compose.yml \
+            -f ./docker/docker-compose.$DIST_NAME.$DIST_VERSION.yml \
+            build
 
+        # jfrog dependency
+        if [[ "$MAKE_TARGET" =~ "deb" ]]; then
             if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
                 curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
                 chmod a+x /tmp/jfrog ;
@@ -43,6 +46,7 @@ before_install()
             fi
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew update
         brew install gnu-sed
         xcode_version=`xcodebuild -version | grep 'Xcode' | cut -f 2 -d ' '`
         # reinstall libtool on osx_image xcode6.x to ensure gsed is found by
@@ -81,22 +85,7 @@ enable_mysqlbinlog()
 before_script()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
-            # Ensures MySQL is started with binlog enabled. This is done by
-            # modifying the default my.cnf file.
-            #  1. Enable replication in mysql config file
-            #  2. Restart MySQL server
-            #  3. Set root password to an empty string
-            enable_mysqlbinlog "/etc/mysql/my.cnf"
-            sudo service mysql restart
-            mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
-        elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
-            # build a docker image with Centos 7 and MySQL
-            docker build -t centos7_mysql56 -f docker/Dockerfile.centos.7 .
-        else
-            print_error_msg "Invalid build configuration"
-            return 1
-        fi
+        echo "Before script not run for docker builds"
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         # Creates a MySQL config file with binary logging enabled and
         # starts the MySQL server
@@ -113,31 +102,23 @@ before_script()
 
 # Invoked by the travis hook script.
 #
-# - configures and compiles the project
-# - runs all unittests with 'make check'
-# - for builds on linux, a deb or rpm package is generated depending on the
-#   current build configuration.
+# Runs ci tests on travis' native build environment or in docker containers
+#
+# Linux:
+#   docker-compose is used to create a container with MySQL and a
+#   container which configures, compiles, tests and possibly builds
+#   distribution packages depending on the build configuration
+#
+# OSX:
+#   Compiles and runs unittests in the travis osx build environment
 #
 # Returns 0 or 1 if called with an invalid build configuration
 run_tests()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$DIST_PACKAGE_TARGET" == "DEB" ]]; then
-            autoreconf -fi
-            ./configure
-            make check
-            make deb
-        elif [[ "$DIST_PACKAGE_TARGET" == "RPM" ]]; then
-            docker run -d --name db_container centos7_mysql56
-            docker exec \
-                -e MYSQL_USER=$MYSQL_USER \
-                -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
-                -u root db_container sh -c \
-                "autoreconf -fi && ./configure && make rpm"
-        else
-            print_error_msg "Invalid build configuration"
-            return 1
-        fi
+        docker-compose up --abort-on-container-exit
+        # follow the log output in the container building libdrizzle-redux
+        docker logs libdrizzle-redux-container -f
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         autoreconf -fi
         # Pass the root of the openssl installation directory

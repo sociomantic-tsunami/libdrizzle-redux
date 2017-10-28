@@ -25,7 +25,7 @@ Support Guarantees
 ------------------
 
 - Major branch development period: 6 months
-- Maintained minor versions: 2 most recent
+- Maintained minor versions: 1 most recent
 
 Maintained Major Branches
 -------------------------
