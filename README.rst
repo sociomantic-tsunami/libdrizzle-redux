@@ -58,6 +58,21 @@ major or minor **GitHub** release are designed to help developers to migrate fro
 one version to another. The changes listed are the steps you need to take to
 move from the previous version to the one listed.
 
+Installing Libdrizzle Redux
+===========================
+
+There are several options for installing the library:
+
+- The project's **apt** repository at `bintray`_ offers ``deb`` packages for Ubuntu Xenial.
+- Build from source.
+- Build and install the ``deb`` or ``rpm`` packages locally.
+
+Please refer to the section `Installing Libdrizzle Redux`_ in the documentation for more info.
+
+.. _`bintray`: https://bintray.com/sociomantic-tsunami/libdrizzle-redux/libdrizzle-redux
+.. _Installing Libdrizzle Redux: ./docs/compiling.rst#installing-libdrizzle-redux
+
+
 Building libdrizzle-redux
 =========================
 
