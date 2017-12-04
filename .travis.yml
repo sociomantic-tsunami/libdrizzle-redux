@@ -92,7 +92,7 @@ script:
 ## deb package built on ubuntu xenial with gcc
 deploy:
     provider: script
-    script: beaver bintray upload -D $DIST_VERSION -N pkg/deb/*.deb
+    script: beaver bintray upload -D $DIST_VERSION -N build/pkg/deb/*.deb
     skip_cleanup: true
     on:
         tags: true # must be a git tag
