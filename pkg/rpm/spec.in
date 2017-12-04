@@ -93,6 +93,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Mon Dec 04 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v6.1.1
+- Fix beaver bintray deb packages path arg (2017-12-04)
+
 * Mon Sep 11 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.0
 - Include 'asynchronous' in library description (2017-09-08)
 - Use variables for common deb package fpm arguments (2017-09-08)
