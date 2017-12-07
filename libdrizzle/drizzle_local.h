@@ -71,11 +71,11 @@ void drizzle_free(drizzle_st *con);
 
 /* Create a copy of drizzle_st instance
  *
- * @params[out] drizzle the target instance
+ * @params[out] con the target instance
  * @params[in] from the instance to clone
  * @return a newly allocated and configured copy of a drizzle connection
  */
-drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from);
+drizzle_st *drizzle_clone(drizzle_st *con, const drizzle_st *from);
 
 /*
  * Initialize the shared ssl object, by calling pthread_once

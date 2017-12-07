@@ -174,12 +174,12 @@ void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function,
  * interested. To resume processing, the libdrizzle function that returned
  * DRIZZLE_RETURN_IO_WAIT should be called again. See drizzle_event_watch_fn().
  *
- * @param[in] drizzle Drizzle structure previously initialized with drizzle_create().
+ * @param[in] con Drizzle structure previously initialized with drizzle_create().
  * @param[in] function Function to call when there is an I/O event.
  * @param[in] context Argument to pass into the callback function.
  */
 DRIZZLE_API
-void drizzle_set_event_watch_fn(drizzle_st *drizzle,
+void drizzle_set_event_watch_fn(drizzle_st *con,
                                 drizzle_event_watch_fn *function,
                                 void *context);
 
