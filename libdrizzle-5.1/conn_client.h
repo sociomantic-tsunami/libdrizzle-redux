@@ -94,7 +94,7 @@ drizzle_result_st *drizzle_shutdown(drizzle_st *con, drizzle_return_t *ret_ptr);
 /**
  * Sends a query kill command to the server
  *
- * @param[out] con – A connection object
+ * @param[out] con A connection object
  * @param[in] connection_id – The connection ID to kill a query from
  * @param[out] ret_ptr A pointer to a drizzle_return_t to store the return status into
  * @return A newly allocated result object

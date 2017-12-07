@@ -321,6 +321,7 @@ Functions
    Gets the previous column in a buffered column result set
 
    :param result: A result object
+   :param column: The column number
    :returns: A column object
 
 .. c:function:: void drizzle_column_seek(drizzle_result_st *result, uint16_t column)
