@@ -75,7 +75,7 @@ uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr);
  * drizzle_row_free().
  *
  * @param[in,out] result pointer to the result structure to read from.
- * @param[out] ret_pointer Standard drizzle return value.
+ * @param[out] ret_ptr Standard drizzle return value.
  * @return the row that was read, or NULL if there are no more rows.
  */
 DRIZZLE_API

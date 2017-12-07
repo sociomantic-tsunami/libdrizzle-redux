@@ -118,7 +118,7 @@ drizzle_column_st *drizzle_column_prev(drizzle_result_st *result);
  * Seeks to a given column in a buffered column result set
  *
  * @param[in,out] result pointer to the structure to read from.
- * @param[in]     The column number
+ * @param[in]     column The column number
  */
 DRIZZLE_API
 void drizzle_column_seek(drizzle_result_st *result, uint16_t column);

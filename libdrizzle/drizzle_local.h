@@ -55,7 +55,7 @@ extern "C" {
 /**
  * Set the error string.
  *
- * @param[in] drizzle Drizzle con structure
+ * @param[in] con Drizzle con structure
  * @param[in] function Name of function the error happened in.
  * @param[in] format Format and variable argument list of message.
  */
@@ -120,7 +120,7 @@ bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_s
 /**
  * Log a message.
  *
- * @param[in] drizzle Drizzle con structure
+ * @param[in] con Drizzle con structure
  * @param[in] verbose Logging level of the message.
  * @param[in] format Format and variable argument list of message.
  * @param[in] args Variable argument list that has been initialized.
