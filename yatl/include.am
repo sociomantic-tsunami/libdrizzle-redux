@@ -8,7 +8,7 @@ VALGRIND_COMMAND= TESTS_ENVIRONMENT="valgrind" $(VALGRIND_EXEC_COMMAND)
 HELGRIND_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=helgrind --read-var-info=yes --error-exitcode=1 --read-var-info=yes
 DRD_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=drd
 MASSIF_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=massif
-GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x yatl/run.gdb
+GDB_COMMAND= $(LIBTOOL_COMMAND) gdb -f -x @abs_top_srcdir@/yatl/run.gdb
 PTRCHECK_COMMAND= $(LIBTOOL_COMMAND) valgrind --tool=exp-ptrcheck --error-exitcode=1
 PAHOLE_COMMAND= $(LIBTOOL_COMMAND) --mode=execute pahole
 VALGRIND_SUPRESSION= $(LIBTOOL_COMMAND) valgrind --leak-check=full --show-reachable=yes --error-limit=no --gen-suppressions=all --log-file=minimalraw.log
