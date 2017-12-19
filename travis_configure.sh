@@ -117,8 +117,6 @@ run_tests()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         docker-compose up --abort-on-container-exit
-        # follow the log output in the container building libdrizzle-redux
-        docker logs libdrizzle-redux-container -f
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         autoreconf -fi
         # Pass the root of the openssl installation directory
