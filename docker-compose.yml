@@ -18,6 +18,8 @@ services:
     volumes:
       - "mysql_socket:/tmp/"
       - ./docker/mysqld_binlog.cnf:/etc/mysql/mysql.conf.d/mysqld_binlog.cnf
+    logging:
+      driver: none
 
   libdrizzle:
     env_file:
