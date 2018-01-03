@@ -84,6 +84,10 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Thu Oct 26 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.2
+- Add guide to install packages from the bintray apt repo (2017-10-26)
+- Pass dist version to bintray upload script (2017-10-26)
+
 * Thu Oct 19 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.1
 - Update minor support guarantees (2017-10-19)
 - Update beaver to v0.2.2 (2017-10-19)
