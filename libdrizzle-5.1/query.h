@@ -61,8 +61,6 @@ extern "C" {
  * results.
  *
  * @param[in] con connection to use to send the query.
- * @param[in,out] result pointer to an unused structure that will be used for
- *                       the results, or NULL to allocate a new structure.
  * @param[in] query query string to send.
  * @param[in] size length of the query string in bytes.
  * @param[out] ret_ptr pointer to the result code.
@@ -95,9 +93,12 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **to, const char *from, cons
  * Escape a string for an SQL query, optionally for pattern matching.
  *
  * This function escapes the following characters:
- * '\0' (0x00), '\'' (0x27), '"' (0x22), '\b' (0x08), '\n' (0x0A),
- * '\r' (0x0D), '\t' (0x09), '\Z' (0x26), '\\' (0x5C).
- * In case `is_pattern` is set to `true`, '%' (0x25) and '_' (0x5F)
+ *
+ * \verbatim
+'\0' (0x00), '\'' (0x27), '"' (0x22), '\b' (0x08), '\n' (0x0A),
+'\r' (0x0D), '\t' (0x09), '\Z' (0x26), '\\' (0x5C).
+\endverbatim
+ * In case \p is_pattern is set to `true`, '%' (0x25) and '_' (0x5F)
  * will be escaped as well.
  *
  * The to parameter is allocated by the function and needs to be freed by

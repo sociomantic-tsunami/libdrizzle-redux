@@ -117,6 +117,7 @@ Functions
    :param minutes: The number of minutes for the time
    :param seconds: The number of seconds for the time
    :param microseconds: The number of microseconds for the time
+   :param is_negative: Flag for the sign of the time value
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
 .. c:function:: drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t param_num, uint16_t year, uint8_t month, uint8_t day, uint8_t hours, uint8_t minutes, uint8_t seconds, uint32_t microseconds)
