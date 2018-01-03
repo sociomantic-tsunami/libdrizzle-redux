@@ -1,5 +1,5 @@
-Description |BuildStatus|_
-==========================
+Description |travis|
+====================
 
 **Drizzle Redux** is a project which aims to breathe new life into the **libdrizzle**
 C connector. It is designed to allow you to syn- or asynchronously connect to and query a
@@ -141,8 +141,9 @@ A set of guidelines guidelines and tools to help developers and users are
 available at the wiki of the `Neptune`_ project, which is also part of
 the `Tsunami programme`_ created by `sociomantic labs GmbH`_.
 
-.. |BuildStatus| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg?branch=master
-.. _BuildStatus: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux
+.. |travis| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg?branch=master
+   :alt: Travis Build Status
+   :target: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux
 .. _SemVer: http://semver.org
 .. _Latest stable release notes: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/latest
 .. _release notes: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/latest
