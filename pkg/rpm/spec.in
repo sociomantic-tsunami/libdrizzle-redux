@@ -84,6 +84,20 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Wed Jan 03 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.3
+- Use rst formatting for travis build status image (2018-01-03)
+- [TRAVIS] Use default osx image (2018-01-03)
+- [TRAVIS] Disable logging in docker MySQL container (2018-01-03)
+- [TRAVIS] Remove group setting from .travis.yml (2018-01-03)
+- Update beaver to v0.3.2 (2018-01-03)
+- Update apt repo installation for ubuntu docker image (2018-01-03)
+- Don't follow the log output from libdrizze-redux container (2018-01-03)
+- Use name `con` consistently for drizzle_st* func param (2017-12-08)
+- Fix rst documentation (2017-12-08)
+- Fix doxygen warnings documentation (2017-12-08)
+- Update beaver (2017-12-07)
+- Update beaver submodule to v0.3.0 (2017-11-27)
+
 * Thu Oct 26 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.2
 - Add guide to install packages from the bintray apt repo (2017-10-26)
 - Pass dist version to bintray upload script (2017-10-26)
