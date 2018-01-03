@@ -84,6 +84,15 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Thu Oct 19 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.1
+- Update minor support guarantees (2017-10-19)
+- Update beaver to v0.2.2 (2017-10-19)
+- Use docker-compose on travis for linux builds (2017-10-19)
+- Enable unittests to not return EXIT_FAILURE on SKIP (2017-10-19)
+- unittests: Replaced conn params with ENV variables (2017-10-19)
+- Fix memory leak in binlog unittest (2017-10-13)
+- Fix brew runtime error on travis (2017-10-13)
+
 * Mon Sep 11 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 5.7.0
 - Include 'asynchronous' in library description (2017-09-08)
 - Use variables for common deb package fpm arguments (2017-09-08)

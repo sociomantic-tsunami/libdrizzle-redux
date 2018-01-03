@@ -6,7 +6,7 @@
 # Use and distribution licensed under the BSD license.  See
 # the COPYING file in this directory for full text.
 
-AC_INIT([libdrizzle-redux],[5.7.0],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
+AC_INIT([libdrizzle-redux],[5.7.1],[https://github.com/sociomantic-tsunami/libdrizzle-redux/issues],[libdrizzle-redux],[https://github.com/sociomantic-tsunami/libdrizzle-redux])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -54,7 +54,7 @@ AC_CONFIG_SRCDIR([libdrizzle/drizzle.cc])
 # (§) The explanation is taken from this blogpost:
 # http://blog.asleson.org/index.php/2014/07/08/libtool-library-versioning-version-info-currentrevisionage/
 #
-LIBDRIZZLE_LIBRARY_VERSION=12:7:2
+LIBDRIZZLE_LIBRARY_VERSION=12:8:2
 #                         | | |
 #                  +------+ | +---+
 #                  |        |     |

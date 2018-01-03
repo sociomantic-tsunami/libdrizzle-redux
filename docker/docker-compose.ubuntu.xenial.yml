@@ -1,0 +1,7 @@
+# Docker compose file to override configuration for centos based images
+version: '3'
+
+services:
+  libdrizzle:
+    build:
+      dockerfile: ./docker/Dockerfile.ubuntu.xenial
