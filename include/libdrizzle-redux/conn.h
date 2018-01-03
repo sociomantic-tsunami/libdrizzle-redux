@@ -216,7 +216,7 @@ void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state);
 /**
  * Gets the raw scramble connect option
  *
- * @param[in] options – The options object to get the value from
+ * @param[in] options The options object to get the value from
  * @return The state of the raw scramble option
  */
 DRIZZLE_API
@@ -256,7 +256,7 @@ void drizzle_options_set_interactive(drizzle_options_st *options, bool state);
  * @return The state of the interactive option
  */
 DRIZZLE_API
-bool drizzle_options_get_interactive(drizzle_options_st *option);
+bool drizzle_options_get_interactive(drizzle_options_st *options);
 
 /**
  * Sets/unsets the multi-statements connect option

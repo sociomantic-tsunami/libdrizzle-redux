@@ -48,43 +48,43 @@ Functions
 
    Gets the current connection timeout set in the connection object
 
-   :param drizzle: A connection object
+   :param con: A connection object
    :returns: The current timeout
 
 .. c:function:: void drizzle_set_timeout(drizzle_st *con, int timeout)
 
    Sets the connection timeout for the connection object
 
-   :param drizzle: A connection object
+   :param con: A connection object
    :param timeout: The new timeout to set
 
 .. c:function:: drizzle_verbose_t drizzle_verbose(const drizzle_st *con)
 
    Gets the verbosity level set in the connection object
 
-   :param drizzle: A connection object
+   :param con: A connection object
    :returns: The verbosity level from :c:type:`drizzle_verbose_t`
 
 .. c:function:: void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose)
 
    Sets the verbosity level for the connection object
 
-   :param drizzle: A connection object
+   :param con: A connection object
    :param verbose: The verbosity level from :c:type:`drizzle_verbose_t`
 
 .. c:function:: void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function, void *context)
 
    Sets a callback function for log handling
 
-   :param drizzle: A connection object
+   :param con: A connection object
    :param function: The function to use in the format of :c:func:`drizzle_log_fn`
    :param context: A pointer to data to pass to the log function
 
-.. c:function:: void drizzle_set_event_watch_fn(drizzle_st *drizzle, drizzle_event_watch_fn *function, void *context)
+.. c:function:: void drizzle_set_event_watch_fn(drizzle_st *con, drizzle_event_watch_fn *function, void *context)
 
    Set a custom I/O event watcher function for a drizzle structure
 
-   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
+   :param con: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :param function: Function to call when there is an I/O event, in the form of :c:func:`drizzle_event_watch_fn`
    :param context: Argument to pass into the callback function.
 
@@ -232,7 +232,7 @@ Functions
    :param options: The options object to modify
    :param state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_interactive(drizzle_options_st *option)
+.. c:function:: bool drizzle_options_get_interactive(drizzle_options_st *options)
 
    Gets the interactive connect option
 
@@ -404,14 +404,14 @@ Functions
 
    Wait for I/O on connections.
 
-   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
+   :param con: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :returns: Standard drizzle return value.
 
 .. c:function:: drizzle_st *drizzle_ready(drizzle_st *con)
 
    Get next connection that is ready for I/O.
 
-   :param drizzle: Drizzle structure previously initialized with :c:func:`drizzle_create`.
+   :param con: Drizzle structure previously initialized with :c:func:`drizzle_create`.
    :returns: Connection that is ready for I/O, or NULL if there are none.
 
 .. c:function:: drizzle_return_t drizzle_close(drizzle_st *con)

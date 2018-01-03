@@ -71,7 +71,6 @@ drizzle_return_t driz_ret;
  * @param[in]  password        password
  * @param[in]  db              database
  * @param[in]  ret_expected    expected return value
- * @param[in]  error_expected  expected error string
  * @param[in]  timeout         connection timeout
  */
 void test_connection_error(const char *host, in_port_t port,

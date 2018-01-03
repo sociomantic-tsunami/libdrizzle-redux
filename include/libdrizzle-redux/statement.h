@@ -271,6 +271,7 @@ drizzle_return_t drizzle_stmt_set_null(drizzle_stmt_st *stmt, uint16_t param_num
  * @param minutes The number of minutes for the time
  * @param seconds The number of seconds for the time
  * @param microseconds The number of microseconds for the time
+ * @param is_negative The sign of the time value
  * @return A return status code, DRIZZLE_RETURN_OK upon success
  */
 DRIZZLE_API
