@@ -38,12 +38,10 @@ before_install()
             build
 
         # jfrog dependency
-        if [[ "$MAKE_TARGET" =~ "deb" ]]; then
-            if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
-                curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
-                chmod a+x /tmp/jfrog ;
-                sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
-            fi
+        if [[ -n "$TRAVIS_TAG" ]]; then
+            curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
+            chmod a+x /tmp/jfrog ;
+            sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update
