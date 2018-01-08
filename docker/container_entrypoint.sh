@@ -25,14 +25,12 @@ install_dependencies()
 install_dependencies
 
 # configure and compile the project
-# run make targets specified in env MAKE_TARGET
-if [[ ! -d ./build ]]; then
-    mkdir build
-fi
+# run make targets specified in the environment variable MAKE_TARGET
+mkdir -p build
 
 cd build
 
-if [[ ! -e ../configure ]]; then
+if [[ ! -e Makefile ]]; then
     autoreconf -fi ..
     ../configure
 fi
