@@ -22,6 +22,35 @@ print_error_msg ()
     return 0
 }
 
+# Install an artifact (package, script, ..) in the travis build environment
+#
+# $1 artifact to install
+#
+# Returns 0 if the installation succeeds, 1 otherwise
+install_artifact()
+{
+    if [[ -z $1 ]]; then
+        echo "Missing argument"
+        return 1
+    fi
+
+    case $1 in
+        jfrog)
+            echo "Installing $1"
+            mkdir -p $HOME/bin ;
+            curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > $HOME/bin/jfrog ;
+            chmod a+x $HOME/bin/jfrog ;
+            export PATH=$HOME/bin:$PATH
+            ;;
+        *)
+            echo "installation of '$1' is not supported"
+            return 1
+            ;;
+    esac
+
+    return 0
+}
+
 # Script which is run before the installation script is called
 #
 # For linux based builds docker-compose is used to set up the build environment
@@ -39,9 +68,7 @@ before_install()
 
         # jfrog dependency
         if [[ -n "$TRAVIS_TAG" ]]; then
-            curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
-            chmod a+x /tmp/jfrog ;
-            sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
+            install_artifact jfrog
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update
@@ -136,6 +163,9 @@ elif [[ $1 == "before_script" ]]; then
     before_script
 elif [[ $1 == "run_tests" ]]; then
     run_tests
+elif [[ $1 == "install_artifact" ]];  then
+    shift
+    install_artifact $1
 else
     echo "invalid function call"
     exit 1
