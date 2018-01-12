@@ -10,12 +10,12 @@ install_dependencies()
         if [[ ! -z $COMPILER_VERSION ]]; then
             COMPILER="$CXX-$COMPILER_VERSION"
         fi
-        apt-fast install -y $COMPILER
+        apt-fast install -y --no-install-recommends $COMPILER
     fi
 
     if [[ "$DIST_NAME" == "centos" ]]; then
         # install compiler
-        if [[ "$CXX" == "clang" ]]; then
+        if [[ "$CC" == "clang" ]]; then
             yum install -y clang
         fi
     fi
