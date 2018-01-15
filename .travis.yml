@@ -1,33 +1,26 @@
 language: cpp
 
 ## Enable cache for dependencies and directories
-cache: ccache
+cache:
+  directories:
+    - build/travis-cache
 
-## Enable sudo (set explicitly although environment's with docker is sudo
-#  enabled by default
+## Enable sudo (set explicitly although it is enabled by default when docker is
+#  running as a service
 sudo: required
 
 ## Operating Systems to use for builds
-os:
-  - linux
+os: linux
 
 ## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
 dist: trusty
 
-## Services started on the build environment
-services:
- - docker
-
 ## Environment variables
 #
-#  The 'global' section defines variables which are added to every row in the
-#  build matrix, i.e. every build configuration.
-#  In turn, variables defined in the 'matrix' section each triggers a separate
-#  build.
+#  The 'global' section defines variables common for all jobs
 env:
   global:
     - COMPILER_VERSION=
-    - DEPLOY_PACKAGE=false
     - DIST_NAME=ubuntu
     - DIST_VERSION=xenial
     - DOCKER_COMPOSE_VERSION=1.16.1
@@ -39,60 +32,83 @@ env:
     - MYSQL_USER=root
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
     - SKIP_TEST_ON_ERROR=0
-  matrix:
-    - COMPILER_VERSION=4.9 MAKE_TARGET="$MAKE_TARGET:deb" DEPLOY_PACKAGE=true
-    - CXX=clang++ CC=clang COMPILER_VERSION=3.9
-    - DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=rpm
+    - CACHE_DIR=build/travis-cache
 
-## Build matrix
-#
-#  Travis expands the environment variables into 6¹ jobs:
-#  All linux based builds are run in docker containers using docker-compose
-#
-#  | os     | compiler    | make targets        |
-#  |--------|-------------|---------------------|
-#  | linux  | clang       | check               |
-#  | linux  | gcc         | check deb           |
-#  | linux  | gcc         | rpm                 |
-#  | osx    | clang 6.1.0 |                     |
-#  | osx    | clang 7.3.0 |                     |
-#  | osx    | clang 8.1.0 |                     |
-#
-#  For osx, the compiler reported is the Apple LLVM version
-#
-#  ¹ Due to excessive build times for osx only XCode 7.3.1 has been enabled.
-matrix:
-  fast_finish: true
-  include:
-    # - os: osx
-    #   osx_image: xcode6.4
-    #   compiler: clang
-    - os: osx
-      compiler: clang
-    # - os: osx
-    #   osx_image: xcode8.3
-    #   compiler: clang
-
-## Install dependencies
+## Build steps for all jobs
 before_install:
   - ./travis_configure.sh before_install
-
-## Prepare build system for tests
 before_script:
   - ./travis_configure.sh before_script
-
-## Run tests, and packaging scripts
 script:
   - ./travis_configure.sh run_tests
 
-## Deploy debian packages to bintray
-##
-## deb package built on ubuntu xenial with gcc
-deploy:
-    provider: script
-    script: beaver bintray upload -D $DIST_VERSION -N build/pkg/deb/*.deb
-    skip_cleanup: true
-    on:
-        tags: true # must be a git tag
-        repo: sociomantic-tsunami/libdrizzle-redux # must be upstream
-        condition: $TRAVIS_OS_NAME = 'linux' && $DIST_NAME = 'ubuntu' && $DIST_VERSION = 'xenial' && $CC = 'gcc' && $MAKE_TARGET =~ 'deb' && $DEPLOY_PACKAGE = 'true'
+## Defines the order of the build stages.
+#
+#  The deployment stage is only done is building semver git tag
+stages:
+  - test
+  - deploy
+
+## Defines the jobs to run in each stage
+#
+#  Travis combines the variables defined in env.global with the variables
+#  defined for each job
+#
+#  The resulting build matrix is as follows:
+#
+#  | os     | dist   | compiler  | make targets | deploy |
+#  |--------|--------|-----------|--------------|--------|
+#  | linux  | ubuntu | clang     | check        | no     |
+#  | linux  | ubuntu | gcc       | check deb    | yes    |
+#  | linux  | centos | gcc       | check rpm    | yes    |
+#  | osx    | sierra | clang¹    | check        | no     |
+#
+#  Linux based builds are run in docker containers using docker-compose.
+#
+#  OSX based builds are done by a third-party provider
+#
+#  ¹ The compiler reported is the Apple LLVM version
+jobs:
+  templates:
+    # Global config for builds on linux
+    - &linux-build
+      services:
+        - docker
+    # Global config for builds on osx
+    - &osx-build
+      os: osx
+      compiler: clang
+      if: tag =~ osx$ or branch =~ osx$
+    # Global config for deployment stage
+    - &deploy
+      os: linux
+
+  include:
+    # Sets up the build environment, compiles the code and runs tests
+    - <<: *linux-build
+      env:
+        COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb
+      before_cache:
+      - if [[ -n $TRAVIS_TAG ]]; then cp build/pkg/deb/*.deb $CACHE_DIR/; fi
+    - <<: *linux-build
+      env:
+        CXX=clang++ CC=clang COMPILER_VERSION=3.9
+    - <<: *linux-build
+      env:
+        DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=rpm
+    - <<: *osx-build
+      env:
+        DIST_NAME=osx
+
+    ## Deployment stage
+    - <<: *deploy
+      # Deploy deb packages to bintray. Doesn't build the packages but uses the
+      # cache from the first stage.
+      stage: deploy
+      if: tag IS present AND tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+
+      env:
+        COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb
+      before_install:
+        - ./travis_configure.sh install_dependency jfrog
+        - beaver bintray upload -D $DIST_VERSION -N $CACHE_DIR/*.deb
+        - exit 0
