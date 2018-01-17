@@ -32,6 +32,7 @@ PREFIX= @prefix@
 @INC_AMINCLUDE@
 DISTCLEANFILES+= aminclude.am
 CLEANFILES+= $(dist_bin_SCRIPTS)
+MAINTAINERCLEANFILES= @top_builddir@/llvm-gcov.sh
 
 TESTS+= ${check_PROGRAMS} ${check_SCRIPTS}
 
@@ -69,3 +70,17 @@ maintainer-clean-local:
 	rm -rf pkg/deb/install
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@
+
+# Add rules for code-coverage testing, as defined by AX_CODE_COVERAGE
+@CODE_COVERAGE_RULES@
+CODE_COVERAGE_LCOV_SHOPTS=--base-directory "@top_srcdir@"
+CODE_COVERAGE_OUTPUT_FILE=libdrizzle-redux-coverage.info
+CODE_COVERAGE_GENHTML_OPTIONS=--prefix "@abs_top_srcdir@"
+CODE_COVERAGE_IGNORE_PATTERN="**/usr/**" "**/yatl/**"
+
+if CODE_COVERAGE_ENABLED
+  CPPFLAGS += $(CODE_COVERAGE_CPPFLAGS)
+  CXXFLAGS += $(CODE_COVERAGE_CXXFLAGS)
+  CFLAGS += $(CODE_COVERAGE_CFLAGS)
+  LIBS += $(CODE_COVERAGE_LIBS)
+endif

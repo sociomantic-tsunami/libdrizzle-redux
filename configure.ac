@@ -83,6 +83,9 @@ AC_PROG_CC
 AC_PROG_CC_C99
 AS_IF([test "x${ac_cv_prog_cc_c99}" == "xno"],[AC_MSG_ERROR([No c99 compatible compiler found])])
 
+# gcov code coverage
+AX_CODE_COVERAGE
+
 AX_PLATFORM
 AX_ASSERT
 
