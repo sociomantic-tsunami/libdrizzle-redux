@@ -104,7 +104,7 @@ jobs:
     - <<: *deploy
       # Deploy deb packages to bintray.
       stage: deploy
-      if: tag IS present AND repo = sociomantic-tsunami/libdrizzle-redux
+      if: tag IS present AND tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+
       env:
         COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb
       after_success:
