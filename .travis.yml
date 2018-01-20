@@ -1,7 +1,9 @@
 language: cpp
 
 ## Enable cache for dependencies and directories
-cache: ccache
+cache:
+  directories:
+    - $CACHE_DIR
 
 ## Enable sudo (set explicitly although environment's with docker is sudo
 #  enabled by default
@@ -31,6 +33,7 @@ env:
     - MYSQL_USER=root
     - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
     - SKIP_TEST_ON_ERROR=0
+    - CACHE_DIR=build/travis-cache
 
 ## Build steps for all jobs
 ## Install dependencies
@@ -91,6 +94,8 @@ jobs:
     - <<: *linux-build
       env:
         COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb
+      before_cache:
+        - if [[ -n "$TRAVIS_TAG" ]]; then cp pkg/deb/*.deb $CACHE_DIR/; fi
     - <<: *linux-build
       env:
         CXX=clang++ CC=clang COMPILER_VERSION=3.9
@@ -103,10 +108,12 @@ jobs:
 
     ## Deployment stage
     - <<: *deploy
-      # Deploy deb packages to bintray.
+      # Deploy deb packages to bintray. Doesn't build the packages but uses the
+      # cache from the first stage.
       stage: deploy
       if: tag IS present AND tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+
       env:
         COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb
-      after_success:
-        - beaver bintray upload -D $DIST_VERSION -N pkg/deb/*.deb
+      before_script: skip
+      script:
+        - beaver bintray upload -D $DIST_VERSION -N $CACHE_DIR/*.deb
