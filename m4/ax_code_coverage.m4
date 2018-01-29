@@ -18,7 +18,7 @@
 #   and substituted, and corresponds to the value of the
 #   --enable-code-coverage option, which defaults to being disabled.
 #
-#   Test also for gcov program and create GCOV variable that could be
+#   Test also for coverage program and create COV_TOOL variable that could be
 #   substituted.
 #
 #   Note that all optimization flags in CFLAGS must be disabled when code
@@ -61,6 +61,7 @@
 #   Copyright (c) 2012 Paolo Borelli
 #   Copyright (c) 2012 Dan Winship
 #   Copyright (c) 2015 Bastien ROUCARIES
+# 	Copyright (c) 2018 sociomantic labs GmbH
 #
 #   This library is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU Lesser General Public License as published by
@@ -81,11 +82,11 @@ AC_DEFUN([AX_CODE_COVERAGE],[
 	dnl Check for --enable-code-coverage
 	AC_REQUIRE([AC_PROG_SED])
 
-	# allow to override gcov location
-	AC_ARG_WITH([gcov],
-	  [AS_HELP_STRING([--with-gcov[=GCOV]], [use given GCOV for coverage (GCOV=gcov).])],
-	  [_AX_CODE_COVERAGE_GCOV_PROG_WITH=$with_gcov],
-	  [_AX_CODE_COVERAGE_GCOV_PROG_WITH=gcov])
+	# allow to override coverage tool location
+	AC_ARG_WITH([cov-tool],
+	  [AS_HELP_STRING([--with-cov-tool[=COV_TOOL]], [use given COV_TOOL for coverage (COV_TOOL=gcov).])],
+	  [_AX_CODE_COVERAGE_COV_TOOL_PROG_WITH=$with_cov_tool],
+	  [_AX_CODE_COVERAGE_COV_TOOL_PROG_WITH=gcov])
 
 	AC_MSG_CHECKING([whether to build with code coverage support])
 	AC_ARG_ENABLE([code-coverage],
@@ -99,12 +100,12 @@ AC_DEFUN([AX_CODE_COVERAGE],[
 
 	AS_IF([ test "$enable_code_coverage" = "yes" ], [
 		# check for gcov
-		AC_CHECK_TOOL([GCOV],
-		  [$_AX_CODE_COVERAGE_GCOV_PROG_WITH],
+		AC_CHECK_TOOL([COV_TOOL],
+		  [$_AX_CODE_COVERAGE_COV_TOOL_PROG_WITH],
 		  [:])
-		AS_IF([test "X$GCOV" = "X:"],
+		AS_IF([test "X$COV_TOOL" = "X:"],
 		  [AC_MSG_ERROR([gcov is needed to do coverage])])
-		AC_SUBST([GCOV])
+		AC_SUBST([COV_TOOL])
 
 		dnl Check if gcc is being used
 		AS_IF([ test "$GCC" = "no" ], [
@@ -183,9 +184,9 @@ code-coverage-clean:
 #    instances. (Default: based on $CODE_COVERAGE_BRANCH_COVERAGE)
 #  - CODE_COVERAGE_LCOV_SHOPTS: Extra options to shared between both lcov
 #    instances. (Default: $CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
-#  - CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH: --gcov-tool pathtogcov
+#  - CODE_COVERAGE_LCOV_OPTIONS_COV_TOOL_PATH: --gcov-tool pathtogcov
 #  - CODE_COVERAGE_LCOV_OPTIONS_DEFAULT: Extra options to pass to the
-#    collecting lcov instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
+#    collecting lcov instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_COV_TOOL_PATH)
 #  - CODE_COVERAGE_LCOV_OPTIONS: Extra options to pass to the collecting lcov
 #    instance. (Default: $CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
 #  - CODE_COVERAGE_LCOV_RMOPTS_DEFAULT: Extra options to pass to the filtering
@@ -210,8 +211,8 @@ CODE_COVERAGE_BRANCH_COVERAGE ?=
 CODE_COVERAGE_LCOV_SHOPTS_DEFAULT ?= $(if $(CODE_COVERAGE_BRANCH_COVERAGE),\
 --rc lcov_branch_coverage=$(CODE_COVERAGE_BRANCH_COVERAGE))
 CODE_COVERAGE_LCOV_SHOPTS ?= $(CODE_COVERAGE_LCOV_SHOPTS_DEFAULT)
-CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH ?= --gcov-tool "$(GCOV)"
-CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?= $(CODE_COVERAGE_LCOV_OPTIONS_GCOVPATH)
+CODE_COVERAGE_LCOV_OPTIONS_COV_TOOL_PATH ?= --gcov-tool "$(COV_TOOL)"
+CODE_COVERAGE_LCOV_OPTIONS_DEFAULT ?= $(CODE_COVERAGE_LCOV_OPTIONS_COV_TOOL_PATH)
 CODE_COVERAGE_LCOV_OPTIONS ?= $(CODE_COVERAGE_LCOV_OPTIONS_DEFAULT)
 CODE_COVERAGE_LCOV_RMOPTS_DEFAULT ?=
 CODE_COVERAGE_LCOV_RMOPTS ?= $(CODE_COVERAGE_LCOV_RMOPTS_DEFAULT)
