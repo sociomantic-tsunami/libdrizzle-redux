@@ -34,6 +34,7 @@ services:
       CXX: $DOCKER_CXX
       CC: $DOCKER_CC
       DRIZZLE_MYSQL_CA_PATH: "/home/ssl-certs"
+      CONFIGURE_ARGS: $CONFIGURE_ARGS
     build:
       dockerfile: ./docker/Dockerfile.$DIST_NAME.$DIST_VERSION
       context: ./
