@@ -84,6 +84,15 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/libdrizzle-5.1/visibility.h
 
 %changelog
+* Tue Jan 30 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.4
+- Remove obsolete check in jfrog install (2018-01-24)
+- [TRAVIS] Cache deb packages built in test stage (2018-01-24)
+- [TRAVIS] Remove sudo from jfrog script install (2018-01-24)
+- [TRAVIS] Move docker image builds to before_script step (2018-01-24)
+- [TRAVIS] Only do OSX builds if tag or branch ends with 'osx' (2018-01-24)
+- [TRAVIS] Modify conditions for deb package deployment (2018-01-24)
+- [TRAVIS] Use build stages in travis configuration (2018-01-24)
+
 * Wed Jan 03 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v5.7.3
 - Use rst formatting for travis build status image (2018-01-03)
 - [TRAVIS] Use default osx image (2018-01-03)
