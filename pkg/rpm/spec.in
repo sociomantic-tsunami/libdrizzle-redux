@@ -93,6 +93,15 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Fri Feb 02 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v6.1.2
+- [TRAVIS] Minor fixes to contrainer_entrypoint script (2018-01-12)
+- [TRAVIS] Minor changes to container_entrypoint.sh (2018-01-08)
+- Enable silent rules for automake (2018-01-08)
+- [TRAVIS] Simplify conditions for jfrog script download (2018-01-08)
+- [TRAVIS] Update OSX build (2018-01-08)
+- Change log level verbosity in unittest (2018-01-04)
+- Bugfix: invalid path to run.gdb file (2017-12-08)
+
 * Mon Dec 04 2017 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v6.1.1
 - Fix beaver bintray deb packages path arg (2017-12-04)
 
