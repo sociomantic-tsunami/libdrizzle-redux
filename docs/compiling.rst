@@ -20,7 +20,6 @@ The parameter ``{distribution}`` should be ``xenial`` while ``{components}`` can
 Then run::
 
     sudo apt update
-    sudo apt install libdrizzle-redux (for versions on the v5.x branch)
     sudo apt install libdrizzle-redux6 (for versions on the v6.x branch)
 
 .. _`bintray`: https://bintray.com/sociomantic-tsunami/libdrizzle-redux/libdrizzle-redux
