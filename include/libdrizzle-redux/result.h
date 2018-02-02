@@ -58,7 +58,7 @@ extern "C" {
 /**
  * Frees all result objects for a given connection object
  *
- * @param[in,out] con a connection object
+ * @param[in,out] result a connection object
  */
 DRIZZLE_API
 void drizzle_result_free(drizzle_result_st *result);

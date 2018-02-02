@@ -24,7 +24,8 @@ print_error_msg ()
 
 # Script which is run before the installation script is called
 #
-# For linux based builds docker-compose is used to set up the build environment
+# Only dependencies required in the native travis build environment should be
+# installed in this step.
 #
 # For osx based builds homebrew is used to install required packages:
 #   - sed, (libtool), openssl, mysql
@@ -32,18 +33,11 @@ print_error_msg ()
 before_install()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        # build images
-        docker-compose -f ./docker-compose.yml \
-            -f ./docker/docker-compose.$DIST_NAME.$DIST_VERSION.yml \
-            build
-
         # jfrog dependency
-        if [[ "$MAKE_TARGET" =~ "deb" ]]; then
-            if [[ -n "$TRAVIS_TAG" && $TRAVIS_REPO_SLUG == "sociomantic-tsunami/libdrizzle-redux" ]]; then
-                curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > /tmp/jfrog ;
-                chmod a+x /tmp/jfrog ;
-                sudo cp /tmp/jfrog /usr/local/bin/jfrog ;
-            fi
+        if [[ -n "$TRAVIS_TAG" && ! -e $HOME/bin/jfrog ]]; then
+            mkdir -p $HOME/bin ;
+            curl -XGET -L -k 'https://api.bintray.com/content/jfrog/jfrog-cli-go/$latest/jfrog-cli-linux-amd64/jfrog?bt_package=jfrog-cli-linux-amd64' > $HOME/bin/jfrog ;
+            chmod a+x $HOME/bin/jfrog ;
         fi
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update
@@ -81,11 +75,19 @@ enable_mysqlbinlog()
 
 # Invoked by the travis hook before_script to prepare the build environment
 #
+# For linux based builds docker-compose is used to set up the build environment
+#
+# No dependencies required in the native travis build environment should be
+# installed in this step. Use before_install instead
+#
 # Returns 0 or 1 if called with an invalid build configuration
 before_script()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        echo "Before script not run for docker builds"
+       # build images
+        docker-compose -f ./docker-compose.yml \
+            -f ./docker/docker-compose.$DIST_NAME.$DIST_VERSION.yml \
+            build
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         # Creates a MySQL config file with binary logging enabled and
         # starts the MySQL server
@@ -117,12 +119,11 @@ run_tests()
 {
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         docker-compose up --abort-on-container-exit
-        # follow the log output in the container building libdrizzle-redux
-        docker logs libdrizzle-redux-container -f
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        autoreconf -fi
+        mkdir build && cd build
+        autoreconf -fi ..
         # Pass the root of the openssl installation directory
-        ./configure --with-openssl=$(brew --prefix openssl)
+        ../configure --with-openssl=$(brew --prefix openssl)
         make check
     else
         print_error_msg "Invalid build configuration"

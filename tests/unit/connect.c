@@ -71,7 +71,6 @@ drizzle_return_t driz_ret;
  * @param[in]  password        password
  * @param[in]  db              database
  * @param[in]  ret_expected    expected return value
- * @param[in]  error_expected  expected error string
  * @param[in]  timeout         connection timeout
  */
 void test_connection_error(const char *host, in_port_t port,
@@ -152,7 +151,7 @@ int main(int argc, char *argv[])
     opt_val);
   int cxt = 1;
   drizzle_set_log_fn(con, log_fn_callback, (void*)&cxt);
-  drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
+  drizzle_set_verbose(con, DRIZZLE_VERBOSE_INFO);
 
   driz_ret= drizzle_connect(con);
   if (driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)

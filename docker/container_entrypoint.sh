@@ -10,12 +10,12 @@ install_dependencies()
         if [[ ! -z $COMPILER_VERSION ]]; then
             COMPILER="$CXX-$COMPILER_VERSION"
         fi
-        apt-fast install -y $COMPILER
+        apt-fast install -y --no-install-recommends $COMPILER
     fi
 
     if [[ "$DIST_NAME" == "centos" ]]; then
         # install compiler
-        if [[ "$CXX" == "clang" ]]; then
+        if [[ "$CC" == "clang" ]]; then
             yum install -y clang
         fi
     fi
@@ -25,14 +25,12 @@ install_dependencies()
 install_dependencies
 
 # configure and compile the project
-# run make targets specified in env MAKE_TARGET
-if [[ ! -d ./build ]]; then
-    mkdir build
-fi
+# run make targets specified in the environment variable MAKE_TARGET
+mkdir -p build
 
 cd build
 
-if [[ ! -e ../configure ]]; then
+if [[ ! -e Makefile ]]; then
     autoreconf -fi ..
     ../configure
 fi
