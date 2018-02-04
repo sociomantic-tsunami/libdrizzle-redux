@@ -227,8 +227,8 @@ do \
 { \
   size_t __expected_length; \
   size_t __actual_length; \
-  int ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
-  if (ret) { \
+  int __ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
+  if (__ret) { \
     fprintf(stderr, "\n%s:%d: %s Assertion '%.*s' != '%.*s'\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, \
             (int)(__expected_length), (__expected_str), \
             (int)__actual_length, (__actual_str)) ; \
@@ -241,8 +241,8 @@ do \
 { \
   size_t __expected_length; \
   size_t __actual_length; \
-  int ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
-  if (ret) { \
+  int __ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
+  if (__ret) { \
     size_t ask= snprintf(0, 0, __VA_ARGS__); \
     ask++; \
     char *buffer= (char*)malloc(sizeof(char) * ask); \
@@ -261,8 +261,8 @@ do \
 { \
   size_t __expected_length; \
   size_t __actual_length; \
-  int ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
-  if (ret == 0) { \
+  int __ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
+  if (__ret == 0) { \
     fprintf(stderr, "\n%s:%d: %s Assertion '%.*s' == '%.*s'\n", __FILE__, __LINE__, __PRETTY_FUNCTION__, \
             (int)(__expected_length), (__expected_str), \
             (int)__actual_length, (__actual_str)) ; \
@@ -275,8 +275,8 @@ do \
 { \
   size_t __expected_length; \
   size_t __actual_length; \
-  int ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
-  if (ret == 0) { \
+  int __ret= yatl_strcmp(__expected_str, __actual_str, &__expected_length, &__actual_length); \
+  if (__ret == 0) { \
     size_t ask= snprintf(0, 0, __VA_ARGS__); \
     ask++; \
     char *buffer= (char*)malloc(sizeof(char) * ask); \
