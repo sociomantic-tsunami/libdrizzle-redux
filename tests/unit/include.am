@@ -143,6 +143,15 @@ valgrind-connect: tests/unit/connect
 check-connect: tests/unit/connect
 	tests/unit/connect
 
+tests_unit_connect_async_SOURCES= tests/unit/connect_async.c tests/unit/common.c
+tests_unit_connect_async_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_connect_async_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/connect_async
+noinst_PROGRAMS+= tests/unit/connect_async
+
+check-connect_async: tests/unit/connect_async
+	tests/unit/connect_async
+
 tests_unit_connect_uds_SOURCES= tests/unit/connect_uds.c tests/unit/common.c
 tests_unit_connect_uds_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_connect_uds_SOURCES = dummy.cxx
