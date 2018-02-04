@@ -104,7 +104,7 @@ nodist_EXTRA_tests_unit_version_cxx_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/version_cxx
 noinst_PROGRAMS+= tests/unit/version_cxx
 
-tests_unit_connect_SOURCES= tests/unit/connect.c
+tests_unit_connect_SOURCES= tests/unit/connect.c tests/unit/common.c
 tests_unit_connect_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_connect_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/connect
