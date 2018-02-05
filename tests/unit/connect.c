@@ -149,9 +149,6 @@ int main(int argc, char *argv[])
   opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
   ASSERT_EQ_(20, opt_val, "unexpected value for socket option KEEPALIVE: %d != 20",
     opt_val);
-  int cxt = 1;
-  drizzle_set_log_fn(con, log_fn_callback, (void*)&cxt);
-  drizzle_set_verbose(con, DRIZZLE_VERBOSE_INFO);
 
   driz_ret= drizzle_connect(con);
   if (driz_ret == DRIZZLE_RETURN_COULD_NOT_CONNECT)
@@ -185,6 +182,9 @@ int main(int argc, char *argv[])
     drizzle_close(con);
   }
 
+  int cxt = 1;
+  drizzle_set_log_fn(con, log_fn_callback, (void*)&cxt);
+  drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
   driz_ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
 
