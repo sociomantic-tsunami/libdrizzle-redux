@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 
   // Test for data too long
   char *out;
-  uint64_t out_len = drizzle_escape_str(NULL, &out, in, strlen(in), false);
+  uint64_t out_len = drizzle_escape_string(NULL, &out, in, strlen(in));
   ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17,
              (unsigned int)(out_len));
 
@@ -79,6 +79,12 @@ int main(int argc, char* argv[])
   out_len = drizzle_escape_str(NULL, &out, tricky, strlen(tricky), false);
   ASSERT_EQ_(out_len, 22, "Bad hex length output %u", (unsigned int)(out_len));
   ASSERT_EQ_(0, strcmp(out, "This\\tis \\\\\\\\\\b tricky"), "Bad hex data output");
+  free(out);
+
+  const char *str = "backslash, zero, ctrl char, return carriage, space, \
+    single quote \\, 0, \r \032 \'";
+  out_len = drizzle_escape_str(NULL, &out, str, strlen(str), false);
+  ASSERT_EQ_(out_len, 84, "Bad hex length output %u", (unsigned int)(out_len));
   free(out);
 
   return EXIT_SUCCESS;
