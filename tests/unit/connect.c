@@ -129,6 +129,9 @@ int main(int argc, char *argv[])
   con = drizzle_create(host, port, user, pass, db, opts);
   ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
 
+  drizzle_set_timeout(con, 30000);
+  ASSERT_EQ_(30000, drizzle_timeout(con), "unexpected value for timeout");
+
   int opt_val = drizzle_socket_get_option(con, DRIZZLE_SOCKET_OPTION_TIMEOUT);
   ASSERT_EQ_(10, opt_val, "unexpected value for socket option TIMEOUT: %d != 10",
     opt_val);
@@ -185,6 +188,7 @@ int main(int argc, char *argv[])
   int cxt = 1;
   drizzle_set_log_fn(con, log_fn_callback, (void*)&cxt);
   drizzle_set_verbose(con, DRIZZLE_VERBOSE_DEBUG);
+  ASSERT_EQ(DRIZZLE_VERBOSE_DEBUG, drizzle_verbose(con));
   driz_ret = drizzle_quit(con);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, driz_ret, "%s", drizzle_strerror(driz_ret));
 
