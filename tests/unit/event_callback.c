@@ -81,6 +81,16 @@ extern drizzle_return_t drizzle_event_callback(drizzle_st *con, short events,
   return DRIZZLE_RETURN_OK;
 }
 
+extern void drizzle_free_context(drizzle_st *con, void *context);
+extern void drizzle_free_context(drizzle_st *con, void *context)
+{
+  (void)con;
+
+  char *cxt = (char*)context;
+  strcpy(cxt, "Context is dead");
+}
+
+
 int main(int argc, char *argv[])
 {
   (void)argc;
@@ -99,6 +109,7 @@ int main(int argc, char *argv[])
 
   // Set drizzle dummy context
   drizzle_set_context(con, (void *)&cxt_a);
+  drizzle_set_context_free_fn(con, drizzle_free_context);
   ASSERT_NOT_NULL_(drizzle_context(con), "Drizzle context is null");
 
   // Set user defined callback function event_watch_fn
@@ -116,6 +127,8 @@ int main(int argc, char *argv[])
     "Expected '1' or more", cxt_b);
 
   printf("\nEvent callback was invoked %d times\n", cxt_b);
+
+  ASSERT_STREQ("Context is dead", cxt_a);
 
   return EXIT_SUCCESS;
 }
