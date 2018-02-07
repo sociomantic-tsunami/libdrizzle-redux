@@ -57,4 +57,10 @@ uint16_t drizzle_stmt_column_lookup(drizzle_result_st *result, const char *colum
 
 #ifdef __cplusplus
 }
+
+template <typename DST_TYPE, typename SRC_SIGNED, typename SRC_UNSIGNED>
+DST_TYPE signedness_cast(const unsigned char *src, bool is_unsigned);
+
+template<typename U>
+U drizzle_get_integer(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr);
 #endif

@@ -39,7 +39,11 @@
 #include "src/common.h"
 
 #include <inttypes.h>
+#include <typeinfo>
 
+// Macro which inlines code to check that stmt!=NULL parameter index is not out
+/// of bounds. If either is the case the macro makes function return immediately
+// with DRIZZLE_RETURN_INVALID_ARGUMENT
 #define CHECK_PARAM_NUM do { \
   if (stmt == NULL) return DRIZZLE_RETURN_INVALID_ARGUMENT; \
   if (param_num > stmt->param_count) \
@@ -338,7 +342,23 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
   return val;
 }
 
-uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+uint32_t drizzle_stmt_get_uint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
+  {
+    *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
+    return 0;
+  }
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
+  {
+    return 0;
+  }
+  return drizzle_stmt_get_uint(stmt, column_number, ret_ptr);
+}
+
+int32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -354,9 +374,23 @@ uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *colum
   return drizzle_stmt_get_int(stmt, column_number, ret_ptr);
 }
 
-uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+template <typename DST_TYPE, typename SRC_SIGNED, typename SRC_UNSIGNED>
+DST_TYPE signedness_cast(void *src, bool is_unsigned)
 {
-  uint32_t val;
+  if (is_unsigned)
+  {
+      return (DST_TYPE) (*(SRC_UNSIGNED *) src);
+  }
+  else
+  {
+      return (DST_TYPE) (*(SRC_SIGNED *) src);
+  }
+}
+
+template<typename U>
+U drizzle_get_integer(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+{
+  U val;
   drizzle_bind_st *param;
 
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
@@ -366,6 +400,7 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
   }
 
   param= &stmt->result_params[column_number];
+  bool is_unsigned = param->options.is_unsigned;
   *ret_ptr= DRIZZLE_RETURN_OK;
   switch(param->type)
   {
@@ -374,30 +409,28 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
       val= 0;
       break;
     case DRIZZLE_COLUMN_TYPE_TINY:
-      val= (uint32_t) (*(uint8_t*)param->data);
+      val = signedness_cast<U, int8_t, uint8_t>(param->data, is_unsigned);
       break;
     case DRIZZLE_COLUMN_TYPE_SHORT:
     case DRIZZLE_COLUMN_TYPE_YEAR:
-      val= (uint32_t) (*(uint16_t*)param->data);
+      val = signedness_cast<U, int16_t, uint16_t>(param->data, is_unsigned);
       break;
     case DRIZZLE_COLUMN_TYPE_INT24:
     case DRIZZLE_COLUMN_TYPE_LONG:
-      val= (uint32_t) (*(uint32_t*)param->data);
+      val = signedness_cast<U, int32_t, uint32_t>(param->data, is_unsigned);
       break;
     case DRIZZLE_COLUMN_TYPE_LONGLONG:
-      val= (uint32_t) (*(uint64_t*)param->data);
-      if (val > UINT32_MAX)
-      {
+      val = signedness_cast<U, int64_t, uint64_t>(param->data, is_unsigned);
+      if (typeid(U) == typeid(int32_t) && is_unsigned && val > INT32_MAX)
         *ret_ptr= DRIZZLE_RETURN_TRUNCATED;
-      }
       break;
     case DRIZZLE_COLUMN_TYPE_FLOAT:
       *ret_ptr= DRIZZLE_RETURN_TRUNCATED;
-      val= (uint32_t) (*(float*)param->data);
+      val = signedness_cast<U, float, float>(param->data, is_unsigned);
       break;
     case DRIZZLE_COLUMN_TYPE_DOUBLE:
       *ret_ptr= DRIZZLE_RETURN_TRUNCATED;
-      val= (uint32_t) (*(double*)param->data);
+      val= signedness_cast<U, double, double>(param->data, is_unsigned);
       break;
     case DRIZZLE_COLUMN_TYPE_TIME:
     case DRIZZLE_COLUMN_TYPE_DATE:
@@ -428,7 +461,17 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
   return val;
 }
 
-uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+int32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+{
+  return drizzle_get_integer<int32_t>(stmt, column_number, ret_ptr);
+}
+
+uint32_t drizzle_stmt_get_uint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+{
+  return drizzle_get_integer<uint32_t>(stmt, column_number, ret_ptr);
+}
+
+int64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -444,74 +487,30 @@ uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *co
   return drizzle_stmt_get_bigint(stmt, column_number, ret_ptr);
 }
 
-uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+int64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
-  uint64_t val;
-  drizzle_bind_st *param;
+  return drizzle_get_integer<int64_t>(stmt, column_number, ret_ptr);
+}
 
-  if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
+uint64_t drizzle_stmt_get_biguint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+{
+  uint16_t column_number;
+  if ((stmt == NULL) || (stmt->result_params == NULL))
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
   }
-
-  param= &stmt->result_params[column_number];
-  *ret_ptr= DRIZZLE_RETURN_OK;
-  switch(param->type)
+  column_number=  drizzle_stmt_column_lookup(stmt->prepare_result, column_name, ret_ptr);
+  if (*ret_ptr != DRIZZLE_RETURN_OK)
   {
-    case DRIZZLE_COLUMN_TYPE_NULL:
-      *ret_ptr= DRIZZLE_RETURN_NULL_SIZE;
-      val= 0;
-      break;
-    case DRIZZLE_COLUMN_TYPE_TINY:
-      val= (uint64_t) (*(uint8_t*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_SHORT:
-    case DRIZZLE_COLUMN_TYPE_YEAR:
-      val= (uint64_t) (*(uint16_t*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_INT24:
-    case DRIZZLE_COLUMN_TYPE_LONG:
-      val= (uint64_t) (*(uint32_t*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_LONGLONG:
-      val= (uint64_t) (*(uint64_t*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_FLOAT:
-      *ret_ptr= DRIZZLE_RETURN_TRUNCATED;
-      val= (uint64_t) (*(float*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_DOUBLE:
-      *ret_ptr= DRIZZLE_RETURN_TRUNCATED;
-      val= (uint64_t) (*(double*)param->data);
-      break;
-    case DRIZZLE_COLUMN_TYPE_TIME:
-    case DRIZZLE_COLUMN_TYPE_DATE:
-    case DRIZZLE_COLUMN_TYPE_DATETIME:
-    case DRIZZLE_COLUMN_TYPE_TIMESTAMP:
-    case DRIZZLE_COLUMN_TYPE_TINY_BLOB:
-    case DRIZZLE_COLUMN_TYPE_MEDIUM_BLOB:
-    case DRIZZLE_COLUMN_TYPE_LONG_BLOB:
-    case DRIZZLE_COLUMN_TYPE_BLOB:
-    case DRIZZLE_COLUMN_TYPE_BIT:
-    case DRIZZLE_COLUMN_TYPE_STRING:
-    case DRIZZLE_COLUMN_TYPE_VAR_STRING:
-    case DRIZZLE_COLUMN_TYPE_DECIMAL:
-    case DRIZZLE_COLUMN_TYPE_NEWDECIMAL:
-    case DRIZZLE_COLUMN_TYPE_NEWDATE:
-    case DRIZZLE_COLUMN_TYPE_VARCHAR:
-    case DRIZZLE_COLUMN_TYPE_ENUM:
-    case DRIZZLE_COLUMN_TYPE_SET:
-    case DRIZZLE_COLUMN_TYPE_GEOMETRY:
-    case DRIZZLE_COLUMN_TYPE_TIMESTAMP2:
-    case DRIZZLE_COLUMN_TYPE_DATETIME2:
-    case DRIZZLE_COLUMN_TYPE_TIME2:
-    default:
-      *ret_ptr= DRIZZLE_RETURN_INVALID_CONVERSION;
-      val= 0;
+    return 0;
   }
+  return drizzle_stmt_get_biguint(stmt, column_number, ret_ptr);
+}
 
-  return val;
+uint64_t drizzle_stmt_get_biguint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+{
+  return drizzle_get_integer<uint64_t>(stmt, column_number, ret_ptr);
 }
 
 double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
