@@ -30,8 +30,8 @@ services:
       COMPILER_VERSION: $COMPILER_VERSION
       MAKE_TARGET: $MAKE_TARGET
       DIST_NAME: $DIST_NAME
-      CXX: $CXX
-      CC: $CC
+      CXX: $DOCKER_CXX
+      CC: $DOCKER_CC
     build:
       context: ./
     depends_on:
