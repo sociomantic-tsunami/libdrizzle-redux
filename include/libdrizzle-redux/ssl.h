@@ -58,6 +58,36 @@ DRIZZLE_API
 drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key,
     const char *cert, const char *ca, const char *capath, const char *cipher);
 
+/**
+ * @brief Get a pointer to the name of the cipher used current established
+ * connection.
+ * If the cipher is NULL, cipher is set to "(NONE)".
+ *
+ * param[in] con A connection object
+ * param[out] cipher reference to a const char pointer
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_ssl_get_cipher_name(drizzle_st * con,
+    const char **cipher_name);
+
 #ifdef __cplusplus
 }
 #endif
+
+/**
+ * @brief Get the string which indicates the SSL/TLS protocol version that first
+ * defined the cipher, or in the case the SSL/TLS protocol negotiated between
+ * client and server.
+ *
+ * This is currently SSLv2 or TLSv1/SSLv3. In some cases it
+ * should possibly return "TLSv1.2" but does not;
+ * If cipher is NULL, "(NONE)" `cipher` is set to "(NONE)".
+ *
+ * param[out] con A connection object
+ * @param cipher_version reference to a const char pointer
+ * @return A return status code DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_ssl_cipher_get_version(drizzle_st *con,
+    const char **cipher_version);
