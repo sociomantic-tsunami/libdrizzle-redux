@@ -402,7 +402,7 @@ unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
 
     if (con->options.auth_plugin)
     {
-      snprintf((char *)ptr, DRIZZLE_MAX_SCRAMBLE_SIZE, "%s", con->password);
+      strncpy((char *)ptr, con->password, DRIZZLE_MAX_SCRAMBLE_SIZE);
       ptr[DRIZZLE_MAX_SCRAMBLE_SIZE-1]= 0;
     }
     else
