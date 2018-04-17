@@ -101,11 +101,57 @@ drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *c
   return DRIZZLE_RETURN_OK;
 }
 
+drizzle_return_t drizzle_ssl_get_cipher_name(drizzle_st * con,
+  const char **cipher_name)
+{
+  if (con == NULL)
+  {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
+  if (con->ssl_state != DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) {
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "SSL connection not used");
+    return DRIZZLE_RETURN_INTERNAL_ERROR;
+  }
+
+  const SSL_CIPHER *cipher = SSL_get_current_cipher((SSL *)con->ssl);
+
+  if (cipher == NULL)
+  {
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "No SSL session established");
+      return DRIZZLE_RETURN_ERROR_CODE;
+  }
+
+  *cipher_name = SSL_CIPHER_get_name(cipher);
+  return DRIZZLE_RETURN_OK;
+}
+
+drizzle_return_t drizzle_ssl_cipher_get_version(drizzle_st *con,
+    const char **cipher_version)
+{
+  if (con == NULL) {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
+  if (con->ssl_state != DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE) {
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "SSL connection not used");
+    return DRIZZLE_RETURN_INTERNAL_ERROR;
+  }
+
+  const SSL_CIPHER *cipher;
+  cipher = SSL_get_current_cipher((SSL *)con->ssl);
+
+  if (cipher == NULL) {
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "No SSL session established");
+    return DRIZZLE_RETURN_ERROR_CODE;
+  }
+
+  *cipher_version = SSL_CIPHER_get_version(cipher);
+  return DRIZZLE_RETURN_OK;
+}
+
 #else
 
 drizzle_return_t drizzle_set_ssl(drizzle_st*, const char*, const char*, const char*, const char*, const char*)
-{
-  return DRIZZLE_RETURN_INVALID_ARGUMENT;
-}
 
 #endif
