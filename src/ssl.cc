@@ -55,8 +55,11 @@ drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *c
 
   if (cipher)
   {
-    drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot set the SSL cipher list");
-    return DRIZZLE_RETURN_SSL_ERROR;
+    if (SSL_CTX_set_cipher_list((SSL_CTX*)con->ssl_context, cipher) != 1)
+    {
+      drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot set the SSL cipher list");
+      return DRIZZLE_RETURN_SSL_ERROR;
+    }
   }
 
   if (SSL_CTX_load_verify_locations((SSL_CTX*)con->ssl_context, ca, capath) != 1)
