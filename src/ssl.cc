@@ -47,7 +47,11 @@
 drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 {
   con->ssl_context= SSL_CTX_new(SSLv23_client_method());
-  if (SSL_CTX_set_options((SSL_CTX*)con->ssl_context, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3) != 1)
+
+  const long required_ssl_options = (SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
+  long ssl_options =
+      SSL_CTX_set_options((SSL_CTX *)con->ssl_context, required_ssl_options);
+  if (!(ssl_options & required_ssl_options))
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__, "Cannot set the SSL protocol options");
     return DRIZZLE_RETURN_SSL_ERROR;
