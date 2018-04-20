@@ -17,6 +17,7 @@ services:
     container_name: mysql-container
     volumes:
       - "mysql_socket:/tmp/"
+      - "ssl_certs:/var/lib/mysql"
       - ./docker/mysqld_binlog.cnf:/etc/mysql/mysql.conf.d/mysqld_binlog.cnf
     logging:
       driver: none
@@ -32,6 +33,7 @@ services:
       DIST_NAME: $DIST_NAME
       CXX: $DOCKER_CXX
       CC: $DOCKER_CC
+      DRIZZLE_MYSQL_CA_PATH: "/home/ssl-certs"
     build:
       dockerfile: ./docker/Dockerfile.$DIST_NAME.$DIST_VERSION
       context: ./
@@ -42,6 +44,7 @@ services:
       - db:database
     volumes:
       - "mysql_socket:/tmp/"
+      - "ssl_certs:/home/ssl-certs"
       - ./:/home/libdrizzle-redux/
       - ./docker/entrypoint.$DIST_NAME.sh:/usr/local/bin/entrypoint.$DIST_NAME.sh
       - ./docker/container_entrypoint.sh:/usr/local/bin/container_entrypoint.sh
@@ -52,3 +55,4 @@ services:
 # volume used to share mysql socket between containers
 volumes:
   mysql_socket: {}
+  ssl_certs: {}
