@@ -93,6 +93,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Fri May 25 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.3
+- [TRAVIS] Fix bug in travis config and build script (2018-03-08)
+
 * Fri Feb 02 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - v6.1.2
 - [TRAVIS] Minor fixes to contrainer_entrypoint script (2018-01-12)
 - [TRAVIS] Minor changes to container_entrypoint.sh (2018-01-08)
