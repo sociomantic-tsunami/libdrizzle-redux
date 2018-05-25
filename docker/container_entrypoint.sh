@@ -2,20 +2,25 @@
 #
 # entrypoint for the container
 
+# set and export the C and C++ compiler environment variables
+export CXX=$CXX${COMPILER_VERSION:+-$COMPILER_VERSION}
+export CC=$CC${COMPILER_VERSION:+-$COMPILER_VERSION}
+
 install_dependencies()
 {
     if [[ "$DIST_NAME" == "ubuntu" ]]; then
         # install compiler
-        COMPILER=$CXX
-        if [[ ! -z $COMPILER_VERSION ]]; then
-            COMPILER="$CXX-$COMPILER_VERSION"
+        COMPILER_PACKAGE=$CXX
+        if [[ "$CC" =~ "clang" ]]; then
+            COMPILER_PACKAGE=$CC
         fi
-        apt-fast install -y --no-install-recommends $COMPILER
+
+        apt-fast install -y --no-install-recommends $COMPILER_PACKAGE
     fi
 
     if [[ "$DIST_NAME" == "centos" ]]; then
         # install compiler
-        if [[ "$CC" == "clang" ]]; then
+        if [[ "$CC" =~ "clang" ]]; then
             yum install -y clang
         fi
     fi
