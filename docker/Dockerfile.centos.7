@@ -11,4 +11,6 @@ RUN yum install -y deltarpm && \
 yum install -y rpm-build zlib-devel libtool openssl \
     openssl-devel automake autoconf gcc-c++
 
-RUN yum install -y centos-release-scl
+#RUN yum install -y centos-release-scl
+#RUN yum install -y devtoolset-7
+#RUN scl enable devtoolset-7 bash
