@@ -1,0 +1,12 @@
+comment:
+    layout: "header"
+
+coverage:
+    status:
+        project: false
+        changes: false
+        patch:
+            default:
+                enabled: true
+                target: 80%
+                threshold: 50%
