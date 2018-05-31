@@ -2,5 +2,30 @@
 FROM sociomantictsunami/base
 MAINTAINER andreas-bok-sociomantic <andreas.bok@sociomantic.com>
 
-ADD docker/ubuntu_xenial_image_run.sh  /usr/local/bin/
-RUN sudo /usr/local/bin/ubuntu_xenial_image_run.sh
+RUN export DEBIAN_FRONTEND=noninteractive
+
+# delete all the apt list files to speed up 'apt-get update' command
+RUN rm -rf /var/lib/apt/lists/*
+
+# add apt repository for clang compiler versions
+RUN wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial main" >> /etc/apt/sources.list
+RUN echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial main" >> /etc/apt/sources.list
+
+# clang 5.0
+RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
+RUN echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-5.0 main" >> /etc/apt/sources.list
+
+# clang 6.0
+RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+RUN echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list
+
+# add apt repository for apt-fast
+RUN add-apt-repository ppa:apt-fast/stable
+
+RUN apt-get update
+RUN apt-get install --no-install-recommends -y apt-fast
+
+# install required packages
+RUN apt-fast -y install --no-install-recommends \
+    libssl-dev autoconf libtool make automake zlib1g-dev
