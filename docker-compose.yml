@@ -33,6 +33,7 @@ services:
       CXX: $DOCKER_CXX
       CC: $DOCKER_CC
     build:
+      dockerfile: ./docker/Dockerfile.$DIST_NAME.$DIST_VERSION
       context: ./
     depends_on:
       - db
@@ -42,6 +43,7 @@ services:
     volumes:
       - "mysql_socket:/tmp/"
       - ./:/home/libdrizzle-redux/
+      - ./docker/entrypoint.$DIST_NAME.sh:/usr/local/bin/entrypoint.$DIST_NAME.sh
       - ./docker/container_entrypoint.sh:/usr/local/bin/container_entrypoint.sh
     working_dir: /home/libdrizzle-redux/
     entrypoint:
