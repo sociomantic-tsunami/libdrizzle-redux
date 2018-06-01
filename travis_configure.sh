@@ -120,6 +120,9 @@ run_tests()
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         docker-compose up --abort-on-container-exit
     elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        if [ -d ./build ]; then
+            rm -rf build
+        fi
         mkdir build && cd build
         autoreconf -fi ..
         # Pass the root of the openssl installation directory
