@@ -70,6 +70,10 @@ const char *column_type_names[] = {
     "NEWDECIMAL", "ENUM", "SET",        "TINY_BLOB", "MEDIUM_BLOB",
     "LONG_BLOB",  "BLOB", "VAR_STRING", "STRING",    "GEOMETRY"};
 
+const char *column_names[4] = {
+  "NULL", "a", "b", "c"
+};
+
 int main(int argc, char *argv[])
 {
   (void)argc;
@@ -89,7 +93,7 @@ int main(int argc, char *argv[])
 
   CHECKED_QUERY("INSERT INTO test_column.t1 (b) VALUES ('this'),('is'),('war')");
 
-  CHECKED_QUERY("SELECT * FROM test_column.t1");
+  CHECKED_QUERY("SELECT a column_1, b column_2, c column_3 FROM test_column.t1 table1");
 
   drizzle_result_buffer(result);
   num_fields = drizzle_result_column_count(result);
@@ -101,6 +105,7 @@ int main(int argc, char *argv[])
   while ((row = drizzle_row_next(result)))
   {
     drizzle_column_seek(result, 0);
+    ASSERT_NULL_(drizzle_column_prev(result), "Can't retrieve column at index -1");
     int cur_column = 0;
     i++;
     char buf[10];
@@ -111,18 +116,23 @@ int main(int argc, char *argv[])
       cur_column++;
       ASSERT_EQ_(strcmp(drizzle_column_db(column), "test_column"), 0,
                  "Column has bad DB name");
-      ASSERT_EQ_(strcmp(drizzle_column_table(column), "t1"), 0,
+      ASSERT_EQ_(strcmp(drizzle_column_table(column), "table1"), 0,
                  "Column had bad table name");
+      ASSERT_EQ(DRIZZLE_COLUMN_TYPE_NONE, drizzle_column_type(NULL));
+      ASSERT_EQ(DRIZZLE_COLUMN_FLAGS_NONE, drizzle_column_flags(NULL));
+
       switch (cur_column) {
       case 1:
         ASSERT_EQ_(drizzle_column_type(column), DRIZZLE_COLUMN_TYPE_LONG,
                    "Column type wrong");
         break;
       case 2:
+        ASSERT_EQ(0, drizzle_column_max_size(NULL));
         ASSERT_EQ_(drizzle_column_max_size(column), 255,
                    "Column max size wrong %lu != 255",
                    drizzle_column_max_size(column));
 
+        ASSERT_EQ(DRIZZLE_CHARSET_NONE, drizzle_column_charset(NULL));
         ASSERT_EQ_(drizzle_column_charset(column), DRIZZLE_CHARSET_LATIN1_SWEDISH_CI,
                    "Column charset wrong, %d != %d", drizzle_column_charset(column),
                    DRIZZLE_CHARSET_LATIN1_SWEDISH_CI);
@@ -132,9 +142,30 @@ int main(int argc, char *argv[])
                    "Column type wrong");
         break;
       }
+      ASSERT_STREQ_("t1", drizzle_column_orig_table(column), "Original table wrong");
+      sprintf(buf, "column_%d", cur_column);
+      ASSERT_STREQ_(buf, drizzle_column_name(column), "Wrong column alias");
+      ASSERT_STREQ_(column_names[cur_column], drizzle_column_orig_name(column),
+        "Wrong column name");
+      ASSERT_EQ(0, drizzle_column_size(NULL));
+      ASSERT_NEQ(0, drizzle_column_size(column));
+      ASSERT_EQ(0, drizzle_column_decimals(NULL));
     }
+
     ASSERT_EQ_(cur_column, 3, "Wrong column count");
+    column = drizzle_column_prev(result);
+    ASSERT_EQ(2, drizzle_column_current(result));
+    drizzle_column_seek(NULL, 0);
+    ASSERT_EQ(2, drizzle_column_current(result));
+    column = drizzle_column_index(result, 1);
+    ASSERT_NULL_(drizzle_column_index(NULL, 1), "Can't get column by index with result=NULL");
+    ASSERT_NULL_(drizzle_column_index(result, 999), "Column index is out of bounds");
+    column = drizzle_column_prev(NULL);
+    ASSERT_NULL_(column, "Result set is NULL");
+    column = drizzle_column_next(NULL);
+    ASSERT_NULL_(column, "Result set is NULL");
   }
+
   /* Should have had 3 rows */
   ASSERT_EQ_(i, 3, "Retrieved bad number of rows");
 
