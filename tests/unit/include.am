@@ -167,6 +167,12 @@ nodist_EXTRA_tests_unit_mysql_properties_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/mysql_properties
 noinst_PROGRAMS+= tests/unit/mysql_properties
 
+tests_unit_return_code_SOURCES= tests/unit/return_code.c
+tests_unit_return_code_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_return_code_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/return_code
+noinst_PROGRAMS+= tests/unit/return_code
+
 tests_unit_drizzle_options_SOURCES= tests/unit/drizzle_options.c tests/unit/common.c
 tests_unit_drizzle_options_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_drizzle_options_SOURCES = dummy.cxx
