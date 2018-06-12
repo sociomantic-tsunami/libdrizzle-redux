@@ -40,7 +40,11 @@
 
 #include <inttypes.h>
 
-#define CHECK_PARAM_NUM do { if (param_num > stmt->param_count) return DRIZZLE_RETURN_INVALID_ARGUMENT; } while(0)
+#define CHECK_PARAM_NUM do { \
+  if (stmt == NULL) return DRIZZLE_RETURN_INVALID_ARGUMENT; \
+  if (param_num > stmt->param_count) \
+  return DRIZZLE_RETURN_INVALID_ARGUMENT; } \
+while(0)
 
 /* Internal function */
 drizzle_return_t drizzle_stmt_set_param(drizzle_stmt_st *stmt, uint16_t param_num, drizzle_column_type_t type, const void *data, size_t length, bool is_unsigned)
