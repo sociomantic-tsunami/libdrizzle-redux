@@ -492,6 +492,11 @@ const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_typ
 drizzle_return_t drizzle_binlog_get_filename(drizzle_st *con, char **filename,
                                              uint32_t *end_position, int file_index)
 {
+  if (con == NULL)
+  {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
   *filename = (char*) malloc(1);
   *filename[0] = '\0';
   *end_position = 0;
