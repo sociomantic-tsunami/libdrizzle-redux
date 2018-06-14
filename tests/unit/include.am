@@ -22,6 +22,21 @@ valgrind-binlog: tests/unit/binlog
 check-binlog: tests/unit/binlog
 	tests/unit/binlog
 
+tests_unit_binlog_async_SOURCES= tests/unit/binlog_async.c tests/unit/common.c
+tests_unit_binlog_async_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_binlog_async_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/binlog_async
+noinst_PROGRAMS+= tests/unit/binlog_async
+
+gdb-binlog_async: tests/unit/binlog_async
+	@$(GDB_COMMAND) tests/unit/binlog_async
+
+valgrind-binlog_async: tests/unit/binlog_async
+	@$(VALGRIND_COMMAND) tests/unit/binlog_async
+
+check-binlog_async: tests/unit/binlog_async
+	tests/unit/binlog_async
+
 tests_unit_event_callback_SOURCES= tests/unit/event_callback.c
 tests_unit_event_callback_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_event_callback_SOURCES = dummy.cxx
