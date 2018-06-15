@@ -188,6 +188,19 @@ DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num,
                                         uint16_t value, bool is_unsigned);
 
+/*
+ * Sets a parameter of a prepared statement to a short int value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_ushort(drizzle_stmt_st *stmt, uint16_t param_num,
+                                        uint16_t value, bool is_unsigned);
+
 /**
  * Sets a parameter of a prepared statement to an int value
  *
@@ -202,6 +215,19 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
                                       uint32_t value, bool is_unsigned);
 
 /**
+ * Sets a parameter of a prepared statement to an int value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_uint(drizzle_stmt_st *stmt, uint16_t param_num,
+                                      uint32_t value);
+
+/**
  * Sets a parameter of a prepared statement to a bigint value
  *
  * @param stmt A prepared statement object
@@ -213,6 +239,19 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
 DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num,
                                          uint64_t value, bool is_unsigned);
+
+/**
+ * Sets a parameter of a prepared statement to a bigint value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_biguint(drizzle_stmt_st *stmt, uint16_t param_num,
+                                         uint64_t value);
 
 /**
  * Sets a parameter of a prepared statement to a double value

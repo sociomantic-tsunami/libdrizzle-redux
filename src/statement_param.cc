@@ -92,6 +92,17 @@ drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_nu
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_SHORT, val, 2, is_unsigned);
 }
 
+drizzle_return_t drizzle_stmt_set_ushort(drizzle_stmt_st *stmt, uint16_t param_num,
+                                        uint16_t value)
+{
+  uint16_t *val;
+  CHECK_PARAM_NUM;
+  val= (uint16_t*) stmt->query_params[param_num].data_buffer;
+  *val= value;
+
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_SHORT, val, 2, true);
+}
+
 drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num, uint32_t value, bool is_unsigned)
 {
   uint32_t *val;
@@ -102,6 +113,17 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONG, val, 4, is_unsigned);
 }
 
+drizzle_return_t drizzle_stmt_set_uint(drizzle_stmt_st *stmt, uint16_t param_num,
+                                      uint32_t value)
+{
+  uint32_t *val;
+  CHECK_PARAM_NUM;
+  val= (uint32_t*) stmt->query_params[param_num].data_buffer;
+  *val= value;
+
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONG, val, 4, true);
+}
+
 drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value, bool is_unsigned)
 {
   uint64_t *val;
@@ -110,6 +132,16 @@ drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_n
   *val= value;
 
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONGLONG, val, 8, is_unsigned);
+}
+
+drizzle_return_t drizzle_stmt_set_biguint(drizzle_stmt_st *stmt, uint16_t param_num, uint64_t value)
+{
+  uint64_t *val;
+  CHECK_PARAM_NUM;
+  val= (uint64_t*) stmt->query_params[param_num].data_buffer;
+  *val= value;
+
+  return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_LONGLONG, val, 8, true);
 }
 
 drizzle_return_t drizzle_stmt_set_double(drizzle_stmt_st *stmt, uint16_t param_num, double value)
