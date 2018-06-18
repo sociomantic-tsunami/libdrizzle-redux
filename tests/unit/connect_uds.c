@@ -49,6 +49,18 @@ int main(int argc, char *argv[])
   (void)argc;
   (void)argv;
 
+  drizzle_return_t ret;
+  con = drizzle_create("/invalid/mysql/socket",
+                       getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
+                                            : DRIZZLE_DEFAULT_TCP_PORT,
+                       getenv("MYSQL_USER"),
+                       getenv("MYSQL_PASSWORD"),
+                       getenv("MYSQL_SCHEMA"), 0);
+
+  ASSERT_NOT_NULL_(con, "Could not create connection object");
+  ASSERT_EQ_(DRIZZLE_RETURN_COULD_NOT_CONNECT, drizzle_connect(con),
+    "Socket not valid");
+
   con = drizzle_create(getenv("MYSQL_SOCK"),
                        getenv("MYSQL_PORT") ? atoi(getenv("MYSQL_PORT"))
                                             : DRIZZLE_DEFAULT_TCP_PORT,
@@ -56,9 +68,7 @@ int main(int argc, char *argv[])
                        getenv("MYSQL_PASSWORD"),
                        getenv("MYSQL_SCHEMA"), 0);
 
-  ASSERT_NOT_NULL_(con, "Drizzle connection object creation error");
-
-  drizzle_return_t ret = drizzle_connect(con);
+  ret = drizzle_connect(con);
   SKIP_IF_(ret == DRIZZLE_RETURN_COULD_NOT_CONNECT, "%s(%s)",
            drizzle_error(con), drizzle_strerror(ret));
   atexit(close_connection_on_exit);
