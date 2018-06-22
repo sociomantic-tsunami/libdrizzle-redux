@@ -164,7 +164,7 @@ static inline void drizzle_log_error(drizzle_st *con, const char* file, uint lin
   if (con->verbose >= DRIZZLE_VERBOSE_ERROR)
   {
     va_start(args, format);
-    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_ERROR, format, args);
     va_end(args);
   }
 }
@@ -180,7 +180,7 @@ static inline void drizzle_log_info(drizzle_st *con, const char* file, uint line
   if (con->verbose >= DRIZZLE_VERBOSE_INFO)
   {
     va_start(args, format);
-    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_DEBUG, format, args);
+    drizzle_log(con, file, line, func, DRIZZLE_VERBOSE_INFO, format, args);
     va_end(args);
   }
 }
