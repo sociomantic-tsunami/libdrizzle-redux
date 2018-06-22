@@ -225,6 +225,9 @@ const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_typ
  * @param[in,out] end_position Variable to save the size of the binlog file into
  * @param[in] file_index Index of the binlog to retrieve.
  * @return Standard drizzle return value
+ *         - DRIZZLE_RETURN_OK the filename was retrieved successfully.
+ *         - DRIZZLE_RETURN_INVALID_ARGUMENT: invalid argument(s)
+ *         - DRIZZLE_RETURN_NOT_FOUND: no binlog files were available
  */
 DRIZZLE_API
 drizzle_return_t drizzle_binlog_get_filename(drizzle_st *con, char **filename,
