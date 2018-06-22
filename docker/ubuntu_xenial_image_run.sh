@@ -15,7 +15,7 @@ echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial main" >> /etc/ap
 add-apt-repository ppa:apt-fast/stable
 
 apt-get update
-apt-get install --no-install-recommends -y apt-fast
+apt-get install --no-install-recommends --allow-unauthenticated -y apt-fast
 # install required packages
 apt-fast -y install --no-install-recommends \
     libssl-dev autoconf libtool make automake zlib1g-dev
