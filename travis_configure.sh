@@ -49,7 +49,8 @@ before_install()
             brew reinstall libtool
         fi
         brew install openssl
-        brew install mysql
+        brew install mysql@5.7
+        brew link --overwrite --force mysql@5.7
     else
         print_error_msg "Invalid build configuration"
         return 1
