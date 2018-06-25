@@ -160,3 +160,12 @@ gdb-ssl: tests/unit/ssl
 
 check-ssl: tests/unit/ssl
 	tests/unit/ssl
+
+api-sanity-checker:
+	${abs_top_srcdir}/configure --prefix=/usr --srcdir=${abs_top_srcdir}
+	$(MAKE) DESTDIR=${abs_builddir}/install install
+	api-sanity-checker  -l @PACKAGE_NAME@ -d ${abs_builddir}/api-sanity-checker-version.xml -gen -build -run
+
+clean-api-sanity-checker:
+	api-sanity-checker -l @PACKAGE_NAME@ -d ${abs_builddir}/api-sanity-checker-version.xml -clean
+	rm -rf libsample_c* test_results tests/libdrizzle-redux* tests/libsample_*

@@ -1,0 +1,11 @@
+<version>
+    @VERSION@
+</version>
+
+<headers>
+    @abs_builddir@/install/usr/include/include
+</headers>
+
+<libs>
+    @abs_builddir@/install/usr/lib
+</libs>

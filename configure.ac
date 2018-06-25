@@ -159,6 +159,7 @@ AC_CONFIG_FILES([Makefile
                  docs/conf.py
                  pkg/rpm/spec
                  include/libdrizzle-redux/version.h:$srcdir/include/libdrizzle-redux/version.h.in
+                 api-sanity-checker-version.xml:$srcdir/tests/api-sanity-checker-version.xml.in
                  ])
 AC_CONFIG_FILES([pkg/deb/build:$srcdir/pkg/deb/build],[chmod +x pkg/deb/build])
 
