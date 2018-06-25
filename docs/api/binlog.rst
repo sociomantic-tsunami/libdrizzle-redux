@@ -182,4 +182,8 @@ Functions
    :param filename: Buffer to copy filename to
    :param end_position: Variable to save the size of the binlog file into
    :param file_index: Index of the binlog to retrieve.
-   :returns: Standard drizzle return value
+   :returns: Standard drizzle return value:
+
+            - DRIZZLE_RETURN_OK the filename was retrieved successfully.
+            - DRIZZLE_RETURN_INVALID_ARGUMENT: invalid argument(s)
+            - DRIZZLE_RETURN_NOT_FOUND: no binlog files were available

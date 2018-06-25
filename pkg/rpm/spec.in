@@ -93,6 +93,15 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Sun Jun 24 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.4
+- [TRAVIS] Fix MySQL installation for OSX build
+- [TRAVIS] Remove build dir for osx build on travis
+- Use --allow-unauthenticated for apt-fast installation
+- Update docs for drizzle_binlog_get_filename
+- Fix error handling in drizzle_binlog_get_filename
+- Bugfix: Add check for stmt=NULL in drizzle_stmt_execute
+- Fix wrong verbosity level passed to drizzle_log
+
 * Fri May 25 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.3
 - [TRAVIS] Fix bug in travis config and build script (2018-03-08)
 

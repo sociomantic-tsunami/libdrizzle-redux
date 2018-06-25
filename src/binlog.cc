@@ -539,7 +539,9 @@ drizzle_return_t drizzle_binlog_get_filename(drizzle_st *con, char **filename,
   }
   else
   {
-    drizzle_log_info(con, __FILE_LINE_FUNC__, "No binary log files found");
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "No binary log files found");
+    drizzle_result_free(result);
+    return DRIZZLE_RETURN_NOT_FOUND;
   }
 
   drizzle_result_free(result);

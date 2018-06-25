@@ -104,6 +104,11 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
 
 drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
 {
+  if (stmt == NULL)
+  {
+    return DRIZZLE_RETURN_INVALID_ARGUMENT;
+  }
+
   uint16_t current_param;
   uint16_t param_count = stmt->param_count;
   drizzle_bind_st *param_ptr;
