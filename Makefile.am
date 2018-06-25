@@ -66,6 +66,7 @@ maintainer-clean-local:
 	rm -f @PACKAGE@-*.tar.gz; \
 	rm -f ./pkg/rpm/@PACKAGE@-*.rpm; \
 	rm -f ./pkg/deb/@PACKAGE@-*.deb; \
-	rm -rf pkg/deb/install
+	rm -rf pkg/deb/install \
+	rm -rf libsample_c* test_results tests/libdrizzle-redux* libsample_*
 
 dist_bin_SCRIPTS+= @GENERIC_CONFIG@
