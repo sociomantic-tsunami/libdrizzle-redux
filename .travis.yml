@@ -106,7 +106,7 @@ jobs:
         DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=rpm
     - <<: *osx-build
       env:
-        DIST_NAME=osx
+        DIST_NAME=osx DRIZZLE_MYSQL_CA_PATH=/usr/local/var/mysql/
 
     ## Deployment stage
     - <<: *deploy
