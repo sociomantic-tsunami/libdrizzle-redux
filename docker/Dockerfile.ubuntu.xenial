@@ -28,4 +28,4 @@ RUN apt-get install --no-install-recommends -y apt-fast
 
 # install required packages
 RUN apt-fast -y install --no-install-recommends \
-    libssl-dev autoconf libtool make automake zlib1g-dev
+    libssl-dev autoconf libtool make automake zlib1g-dev api-sanity-checker
