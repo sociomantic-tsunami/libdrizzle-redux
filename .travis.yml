@@ -92,7 +92,7 @@ jobs:
     - &osx-build
       os: osx
       compiler: clang
-      if: tag =~ osx$ OR branch =~ osx$
+#      if: tag =~ osx$ OR branch =~ osx$
       after_success: skip
       env:
         DIST_NAME=osx
