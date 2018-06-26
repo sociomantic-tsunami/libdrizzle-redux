@@ -305,8 +305,7 @@ code-coverage-clean:
 	-find . \( -name "*.gcda" -o -name "*.gcno" -o -name "*.gcov" \) -delete
 ']
 				[CODE_COVERAGE_RULES_CAPTURE='
-	$(abs_srcdir)/beaver/bin/codecov-bash --help
-	$(abs_srcdir)/beaver/bin/codecov-bash -R $(abs_srcdir) -x $(COV_TOOL) -d -Z
+	$(abs_srcdir)/beaver/bin/codecov-bash -R $(abs_srcdir) -x $(COV_TOOL) -d -Z >/dev/null 2>&1
 ']
 			],
 			[report], [
