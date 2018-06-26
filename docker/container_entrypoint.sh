@@ -12,6 +12,10 @@ export CC=$CC$COMPILER_VERSION
 
 # configure and compile the project
 # run make targets specified in the environment variable MAKE_TARGET
+if [ -d ./build ]; then
+    rm -rf build
+fi
+
 mkdir -p build
 
 cd build
