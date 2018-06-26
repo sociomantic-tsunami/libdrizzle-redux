@@ -7,7 +7,7 @@ install_dependencies()
     COMPILER_PACKAGE=$CXX$COMPILER_VERSION
 
     if [[ "$CC" =~ "clang" ]]; then
-        COMPILER_PACKAGE=$CC$COMPILER_VERSION
+        COMPILER_PACKAGE="$CC$COMPILER_VERSION llvm$COMPILER_VERSION"
     fi
 
     apt-fast install -y --no-install-recommends $COMPILER_PACKAGE
