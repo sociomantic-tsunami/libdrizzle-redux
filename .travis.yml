@@ -52,8 +52,8 @@ script:
   - ./travis_configure.sh run_tests
 
 after_success:
-  #- beaver/bin/codecov-bash -X gcov -Z -s build
-  - beaver/bin/codecov-bash -Z -s build -d
+  - beaver/bin/codecov-bash -X gcov -Z -s build
+#  - beaver/bin/codecov-bash -Z -s build -d
   - echo $?
 
 ## Defines the order of the build stages.
