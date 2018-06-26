@@ -113,7 +113,9 @@ jobs:
         CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
     - <<: *linux-build
       env:
-        DOCKER_CXX=clang++ DOCKER_CC=clang CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-3.9" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
+        DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=3.9
+        CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-3.9"
+        MAKE_TARGET=$MAKE_TARGET:check-code-coverage
     - <<: *linux-build
       env:
         DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=5.0 CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-5.0" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
