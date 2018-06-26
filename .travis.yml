@@ -95,7 +95,7 @@ jobs:
       if: tag =~ osx$ OR branch =~ osx$
       after_success: skip
       env:
-        CONFIGURE_ARGS= MAKE_TARGET=check:code-coverage-capture
+        DIST_NAME=osx
     # Global config for deployment stage
     - &deploy
       os: linux
@@ -110,13 +110,13 @@ jobs:
         - if [[ -n "$TRAVIS_TAG" ]]; then cp build/pkg/deb/*.deb $CACHE_DIR/; fi
     - <<: *linux-build
       env:
-        CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture"
+        CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
     - <<: *linux-build
       env:
-        DOCKER_CXX=clang++ DOCKER_CC=clang CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-3.9"
+        DOCKER_CXX=clang++ DOCKER_CC=clang CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-3.9" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
     - <<: *linux-build
       env:
-        DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=5.0 CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-5.0"
+        DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=5.0 CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture --with-cov-tool=llvm-cov-5.0" MAKE_TARGET=$MAKE_TARGET:check-code-coverage
     - <<: *linux-build
       env:
         DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=$MAKE_TARGET:rpm
