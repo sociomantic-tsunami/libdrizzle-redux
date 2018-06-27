@@ -86,7 +86,8 @@ jobs:
     - &osx-build
       os: osx
       compiler: clang
-      if: tag =~ osx$ OR branch =~ osx$
+    # Enable the build condition if travis' osx service startup hangs
+    # if: tag =~ osx$ OR branch =~ osx$
     # Global config for deployment stage
     - &deploy
       os: linux
