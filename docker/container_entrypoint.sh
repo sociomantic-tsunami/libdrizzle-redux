@@ -22,5 +22,3 @@ if [[ ! -e Makefile ]]; then
 fi
 
 make ${MAKE_TARGET//:/ }
-
-ls -la
