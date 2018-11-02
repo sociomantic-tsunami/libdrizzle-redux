@@ -60,7 +60,7 @@ pkgversion=$(git describe --dirty | cut -c2- |
 pkgmaint=$(echo "`git config user.name` <`git config user.email`>")
 description="Simple Asynchronous C API to MySQL databases"
 url="https://github.com/sociomantic-tsunami/libdrizzle-redux"
-vendor="Sociomantic Labs GmbH"
+vendor="dunnhumby Germany GmbH"
 license="Simplified BSD License"
 
 # the package name used in the distribution
