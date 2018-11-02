@@ -12,9 +12,6 @@ The primary reason for the fork is that development of the upstream stopped in 2
 which meant that crucial fixes and enhancements were not included in the latest
 stable release **v5.1.4 Felmingham**.
 
-The repository is part of the `Tsunami programme`_ created by `sociomantic labs GmbH`_
-in order to support developers who want to contribute to the open source community.
-
 We hope that continuing the development of **libdrizzle-redux** can benefit current
 and future users of the library.
 
@@ -161,8 +158,7 @@ We appreciate any contributions to the development of **libdrizzle-redux**.
 One requirement is that the changes should be added in accordance with a
 versioning scheme based on SemVer.
 A set of guidelines guidelines and tools to help developers and users are
-available at the wiki of the `Neptune`_ project, which is also part of
-the `Tsunami programme`_ created by `sociomantic labs GmbH`_.
+available at the wiki of the `Neptune`_ project.
 
 .. |travis| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg?branch=master
    :alt: Travis Build Status
@@ -173,6 +169,4 @@ the `Tsunami programme`_ created by `sociomantic labs GmbH`_.
 .. _All: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/
 .. _here: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst
 .. _compiling.rst: https://github.com/andreas-bok-sociomantic/libdrizzle-redux/blob/v5.4.x/docs/compiling.rst
-.. _Tsunami programme: https://github.com/sociomantic-tsunami
-.. _sociomantic labs GmbH: https://www.sociomantic.com
 .. _Neptune: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst#contributing-to-a-neptune-versioned-library
