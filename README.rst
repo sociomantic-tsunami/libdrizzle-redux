@@ -171,8 +171,8 @@ the `Tsunami programme`_ created by `sociomantic labs GmbH`_.
 .. _Latest stable release notes: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/latest
 .. _release notes: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/latest
 .. _All: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/
-.. _here: https://github.com/sociomantic-tsunami/neptune/blob/master/doc/library-user.rst
+.. _here: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst
 .. _compiling.rst: https://github.com/andreas-bok-sociomantic/libdrizzle-redux/blob/v5.4.x/docs/compiling.rst
 .. _Tsunami programme: https://github.com/sociomantic-tsunami
 .. _sociomantic labs GmbH: https://www.sociomantic.com
-.. _Neptune: https://github.com/sociomantic-tsunami/neptune/blob/master/doc/library-user.rst#contributing-to-a-neptune-versioned-library
+.. _Neptune: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst#contributing-to-a-neptune-versioned-library
