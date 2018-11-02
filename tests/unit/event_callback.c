@@ -2,7 +2,7 @@
  *
  * Drizzle Client & Protocol Library
  *
- * Copyright (C) 2016 Sociomantic Labs GmbH
+ * Copyright (c) 2016 dunnhumby Germany GmbH
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
