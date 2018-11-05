@@ -1,5 +1,5 @@
 # Dockerfile for building an image with ubuntu xenial
-FROM sociomantictsunami/base
+FROM sociomantictsunami/develbase
 MAINTAINER andreas-bok-sociomantic <andreas.bok@sociomantic.com>
 
 ADD docker/ubuntu_xenial_image_run.sh  /usr/local/bin/
