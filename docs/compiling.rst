@@ -35,11 +35,7 @@ Compiling Libdrizzle Redux
 Building Libdrizzle Redux
 -------------------------
 
-To build libdrizzle-redux you can invoke bootstrap script::
-
-   bootstrap.sh
-
-Alternatively you can build and customize::
+To build libdrizzle-redux run the following commands::
 
    mkdir build && cd build
    autoreconf -fi ..
