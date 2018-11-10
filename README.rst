@@ -160,7 +160,7 @@ versioning scheme based on SemVer.
 A set of guidelines guidelines and tools to help developers and users are
 available at the wiki of the `Neptune`_ project.
 
-.. |travis| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg?branch=master
+.. |travis| image:: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux.svg
    :alt: Travis Build Status
    :target: https://travis-ci.org/sociomantic-tsunami/libdrizzle-redux
 .. _SemVer: http://semver.org
@@ -168,5 +168,5 @@ available at the wiki of the `Neptune`_ project.
 .. _release notes: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/latest
 .. _All: https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/
 .. _here: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst
-.. _compiling.rst: https://github.com/andreas-bok-sociomantic/libdrizzle-redux/blob/v5.4.x/docs/compiling.rst
+.. _compiling.rst: docs/compiling.rst
 .. _Neptune: https://github.com/sociomantic-tsunami/neptune/blob/v0.x.x/doc/library-user.rst#contributing-to-a-neptune-versioned-library
