@@ -97,11 +97,7 @@ Building libdrizzle-redux
 .. [#] openssl is needed if libdrizzle-redux is compiled with support for
        SSL connections.
 
-To build **libdrizzle-redux** you can invoke bootstrap script::
-
-    bootstrap.sh
-
-Alternatively you can build and customize::
+To build libdrizzle-redux run the following commands::
 
     mkdir build && cd build
     autoreconf -fi ..
