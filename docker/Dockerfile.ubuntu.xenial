@@ -1,5 +1,5 @@
 # Dockerfile for building an image with ubuntu xenial
-FROM sociomantictsunami/base
+FROM sociomantictsunami/develbase
 MAINTAINER andreas-bok-sociomantic <andreas.bok@sociomantic.com>
 
 RUN export DEBIAN_FRONTEND=noninteractive
