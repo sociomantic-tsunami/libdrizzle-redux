@@ -93,6 +93,12 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Sat Dec 01 2018 Andreas Bok Andersen <bok.chan@gmail.com> - 6.1.5
+- Minor fixes in README
+- Update docker images to sociomantictsunami
+- Replace copyright notices to dunnhumby Germany GmbH
+- Fix broken links to sociomantic-tsunami
+
 * Sun Jun 24 2018 Andreas Bok Andersen <andreas.bok@sociomantic.com> - 6.1.4
 - [TRAVIS] Fix MySQL installation for OSX build
 - [TRAVIS] Remove build dir for osx build on travis
