@@ -82,7 +82,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result);
  * @return size in bytes else 0
  */
 DRIZZLE_API
-size_t drizzle_result_row_size(drizzle_result_st *result);
+size_t drizzle_result_row_size(const drizzle_result_st *result);
 
 /** @} */
 

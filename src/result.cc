@@ -170,7 +170,7 @@ drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result)
   return result->con;
 }
 
-bool drizzle_result_eof(drizzle_result_st *result)
+bool drizzle_result_eof(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -180,7 +180,7 @@ bool drizzle_result_eof(drizzle_result_st *result)
   return result->options & DRIZZLE_RESULT_EOF_PACKET;
 }
 
-const char *drizzle_result_message(drizzle_result_st *result)
+const char *drizzle_result_message(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -190,7 +190,7 @@ const char *drizzle_result_message(drizzle_result_st *result)
   return result->info;
 }
 
-uint16_t drizzle_result_error_code(drizzle_result_st *result)
+uint16_t drizzle_result_error_code(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -200,7 +200,7 @@ uint16_t drizzle_result_error_code(drizzle_result_st *result)
   return result->error_code;
 }
 
-const char *drizzle_result_sqlstate(drizzle_result_st *result)
+const char *drizzle_result_sqlstate(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -210,7 +210,7 @@ const char *drizzle_result_sqlstate(drizzle_result_st *result)
   return result->sqlstate;
 }
 
-uint16_t drizzle_result_warning_count(drizzle_result_st *result)
+uint16_t drizzle_result_warning_count(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -220,7 +220,7 @@ uint16_t drizzle_result_warning_count(drizzle_result_st *result)
   return result->warning_count;
 }
 
-uint64_t drizzle_result_insert_id(drizzle_result_st *result)
+uint64_t drizzle_result_insert_id(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -230,7 +230,7 @@ uint64_t drizzle_result_insert_id(drizzle_result_st *result)
   return result->insert_id;
 }
 
-uint64_t drizzle_result_affected_rows(drizzle_result_st *result)
+uint64_t drizzle_result_affected_rows(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -240,7 +240,7 @@ uint64_t drizzle_result_affected_rows(drizzle_result_st *result)
   return result->affected_rows;
 }
 
-uint16_t drizzle_result_column_count(drizzle_result_st *result)
+uint16_t drizzle_result_column_count(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -250,7 +250,7 @@ uint16_t drizzle_result_column_count(drizzle_result_st *result)
   return result->column_count;
 }
 
-uint64_t drizzle_result_row_count(drizzle_result_st *result)
+uint64_t drizzle_result_row_count(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -389,7 +389,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
   return DRIZZLE_RETURN_OK;
 }
 
-size_t drizzle_result_row_size(drizzle_result_st *result)
+size_t drizzle_result_row_size(const drizzle_result_st *result)
 {
   if (result == NULL)
   {

@@ -87,7 +87,7 @@ drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result);
  * @return true on EOF else false
  */
 DRIZZLE_API
-bool drizzle_result_eof(drizzle_result_st *result);
+bool drizzle_result_eof(const drizzle_result_st *result);
 
 /**
  * Get error or information message from result set
@@ -96,7 +96,7 @@ bool drizzle_result_eof(drizzle_result_st *result);
  * @return The message to be returned
  */
 DRIZZLE_API
-const char *drizzle_result_message(drizzle_result_st *result);
+const char *drizzle_result_message(const drizzle_result_st *result);
 
 /**
  * Gets the error code from a result set
@@ -105,7 +105,7 @@ const char *drizzle_result_message(drizzle_result_st *result);
  * @return The error code
  */
 DRIZZLE_API
-uint16_t drizzle_result_error_code(drizzle_result_st *result);
+uint16_t drizzle_result_error_code(const drizzle_result_st *result);
 
 /**
  * Gets the SQL state from a result set
@@ -114,7 +114,7 @@ uint16_t drizzle_result_error_code(drizzle_result_st *result);
  * @return The SQL state string
  */
 DRIZZLE_API
-const char *drizzle_result_sqlstate(drizzle_result_st *result);
+const char *drizzle_result_sqlstate(const drizzle_result_st *result);
 
 /**
   * Gets the warning count from a result set
@@ -123,7 +123,7 @@ const char *drizzle_result_sqlstate(drizzle_result_st *result);
  * @return The warning count
  */
 DRIZZLE_API
-uint16_t drizzle_result_warning_count(drizzle_result_st *result);
+uint16_t drizzle_result_warning_count(const drizzle_result_st *result);
 
 /**
  * Gets the insert ID for an auto_increment column in a result set
@@ -132,7 +132,7 @@ uint16_t drizzle_result_warning_count(drizzle_result_st *result);
  * @return The inserted ID
  */
 DRIZZLE_API
-uint64_t drizzle_result_insert_id(drizzle_result_st *result);
+uint64_t drizzle_result_insert_id(const drizzle_result_st *result);
 
 /**
  * Gets the affected row count from a result set
@@ -141,7 +141,7 @@ uint64_t drizzle_result_insert_id(drizzle_result_st *result);
  * @return The affected row count
  */
 DRIZZLE_API
-uint64_t drizzle_result_affected_rows(drizzle_result_st *result);
+uint64_t drizzle_result_affected_rows(const drizzle_result_st *result);
 
 /**
  * Gets the column count from a result set
@@ -150,7 +150,7 @@ uint64_t drizzle_result_affected_rows(drizzle_result_st *result);
  * @return The column count
  */
 DRIZZLE_API
-uint16_t drizzle_result_column_count(drizzle_result_st *result);
+uint16_t drizzle_result_column_count(const drizzle_result_st *result);
 
 /**
  * Gets the row count from a result set buffered with drizzle_result_buffer()
@@ -159,7 +159,7 @@ uint16_t drizzle_result_column_count(drizzle_result_st *result);
  * @return The row count
  */
 DRIZZLE_API
-uint64_t drizzle_result_row_count(drizzle_result_st *result);
+uint64_t drizzle_result_row_count(const drizzle_result_st *result);
 
 /** @} */
 

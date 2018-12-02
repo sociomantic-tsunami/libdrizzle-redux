@@ -57,7 +57,7 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
                                    (unsigned char *)query, size, size, ret_ptr);
 }
 
-ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from, const size_t from_size, bool is_pattern)
+ssize_t drizzle_escape_str(const drizzle_st *con, char **destination, const char *from, const size_t from_size, bool is_pattern)
 {
   (void)con;
   const char *end;
@@ -160,7 +160,7 @@ ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from
   return to_size;
 }
 
-ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *from, const size_t from_size)
+ssize_t drizzle_escape_string(const drizzle_st *con, char **destination, const char *from, const size_t from_size)
 {
     return drizzle_escape_str(con, destination, from, from_size, false);
 }

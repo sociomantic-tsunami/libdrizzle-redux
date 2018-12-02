@@ -49,8 +49,8 @@ void binlog_error(drizzle_return_t ret, drizzle_st *connection, void *context)
              drizzle_strerror(ret));
 }
 
-void binlog_event(drizzle_binlog_event_st *event, void *context);
-void binlog_event(drizzle_binlog_event_st *event, void *context)
+void binlog_event(const drizzle_binlog_event_st *event, void *context);
+void binlog_event(const drizzle_binlog_event_st *event, void *context)
 {
   (void)context;
   uint32_t timestamp;

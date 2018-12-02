@@ -131,7 +131,7 @@ void drizzle_column_seek(drizzle_result_st *result, uint16_t column);
  * @return A column object
  */
 DRIZZLE_API
-drizzle_column_st *drizzle_column_index(drizzle_result_st *result,
+drizzle_column_st *drizzle_column_index(const drizzle_result_st *result,
                                         uint16_t column);
 
 /**
@@ -141,7 +141,7 @@ drizzle_column_st *drizzle_column_index(drizzle_result_st *result,
  * @return        The column number
  */
 DRIZZLE_API
-uint16_t drizzle_column_current(drizzle_result_st *result);
+uint16_t drizzle_column_current(const drizzle_result_st *result);
 
 /** @} */
 

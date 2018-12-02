@@ -598,7 +598,7 @@ typedef drizzle_field_t *drizzle_row_t;
 
 typedef void (drizzle_log_fn)(const char *file, uint line, const char *func,
   const char *msg, drizzle_verbose_t verbose, void *context);
-typedef void (drizzle_binlog_fn)(drizzle_binlog_event_st *event, void *context);
+typedef void (drizzle_binlog_fn)(const drizzle_binlog_event_st *event, void *context);
 typedef void (drizzle_binlog_error_fn)(drizzle_return_t error, drizzle_st *con, void *context);
 typedef drizzle_return_t (drizzle_state_fn)(drizzle_st *con);
 typedef void (drizzle_context_free_fn)(drizzle_st *con,

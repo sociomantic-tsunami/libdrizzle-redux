@@ -88,7 +88,7 @@ typedef enum drizzle_return_t drizzle_return_t;
 * @param[in] ret result code
 * @return true on success, false otherwise
 */
-static inline bool drizzle_success(drizzle_return_t ret)
+static inline bool drizzle_success(const drizzle_return_t ret)
 {
   if (ret == DRIZZLE_RETURN_OK)
   {
@@ -104,7 +104,7 @@ static inline bool drizzle_success(drizzle_return_t ret)
 * @param[in] ret result code
 * @return true on fail, false otherwise
 */
-static inline bool drizzle_failed(drizzle_return_t ret)
+static inline bool drizzle_failed(const drizzle_return_t ret)
 {
   if (ret != DRIZZLE_RETURN_OK)
   {

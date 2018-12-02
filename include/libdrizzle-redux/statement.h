@@ -122,7 +122,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt);
  * @return The column count
  */
 DRIZZLE_API
-uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt);
+uint16_t drizzle_stmt_column_count(const drizzle_stmt_st *stmt);
 
 /**
  * Gets the affected rows count for a result set which has been executed using
@@ -132,7 +132,7 @@ uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt);
  * @return The column count
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt);
+uint64_t drizzle_stmt_affected_rows(const drizzle_stmt_st *stmt);
 
 /**
  * Gets the insert ID for a result set which has been executed using drizzle_stmt_execute
@@ -141,7 +141,7 @@ uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt);
  * @return The insert ID
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt);
+uint64_t drizzle_stmt_insert_id(const drizzle_stmt_st *stmt);
 
 /**
  * Gets the number of parameters expected for a result set that has been
@@ -151,7 +151,7 @@ uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt);
  * @return The number of parameters
  */
 DRIZZLE_API
-uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt);
+uint16_t drizzle_stmt_param_count(const drizzle_stmt_st *stmt);
 
 /** Gets the row count for a statement buffered with drizzle_stmt_buffer
  * n error it returns UINT64_MAX;
@@ -160,7 +160,7 @@ uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt);
  * @return The row count
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_row_count(drizzle_stmt_st *stmt);
+uint64_t drizzle_stmt_row_count(const drizzle_stmt_st *stmt);
 
 /**
  *Sets a parameter of a prepared statement to a tinyint value
@@ -310,7 +310,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
  * @return True if NULL
  */
 DRIZZLE_API
-bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt,
+bool drizzle_stmt_get_is_null_from_name(const drizzle_stmt_st *stmt,
                                         const char *column_name,
                                         drizzle_return_t *ret_ptr);
 
@@ -323,7 +323,7 @@ bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt,
  * @return True if NULL
  */
 DRIZZLE_API
-bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number,
+bool drizzle_stmt_get_is_null(const drizzle_stmt_st *stmt, uint16_t column_number,
                               drizzle_return_t *ret_ptr);
 
 /**
@@ -336,7 +336,7 @@ bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return True if unsigned
 */
 DRIZZLE_API
-bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt,
+bool drizzle_stmt_get_is_unsigned_from_name(const drizzle_stmt_st *stmt,
                                             const char *column_name,
                                             drizzle_return_t *ret_ptr);
 
@@ -349,7 +349,7 @@ bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt,
  * @return True if unsigned
  */
 DRIZZLE_API
-bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number,
+bool drizzle_stmt_get_is_unsigned(const drizzle_stmt_st *stmt, uint16_t column_number,
                                   drizzle_return_t *ret_ptr);
 
 /**
@@ -364,7 +364,7 @@ bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return A pointer to the string value
  */
 DRIZZLE_API
-const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt,
+const char *drizzle_stmt_get_string_from_name(const drizzle_stmt_st *stmt,
                                               const char *column_name,
                                               size_t *len, drizzle_return_t *ret_ptr);
 
@@ -379,7 +379,7 @@ const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt,
  * @return A pointer to the string value
  */
 DRIZZLE_API
-const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number,
+const char *drizzle_stmt_get_string(const drizzle_stmt_st *stmt, uint16_t column_number,
                                     size_t *len, drizzle_return_t *ret_ptr);
 
 /**
@@ -392,7 +392,7 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
  * @return The int value
  */
 DRIZZLE_API
-uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number,
+uint32_t drizzle_stmt_get_int(const drizzle_stmt_st *stmt, uint16_t column_number,
                               drizzle_return_t *ret_ptr);
 
 /**
@@ -406,7 +406,7 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return The int value
  */
 DRIZZLE_API
-uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name,
+uint32_t drizzle_stmt_get_int_from_name(const drizzle_stmt_st *stmt, const char *column_name,
                                         drizzle_return_t *ret_ptr);
 
 /**
@@ -420,7 +420,7 @@ uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *colum
  * @return The bigint value
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name,
+uint64_t drizzle_stmt_get_bigint_from_name(const drizzle_stmt_st *stmt, const char *column_name,
                                            drizzle_return_t *ret_ptr);
 
 /**
@@ -433,7 +433,7 @@ uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *co
  * @return The bigint value
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number,
+uint64_t drizzle_stmt_get_bigint(const drizzle_stmt_st *stmt, uint16_t column_number,
                                  drizzle_return_t *ret_ptr);
 /**
  * Get the double value for a column of a fetched row
@@ -445,7 +445,7 @@ uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return The double value
  */
 DRIZZLE_API
-double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number,
+double drizzle_stmt_get_double(const drizzle_stmt_st *stmt, uint16_t column_number,
                                drizzle_return_t *ret_ptr);
 
 /**
@@ -459,7 +459,7 @@ double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return The double value
  */
 DRIZZLE_API
-double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *column_name,
+double drizzle_stmt_get_double_from_name(const drizzle_stmt_st *stmt, const char *column_name,
                                          drizzle_return_t *ret_ptr);
 
 #ifdef __cplusplus

@@ -265,7 +265,7 @@ void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option,
   }
 }
 
-int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option)
+int drizzle_socket_get_option(const drizzle_st *con, drizzle_socket_option_t option)
 {
   if (con == NULL)
   {
@@ -300,7 +300,7 @@ void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state)
   options->non_blocking= state;
 }
 
-bool drizzle_options_get_non_blocking(drizzle_options_st *options)
+bool drizzle_options_get_non_blocking(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -318,7 +318,7 @@ void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state)
   options->raw_scramble= state;
 }
 
-bool drizzle_options_get_raw_scramble(drizzle_options_st *options)
+bool drizzle_options_get_raw_scramble(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -336,7 +336,7 @@ void drizzle_options_set_found_rows(drizzle_options_st *options, bool state)
   options->found_rows= state;
 }
 
-bool drizzle_options_get_found_rows(drizzle_options_st *options)
+bool drizzle_options_get_found_rows(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -354,7 +354,7 @@ void drizzle_options_set_interactive(drizzle_options_st *options, bool state)
   options->interactive= state;
 }
 
-bool drizzle_options_get_interactive(drizzle_options_st *options)
+bool drizzle_options_get_interactive(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -372,7 +372,7 @@ void drizzle_options_set_multi_statements(drizzle_options_st *options, bool stat
   options->multi_statements= state;
 }
 
-bool drizzle_options_get_multi_statements(drizzle_options_st *options)
+bool drizzle_options_get_multi_statements(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -390,7 +390,7 @@ void drizzle_options_set_auth_plugin(drizzle_options_st *options, bool state)
   options->auth_plugin= state;
 }
 
-bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
+bool drizzle_options_get_auth_plugin(const drizzle_options_st *options)
 {
   if (options == NULL)
   {
@@ -409,7 +409,7 @@ void drizzle_options_set_socket_owner(drizzle_options_st *options,
   options->socket_owner = owner;
 }
 
-drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options)
+drizzle_socket_owner_t drizzle_options_get_socket_owner(const drizzle_options_st *options)
 {
   if (options == NULL)
   {

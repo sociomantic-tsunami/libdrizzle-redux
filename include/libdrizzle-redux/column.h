@@ -74,61 +74,61 @@ drizzle_result_st *drizzle_column_drizzle_result(drizzle_column_st *column);
  * Get catalog name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_catalog(drizzle_column_st *column);
+const char *drizzle_column_catalog(const drizzle_column_st *column);
 
 /**
  * Get database name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_db(drizzle_column_st *column);
+const char *drizzle_column_db(const drizzle_column_st *column);
 
 /**
  * Get table name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_table(drizzle_column_st *column);
+const char *drizzle_column_table(const drizzle_column_st *column);
 
 /**
  * Get original table name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_orig_table(drizzle_column_st *column);
+const char *drizzle_column_orig_table(const drizzle_column_st *column);
 
 /**
  * Get column name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_name(drizzle_column_st *column);
+const char *drizzle_column_name(const drizzle_column_st *column);
 
 /**
  * Get original column name for a column.
  */
 DRIZZLE_API
-const char *drizzle_column_orig_name(drizzle_column_st *column);
+const char *drizzle_column_orig_name(const drizzle_column_st *column);
 
 /**
  * Get charset for a column.
  */
 DRIZZLE_API
-drizzle_charset_t drizzle_column_charset(drizzle_column_st *column);
+drizzle_charset_t drizzle_column_charset(const drizzle_column_st *column);
 
 /**
  * Get size of a column.
  */
 DRIZZLE_API
-uint32_t drizzle_column_size(drizzle_column_st *column);
+uint32_t drizzle_column_size(const drizzle_column_st *column);
 
 /**
  * Get max size of a column.
  */
 DRIZZLE_API
-size_t drizzle_column_max_size(drizzle_column_st *column);
+size_t drizzle_column_max_size(const drizzle_column_st *column);
 
 /**
  * Get the type of a column.
  */
 DRIZZLE_API
-drizzle_column_type_t drizzle_column_type(drizzle_column_st *column);
+drizzle_column_type_t drizzle_column_type(const drizzle_column_st *column);
 
 /**
  * Get a column type as string
@@ -137,25 +137,25 @@ drizzle_column_type_t drizzle_column_type(drizzle_column_st *column);
  * @return The type of the column in human readable format
  */
 DRIZZLE_API
-const char *drizzle_column_type_str(drizzle_column_type_t type);
+const char *drizzle_column_type_str(const drizzle_column_type_t type);
 
 /**
  * Get flags for a column.
  */
 DRIZZLE_API
-drizzle_column_flags_t drizzle_column_flags(drizzle_column_st *column);
+drizzle_column_flags_t drizzle_column_flags(const drizzle_column_st *column);
 
 /**
  * Get the number of decimals for numeric columns.
  */
 DRIZZLE_API
-uint8_t drizzle_column_decimals(drizzle_column_st *column);
+uint8_t drizzle_column_decimals(const drizzle_column_st *column);
 
 /**
  * Get default value for a column.
  */
 DRIZZLE_API
-const unsigned char *drizzle_column_default_value(drizzle_column_st *column,
+const unsigned char *drizzle_column_default_value(const drizzle_column_st *column,
                                             size_t *size);
 
 /** @} */

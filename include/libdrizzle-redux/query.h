@@ -87,7 +87,7 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
  *         parameters or overflow
  */
 DRIZZLE_API
-ssize_t drizzle_escape_string(drizzle_st *con, char **to, const char *from, const size_t from_size);
+ssize_t drizzle_escape_string(const drizzle_st *con, char **to, const char *from, const size_t from_size);
 
 /**
  * Escape a string for an SQL query, optionally for pattern matching.
@@ -115,7 +115,7 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **to, const char *from, cons
  *         parameters or overflow
  */
 DRIZZLE_API
-ssize_t drizzle_escape_str(drizzle_st *con, char **to, const char *from, const size_t from_size, bool is_pattern);
+ssize_t drizzle_escape_str(const drizzle_st *con, char **to, const char *from, const size_t from_size, bool is_pattern);
 
 /** @} */
 

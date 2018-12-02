@@ -178,7 +178,7 @@ drizzle_return_t drizzle_stmt_set_timestamp(drizzle_stmt_st *stmt, uint16_t para
   return drizzle_stmt_set_param(stmt, param_num, DRIZZLE_COLUMN_TYPE_TIMESTAMP, timestamp, 0, false);
 }
 
-bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+bool drizzle_stmt_get_is_null_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -194,7 +194,7 @@ bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *colum
   return drizzle_stmt_get_is_null(stmt, column_number, ret_ptr);
 }
 
-bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+bool drizzle_stmt_get_is_null(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
   {
@@ -206,7 +206,7 @@ bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, dri
   return stmt->result_params[column_number].options.is_null;
 }
 
-bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+bool drizzle_stmt_get_is_unsigned_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -222,7 +222,7 @@ bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *c
   return drizzle_stmt_get_is_unsigned(stmt, column_number, ret_ptr);
 }
 
-bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+bool drizzle_stmt_get_is_unsigned(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   if ((stmt == NULL) || (stmt->result_params == NULL) || (column_number >= stmt->execute_result->column_count))
   {
@@ -234,7 +234,7 @@ bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number,
   return stmt->result_params[column_number].options.is_unsigned;
 }
 
-const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
+const char *drizzle_stmt_get_string_from_name(const drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -250,7 +250,7 @@ const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char 
   return drizzle_stmt_get_string(stmt, column_number, len, ret_ptr);
 }
 
-const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
+const char *drizzle_stmt_get_string(const drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
 {
   char *val;
   drizzle_bind_st *param;
@@ -338,7 +338,8 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
   return val;
 }
 
-uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+uint32_t drizzle_stmt_get_int_from_name(const drizzle_stmt_st *stmt,
+  const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -354,7 +355,7 @@ uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *colum
   return drizzle_stmt_get_int(stmt, column_number, ret_ptr);
 }
 
-uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+uint32_t drizzle_stmt_get_int(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint32_t val;
   drizzle_bind_st *param;
@@ -428,7 +429,7 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, dri
   return val;
 }
 
-uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+uint64_t drizzle_stmt_get_bigint_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -444,7 +445,7 @@ uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *co
   return drizzle_stmt_get_bigint(stmt, column_number, ret_ptr);
 }
 
-uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+uint64_t drizzle_stmt_get_bigint(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   uint64_t val;
   drizzle_bind_st *param;
@@ -514,7 +515,7 @@ uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, 
   return val;
 }
 
-double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+double drizzle_stmt_get_double_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 {
   uint16_t column_number;
   if ((stmt == NULL) || (stmt->result_params == NULL))
@@ -530,7 +531,7 @@ double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *colu
   return drizzle_stmt_get_double(stmt, column_number, ret_ptr);
 }
 
-double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+double drizzle_stmt_get_double(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 {
   double val;
   drizzle_bind_st *param;
