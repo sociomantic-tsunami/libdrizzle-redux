@@ -83,7 +83,7 @@ Functions
    :param start_position: The position of the binlog file to start at, a value of less than 4 is set to 4 due to the binlog header taking the first 4 bytes
    :returns: A Drizzle return type.  :py:const:`DRIZZLE_RETURN_OK` upon success.
 
-.. c:function:: uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
+.. c:function:: uint32_t drizzle_binlog_event_timestamp(const drizzle_binlog_event_st *event)
 
    Get the timestamp for the event received by the event callback
 
