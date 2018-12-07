@@ -33,7 +33,7 @@ There are two callback functions.  The first is called whenever a new event is
 available to retrieve.  The second is triggered whenever an error (or EOF)
 occurs.
 
-.. c:function:: void (drizzle_binlog_fn)(drizzle_binlog_event_st *event, void *context)
+.. c:function:: void (drizzle_binlog_fn)(const drizzle_binlog_event_st *event, void *context)
 
    This defines the function that will be supplied to accept binlog events
 
@@ -90,70 +90,70 @@ Functions
    :param event: The event from the binlog stream
    :returns: The timestamp for the binlog event
 
-.. c:function:: drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event)
+.. c:function:: drizzle_binlog_event_types_t drizzle_binlog_event_type(const drizzle_binlog_event_st *event)
 
    Get the event type for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The timestamp for the binlog event
 
-.. c:function:: uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
+.. c:function:: uint32_t drizzle_binlog_event_server_id(const drizzle_binlog_event_st *event)
 
    Get the server_id for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The server_id for the binlog event
 
-.. c:function:: uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
+.. c:function:: uint32_t drizzle_binlog_event_length(const drizzle_binlog_event_st *event)
 
    Get the length of the event data received by the event callback
 
    :param event: The event from binlog stream
    :returns: The event data length
 
-.. c:function:: uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
+.. c:function:: uint32_t drizzle_binlog_event_next_pos(const drizzle_binlog_event_st *event)
 
    Get the next event position from the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The next event position
 
-.. c:function:: uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
+.. c:function:: uint16_t drizzle_binlog_event_flags(const drizzle_binlog_event_st *event)
 
    Get the flags for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The event flags
 
-.. c:function:: uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
+.. c:function:: uint16_t drizzle_binlog_event_extra_flags(const drizzle_binlog_event_st *event))
 
    Get the extra flags for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The extra event flags
 
-.. c:function:: const unsigned char* drizzle_binlog_event_data(drizzle_binlog_event_st *event)
+.. c:function:: const unsigned char* drizzle_binlog_event_data(const drizzle_binlog_event_st *event)
 
    Get the event data for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: A pointer to the event data
 
-.. c:function:: const unsigned char* drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event)
+.. c:function:: const unsigned char* drizzle_binlog_event_raw_data(const drizzle_binlog_event_st *event)
 
    Get the raw event data (including header) for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: A pointer to the raw event data
 
-.. c:function:: uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event)
+.. c:function:: uint32_t drizzle_binlog_event_raw_length(const drizzle_binlog_event_st *event)
 
    Get the length of the raw event data (including header) for the event received by the event callback
 
    :param event: The event from the binlog stream
    :returns: The length of the raw event data
 
-.. c:function:: const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type)
+.. c:function:: const char *drizzle_binlog_event_type_str(const drizzle_binlog_event_types_t event_type)
 
    Get the event type for the binlog event as string
 

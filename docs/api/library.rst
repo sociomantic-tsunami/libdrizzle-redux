@@ -30,7 +30,7 @@ Functions
 
    :returns: A string containing the bug report URL
 
-.. c:function:: const char* drizzle_verbose_name(drizzle_verbose_t verbose)
+.. c:function:: const char* drizzle_verbose_name(const drizzle_verbose_t verbose)
 
    Gives the verbosity name for a given verbosity type
 
