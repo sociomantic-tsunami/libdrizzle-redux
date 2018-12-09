@@ -455,3 +455,17 @@ Functions
    Frees field data for unbuffered row reads
 
    :param field: The field data to free
+
+.. c:function:: bool drizzle_success(drizzle_return_t ret)
+
+   Check if a drizzle function call succeeded
+
+   :param ret: result code
+   :returns: true on success, false otherwise
+
+.. c:function:: bool drizzle_failed(drizzle_return_t ret)
+
+   Check if a drizzle function call failed
+
+   :param ret: result code
+   :returns: true on fail, false otherwise

@@ -11,3 +11,11 @@ The **MySQL** manual lists 11 characters which should be escaped, including 2 wh
 The function `drizzle_escape_str` extends the capabilities of `drizzle_escape_string` by taking an extra parameter, `is_pattern`, specifying whether the string will be used in a pattern-matching context.
 
 The feature was part of [`v5.6.0`](https://github.com/sociomantic-tsunami/libdrizzle-redux/releases/tag/v5.6.0) but wasn't added to the documentation.
+
+- `bool drizzle_success(drizzle_return_t ret)`
+
+Utility function to check if a `drizzle` function call succeeded
+
+- `bool drizzle_failed(drizzle_return_t ret)`
+
+Utility function to check if a `drizzle` function call failed
