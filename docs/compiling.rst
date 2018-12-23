@@ -102,12 +102,13 @@ Compatible compilers:
 
    or pass the OpenSSL directory to ``configure`` using ``--with-openssl``::
 
-      ./configure --with-openssl=$(brew --prefix openssl)
+      # create and cd to build directory and run autoreconf
+      ../configure --with-openssl=$(brew --prefix openssl)
 
 #. Optionally set the C and C++ compiler before running ``configure``, e.g.::
 
-      autoreconf -fi
-      CC=gcc-4.9 CXX=g++-4.9 ./configure
+      # create and cd to build directory and run autoreconf
+      CC=gcc-4.9 CXX=g++-4.9 ../configure
       make
 
 
