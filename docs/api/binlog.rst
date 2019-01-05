@@ -160,17 +160,17 @@ Functions
    :param event_type: A binlog event type
    :returns: The event type of the binlog event as string
 
-.. c:function:: void drizzle_binlog_get_filename(drizzle_st *con, char *filename, int file_index)
+.. c:function:: void drizzle_binlog_get_filename(drizzle_st *con, char **filename, uint32_t *end_position, int file_index)
 
    Get the name and size of a binlog file in bytes
 
-   Queries the database for a list of binlog files and copies the filename to
+   Queries the database for a list of binlog files and copies the **filename** to
    the passed buffer
 
    If the file_index is invalid or no binlog files exist filename will contain
    an empty string.
-   A valid file_index is in the range [-1 to (number of binlog files -1)]
-   The end_position will hold the size of the binlog file and can be used to
+   A valid **file_index** is in the range ``[-1 to (number of binlog files -1)]``
+   The **end_position** will hold the size of the binlog file and can be used to
    start reading from the end of the binlog file when passed to
    :c:func:`drizzle_binlog_start()`
 
