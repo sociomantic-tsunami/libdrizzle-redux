@@ -373,7 +373,7 @@ Functions
 
 .. c:function:: drizzle_row_t drizzle_row_buffer(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 
-   Read and buffer one entire row, must be freed with c:func:`drizzle_row_free`
+   Read and buffer one entire row, must be freed with :c:func:`drizzle_row_free`
 
    :param result: A result object
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
