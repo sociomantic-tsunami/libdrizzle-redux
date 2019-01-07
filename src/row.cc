@@ -51,12 +51,12 @@
 uint64_t drizzle_row_read(drizzle_result_st *result, drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
@@ -85,12 +85,12 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
                                  drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
@@ -103,28 +103,28 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
   if (result->row)
   {
     delete[] result->row;
-    result->row= NULL;
+    result->row= nullptr;
   }
 
   if (drizzle_row_read(result, ret_ptr) == 0 || *ret_ptr != DRIZZLE_RETURN_OK)
   {
-    return NULL;
+    return nullptr;
   }
 
   result->row= new (std::nothrow) drizzle_field_t[result->column_count];
-  if (result->row == NULL)
+  if (result->row == nullptr)
   {
     drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    return NULL;
+    return nullptr;
   }
 
   result->field_sizes= new (std::nothrow) size_t[result->column_count];
-  if (result->field_sizes == NULL)
+  if (result->field_sizes == nullptr)
   {
     drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    return NULL;
+    return nullptr;
   }
 
   memset(result->field_sizes, 0, sizeof(size_t) * result->column_count);
@@ -140,11 +140,11 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
       {
         delete[] result->row;
         delete[] result->field_sizes;
-        result->row= NULL;
-        result->field_sizes= NULL;
+        result->row= nullptr;
+        result->field_sizes= nullptr;
       }
 
-      return NULL;
+      return nullptr;
     }
 
     result->row[result->field_current - 1]= field;
@@ -159,7 +159,7 @@ drizzle_row_t drizzle_row_buffer(drizzle_result_st *result,
 
 void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return;
   }
@@ -168,19 +168,19 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
   if (!(result->options & DRIZZLE_RESULT_BUFFER_ROW))
   {
     delete[] result->null_bitmap;
-    result->null_bitmap= NULL;
+    result->null_bitmap= nullptr;
     delete[] result->field_sizes;
-    result->field_sizes= NULL;
-    result->row= NULL;
+    result->field_sizes= nullptr;
+    result->row= nullptr;
   }
 
 }
 
 size_t *drizzle_row_field_sizes(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return result->field_sizes;
@@ -188,14 +188,14 @@ size_t *drizzle_row_field_sizes(drizzle_result_st *result)
 
 drizzle_row_t drizzle_row_next(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (result->row_current == result->row_count)
   {
-    return NULL;
+    return nullptr;
   }
 
   result->field_sizes= result->field_sizes_list[result->row_current];
@@ -209,13 +209,13 @@ drizzle_row_t drizzle_row_next(drizzle_result_st *result)
 
 drizzle_row_t drizzle_row_prev(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (result->row_current == 0)
-    return NULL;
+    return nullptr;
 
   result->row_current--;
   result->field_sizes= result->field_sizes_list[result->row_current];
@@ -228,7 +228,7 @@ drizzle_row_t drizzle_row_prev(drizzle_result_st *result)
 
 void drizzle_row_seek(drizzle_result_st *result, uint64_t row)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return;
   }
@@ -239,20 +239,20 @@ void drizzle_row_seek(drizzle_result_st *result, uint64_t row)
 
 drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (row >= result->row_count)
-    return NULL;
+    return nullptr;
 
   return result->row_list[row];
 }
 
 uint64_t drizzle_row_current(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -266,7 +266,7 @@ uint64_t drizzle_row_current(drizzle_result_st *result)
 
 drizzle_return_t drizzle_state_row_read(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }

@@ -47,30 +47,30 @@ drizzle_binlog_st *drizzle_binlog_init(drizzle_st *con,
                                        void *context,
                                        bool verify_checksums)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (con->options.socket_owner == DRIZZLE_SOCKET_OWNER_NATIVE)
   {
-    if (binlog_fn == NULL)
+    if (binlog_fn == nullptr )
     {
       drizzle_set_error(con, __FILE_LINE_FUNC__, "binlog event callback function is NULL");
-      return NULL;
+      return nullptr;
     }
-    else if (error_fn == NULL)
+    else if (error_fn == nullptr)
     {
       drizzle_set_error(con, __FILE_LINE_FUNC__, "binlog error callback function is NULL");
-      return NULL;
+      return nullptr;
     }
   }
 
   drizzle_binlog_st *binlog= new (std::nothrow) drizzle_binlog_st;
-  if (binlog == NULL)
+  if (binlog == nullptr)
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__, "error allocating binlog struct");
-    return NULL;
+    return nullptr;
   }
   binlog->con= con;
   binlog->binlog_fn= binlog_fn;
@@ -98,7 +98,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
   drizzle_st *con;
   drizzle_return_t ret;
 
-  if (binlog == NULL)
+  if (binlog == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -156,7 +156,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
     memcpy(ptr, file, fn_len);
   }
 
-  result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_BINLOG_DUMP,
+  result= drizzle_command_write(con, nullptr, DRIZZLE_COMMAND_BINLOG_DUMP,
                                    data, len, len, &ret);
 
   con->binlog= binlog;
@@ -185,7 +185,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
 
 uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -195,7 +195,7 @@ uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
 
 drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return drizzle_binlog_event_types_t();
   }
@@ -205,7 +205,7 @@ drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *
 
 uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -215,7 +215,7 @@ uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
 
 uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -225,7 +225,7 @@ uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
 
 uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -235,7 +235,7 @@ uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
 
 uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -245,7 +245,7 @@ uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
 
 uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -255,9 +255,9 @@ uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
 
 const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return event->data;
@@ -265,9 +265,9 @@ const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event)
 
 const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return event->raw_data;
@@ -275,7 +275,7 @@ const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *even
 
 uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event)
 {
-  if (event == NULL)
+  if (event == nullptr)
   {
     return 0;
   }
@@ -287,7 +287,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
 {
   drizzle_binlog_event_st *binlog_event;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -308,7 +308,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->buffer_ptr+= 5;
     con->buffer_size-= 5;
     con->pop_state();
-    if (con->binlog->error_fn != NULL)
+    if (con->binlog->error_fn != nullptr)
     {
       con->binlog->error_fn(DRIZZLE_RETURN_EOF, con, con->binlog->binlog_context);
     }
@@ -321,7 +321,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
 
     con->pop_state();
-    if (con->binlog->error_fn != NULL)
+    if (con->binlog->error_fn != nullptr)
     {
       con->binlog->error_fn(DRIZZLE_RETURN_ERROR_CODE, con, con->binlog->binlog_context);
     }
@@ -344,7 +344,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
         drizzle_set_error(con, __FILE_LINE_FUNC__, "packet size error:%" PRIu32
                           ":%" PRIu32, con->packet_size, binlog_event->length);
-        if (con->binlog->error_fn != NULL)
+        if (con->binlog->error_fn != nullptr)
         {
           con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
         }
@@ -360,7 +360,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
       con->buffer_size-= binlog_event->length;
       con->packet_size-= binlog_event->length;
       binlog_event->length= 0;
-      binlog_event->data= NULL;
+      binlog_event->data= nullptr;
     }
     else
     {
@@ -411,7 +411,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
         {
           drizzle_set_error(con, __FILE_LINE_FUNC__, "CRC doesn't match: 0x%"
             PRIX32 ", 0x%" PRIX32, event_crc, binlog_event->checksum);
-          if (con->binlog->error_fn != NULL)
+          if (con->binlog->error_fn != nullptr)
           {
             con->binlog->error_fn(DRIZZLE_RETURN_BINLOG_CRC, con, con->binlog->binlog_context);
           }
@@ -424,7 +424,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     {
       drizzle_set_error(con, __FILE_LINE_FUNC__,
                         "unexpected data after packet:%" PRIu64, con->buffer_size);
-      if (con->binlog->error_fn != NULL)
+      if (con->binlog->error_fn != nullptr)
       {
         con->binlog->error_fn(DRIZZLE_RETURN_UNEXPECTED_DATA, con, con->binlog->binlog_context);
       }
@@ -433,7 +433,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     con->pop_state();
   }
 
-  if (con->binlog->binlog_fn != NULL)
+  if (con->binlog->binlog_fn != nullptr)
   {
     con->binlog->binlog_fn(&con->binlog->event, con->binlog->binlog_context);
   }

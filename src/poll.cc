@@ -55,7 +55,7 @@ int poll(struct pollfd fds[], nfds_t nfds, int tmo)
   struct timeval *tp= &timeout;
   if (tmo == -1)
   {
-    tp= NULL;
+    tp= nullptr;
   }
   int ret= select(maxfd + 1, &readfds, &writefds, &errorfds, tp);
   if (ret <= 0)
