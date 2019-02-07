@@ -1160,7 +1160,12 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
 #endif
           )
       {
-        /* Positive failure. Try the next address. */
+        /* Positive failure. Try the next address, if it is available. */
+        if (con->addrinfo_next == nullptr)
+        {
+          return DRIZZLE_RETURN_COULD_NOT_CONNECT;
+        }
+
         con->addrinfo_next= con->addrinfo_next->ai_next;
         return DRIZZLE_RETURN_OK;
       }
@@ -1395,6 +1400,13 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
           con->revents= 0;
           con->pop_state();
           con->push_state(drizzle_state_connect);
+
+          /* Positive failure. Try the next address, if available. */
+          if (con->addrinfo_next == nullptr)
+          {
+            return DRIZZLE_RETURN_COULD_NOT_CONNECT;
+          }
+
           con->addrinfo_next= con->addrinfo_next->ai_next;
           return DRIZZLE_RETURN_OK;
         }
@@ -1765,6 +1777,10 @@ static void connect_failed_try_next(drizzle_st *con, const char *file, uint line
   drizzle_set_error(con, file, line, function, "connect: %s (port %s): %s",
                     hostbuf, servbuf, msg);
 
-  con->addrinfo_next= con->addrinfo_next->ai_next;
+  if (con->addrinfo_next != nullptr)
+  {
+    con->addrinfo_next= con->addrinfo_next->ai_next;
+  }
+
   con->push_state(drizzle_state_connect);
 }
