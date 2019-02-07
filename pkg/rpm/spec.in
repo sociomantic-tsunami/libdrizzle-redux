@@ -93,6 +93,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Thu Feb 07 2019 Andreas Bok Andersen <bok.chan@gmail.com> - 6.1.6
+- Prevent segfault upon running out of addresses
+
 * Sat Dec 01 2018 Andreas Bok Andersen <bok.chan@gmail.com> - 6.1.5
 - Minor fixes in README
 - Update docker images to sociomantictsunami
