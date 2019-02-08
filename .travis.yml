@@ -110,7 +110,7 @@ jobs:
         CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture"
     - <<: *linux-build
       env:
-        DOCKER_CXX=clang++ DOCKER_CC=clang
+        DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=4.0
     - <<: *linux-build
       env:
         DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=$MAKE_TARGET:rpm
