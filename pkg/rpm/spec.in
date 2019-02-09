@@ -93,6 +93,16 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Sun Feb 10 2019 Andreas Bok Andersen <bok.chan@gmail.com> - 6.2.0
+- Add support for checking code coverage
+- End of support for v5.x.x
+- Remove bootstrap.sh script
+- Use relnotes folder to describe new features
+- Add missing for documentation for query API
+- Remove github wiki pages
+- Add support for api-sanity-checker tool
+- Fix validation of SSL_CTX_set_options
+
 * Thu Feb 07 2019 Andreas Bok Andersen <bok.chan@gmail.com> - 6.1.6
 - Prevent segfault upon running out of addresses
 
