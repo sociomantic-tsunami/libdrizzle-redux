@@ -98,7 +98,7 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row);
  * @return An array of row sizes
  */
 DRIZZLE_API
-size_t *drizzle_row_field_sizes(drizzle_result_st *result);
+size_t *drizzle_row_field_sizes(const drizzle_result_st *result);
 
 /**
  * Gets the next row in a buffered result set
@@ -135,7 +135,7 @@ void drizzle_row_seek(drizzle_result_st *result, uint64_t row);
  * @return The row data
  */
 DRIZZLE_API
-drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row);
+drizzle_row_t drizzle_row_index(const drizzle_result_st *result, uint64_t row);
 
 /**
  * Gets the current row number
@@ -144,7 +144,7 @@ drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row);
  * @return The row number
  */
 DRIZZLE_API
-uint64_t drizzle_row_current(drizzle_result_st *result);
+uint64_t drizzle_row_current(const drizzle_result_st *result);
 
 /** @} */
 

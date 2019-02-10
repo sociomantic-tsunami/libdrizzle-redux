@@ -183,7 +183,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
   return drizzle_state_loop(con);
 }
 
-uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
+uint32_t drizzle_binlog_event_timestamp(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -193,7 +193,7 @@ uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event)
   return event->timestamp;
 }
 
-drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event)
+drizzle_binlog_event_types_t drizzle_binlog_event_type(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -203,7 +203,7 @@ drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *
   return event->type;
 }
 
-uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
+uint32_t drizzle_binlog_event_server_id(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -213,7 +213,7 @@ uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event)
   return event->server_id;
 }
 
-uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
+uint32_t drizzle_binlog_event_length(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -223,7 +223,7 @@ uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event)
   return event->length;
 }
 
-uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
+uint32_t drizzle_binlog_event_next_pos(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -233,7 +233,7 @@ uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event)
   return event->next_pos;
 }
 
-uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
+uint16_t drizzle_binlog_event_flags(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -243,7 +243,7 @@ uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event)
   return event->flags;
 }
 
-uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
+uint16_t drizzle_binlog_event_extra_flags(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -253,7 +253,7 @@ uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event)
   return event->extra_flags;
 }
 
-const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event)
+const unsigned char *drizzle_binlog_event_data(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -263,7 +263,7 @@ const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event)
   return event->data;
 }
 
-const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event)
+const unsigned char *drizzle_binlog_event_raw_data(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -273,7 +273,7 @@ const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *even
   return event->raw_data;
 }
 
-uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event)
+uint32_t drizzle_binlog_event_raw_length(const drizzle_binlog_event_st *event)
 {
   if (event == NULL)
   {
@@ -443,7 +443,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
   return DRIZZLE_RETURN_OK;
 }
 
-const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type)
+const char *drizzle_binlog_event_type_str(const drizzle_binlog_event_types_t event_type)
 {
     switch(event_type)
     {

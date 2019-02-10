@@ -107,7 +107,7 @@ drizzle_return_t drizzle_binlog_start(drizzle_binlog_st *binlog,
 * @return The timestamp for the binlog event
 */
 DRIZZLE_API
-uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event);
+uint32_t drizzle_binlog_event_timestamp(const drizzle_binlog_event_st *event);
 
 /**
 * Get the event type for the event received by the event callback
@@ -116,7 +116,7 @@ uint32_t drizzle_binlog_event_timestamp(drizzle_binlog_event_st *event);
 * @return The event type of the binlog event
 */
 DRIZZLE_API
-drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *event);
+drizzle_binlog_event_types_t drizzle_binlog_event_type(const drizzle_binlog_event_st *event);
 
 /**
 * Get the server_id for the event received by the event callback
@@ -125,7 +125,7 @@ drizzle_binlog_event_types_t drizzle_binlog_event_type(drizzle_binlog_event_st *
 * @return The server_id for the binlog event
 */
 DRIZZLE_API
-uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event);
+uint32_t drizzle_binlog_event_server_id(const drizzle_binlog_event_st *event);
 
 /**
 * Get the length of the event data (excluding header) received by the event
@@ -135,7 +135,7 @@ uint32_t drizzle_binlog_event_server_id(drizzle_binlog_event_st *event);
 * @return The event data length
 */
 DRIZZLE_API
-uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event);
+uint32_t drizzle_binlog_event_length(const drizzle_binlog_event_st *event);
 
 /**
 * Get the next event position from the event received by the event callback
@@ -144,7 +144,7 @@ uint32_t drizzle_binlog_event_length(drizzle_binlog_event_st *event);
 * @return The next event position
 */
 DRIZZLE_API
-uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event);
+uint32_t drizzle_binlog_event_next_pos(const drizzle_binlog_event_st *event);
 
 /**
 * Get the flags for the event received by the event callback
@@ -153,7 +153,7 @@ uint32_t drizzle_binlog_event_next_pos(drizzle_binlog_event_st *event);
 * @return The event flags
 */
 DRIZZLE_API
-uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event);
+uint16_t drizzle_binlog_event_flags(const drizzle_binlog_event_st *event);
 
 /**
 * Get the flags for the event received by the event callback
@@ -162,7 +162,7 @@ uint16_t drizzle_binlog_event_flags(drizzle_binlog_event_st *event);
 * @return The extra event flags
 */
 DRIZZLE_API
-uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event);
+uint16_t drizzle_binlog_event_extra_flags(const drizzle_binlog_event_st *event);
 
 /**
 * Get the event data for the event received by the event callback
@@ -171,7 +171,7 @@ uint16_t drizzle_binlog_event_extra_flags(drizzle_binlog_event_st *event);
 * @return A pointer to the event data
 */
 DRIZZLE_API
-const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event);
+const unsigned char *drizzle_binlog_event_data(const drizzle_binlog_event_st *event);
 
 /**
 * Get the raw event data (including header) for the event received by the event
@@ -181,7 +181,7 @@ const unsigned char *drizzle_binlog_event_data(drizzle_binlog_event_st *event);
 * @return A pointer to the raw event data
 */
 DRIZZLE_API
-const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *event);
+const unsigned char *drizzle_binlog_event_raw_data(const drizzle_binlog_event_st *event);
 
 /**
 * Get the length of the raw event data (including header) for the event
@@ -191,7 +191,7 @@ const unsigned char *drizzle_binlog_event_raw_data(drizzle_binlog_event_st *even
 * @return The length of the raw event data
 */
 DRIZZLE_API
-uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event);
+uint32_t drizzle_binlog_event_raw_length(const drizzle_binlog_event_st *event);
 
 /**
 * Get the event type for the binlog event as string
@@ -200,7 +200,7 @@ uint32_t drizzle_binlog_event_raw_length(drizzle_binlog_event_st *event);
 * @return The event type of the binlog event as string
 */
 DRIZZLE_API
-const char *drizzle_binlog_event_type_str(drizzle_binlog_event_types_t event_type);
+const char *drizzle_binlog_event_type_str(const drizzle_binlog_event_types_t event_type);
 
 /**
  * Get the name and size of a binlog file in bytes

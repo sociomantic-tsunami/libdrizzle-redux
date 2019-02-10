@@ -176,7 +176,7 @@ void drizzle_row_free(drizzle_result_st *result, drizzle_row_t row)
 
 }
 
-size_t *drizzle_row_field_sizes(drizzle_result_st *result)
+size_t *drizzle_row_field_sizes(const drizzle_result_st *result)
 {
   if (result == NULL)
   {
@@ -237,7 +237,7 @@ void drizzle_row_seek(drizzle_result_st *result, uint64_t row)
     result->row_current= row;
 }
 
-drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row)
+drizzle_row_t drizzle_row_index(const drizzle_result_st *result, uint64_t row)
 {
   if (result == NULL)
   {
@@ -250,7 +250,7 @@ drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row)
   return result->row_list[row];
 }
 
-uint64_t drizzle_row_current(drizzle_result_st *result)
+uint64_t drizzle_row_current(const drizzle_result_st *result)
 {
   if (result == NULL)
   {

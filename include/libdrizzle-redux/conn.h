@@ -184,7 +184,7 @@ void drizzle_socket_set_option(drizzle_st *con, drizzle_socket_option_t option,
  * @return The value of the option, or -1 if the specified option doesn't exist
  */
 DRIZZLE_API
-int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option);
+int drizzle_socket_get_option(const drizzle_st *con, drizzle_socket_option_t option);
 
 /**
  * Sets/unsets non-blocking connect option
@@ -202,7 +202,7 @@ void drizzle_options_set_non_blocking(drizzle_options_st *options, bool state);
  * @return The state of the non-blocking option
  */
 DRIZZLE_API
-bool drizzle_options_get_non_blocking(drizzle_options_st *options);
+bool drizzle_options_get_non_blocking(const drizzle_options_st *options);
 
 /**
  * Sets/unsets the raw scramble connect option
@@ -220,7 +220,7 @@ void drizzle_options_set_raw_scramble(drizzle_options_st *options, bool state);
  * @return The state of the raw scramble option
  */
 DRIZZLE_API
-bool drizzle_options_get_raw_scramble(drizzle_options_st *options);
+bool drizzle_options_get_raw_scramble(const drizzle_options_st *options);
 
 /**
  * Sets/unsets the found rows connect option
@@ -238,7 +238,7 @@ void drizzle_options_set_found_rows(drizzle_options_st *options, bool state);
  * @return The state of the found rows option
  */
 DRIZZLE_API
-bool drizzle_options_get_found_rows(drizzle_options_st *options);
+bool drizzle_options_get_found_rows(const drizzle_options_st *options);
 
 /**
  * Sets/unsets the interactive connect option
@@ -256,7 +256,7 @@ void drizzle_options_set_interactive(drizzle_options_st *options, bool state);
  * @return The state of the interactive option
  */
 DRIZZLE_API
-bool drizzle_options_get_interactive(drizzle_options_st *options);
+bool drizzle_options_get_interactive(const drizzle_options_st *options);
 
 /**
  * Sets/unsets the multi-statements connect option
@@ -274,7 +274,7 @@ void drizzle_options_set_multi_statements(drizzle_options_st *options, bool stat
  * @return The state of the multi-statements option
  */
 DRIZZLE_API
-bool drizzle_options_get_multi_statements(drizzle_options_st *options);
+bool drizzle_options_get_multi_statements(const drizzle_options_st *options);
 
 /**
  * Sets/unsets the auth plugin connect option
@@ -292,7 +292,7 @@ void drizzle_options_set_auth_plugin(drizzle_options_st *options, bool state);
  * @return The state of the auth plugin option
  */
 DRIZZLE_API
-bool drizzle_options_get_auth_plugin(drizzle_options_st *options);
+bool drizzle_options_get_auth_plugin(const drizzle_options_st *options);
 
 /**
  * Sets the owner of the socket connection
@@ -311,7 +311,7 @@ void drizzle_options_set_socket_owner(drizzle_options_st *options,
  * @return The owner of the socket
  */
 DRIZZLE_API
-drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options);
+drizzle_socket_owner_t drizzle_options_get_socket_owner(const drizzle_options_st *options);
 
 /**
  * Get TCP host for a connection.

@@ -174,7 +174,7 @@ Functions
    :param option: the option to set the value for
    :param value: the value to set
 
-.. c:function:: int drizzle_socket_get_option(drizzle_st *con, drizzle_socket_option_t option)
+.. c:function:: int drizzle_socket_get_option(const drizzle_st *con, drizzle_socket_option_t option)
 
    Gets the value of a socket option. See :c:func:`drizzle_socket_set_options`
    for a description of the available options
@@ -190,7 +190,7 @@ Functions
    :param options: The options object to modify
    :param state: Set option to true/false
 
-.. c:function:: bool drizzle_options_get_non_blocking(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_non_blocking(const drizzle_options_st *options)
 
    Gets the non-blocking connect option
 
@@ -204,7 +204,7 @@ Functions
    :param options: The options object to modify
    :param state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_raw_scramble(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_raw_scramble(const drizzle_options_st *options)
 
    Gets the raw scramble connect option
 
@@ -218,7 +218,7 @@ Functions
    :param options: The options object to modify
    :param state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_found_rows(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_found_rows(const drizzle_options_st *options)
 
    Gets the found rows connect option
 
@@ -232,7 +232,7 @@ Functions
    :param options: The options object to modify
    :param state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_interactive(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_interactive(const drizzle_options_st *options)
 
    Gets the interactive connect option
 
@@ -246,7 +246,7 @@ Functions
    :param options: The options object to modify
    :parma state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_multi_statements(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_multi_statements(const drizzle_options_st *options)
 
    Gets the multi-statements connect option
 
@@ -260,7 +260,7 @@ Functions
    :param options: The options object to modify
    :param state: Set to true/false
 
-.. c:function:: bool drizzle_options_get_auth_plugin(drizzle_options_st *options)
+.. c:function:: bool drizzle_options_get_auth_plugin(const drizzle_options_st *options)
 
    Gets the auth plugin connect option
 
@@ -274,7 +274,7 @@ Functions
    :param options: The options object to modify
    :param owner: The owner of the socket connection
 
-.. c:function:: drizzle_socket_owner_t drizzle_options_get_socket_owner(drizzle_options_st *options)
+.. c:function:: drizzle_socket_owner_t drizzle_options_get_socket_owner(const drizzle_options_st *options)
 
    Gets the owner of the socket connection
 

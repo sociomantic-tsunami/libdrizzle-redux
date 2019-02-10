@@ -106,7 +106,7 @@ const char *drizzle_bugreport(void);
  * @return String form of verbose level.
  */
 DRIZZLE_API
-const char *drizzle_verbose_name(drizzle_verbose_t verbose);
+const char *drizzle_verbose_name(const drizzle_verbose_t verbose);
 
 /**
  * Get current socket I/O activity timeout value.

@@ -174,7 +174,7 @@ Functions
    :param stmt: The prepared statement object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
-.. c:function:: bool drizzle_stmt_get_is_null(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+.. c:function:: bool drizzle_stmt_get_is_null(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 
    Check if a column for a fetched row is set to NULL
 
@@ -183,7 +183,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: True if NULL
 
-.. c:function:: bool drizzle_stmt_get_is_null_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+.. c:function:: bool drizzle_stmt_get_is_null_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 
    Check if a column for a fetched row is set to NULL using a column name
 
@@ -192,7 +192,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into, :py:const:`DRIZZLE_RETURN_NOT_FOUND` if the column name cannot be found
    :returns: True if NULL
 
-.. c:function:: bool drizzle_stmt_get_is_unsigned(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+.. c:function:: bool drizzle_stmt_get_is_unsigned(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 
    Check if a column for a fetched row is unsigned
 
@@ -201,7 +201,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: True if unsigned
 
-.. c:function:: bool drizzle_stmt_get_is_unsigned_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+.. c:function:: bool drizzle_stmt_get_is_unsigned_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 
    Check if a column for a fetched row is unsigned using a column name
 
@@ -210,7 +210,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into, :py:const:`DRIZZLE_RETURN_NOT_FOUND` if the column name cannot be found
    :returns: True if unsigned
 
-.. c:function:: const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
+.. c:function:: const char *drizzle_stmt_get_string(const drizzle_stmt_st *stmt, uint16_t column_number, size_t *len, drizzle_return_t *ret_ptr)
 
    Get the string value for a column of a fetched row (int types are automatically converted)
 
@@ -220,7 +220,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into
    :returns: A pointer to the string value
 
-.. c:function:: const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
+.. c:function:: const char *drizzle_stmt_get_string_from_name(const drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
 
    Get the string value for a column of a fetched row (int types are automatically converted) using a column name
 
@@ -230,7 +230,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into, :py:const:`DRIZZLE_RETURN_NOT_FOUND` if the column name cannot be found
    :returns: A pointer to the string value
 
-.. c:function:: uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+.. c:function:: uint32_t drizzle_stmt_get_int(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 
    Get the int value for a column of a fetched row
 
@@ -239,7 +239,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
    :returns: The int value
 
-.. c:function:: uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+.. c:function:: uint32_t drizzle_stmt_get_int_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 
    Get the int value for a column of a fetched row using a column name
 
@@ -248,7 +248,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred,  :py:const:`DRIZZLE_RETURN_NOT_FOUND` if the column name cannot be found
    :returns: The int value
 
-.. c:function:: uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+.. c:function:: uint64_t drizzle_stmt_get_bigint(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 
    Get the bigint value for a column of a fetched row
 
@@ -257,7 +257,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
    :returns: The bigint value
 
-.. c:function:: uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+.. c:function:: uint64_t drizzle_stmt_get_bigint_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 
    Get the bigint value for a column of a fetched row using a column name
 
@@ -266,7 +266,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred,  :py:const:`DRIZZLE_RETURN_NOT_FOUND` if the column name cannot be found
    :returns: The bigint value
 
-.. c:function:: double drizzle_stmt_get_double(drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
+.. c:function:: double drizzle_stmt_get_double(const drizzle_stmt_st *stmt, uint16_t column_number, drizzle_return_t *ret_ptr)
 
    Get the double value for a column of a fetched row
 
@@ -275,7 +275,7 @@ Functions
    :param ret_ptr: A pointer to a :c:type:`drizzle_return_t` to store the return status into :py:const:`DRIZZLE_RETURN_TRUNCATED` if a truncation has occurred
    :returns: The double value
 
-.. c:function:: double drizzle_stmt_get_double_from_name(drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
+.. c:function:: double drizzle_stmt_get_double_from_name(const drizzle_stmt_st *stmt, const char *column_name, drizzle_return_t *ret_ptr)
 
    Get the double value for a column of a fetched row from a column name
 
@@ -291,35 +291,35 @@ Functions
    :param stmt: The prepared statement object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
-.. c:function:: uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
+.. c:function:: uint16_t drizzle_stmt_column_count(const drizzle_stmt_st *stmt)
 
    Gets the column count for a result set which has been executed using :c:func:`drizzle_stmt_execute`
 
    :param stmt: The prepared statement object
    :returns: The column count
 
-.. c:function:: uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
+.. c:function:: uint64_t drizzle_stmt_affected_rows(const drizzle_stmt_st *stmt)
 
    Gets the affected rows count for a result set which has been executed using :c:func:`drizzle_stmt_execute`
 
    :param stmt: The prepared statement object
    :returns: The column count
 
-.. c:function:: uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt)
+.. c:function:: uint64_t drizzle_stmt_insert_id(const drizzle_stmt_st *stmt)
 
    Gets the insert ID for a result set which has been executed using :c:func:`drizzle_stmt_execute`
 
    :param stmt: The prepared statement object
    :returns: The insert ID
 
-.. c:function:: uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt)
+.. c:function:: uint16_t drizzle_stmt_param_count(const drizzle_stmt_st *stmt)
 
    Gets the number of parameters expected for a result set that has been prepared with :c:func:`drizzle_stmt_prepare`
 
    :param stmt: The prepared statement object
    :returns: The number of parameters
 
-.. c:function:: uint64_t drizzle_stmt_row_count(drizzle_stmt_st *stmt)
+.. c:function:: uint64_t drizzle_stmt_row_count(const drizzle_stmt_st *stmt)
 
    Gets the row count for a statement buffered with :c:func:`drizzle_stmt_buffer`
 

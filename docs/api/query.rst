@@ -91,42 +91,42 @@ Functions
    :param result: A result object
    :returns: The connection object associated to the result object
 
-.. c:function:: bool drizzle_result_eof(drizzle_result_st *result)
+.. c:function:: bool drizzle_result_eof(const drizzle_result_st *result)
 
    Tests to see if an EOF packet has been hit
 
    :param result: A result object
    :returns: true on EOF or false
 
-.. c:function:: const char* drizzle_result_message(drizzle_result_st *result)
+.. c:function:: const char* drizzle_result_message(const drizzle_result_st *result)
 
    Get error or information message from result set
 
    :param result: A result object
    :returns: The message to be returned
 
-.. c:function:: uint16_t drizzle_result_error_code(drizzle_result_st *result)
+.. c:function:: uint16_t drizzle_result_error_code(const drizzle_result_st *result)
 
    Gets the error code from a result set
 
    :param result: A result object
    :returns: The error code
 
-.. c:function:: const char* drizzle_result_sqlstate(drizzle_result_st *result)
+.. c:function:: const char* drizzle_result_sqlstate(const drizzle_result_st *result)
 
    Gets the SQL state from a result set
 
    :param result: A result object
    :returns: The SQL state string
 
-.. c:function:: uint16_t drizzle_result_warning_count(drizzle_result_st *result)
+.. c:function:: uint16_t drizzle_result_warning_count(const drizzle_result_st *result)
 
    Gets the warning count from a result set
 
    :param result: A result object
    :retuns: The warning count
 
-.. c:function:: uint64_t drizzle_result_insert_id(drizzle_result_st *result)
+.. c:function:: uint64_t drizzle_result_insert_id(const drizzle_result_st *result)
 
    Gets the insert ID for an auto_increment column in a result set
 
@@ -137,21 +137,21 @@ Functions
    :param result: A result object
    :returns: The insert ID
 
-.. c:function:: uint64_t drizzle_result_affected_rows(drizzle_result_st *result)
+.. c:function:: uint64_t drizzle_result_affected_rows(const drizzle_result_st *result)
 
    Gets the affected row count from a result set
 
    :param result: A result object
    :returns: The affected row count
 
-.. c:function:: uint16_t drizzle_result_column_count(drizzle_result_st *result)
+.. c:function:: uint16_t drizzle_result_column_count(const drizzle_result_st *result)
 
    Gets the column count from a result set
 
    :param result: A result object
    :returns: The column count
 
-.. c:function:: uint64_t drizzle_result_row_count(drizzle_result_st *result)
+.. c:function:: uint64_t drizzle_result_row_count(const drizzle_result_st *result)
 
    Gets the row count from a result set buffered with
    :c:func:`drizzle_result_buffer`
@@ -174,7 +174,7 @@ Functions
    :param result: A result object
    :returns: A return status code, :py:const:`DRIZZLE_RETURN_OK` upon success
 
-.. c:function:: size_t drizzle_result_row_size(drizzle_result_st *result)
+.. c:function:: size_t drizzle_result_row_size(const drizzle_result_st *result)
 
    Get result row packet size in bytes.
 
@@ -188,98 +188,98 @@ Functions
    :param column: A column object
    :returns: A result object
 
-.. c:function:: const char* drizzle_column_catalog(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_catalog(const drizzle_column_st *column)
 
    Gets the catalog name for a given column
 
    :param column: A column object
    :returns: The catalog name
 
-.. c:function:: const char* drizzle_column_db(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_db(const drizzle_column_st *column)
 
    Gets the database name for a given column
 
    :param column: A column object
    :returns: The database name
 
-.. c:function:: const char* drizzle_column_table(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_table(const drizzle_column_st *column)
 
    Get the table name (or table alias) for a given column
 
    :param column: A column object
    :returns: The table name
 
-.. c:function:: const char* drizzle_column_orig_table(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_orig_table(const drizzle_column_st *column)
 
    Gets the original table name (if an alias has been used) for a given column
 
    :param column: A column object
    :returns: The original table name
 
-.. c:function:: const char* drizzle_column_name(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_name(const drizzle_column_st *column)
 
    Gets the column name (or column alias) for a given column
 
    :param column: A column object
    :returns: The column name
 
-.. c:function:: const char* drizzle_column_orig_name(drizzle_column_st *column)
+.. c:function:: const char* drizzle_column_orig_name(const drizzle_column_st *column)
 
    Gets the original column name (if an alias has been used) for a given column
 
    :param column: A column object
    :returns: The original column name
 
-.. c:function:: drizzle_charset_t drizzle_column_charset(drizzle_column_st *column)
+.. c:function:: drizzle_charset_t drizzle_column_charset(const drizzle_column_st *column)
 
    Gets the character set ID for a given column
 
    :param column: A column object
    :returns: The character set ID
 
-.. c:function:: uint32_t drizzle_column_size(drizzle_column_st *column)
+.. c:function:: uint32_t drizzle_column_size(const drizzle_column_st *column)
 
    Gets the size of a given column
 
    :param column: A column object
    :returns: The column size
 
-.. c:function:: size_t drizzle_column_max_size(drizzle_column_st *column)
+.. c:function:: size_t drizzle_column_max_size(const drizzle_column_st *column)
 
    Gets the maximum size of a given column
 
    :param column: A column object
    :returns: The maximum size
 
-.. c:function:: drizzle_column_type_t drizzle_column_type(drizzle_column_st *column)
+.. c:function:: drizzle_column_type_t drizzle_column_type(const drizzle_column_st *column)
 
    Gets the type of data for the column
 
    :param column: A column object
    :returns: The column type
 
-.. c:function:: const char *drizzle_column_type_str(drizzle_column_type_t type)
+.. c:function:: const char *drizzle_column_type_str(const drizzle_column_type_t type)
 
    Get a column type as string
 
    :param type: The table column type
    :returns: The type of the column in human readable format
 
-.. c:function:: drizzle_column_flags_t drizzle_column_flags(drizzle_column_st *column)
+.. c:function:: drizzle_column_flags_t drizzle_column_flags(const drizzle_column_st *column))
 
    Gets the flags for a given column
 
    :param column: A column object
    :returns: The column flags
 
-.. c:function:: uint8_t drizzle_column_decimals(drizzle_column_st *column)
+.. c:function:: uint8_t drizzle_column_decimals(const drizzle_column_st *column)
 
    Gets the number of decimal places for a given column
 
    :param column: A column object
    :returns: The number of decimal places
 
-.. c:function:: const unsigned char* drizzle_column_default_value(drizzle_column_st *column, size_t *size)
+.. c:function:: const unsigned char* drizzle_column_default_value(const drizzle_column_st *column, size_t *size)
 
    Gets the default value for a given column
 
@@ -346,7 +346,7 @@ Functions
    :param result: A result object
    :param column: The column number
 
-.. c:function:: drizzle_column_st* drizzle_column_index(drizzle_result_st *result, uint16_t column)
+.. c:function:: drizzle_column_st* drizzle_column_index(const drizzle_result_st *result, uint16_t column)
 
    Gets a given column in a column buffered result set
 
@@ -354,7 +354,7 @@ Functions
    :param column: The column number
    :returns: A column object
 
-.. c:function:: uint16_t drizzle_column_current(drizzle_result_st *result)
+.. c:function:: uint16_t drizzle_column_current(const drizzle_result_st *result)
 
    Gets the column number in a buffered or unbuffered column result set
 
@@ -386,7 +386,7 @@ Functions
    :param result: A result object
    :param row: The row data to be freed
 
-.. c:function:: size_t* drizzle_row_field_sizes(drizzle_result_st *result)
+.. c:function:: size_t* drizzle_row_field_sizes(const drizzle_result_st *result)
 
    Gets an array of the field sizes for buffered rows
 
@@ -414,7 +414,7 @@ Functions
    :param result: A result object
    :param row: The row number to seek to
 
-.. c:function:: drizzle_row_t drizzle_row_index(drizzle_result_st *result, uint64_t row)
+.. c:function:: drizzle_row_t drizzle_row_indexc(const drizzle_result_st *result, uint64_t row)
 
    Gets a row at the given index in a buffered result set
 
@@ -422,7 +422,7 @@ Functions
    :param row: The row number to get
    :returns: The row data
 
-.. c:function:: uint64_t drizzle_row_current(drizzle_result_st *result)
+.. c:function:: uint64_t drizzle_row_current(const drizzle_result_st *result)
 
    Gets the current row number
 
