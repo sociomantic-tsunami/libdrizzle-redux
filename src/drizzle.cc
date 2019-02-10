@@ -141,7 +141,7 @@ const char *drizzle_verbose_name(drizzle_verbose_t verbose)
 
 int drizzle_timeout(const drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return -1;
   }
@@ -151,7 +151,7 @@ int drizzle_timeout(const drizzle_st *con)
 
 void drizzle_set_timeout(drizzle_st *con, int timeout)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
@@ -161,7 +161,7 @@ void drizzle_set_timeout(drizzle_st *con, int timeout)
 
 drizzle_verbose_t drizzle_verbose(const drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_VERBOSE_NEVER;
   }
@@ -171,7 +171,7 @@ drizzle_verbose_t drizzle_verbose(const drizzle_st *con)
 
 void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
@@ -181,7 +181,7 @@ void drizzle_set_verbose(drizzle_st *con, drizzle_verbose_t verbose)
 
 void drizzle_set_log_fn(drizzle_st *con, drizzle_log_fn *function, void *context)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
@@ -201,9 +201,9 @@ void drizzle_set_event_watch_fn(drizzle_st *drizzle,
 drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
 {
   drizzle= new (std::nothrow) drizzle_st;
-  if (drizzle == NULL)
+  if (drizzle == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   drizzle->capabilities= from->capabilities;
@@ -233,12 +233,12 @@ drizzle_st *drizzle_clone(drizzle_st *drizzle, const drizzle_st *from)
 
 void drizzle_free(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
 
-  if (con->context != NULL && con->context_free_fn != NULL)
+  if (con->context != nullptr && con->context_free_fn != nullptr)
   {
     con->context_free_fn(con, con->context);
   }
@@ -260,7 +260,7 @@ void drizzle_free(drizzle_st *con)
     SSL_CTX_free(con->ssl_context);
 #endif
 
-  if (con->binlog != NULL)
+  if (con->binlog != nullptr)
   {
     drizzle_binlog_free(con->binlog);
   }
@@ -306,7 +306,7 @@ drizzle_return_t drizzle_wait(drizzle_st *con)
   char ebuf[POLLDEBUGBUFLEN];
 #endif
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -381,7 +381,7 @@ drizzle_st *drizzle_ready(drizzle_st *con)
     return con;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 /*
@@ -394,15 +394,15 @@ drizzle_st *drizzle_create(const char *host, in_port_t port,
                            drizzle_options_st *options)
 {
   drizzle_st *con= new (std::nothrow) drizzle_st;
-  if (con == NULL)
+  if (con == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (drizzle_library_init(con) == false)
   {
     delete con;
-    return NULL;
+    return nullptr;
   }
 
   if (host and host[0] == '/')
@@ -415,7 +415,7 @@ drizzle_st *drizzle_create(const char *host, in_port_t port,
   }
   drizzle_set_auth(con, user, password);
   drizzle_set_db(con, db);
-  if (options != NULL)
+  if (options != nullptr)
   {
     con->options= *options;
   }
@@ -431,7 +431,7 @@ __attribute__((__format__ (__printf__, 5, 6)))
 void drizzle_set_error(drizzle_st *con, const char *file, uint line,
   const char *function, const char *format, ...)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
@@ -467,7 +467,7 @@ void drizzle_set_error(drizzle_st *con, const char *file, uint line,
   }
   log_buffer[size]= 0;
 
-  if (con->log_fn == NULL)
+  if (con->log_fn == nullptr)
   {
     memcpy(con->last_error, log_buffer, size + 1);
   }
@@ -482,14 +482,14 @@ __attribute__((__format__ (__printf__, 6, 0)))
 void drizzle_log(drizzle_st *con, const char *file, uint line, const char *func,
   drizzle_verbose_t verbose, const char *format, va_list args)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
 
   char log_buffer[DRIZZLE_MAX_ERROR_SIZE];
 
-  if (con->log_fn == NULL)
+  if (con->log_fn == nullptr)
   {
     printf("%-6s[%s:%d] : %s %s", drizzle_verbose_name(verbose), file, line, func,
       strlen(format) > 0 ? "- " : "" );

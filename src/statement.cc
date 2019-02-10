@@ -41,22 +41,22 @@
 drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, size_t size, drizzle_return_t *ret_ptr)
 {
   drizzle_stmt_st *stmt= new (std::nothrow) drizzle_stmt_st;
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     drizzle_set_error(con, __FILE_LINE_FUNC__, "new");
-    return NULL;
+    return nullptr;
   }
   con->stmt= stmt;
   stmt->con= con;
 
-  stmt->prepare_result= drizzle_command_write(con, NULL, DRIZZLE_COMMAND_STMT_PREPARE,
+  stmt->prepare_result= drizzle_command_write(con, nullptr, DRIZZLE_COMMAND_STMT_PREPARE,
                                       statement, size, size, ret_ptr);
   if (*ret_ptr != DRIZZLE_RETURN_OK)
   {
     delete stmt;
-    con->stmt= NULL;
-    return NULL;
+    con->stmt= nullptr;
+    return nullptr;
   }
 
   /* Don't get the unused parameter packets.  Format is the same as column
@@ -70,7 +70,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
       if ((*ret_ptr != DRIZZLE_RETURN_OK) && (*ret_ptr != DRIZZLE_RETURN_EOF))
       {
         delete stmt;
-        return NULL;
+        return nullptr;
       }
     }
   }
@@ -86,12 +86,12 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
 
   stmt->null_bitmap_length= (stmt->param_count + 7) / 8;
   stmt->null_bitmap= new (std::nothrow) uint8_t[stmt->null_bitmap_length]();
-  if (stmt->null_bitmap == NULL)
+  if (stmt->null_bitmap == nullptr)
   {
     delete stmt;
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
     drizzle_set_error(con, __FILE_LINE_FUNC__, "new");
-    return NULL;
+    return nullptr;
   }
 
   /* Also use the parameter count to allocate the parameters */
@@ -104,7 +104,7 @@ drizzle_stmt_st *drizzle_stmt_prepare(drizzle_st *con, const char *statement, si
 
 drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
 {
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -146,7 +146,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
              + param_lengths; /* Parameter data */
 
   buffer = new (std::nothrow) unsigned char[buffer_size];
-  if (buffer == NULL)
+  if (buffer == nullptr)
   {
     drizzle_set_error(stmt->con, __FILE_LINE_FUNC__, "new");
     return DRIZZLE_RETURN_MEMORY;
@@ -290,7 +290,7 @@ drizzle_return_t drizzle_stmt_execute(drizzle_stmt_st *stmt)
   if (stmt->execute_result)
   {
     drizzle_result_free(stmt->execute_result);
-    stmt->execute_result= NULL;
+    stmt->execute_result= nullptr;
   }
 
   /* Set buffer size to what we actually used */
@@ -329,7 +329,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   drizzle_return_t ret;
   unsigned char *buffer;
 
-  if ((stmt == NULL) || (param_num >= stmt->param_count))
+  if ((stmt == nullptr) || (param_num >= stmt->param_count))
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -351,7 +351,7 @@ drizzle_return_t drizzle_stmt_send_long_data(drizzle_stmt_st *stmt, uint16_t par
   memcpy(&buffer[6], data, len);
 
   stmt->con->state.no_result_read= true;
-  drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
+  drizzle_command_write(stmt->con, nullptr, DRIZZLE_COMMAND_STMT_SEND_LONG_DATA,
                         buffer, len+6, len+6, &ret);
   stmt->con->state.no_result_read= false;
   stmt->query_params[param_num].options.is_long_data= true;
@@ -366,7 +366,7 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
   unsigned char buffer[4];
   uint16_t current_param;
 
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -378,13 +378,13 @@ drizzle_return_t drizzle_stmt_reset(drizzle_stmt_st *stmt)
 
   drizzle_set_byte4(buffer, stmt->id);
   stmt->con->state.no_result_read= true;
-  drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_RESET, buffer, 4,
+  drizzle_command_write(stmt->con, nullptr, DRIZZLE_COMMAND_STMT_RESET, buffer, 4,
                         4, &ret);
   stmt->con->state.no_result_read= false;
   if (stmt->execute_result)
   {
     drizzle_result_free(stmt->execute_result);
-    stmt->execute_result= NULL;
+    stmt->execute_result= nullptr;
   }
   stmt->state= DRIZZLE_STMT_PREPARED;
   delete[] stmt->result_params;
@@ -398,7 +398,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
   uint16_t column_counter= 0, current_column= 0;
   drizzle_row_t row;
 
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -422,7 +422,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
     row= drizzle_row_buffer(stmt->execute_result, &ret);
   }
 
-  if (row == NULL)
+  if (row == nullptr)
   {
     return DRIZZLE_RETURN_ROW_END;
   }
@@ -542,7 +542,7 @@ drizzle_return_t drizzle_stmt_fetch(drizzle_stmt_st *stmt)
 
 drizzle_return_t drizzle_stmt_buffer(drizzle_stmt_st *stmt)
 {
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -563,7 +563,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
   unsigned char buffer[4];
   drizzle_return_t ret;
 
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -590,7 +590,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
 
   drizzle_set_byte4(buffer, stmt->id);
   stmt->con->state.no_result_read= true;
-  drizzle_command_write(stmt->con, NULL, DRIZZLE_COMMAND_STMT_CLOSE, buffer, 4,
+  drizzle_command_write(stmt->con, nullptr, DRIZZLE_COMMAND_STMT_CLOSE, buffer, 4,
                         4, &ret);
   stmt->con->state.no_result_read= false;
   delete stmt;
@@ -599,7 +599,7 @@ drizzle_return_t drizzle_stmt_close(drizzle_stmt_st *stmt)
 
 uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
 {
-  if ((stmt == NULL) || (stmt->prepare_result == NULL))
+  if ((stmt == nullptr) || (stmt->prepare_result == nullptr))
   {
     return 0;
   }
@@ -609,7 +609,7 @@ uint16_t drizzle_stmt_column_count(drizzle_stmt_st *stmt)
 
 uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
 {
-  if ((stmt == NULL) || (stmt->execute_result == NULL))
+  if ((stmt == nullptr) || (stmt->execute_result == nullptr))
   {
     return 0;
   }
@@ -619,7 +619,7 @@ uint64_t drizzle_stmt_affected_rows(drizzle_stmt_st *stmt)
 
 uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt)
 {
-  if ((stmt == NULL) || (stmt->execute_result == NULL))
+  if ((stmt == nullptr) || (stmt->execute_result == nullptr))
   {
     return 0;
   }
@@ -629,7 +629,7 @@ uint64_t drizzle_stmt_insert_id(drizzle_stmt_st *stmt)
 
 uint16_t drizzle_stmt_param_count(drizzle_stmt_st *stmt)
 {
-  if (stmt == NULL)
+  if (stmt == nullptr)
   {
     return 0;
   }

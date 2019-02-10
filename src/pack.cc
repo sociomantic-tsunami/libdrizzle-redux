@@ -104,12 +104,12 @@ uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr)
   uint8_t bytes;
 
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
@@ -160,9 +160,9 @@ uint64_t drizzle_unpack_length(drizzle_st *con, drizzle_return_t *ret_ptr)
 
 unsigned char *drizzle_pack_string(char *string, unsigned char *ptr)
 {
-  if (string == NULL)
+  if (string == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   size_t size= strlen(string);
@@ -310,7 +310,7 @@ drizzle_return_t drizzle_unpack_string(drizzle_st *con, char *buffer,
 {
   drizzle_return_t ret= DRIZZLE_RETURN_OK;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -361,15 +361,15 @@ unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
                            drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
-    return NULL;
+    return nullptr;
   }
 
   if (con->user[0] != 0)
@@ -381,7 +381,7 @@ unsigned char *drizzle_pack_auth(drizzle_st *con, unsigned char *ptr,
   ptr[0]= 0;
   ptr++;
 
-  if (con->options.raw_scramble && con->scramble != NULL)
+  if (con->options.raw_scramble && con->scramble != nullptr)
   {
     ptr[0]= DRIZZLE_MAX_SCRAMBLE_SIZE;
     ptr++;
@@ -447,7 +447,7 @@ static drizzle_return_t _pack_scramble_hash(drizzle_st *con,
     return DRIZZLE_RETURN_INTERNAL_ERROR;
   }
 
-  if (con->scramble == NULL)
+  if (con->scramble == nullptr)
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__, "no scramble buffer");
     return DRIZZLE_RETURN_NO_SCRAMBLE;

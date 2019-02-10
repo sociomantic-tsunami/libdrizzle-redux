@@ -86,7 +86,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
   ptrdiff_t extra_length;
   unsigned char* packet_end;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -134,7 +134,7 @@ drizzle_return_t drizzle_state_handshake_server_read(drizzle_st *con)
 
   /* Look for null-terminated server version string. */
   ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 1);
-  if (ptr == NULL)
+  if (ptr == nullptr)
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "server version string not found");
@@ -225,7 +225,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
 {
   unsigned char *ptr;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -273,7 +273,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   drizzle_set_byte4(ptr, con->thread_id);
   ptr+= 4;
 
-  if (con->scramble == NULL)
+  if (con->scramble == nullptr)
   {
     memset(ptr, 0, 8);
   }
@@ -301,7 +301,7 @@ drizzle_return_t drizzle_state_handshake_server_write(drizzle_st *con)
   memset(ptr, 0, 13);
   ptr+= 13;
 
-  if (con->scramble == NULL)
+  if (con->scramble == nullptr)
   {
     memset(ptr, 0, 12);
   }
@@ -334,7 +334,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   size_t real_size;
   uint8_t scramble_size;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -378,7 +378,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
 
   /* Look for null-terminated user string. */
   unsigned char *ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size - 32);
-  if (ptr == NULL)
+  if (ptr == nullptr)
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__,
                       "user string not found");
@@ -411,7 +411,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
 
   if (scramble_size == 0)
   {
-    con->scramble= NULL;
+    con->scramble= nullptr;
   }
   else
   {
@@ -438,7 +438,7 @@ drizzle_return_t drizzle_state_handshake_client_read(drizzle_st *con)
   {
     ptr= (unsigned char*)memchr(con->buffer_ptr, 0, con->buffer_size -
                                     (34 + strlen(con->user) + scramble_size));
-    if (ptr == NULL)
+    if (ptr == nullptr)
     {
       drizzle_set_error(con, __FILE_LINE_FUNC__,
                         "db string not found");
@@ -529,7 +529,7 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
 #endif
   drizzle_return_t ret;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -647,7 +647,7 @@ drizzle_return_t drizzle_state_handshake_ssl_client_write(drizzle_st *con)
 
 drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -655,7 +655,7 @@ drizzle_return_t drizzle_state_handshake_result_read(drizzle_st *con)
 
   drizzle_result_st *result = drizzle_result_create(con);
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     return DRIZZLE_RETURN_MEMORY;
   }

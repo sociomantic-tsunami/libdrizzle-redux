@@ -295,32 +295,32 @@ public:
     command_size(0),
     command_total(0),
     packet_size(0),
-    addrinfo_next(NULL),
-    command_buffer(NULL),
-    command_data(NULL),
-    context(NULL),
-    context_free_fn(NULL),
-    event_watch_context(NULL),
-    event_watch_fn(NULL),
-    result(NULL),
-    result_list(NULL),
-    scramble(NULL),
+    addrinfo_next(nullptr),
+    command_buffer(nullptr),
+    command_data(nullptr),
+    context(nullptr),
+    context_free_fn(nullptr),
+    event_watch_context(nullptr),
+    event_watch_fn(nullptr),
+    result(nullptr),
+    result_list(nullptr),
+    scramble(nullptr),
     buffer_allocation(DRIZZLE_DEFAULT_BUFFER_SIZE),
-    ssl_context(NULL),
-    ssl(NULL),
+    ssl_context(nullptr),
+    ssl(nullptr),
     ssl_state(DRIZZLE_SSL_STATE_NONE),
     error_code(0),
     verbose(DRIZZLE_VERBOSE_NEVER),
     last_errno(0),
     timeout(-1),
-    log_fn(NULL),
-    log_context(NULL),
-    stmt(NULL),
-    binlog(NULL),
+    log_fn(nullptr),
+    log_context(nullptr),
+    stmt(nullptr),
+    binlog(nullptr),
     _state_stack_count(0),
-    _state_stack_list(NULL),
+    _state_stack_list(nullptr),
     _free_packet_count(0),
-    _free_packet_list(NULL)
+    _free_packet_list(nullptr)
   {
     db[0]= '\0';
     password[0]= '\0';
@@ -429,8 +429,8 @@ struct drizzle_binlog_event_st
     flags(0),
     extra_flags(0),
     checksum(0),
-    data(NULL),
-    raw_data(NULL),
+    data(nullptr),
+    raw_data(nullptr),
     raw_length(0)
   { }
 };
@@ -445,12 +445,12 @@ struct drizzle_binlog_st
   bool has_checksums;
   drizzle_st *con;
   drizzle_binlog_st() :
-    binlog_fn(NULL),
-    error_fn(NULL),
-    binlog_context(NULL),
+    binlog_fn(nullptr),
+    error_fn(nullptr),
+    binlog_context(nullptr),
     verify_checksums(false),
     has_checksums(false),
-    con(NULL)
+    con(nullptr)
   { }
 };
 
@@ -479,9 +479,9 @@ struct drizzle_column_st
   size_t default_value_size;
 
   drizzle_column_st() :
-    result(NULL),
-    next(NULL),
-    prev(NULL),
+    result(nullptr),
+    next(nullptr),
+    prev(nullptr),
     options(DRIZZLE_COLUMN_UNUSED),
     charset(DRIZZLE_CHARSET_NONE),
     size(0),
@@ -515,18 +515,18 @@ struct drizzle_stmt_st
   drizzle_column_st *fields;
 
   drizzle_stmt_st() :
-    con(NULL),
+    con(nullptr),
     state(DRIZZLE_STMT_NONE),
     id(0),
     param_count(0),
-    query_params(NULL),
-    result_params(NULL),
+    query_params(nullptr),
+    result_params(nullptr),
     null_bitmap_length(0),
-    null_bitmap(NULL),
+    null_bitmap(nullptr),
     new_bind(true),
-    prepare_result(NULL),
-    execute_result(NULL),
-    fields(NULL)
+    prepare_result(nullptr),
+    execute_result(nullptr),
+    fields(nullptr)
   { }
 };
 
@@ -551,7 +551,7 @@ struct drizzle_bind_st
   } options;
   drizzle_bind_st() :
     type(DRIZZLE_COLUMN_TYPE_NONE),
-    data(NULL),
+    data(nullptr),
     length(0),
     is_bound(false)
   {

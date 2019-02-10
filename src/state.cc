@@ -46,7 +46,7 @@
 
 drizzle_return_t drizzle_state_loop(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -71,7 +71,7 @@ drizzle_return_t drizzle_state_loop(drizzle_st *con)
 
 drizzle_return_t drizzle_state_packet_read(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }

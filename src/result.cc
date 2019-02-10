@@ -51,16 +51,16 @@
 drizzle_result_st *drizzle_result_create(drizzle_st *con)
 {
   drizzle_result_st *result;
-  if (con == NULL)
+  if (con == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   result= new (std::nothrow) drizzle_result_st;
-  if (result == NULL)
+  if (result == nullptr)
   {
     drizzle_set_error(con, __FILE_LINE_FUNC__, "Failed to allocate.");
-    return NULL;
+    return nullptr;
   }
 
   result->con= con;
@@ -80,12 +80,12 @@ void drizzle_result_free(drizzle_result_st *result)
   drizzle_column_st* column;
   int64_t y;
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     return;
   }
 
-  for (column= result->column_list; column != NULL; column= result->column_list)
+  for (column= result->column_list; column != nullptr; column= result->column_list)
   {
     drizzle_column_free(column);
   }
@@ -103,13 +103,13 @@ void drizzle_result_free(drizzle_result_st *result)
         delete[] result->row_list[x][y];
       }
       delete[] result->row_list[x];
-      if (result->null_bitmap_list != NULL)
+      if (result->null_bitmap_list != nullptr)
       {
         delete[] result->null_bitmap_list[x];
       }
       delete[] result->field_sizes_list[x];
     }
-    if (result->null_bitmap_list != NULL)
+    if (result->null_bitmap_list != nullptr)
     {
       free(result->null_bitmap_list);
     }
@@ -149,12 +149,12 @@ void drizzle_result_free(drizzle_result_st *result)
 
 void drizzle_result_free_all(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
 
-  while (con->result_list != NULL)
+  while (con->result_list != nullptr)
   {
     drizzle_result_free(con->result_list);
   }
@@ -162,9 +162,9 @@ void drizzle_result_free_all(drizzle_st *con)
 
 drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return result->con;
@@ -172,7 +172,7 @@ drizzle_st *drizzle_result_drizzle_con(drizzle_result_st *result)
 
 bool drizzle_result_eof(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return false;
   }
@@ -182,9 +182,9 @@ bool drizzle_result_eof(drizzle_result_st *result)
 
 const char *drizzle_result_message(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return result->info;
@@ -192,7 +192,7 @@ const char *drizzle_result_message(drizzle_result_st *result)
 
 uint16_t drizzle_result_error_code(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -202,9 +202,9 @@ uint16_t drizzle_result_error_code(drizzle_result_st *result)
 
 const char *drizzle_result_sqlstate(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   return result->sqlstate;
@@ -212,7 +212,7 @@ const char *drizzle_result_sqlstate(drizzle_result_st *result)
 
 uint16_t drizzle_result_warning_count(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -222,7 +222,7 @@ uint16_t drizzle_result_warning_count(drizzle_result_st *result)
 
 uint64_t drizzle_result_insert_id(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -232,7 +232,7 @@ uint64_t drizzle_result_insert_id(drizzle_result_st *result)
 
 uint64_t drizzle_result_affected_rows(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -242,7 +242,7 @@ uint64_t drizzle_result_affected_rows(drizzle_result_st *result)
 
 uint16_t drizzle_result_column_count(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -252,7 +252,7 @@ uint16_t drizzle_result_column_count(drizzle_result_st *result)
 
 uint64_t drizzle_result_row_count(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -268,24 +268,24 @@ drizzle_result_st *drizzle_result_read(drizzle_st *con,
                                        drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused;
   }
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
-    return NULL;
+    return nullptr;
   }
 
   if (con->has_state())
   {
     con->result= drizzle_result_create(con);
-    if (con->result == NULL)
+    if (con->result == nullptr)
     {
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
-      return NULL;
+      return nullptr;
     }
 
     con->push_state(drizzle_state_result_read);
@@ -298,7 +298,7 @@ drizzle_result_st *drizzle_result_read(drizzle_st *con,
 
 drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -328,7 +328,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
     if (ret != DRIZZLE_RETURN_OK)
       return ret;
 
-    if (row == NULL)
+    if (row == nullptr)
       break;
 
     if (result->row_list_size < result->row_count)
@@ -336,7 +336,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       size_t new_row_list_size = result->row_list_size + DRIZZLE_ROW_GROW_SIZE;
 
       row_list= (drizzle_row_t *)realloc(result->row_list, sizeof(drizzle_row_t) * new_row_list_size);
-      if (row_list == NULL)
+      if (row_list == nullptr)
       {
         drizzle_row_free(result, row);
         drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc row_list.");
@@ -347,7 +347,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       if (result->binary_rows)
       {
         uint8_t **null_bitmap_list= (uint8_t **)realloc(result->null_bitmap_list, sizeof(uint8_t *) * new_row_list_size);
-        if (null_bitmap_list == NULL)
+        if (null_bitmap_list == nullptr)
         {
           drizzle_row_free(result, row);
           drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc null_bitmap_list.");
@@ -357,7 +357,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
       }
 
       field_sizes_list= (size_t **)realloc(result->field_sizes_list, sizeof(size_t *) * new_row_list_size);
-      if (field_sizes_list == NULL)
+      if (field_sizes_list == nullptr)
       {
         drizzle_row_free(result, row);
         drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to realloc field list.");
@@ -391,7 +391,7 @@ drizzle_return_t drizzle_result_buffer(drizzle_result_st *result)
 
 size_t drizzle_result_row_size(drizzle_result_st *result)
 {
-  if (result == NULL)
+  if (result == nullptr)
   {
     return 0;
   }
@@ -407,7 +407,7 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
 {
   drizzle_return_t ret;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }

@@ -55,14 +55,14 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
   unsigned char *ptr;
   drizzle_return_t ret;
 
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
 
   __LOG_LOCATION__
 
-  if (con->command_data == NULL && con->command_total != 0 &&
+  if (con->command_data == nullptr && con->command_total != 0 &&
       con->command != DRIZZLE_COMMAND_CHANGE_USER)
   {
     return DRIZZLE_RETURN_PAUSE;
@@ -130,7 +130,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
       {
         memcpy(ptr, con->command_data, con->command_size);
         con->command_offset= con->command_size;
-        con->command_data= NULL;
+        con->command_data= nullptr;
         con->buffer_size+= 5 + con->command_size;
       }
       else
@@ -152,7 +152,7 @@ drizzle_return_t drizzle_state_command_write(drizzle_st *con)
     con->buffer_ptr= con->command_data;
     con->buffer_size= con->command_size;
     con->command_offset+= con->command_size;
-    con->command_data= NULL;
+    con->command_data= nullptr;
   }
 
   if (con->command_offset == con->command_total)

@@ -53,7 +53,7 @@ drizzle_result_st *drizzle_query(drizzle_st *con,
   {
     size= strlen(query);
   }
-  return drizzle_command_write(con, NULL, DRIZZLE_COMMAND_QUERY,
+  return drizzle_command_write(con, nullptr, DRIZZLE_COMMAND_QUERY,
                                    (unsigned char *)query, size, size, ret_ptr);
 }
 
@@ -62,7 +62,7 @@ ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from
   (void)con;
   const char *end;
 
-  if (from == NULL || from_size == 0)
+  if (from == nullptr || from_size == 0)
   {
     return -1;
   }
@@ -70,7 +70,7 @@ ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from
   size_t max_to_size= from_size * 2;
   *destination= (char*) malloc(max_to_size);
 
-  if (destination == NULL)
+  if (destination == nullptr)
   {
     return -1;
   }
@@ -133,7 +133,7 @@ ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from
       if ((size_t)to_size + 2 > max_to_size)
       {
         free(to);
-        *destination= NULL;
+        *destination= nullptr;
         return -1;
       }
 
@@ -146,7 +146,7 @@ ssize_t drizzle_escape_str(drizzle_st *con, char **destination, const char *from
       if ((size_t)to_size + 1 > max_to_size)
       {
         free(to);
-        *destination= NULL;
+        *destination= nullptr;
         return -1;
       }
 
@@ -167,7 +167,7 @@ ssize_t drizzle_escape_string(drizzle_st *con, char **destination, const char *f
 
 bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_size)
 {
-  if (to == NULL || from == NULL || from_size == 0)
+  if (to == nullptr || from == nullptr || from_size == 0)
   {
     return false;
   }
@@ -188,7 +188,7 @@ bool drizzle_hex_string(char *to, const unsigned char *from, const size_t from_s
 
 bool drizzle_mysql_password_hash(char *to, const char *from, const size_t from_size)
 {
-  if (to == NULL || from == NULL || from_size == 0)
+  if (to == nullptr || from == nullptr || from_size == 0)
   {
     return false;
   }

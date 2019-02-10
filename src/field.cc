@@ -55,12 +55,12 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
                                    drizzle_return_t *ret_ptr)
 {
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
@@ -81,7 +81,7 @@ drizzle_field_t drizzle_field_read(drizzle_result_st *result, uint64_t *offset,
     if (result->field_current == (result->column_count - result->null_bitcount))
     {
       *ret_ptr= DRIZZLE_RETURN_ROW_END;
-      return NULL;
+      return nullptr;
     }
 
     if (result->binary_rows)
@@ -128,12 +128,12 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
   uint16_t current_field;
 
   drizzle_return_t unused_ret;
-  if (ret_ptr == NULL)
+  if (ret_ptr == nullptr)
   {
     ret_ptr= &unused_ret;
   }
 
-  if (result == NULL)
+  if (result == nullptr)
   {
     *ret_ptr= DRIZZLE_RETURN_INVALID_ARGUMENT;
     return 0;
@@ -143,13 +143,13 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
 
   if (*ret_ptr != DRIZZLE_RETURN_OK)
   {
-    return NULL;
+    return nullptr;
   }
 
-  if (field == NULL)
+  if (field == nullptr)
   {
     *total= 0;
-    return NULL;
+    return nullptr;
   }
 
 #if SIZE_MAX < UINT64_MAX
@@ -157,12 +157,12 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
   {
     drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Field is larger than memory.");
     *ret_ptr= DRIZZLE_RETURN_MEMORY;
-    return NULL;
+    return nullptr;
   }
 #endif
   *total = (size_t)wire_size;
 
-  if (result->field_buffer == NULL)
+  if (result->field_buffer == nullptr)
   {
     result->field_buffer= new (std::nothrow) char*[result->column_count]();
     result->field_buffer_sizes= new (std::nothrow) size_t[result->column_count]();
@@ -203,11 +203,11 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
   {
     result->field_buffer[current_field]= (drizzle_field_t) realloc(result->field_buffer[current_field], (*total) + 1);
     result->field_buffer_sizes[current_field]= (*total) + 1;
-    if (result->field_buffer[current_field] == NULL)
+    if (result->field_buffer[current_field] == nullptr)
     {
       drizzle_set_error(result->con, __FILE_LINE_FUNC__, "Failed to allocate.");
       *ret_ptr= DRIZZLE_RETURN_MEMORY;
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -218,7 +218,7 @@ drizzle_field_t drizzle_field_buffer(drizzle_result_st *result, size_t *total,
     field= drizzle_field_read(result, &offset, &size, &wire_size, ret_ptr);
     if (*ret_ptr != DRIZZLE_RETURN_OK)
     {
-      return NULL;
+      return nullptr;
     }
     assert(wire_size == (uint64_t)*total);
     if ((result->field_offset + result->field_size) != result->field_total)
@@ -253,7 +253,7 @@ void drizzle_field_free(drizzle_field_t field)
 
 drizzle_return_t drizzle_state_field_read(drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return DRIZZLE_RETURN_INVALID_ARGUMENT;
   }
@@ -275,7 +275,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
     con->result->field_total= drizzle_unpack_length(con, &ret);
     if (ret == DRIZZLE_RETURN_NULL_SIZE)
     {
-      con->result->field= NULL;
+      con->result->field= nullptr;
       con->result->field_current++;
       con->pop_state();
       return DRIZZLE_RETURN_OK;
@@ -355,7 +355,7 @@ drizzle_return_t drizzle_state_field_read(drizzle_st *con)
   if ((con->result->field_offset + con->result->field_size) ==
       con->result->field_total)
   {
-    if (con->result->column_buffer != NULL &&
+    if (con->result->column_buffer != nullptr &&
         con->result->column_buffer[con->result->field_current].size <
         con->result->field_total)
     {

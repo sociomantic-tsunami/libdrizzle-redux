@@ -38,10 +38,10 @@
 #pragma once
 
 #define LIBDRIZZLE_LIST_ADD(__list, __obj) { \
-  if (__list ## _list != NULL) \
+  if (__list ## _list != nullptr) \
     __list ## _list->prev= __obj; \
   __obj->next= __list ## _list; \
-  __obj->prev= NULL; \
+  __obj->prev= nullptr; \
   __list ## _list= __obj; \
   __list ## _count++; \
 }
@@ -49,9 +49,9 @@
 #define LIBDRIZZLE_LIST_DEL(__list, __obj) { \
   if (__list ## _list == __obj) \
     __list ## _list= __obj->next; \
-  if (__obj->prev != NULL) \
+  if (__obj->prev != nullptr) \
     __obj->prev->next= __obj->next; \
-  if (__obj->next != NULL) \
+  if (__obj->next != nullptr) \
     __obj->next->prev= __obj->prev; \
   __list ## _count--; \
 }
@@ -60,10 +60,10 @@ class Packet {
 public:
   Packet():
     _stack(true),
-    _drizzle(NULL),
-    _func(NULL),
-    next(NULL),
-    prev(NULL)
+    _drizzle(nullptr),
+    _func(nullptr),
+    next(nullptr),
+    prev(nullptr)
   {
   }
 
@@ -71,8 +71,8 @@ public:
     _stack(false),
     _drizzle(drizzle_),
     _func(func_),
-    next(NULL),
-    prev(NULL)
+    next(nullptr),
+    prev(nullptr)
   {
   }
 
@@ -87,7 +87,7 @@ public:
 
   void clear()
   {
-    _func= NULL;
+    _func= nullptr;
   }
 
   bool stack() const

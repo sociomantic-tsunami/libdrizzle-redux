@@ -46,9 +46,9 @@
 
 const char *drizzle_uds(const drizzle_st *con)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
-    return NULL;
+    return nullptr;
   }
 
   if (con->socket_type == DRIZZLE_CON_SOCKET_UDS)
@@ -61,12 +61,12 @@ const char *drizzle_uds(const drizzle_st *con)
     return DRIZZLE_DEFAULT_UDS;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void drizzle_set_uds(drizzle_st *con, const char *uds)
 {
-  if (con == NULL)
+  if (con == nullptr)
   {
     return;
   }
@@ -75,7 +75,7 @@ void drizzle_set_uds(drizzle_st *con, const char *uds)
 
   drizzle_reset_addrinfo(con);
 
-  if (uds == NULL)
+  if (uds == nullptr)
   {
     con->socket.uds.path_buffer[0]= 0;
   }
