@@ -128,4 +128,4 @@ jobs:
         COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
       before_script: skip
       script:
-        - beaver bintray upload -D $DIST_VERSION -N $CACHE_DIR/*.deb
+        - beaver bintray upload -n -D $DIST_VERSION -N $CACHE_DIR/*.deb
