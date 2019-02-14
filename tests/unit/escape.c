@@ -50,12 +50,16 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  // Test for data too long
   char *out;
+
+  // Test invalid parameters
+  ASSERT_EQ_(-1, drizzle_escape_string(NULL, &out, NULL, strlen(in)), "from string is NULL");
+  ASSERT_EQ_(-1, drizzle_escape_string(NULL, &out, in, 0), "length of from string is 0");
+
+  // Test for data too long
   uint64_t out_len = drizzle_escape_string(NULL, &out, in, strlen(in));
   ASSERT_EQ_(17, out_len, "drizzle_escape_string(): %u != %u", 17,
              (unsigned int)(out_len));
-
   free(out);
 
   out_len= drizzle_escape_str(NULL, &out, in, strlen(in), false);
