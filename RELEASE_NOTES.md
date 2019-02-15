@@ -26,3 +26,10 @@ The modified build process is as follows:
 
 New Features
 ============
+
+API functions for retrieving unsigned 32-bit and 64-bit numbers.
+
+- `drizzle_stmt_get_uint`
+- `drizzle_stmt_get_uint_from_name`
+- `drizzle_stmt_get_biguint_from_name`
+- `drizzle_stmt_get_biguint`

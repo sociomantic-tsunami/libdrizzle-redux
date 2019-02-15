@@ -188,6 +188,19 @@ DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_short(drizzle_stmt_st *stmt, uint16_t param_num,
                                         uint16_t value, bool is_unsigned);
 
+/*
+ * Sets a parameter of a prepared statement to a short int value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_ushort(drizzle_stmt_st *stmt, uint16_t param_num,
+                                        uint16_t value, bool is_unsigned);
+
 /**
  * Sets a parameter of a prepared statement to an int value
  *
@@ -202,6 +215,19 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
                                       uint32_t value, bool is_unsigned);
 
 /**
+ * Sets a parameter of a prepared statement to an int value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_uint(drizzle_stmt_st *stmt, uint16_t param_num,
+                                      uint32_t value);
+
+/**
  * Sets a parameter of a prepared statement to a bigint value
  *
  * @param stmt A prepared statement object
@@ -213,6 +239,19 @@ drizzle_return_t drizzle_stmt_set_int(drizzle_stmt_st *stmt, uint16_t param_num,
 DRIZZLE_API
 drizzle_return_t drizzle_stmt_set_bigint(drizzle_stmt_st *stmt, uint16_t param_num,
                                          uint64_t value, bool is_unsigned);
+
+/**
+ * Sets a parameter of a prepared statement to a bigint value
+ *
+ * @param stmt A prepared statement object
+ * @param param_num The parameter number to set (starting at 0)
+ * @param value The value to set the parameter
+ * @param is_unsigned Set to true if the parameter is unsigned
+ * @return A return status code, DRIZZLE_RETURN_OK upon success
+ */
+DRIZZLE_API
+drizzle_return_t drizzle_stmt_set_biguint(drizzle_stmt_st *stmt, uint16_t param_num,
+                                         uint64_t value);
 
 /**
  * Sets a parameter of a prepared statement to a double value
@@ -383,6 +422,19 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
                                     size_t *len, drizzle_return_t *ret_ptr);
 
 /**
+ * Get the unsigned int value for a column of a fetched row
+ *
+ * @param stmt The prepared statement object
+ * @param column_number The column number to get (starting at 0)
+ * @param ret_ptr A pointer to a drizzle_return_t to store the return status
+ *  into DRIZZLE_RETURN_TRUNCATED if a truncation has occurred
+ * @return The unsigned int value
+ */
+DRIZZLE_API
+uint32_t drizzle_stmt_get_uint(drizzle_stmt_st *stmt, uint16_t column_number,
+                               drizzle_return_t *ret_ptr);
+
+/**
  * Get the int value for a column of a fetched row
  *
  * @param stmt The prepared statement object
@@ -392,8 +444,22 @@ const char *drizzle_stmt_get_string(drizzle_stmt_st *stmt, uint16_t column_numbe
  * @return The int value
  */
 DRIZZLE_API
-uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number,
-                              drizzle_return_t *ret_ptr);
+int32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number,
+                             drizzle_return_t *ret_ptr);
+
+/**
+ * Get the unsigned int value for a column of a fetched row using a column name
+ *
+ * @param stmt The prepared statement object
+ * @param column_name The column name to get
+ * @param ret_ptr A pointer to a drizzle_return_t to store the return status
+ * into DRIZZLE_RETURN_TRUNCATED if a truncation has occurred,
+ * DRIZZLE_RETURN_NOT_FOUND if the column name cannot be found
+ * @return The unsigned int value
+ */
+DRIZZLE_API
+uint32_t drizzle_stmt_get_uint_from_name(drizzle_stmt_st *stmt, const char *column_name,
+                                         drizzle_return_t *ret_ptr);
 
 /**
  * Get the int value for a column of a fetched row using a column name
@@ -406,8 +472,8 @@ uint32_t drizzle_stmt_get_int(drizzle_stmt_st *stmt, uint16_t column_number,
  * @return The int value
  */
 DRIZZLE_API
-uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name,
-                                        drizzle_return_t *ret_ptr);
+int32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *column_name,
+                                       drizzle_return_t *ret_ptr);
 
 /**
  * Get the bigint value for a column of a fetched row using a column name
@@ -420,7 +486,21 @@ uint32_t drizzle_stmt_get_int_from_name(drizzle_stmt_st *stmt, const char *colum
  * @return The bigint value
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name,
+int64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *column_name,
+                                           drizzle_return_t *ret_ptr);
+
+/**
+ * Get the unsigned bigint value for a column of a fetched row using a column name
+ *
+ * @param stmt The prepared statement object
+ * @param column_name The column name to get
+ * @param ret_ptr A pointer to a drizzle_return_t to store the return status
+ * into DRIZZLE_RETURN_TRUNCATED if a truncation has occurred,
+ *
+ * @return The unsigned bigint value
+ */
+DRIZZLE_API
+uint64_t drizzle_stmt_get_biguint_from_name(drizzle_stmt_st *stmt, const char *column_name,
                                            drizzle_return_t *ret_ptr);
 
 /**
@@ -433,8 +513,22 @@ uint64_t drizzle_stmt_get_bigint_from_name(drizzle_stmt_st *stmt, const char *co
  * @return The bigint value
  */
 DRIZZLE_API
-uint64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number,
+int64_t drizzle_stmt_get_bigint(drizzle_stmt_st *stmt, uint16_t column_number,
                                  drizzle_return_t *ret_ptr);
+
+/**
+ * Get the unsigned bigint value for a column of a fetched row
+ *
+ * @param stmt The prepared statement object
+ * @param column_number The column number to get (starting at 0)
+ * @param ret_ptr A pointer to a drizzle_return_t to store the return status
+ * into DRIZZLE_RETURN_TRUNCATED if a truncation has occurred
+ * @return The unsigned bigint value
+ */
+DRIZZLE_API
+uint64_t drizzle_stmt_get_biguint(drizzle_stmt_st *stmt, uint16_t column_number,
+                                 drizzle_return_t *ret_ptr);
+
 /**
  * Get the double value for a column of a fetched row
  *
