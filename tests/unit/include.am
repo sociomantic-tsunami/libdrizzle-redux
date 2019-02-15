@@ -67,6 +67,15 @@ valgrind-column: tests/unit/column
 check-column: tests/unit/column
 	tests/unit/column
 
+tests_unit_column_unbuffered_SOURCES= tests/unit/column_unbuffered.c tests/unit/common.c
+tests_unit_column_unbuffered_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_column_unbuffered_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/column_unbuffered
+noinst_PROGRAMS+= tests/unit/column_unbuffered
+
+check-column_unbuffered: tests/unit/column_unbuffered
+	tests/unit/column_unbuffered
+
 tests_unit_numbers_SOURCES= tests/unit/numbers.c tests/unit/common.c
 tests_unit_numbers_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 tests_unit_numbers_LDADD+= -lm
