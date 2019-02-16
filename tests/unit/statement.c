@@ -44,6 +44,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+drizzle_return_t actual;
+#define CHECK_FROM_NAME_API(__api_func, __stmt, __name, __exp_res) \
+do \
+{ \
+  __api_func(NULL, __name, &actual); \
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, actual); \
+  __api_func(__stmt, "__name", &actual); \
+  ASSERT_NEQ(DRIZZLE_RETURN_OK, actual); \
+  res_val = __api_func(__stmt, __name, &actual); \
+  ASSERT_EQ(DRIZZLE_RETURN_OK, actual); \
+  ASSERT_EQ(__exp_res, res_val); \
+} \
+while (0)
+
+#define CHECK_STMT_API(__api_func, __stmt, __int, __exp_res) \
+do \
+{ \
+  __api_func(NULL, __int, &actual); \
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, actual); \
+  __api_func(__stmt, 999, &actual); \
+  ASSERT_NEQ(DRIZZLE_RETURN_OK, actual); \
+  res_val = __api_func(__stmt, __int, &actual); \
+  ASSERT_EQ(DRIZZLE_RETURN_OK, actual); \
+  ASSERT_EQ(__exp_res, res_val); \
+} \
+while (0)
+
 int main(int argc, char *argv[])
 {
   (void)argc;
@@ -97,15 +124,26 @@ int main(int argc, char *argv[])
   /* Query should have 1 param */
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
 
+  ret = drizzle_stmt_execute(stmt);
+  ASSERT_EQ_(DRIZZLE_RETURN_STMT_ERROR, ret, "%s", drizzle_error(con));
+
   uint32_t val = 1;
   ret = drizzle_stmt_set_int(stmt, 0, val, false);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
+  ret = drizzle_stmt_fetch(stmt);
+  ASSERT_EQ_(DRIZZLE_RETURN_UNEXPECTED_DATA, ret, "%s", drizzle_error(con));
+
   ret = drizzle_stmt_execute(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+  ASSERT_EQ(1, drizzle_stmt_column_count(stmt));
+  ASSERT_EQ(0, drizzle_stmt_affected_rows(stmt));
 
   ret = drizzle_stmt_buffer(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
+  ret = drizzle_stmt_buffer(stmt);
+  ASSERT_EQ_(DRIZZLE_RETURN_UNEXPECTED_DATA, ret, "%s", drizzle_error(con));
 
   /* Result should have 2 rows */
   uint64_t count = drizzle_stmt_row_count(stmt);
@@ -128,8 +166,18 @@ int main(int argc, char *argv[])
       printf("Retrieved unexpected int value\n");
       return EXIT_FAILURE;
     }
-    res_val = drizzle_stmt_get_int_from_name(stmt, "a", &ret);
-    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int (char col name)");
+
+    // drizzle_stmt_get_is_unsigned_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_is_unsigned_from_name, stmt, "a", false);
+
+    // drizzle_stmt_get_is_null
+    CHECK_STMT_API(drizzle_stmt_get_is_null, stmt, 0, false);
+
+    // drizzle_stmt_get_is_null_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_is_null_from_name, stmt, "a", false);
+    // drizzle_stmt_get_is_null_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_int_from_name, stmt, "a", i);
+
     if (res_val != i)
     {
       printf("Rerieved unexpected int value with char col name\n");
@@ -148,6 +196,9 @@ int main(int argc, char *argv[])
     printf("Retrieved bad number of rows\n");
     return EXIT_FAILURE;
   }
+  ret = drizzle_stmt_reset(stmt);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
   ret = drizzle_stmt_close(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
