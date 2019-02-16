@@ -581,6 +581,7 @@ drizzle_return_t drizzle_state_column_read(drizzle_st *con)
       column= con->result->column;
     }
 
+    column->result= con->result;
     /* These functions can only fail if they need to read data, but we know we
        buffered the entire packet, so ignore returns. */
     (void)drizzle_unpack_string(con, column->catalog, DRIZZLE_MAX_CATALOG_SIZE);
