@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   row = drizzle_row_next(result);
+  ASSERT_NULL_(drizzle_row_next(NULL), "Could not get next row");
   if (row == NULL)
   {
     printf("Could not get the next row\n");
@@ -77,7 +78,9 @@ int main(int argc, char *argv[])
     printf("Retrieved bad next row value\n");
     return EXIT_FAILURE;
   }
+  drizzle_row_seek(NULL, 3);
   drizzle_row_seek(result, 3);
+  ASSERT_NULL_(drizzle_row_prev(NULL), "Could not get prev row");
   row = drizzle_row_prev(result);
   if (row == NULL)
   {
@@ -89,6 +92,8 @@ int main(int argc, char *argv[])
     printf("Retrieved bad prev row value: %s\n", row[0]);
     return EXIT_FAILURE;
   }
+  ASSERT_NULL_(drizzle_row_index(NULL, 1), "result set is NULL");
+  ASSERT_NULL_(drizzle_row_index(result, 999), "row index out of bounds");
   row = drizzle_row_index(result, 1);
   if (row == NULL)
   {
@@ -100,13 +105,19 @@ int main(int argc, char *argv[])
     printf("Retrieved bad indexed row value: %s\n", row[0]);
     return EXIT_FAILURE;
   }
+
+  ASSERT_EQ(0, drizzle_row_current(NULL));
   if (drizzle_row_current(result) != 2)
   {
     printf("Index at wrong pos\n");
     return EXIT_FAILURE;
   }
+  ASSERT_NULL_(drizzle_row_field_sizes(NULL), "Could not get field sizes");
   size_t *sizes = drizzle_row_field_sizes(result);
   ASSERT_EQ(sizes[0], 1);
+
+  drizzle_row_seek(result, 0);
+  ASSERT_NULL_(drizzle_row_prev(result), "Could not get prev row");
 
   drizzle_result_free(result);
 
