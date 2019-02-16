@@ -119,7 +119,7 @@ nodist_EXTRA_tests_unit_nulls_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/nulls
 noinst_PROGRAMS+= tests/unit/nulls
 
-tests_unit_row_SOURCES= tests/unit/row.c
+tests_unit_row_SOURCES= tests/unit/row.c tests/unit/common.c
 tests_unit_row_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_row_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/row
