@@ -10,7 +10,7 @@ install_dependencies()
         COMPILER_PACKAGE=$CC$COMPILER_VERSION
     fi
 
-    apt-get install -y --no-install-recommends $COMPILER_PACKAGE
+    apt-get install -y --no-install-recommends $COMPILER_PACKAGE lcov
 }
 
 # install dependencies
