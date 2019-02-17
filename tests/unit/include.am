@@ -125,6 +125,15 @@ nodist_EXTRA_tests_unit_row_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/row
 noinst_PROGRAMS+= tests/unit/row
 
+tests_unit_row_api_SOURCES= tests/unit/row_api.c tests/unit/common.c
+tests_unit_row_api_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_row_api_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/row_api
+noinst_PROGRAMS+= tests/unit/row_api
+
+check-row_api: tests/unit/row_api
+	tests/unit/row_api
+
 tests_unit_version_SOURCES= tests/unit/version.c
 tests_unit_version_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_version_SOURCES = dummy.cxx
