@@ -104,6 +104,15 @@ nodist_EXTRA_tests_unit_datetypes_SOURCES = dummy.cxx
 check_PROGRAMS+= tests/unit/datetypes
 noinst_PROGRAMS+= tests/unit/datetypes
 
+tests_unit_datatypes_all_SOURCES= tests/unit/datatypes_all.c tests/unit/common.c
+tests_unit_datatypes_all_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
+nodist_EXTRA_tests_unit_datatypes_all_SOURCES = dummy.cxx
+check_PROGRAMS+= tests/unit/datatypes_all
+noinst_PROGRAMS+= tests/unit/datatypes_all
+
+check-datatypes_all: tests/unit/datatypes_all
+	tests/unit/datatypes_all
+
 tests_unit_nulls_SOURCES= tests/unit/nulls.c tests/unit/common.c
 tests_unit_nulls_LDADD= src/libdrizzle-redux@LIBDRIZZLE_MAJOR@.la
 nodist_EXTRA_tests_unit_nulls_SOURCES = dummy.cxx
