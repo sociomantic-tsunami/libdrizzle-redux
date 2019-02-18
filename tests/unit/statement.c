@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+// const char *drizzle_stmt_get_string_from_name(drizzle_stmt_st *stmt, const char *column_name, size_t *len, drizzle_return_t *ret_ptr)
 drizzle_return_t actual;
 #define CHECK_FROM_NAME_API(__api_func, __stmt, __name, __exp_res) \
 do \
@@ -110,16 +110,19 @@ int main(int argc, char *argv[])
   ret = drizzle_select_db(con, "test_stmt");
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "USE test_stmt");
 
-  drizzle_query(con, "CREATE TABLE test_stmt.t1 (a INT)", 0, &ret);
-  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE TABLE test_stmt.t1 (a INT): %s",
+  drizzle_query(con, "CREATE TABLE test_stmt.t1 (a INT, b INT UNSIGNED)", 0, &ret);
+  ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "CREATE TABLE test_stmt.t1 (a INT, b INT UNSIGNED): %s",
              drizzle_error(con));
 
-  drizzle_query(con, "INSERT INTO test_stmt.t1 VALUES (1),(2),(3)", 0, &ret);
+  drizzle_query(con, "INSERT INTO test_stmt.t1 VALUES (1, 4),(2, 5),(3, NULL)", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   const char *query = "SELECT * FROM test_stmt.t1 where a > ?";
   stmt = drizzle_stmt_prepare(con, query, strlen(query), &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
+  /* drizzle_stmt_param_count with stmt object=NULL */
+  ASSERT_EQ(0, drizzle_stmt_param_count(NULL));
 
   /* Query should have 1 param */
   ASSERT_EQ_(1, drizzle_stmt_param_count(stmt), "Retrieved bad param count");
@@ -128,16 +131,33 @@ int main(int argc, char *argv[])
   ASSERT_EQ_(DRIZZLE_RETURN_STMT_ERROR, ret, "%s", drizzle_error(con));
 
   uint32_t val = 1;
+  ret = drizzle_stmt_set_int(NULL, 0, val, false);
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, ret);
+
+  ret = drizzle_stmt_set_int(stmt, 2, val, false);
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, ret);
+
   ret = drizzle_stmt_set_int(stmt, 0, val, false);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
+  ret = drizzle_stmt_fetch(NULL);
+  ASSERT_EQ(ret, DRIZZLE_RETURN_INVALID_ARGUMENT);
 
   ret = drizzle_stmt_fetch(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_UNEXPECTED_DATA, ret, "%s", drizzle_error(con));
 
   ret = drizzle_stmt_execute(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
-  ASSERT_EQ(1, drizzle_stmt_column_count(stmt));
+  ASSERT_EQ(2, drizzle_stmt_column_count(stmt));
+
   ASSERT_EQ(0, drizzle_stmt_affected_rows(stmt));
+  drizzle_stmt_get_is_unsigned(NULL, 0, &ret);
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, ret);
+
+  ASSERT_EQ(false, drizzle_stmt_get_is_unsigned(stmt, 0, &ret));
+
+  ret = drizzle_stmt_buffer(NULL);
+  ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, ret);
 
   ret = drizzle_stmt_buffer(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
@@ -156,27 +176,31 @@ int main(int argc, char *argv[])
     const char *char_val;
     char comp_val[3];
     size_t len;
+    res_val = drizzle_stmt_get_int(NULL, 0, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_INVALID_ARGUMENT, ret, "drizzle_stmt_get_int");
+
     res_val = drizzle_stmt_get_int(stmt, 0, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_int");
     char_val = drizzle_stmt_get_string(stmt, 0, &len, &ret);
     ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
+    char_val = drizzle_stmt_get_string(stmt, 99, &len, &ret);
+    ASSERT_NULL_(char_val, "drizzle_stmt_get_string: out of bounds column number");
+    ASSERT_NEQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string");
+
+    // test drizzle_stmt_get_string_from_name
+    drizzle_stmt_get_string_from_name(NULL, "a", &len, &ret);
+    ASSERT_EQ(DRIZZLE_RETURN_INVALID_ARGUMENT, ret);
+    drizzle_stmt_get_string_from_name(stmt, "z", &len, &ret);
+    ASSERT_EQ(DRIZZLE_RETURN_NOT_FOUND, ret);
+    char_val = drizzle_stmt_get_string_from_name(stmt, "a", &len, &ret);
+    ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "drizzle_stmt_get_string_from_name");
+
     i++;
     if (res_val != i)
     {
       printf("Retrieved unexpected int value\n");
       return EXIT_FAILURE;
     }
-
-    // drizzle_stmt_get_is_unsigned_from_name
-    CHECK_FROM_NAME_API(drizzle_stmt_get_is_unsigned_from_name, stmt, "a", false);
-
-    // drizzle_stmt_get_is_null
-    CHECK_STMT_API(drizzle_stmt_get_is_null, stmt, 0, false);
-
-    // drizzle_stmt_get_is_null_from_name
-    CHECK_FROM_NAME_API(drizzle_stmt_get_is_null_from_name, stmt, "a", false);
-    // drizzle_stmt_get_is_null_from_name
-    CHECK_FROM_NAME_API(drizzle_stmt_get_int_from_name, stmt, "a", i);
 
     if (res_val != i)
     {
@@ -189,6 +213,27 @@ int main(int argc, char *argv[])
       printf("Retrieved unexpected string value\n");
       return EXIT_FAILURE;
     }
+
+    // drizzle_stmt_get_is_unsigned_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_is_unsigned_from_name, stmt, "a", false);
+
+    // drizzle_stmt_get_is_unsigned_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_is_unsigned_from_name, stmt, "b", true);
+
+    // drizzle_stmt_get_is_null
+    CHECK_STMT_API(drizzle_stmt_get_is_null, stmt, 0, false);
+
+    // drizzle_stmt_get_is_null_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_is_null_from_name, stmt, "a", false);
+    // drizzle_stmt_get_is_null_from_name
+    CHECK_FROM_NAME_API(drizzle_stmt_get_int_from_name, stmt, "a", i);
+
+    if (drizzle_stmt_get_is_null_from_name(stmt, "b", &ret))
+    {
+      char_val= drizzle_stmt_get_string(stmt, 1, &len, &ret);
+      ASSERT_EQ(ret, DRIZZLE_RETURN_NULL_SIZE);
+      ASSERT_NULL_(char_val, "NULL column");
+    }
   }
   /* Should have cycled through 2 rows (values 2 and 3) */
   if (i != 3)
@@ -196,11 +241,18 @@ int main(int argc, char *argv[])
     printf("Retrieved bad number of rows\n");
     return EXIT_FAILURE;
   }
+
   ret = drizzle_stmt_reset(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
 
   ret = drizzle_stmt_close(stmt);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "%s", drizzle_error(con));
+
+  ret = drizzle_stmt_close(NULL);
+  ASSERT_EQ_(DRIZZLE_RETURN_INVALID_ARGUMENT, ret, "%s", drizzle_error(con));
+
+  ret = drizzle_stmt_reset(NULL);
+  ASSERT_EQ_(DRIZZLE_RETURN_INVALID_ARGUMENT, ret, "%s", drizzle_error(con));
 
   drizzle_query(con, "DROP TABLE test_stmt.t1", 0, &ret);
   ASSERT_EQ_(DRIZZLE_RETURN_OK, ret, "DROP TABLE test_stmt.t1");
