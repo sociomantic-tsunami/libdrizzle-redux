@@ -319,6 +319,7 @@ drizzle_return_t drizzle_state_binlog_read(drizzle_st *con)
     snprintf(con->result->info, DRIZZLE_MAX_INFO_SIZE, "%.*s",
              (int)con->packet_size, con->last_error);
     con->result->info[DRIZZLE_MAX_INFO_SIZE-1]= 0;
+    con->result->error_code = con->error_code;
 
     con->pop_state();
     if (con->binlog->error_fn != NULL)

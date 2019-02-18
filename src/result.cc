@@ -469,6 +469,7 @@ drizzle_return_t drizzle_state_result_read(drizzle_st *con)
     memcpy(con->result->sqlstate, con->sqlstate,
            DRIZZLE_MAX_SQLSTATE_SIZE);
     con->result->sqlstate[DRIZZLE_MAX_SQLSTATE_SIZE]= 0;
+    con->result->error_code = con->error_code;
     ret= DRIZZLE_RETURN_ERROR_CODE;
   }
   else
