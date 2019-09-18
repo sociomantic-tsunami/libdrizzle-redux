@@ -4,18 +4,19 @@ Installing Libdrizzle Redux
 Debian
 ------
 
-For ``Debian`` based systems running **ubuntu xenial** ``deb`` packages are
-available in the project's **apt** repository at `bintray`_.
+For ``Debian`` based systems running **ubuntu xenial or bionic** ``deb``
+packages are available in the project's **apt** repository at `bintray`_.
 
 To add the **apt** repository to your system follow the instructions given
 when clicking on the **[set up me]!** button.
 
 .. image:: _static/bintray-setmeup.png
 
-The parameter ``{distribution}`` should be ``xenial`` while ``{components}`` can be
-``release`` and/or ``prerelease``. E.g::
+The parameter ``{distribution}`` should be ``xenial`` or ``bionic`` while
+``{components}`` can be ``release`` and/or ``prerelease``. E.g::
 
    https://dl.bintray.com/sociomantic-tsunami/libdrizzle-redux xenial release prerelease
+   https://dl.bintray.com/sociomantic-tsunami/libdrizzle-redux bionic release prerelease
 
 Then run::
 
