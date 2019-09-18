@@ -57,7 +57,7 @@ Installing Libdrizzle Redux
 
 There are several options for installing the library:
 
-- The project's **apt** repository at `bintray`_ offers ``deb`` packages for Ubuntu Xenial.
+- The project's **apt** repository at `bintray`_ offers ``deb`` packages for Ubuntu Xenial and Bionic.
 - Build from source.
 - Build and install the ``deb`` or ``rpm`` packages locally.
 
