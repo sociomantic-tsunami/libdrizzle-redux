@@ -1,4 +1,4 @@
-# Docker compose file to override configuration for centos based images
+# Docker compose file to override configuration for ubuntu xenial based images
 version: '3'
 
 services:
