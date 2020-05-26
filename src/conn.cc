@@ -52,6 +52,9 @@
 
 #include <limits.h>
 #include <cerrno>
+#ifdef USE_OPENSSL
+#include <openssl/err.h>
+#endif
 
 /**
  * @addtogroup drizzle_static Static Connection Declarations
@@ -103,6 +106,18 @@ void drizzle_close(drizzle_st *con)
   {
     return;
   }
+
+#ifdef USE_OPENSSL
+  if (con->ssl) {
+          if (0 == ERR_peek_error() &&
+              !(SSL_SENT_SHUTDOWN & SSL_get_shutdown(con->ssl)))
+                  SSL_shutdown(con->ssl);
+          SSL_free(con->ssl);
+          con->ssl = NULL;
+  }
+  con->ssl_state = DRIZZLE_SSL_STATE_NONE;
+  ERR_clear_error();
+#endif
 
   if (con->fd == INVALID_SOCKET)
   {
@@ -1176,9 +1191,16 @@ drizzle_return_t drizzle_state_connect(drizzle_st *con)
       return DRIZZLE_RETURN_COULD_NOT_CONNECT;
     }
 #ifdef USE_OPENSSL
-    if (con->ssl)
-    {
-      SSL_set_fd(con->ssl, con->fd);
+    if (con->ssl_context) {
+	    con->ssl_state = DRIZZLE_SSL_STATE_NONE;
+            con->ssl = SSL_new(con->ssl_context);
+            if (NULL == con->ssl) {
+                    drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                      "Could not build SSL object");
+                    return DRIZZLE_RETURN_SSL_ERROR;
+            }
+            ERR_clear_error();
+            SSL_set_fd(con->ssl, con->fd);
     }
 #endif
     con->pop_state();
@@ -1212,8 +1234,19 @@ drizzle_return_t drizzle_state_connecting(drizzle_st *con)
 
     if (error == 0 && (con->revents & POLLOUT))
       {
-      /* Successful connection! */
-      con->addrinfo_next= NULL;
+        /* Successful connection! */
+        con->addrinfo_next= NULL;
+        if (con->ssl_context) {
+		con->ssl_state = DRIZZLE_SSL_STATE_NONE;
+                con->ssl = SSL_new(con->ssl_context);
+                if (NULL == con->ssl) {
+                        drizzle_set_error(con, __FILE_LINE_FUNC__, "Could not "
+                                          "build SSL object");
+                        return DRIZZLE_RETURN_SSL_ERROR;
+                }
+                ERR_clear_error();
+                SSL_set_fd(con->ssl, con->fd);
+        }
         return DRIZZLE_RETURN_OK;
       }
     else
@@ -1337,7 +1370,43 @@ drizzle_return_t drizzle_state_read(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
+        ERR_clear_error();
         read_size= SSL_read(con->ssl, (char*)con->buffer_ptr + con->buffer_size, (available_buffer % INT_MAX));
+        if (read_size <= 0) {
+                int rc = SSL_get_error(con->ssl, read_size);
+                drizzle_return_t rsev;
+                switch (rc) {
+                case SSL_ERROR_WANT_X509_LOOKUP:
+                case SSL_ERROR_WANT_READ:
+                        con->revents &= ~POLLIN;
+                        rsev = drizzle_set_events(con, POLLIN);
+                        return DRIZZLE_RETURN_OK == rsev ?
+                                DRIZZLE_RETURN_IO_WAIT : rsev;
+                case SSL_ERROR_WANT_WRITE:
+                        con->revents = 0;
+                        rsev = drizzle_set_events(con, POLLOUT);
+                        return DRIZZLE_RETURN_OK == rsev ?
+                                DRIZZLE_RETURN_IO_WAIT : rsev;
+                case SSL_ERROR_ZERO_RETURN:
+                        // peer closed connection
+                        ERR_clear_error();
+                        SSL_shutdown(con->ssl);
+                        return DRIZZLE_RETURN_LOST_CONNECTION;
+                case SSL_ERROR_SYSCALL:
+                        drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                          "SSL error: %s", strerror(errno));
+                        return DRIZZLE_RETURN_SSL_ERROR;
+                case SSL_ERROR_SSL:
+                        // TODO
+                        drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                          "SSL error: %d", rc);
+                        return DRIZZLE_RETURN_SSL_ERROR;
+                default:
+                        drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                          "SSL error: %d", rc);
+                        return DRIZZLE_RETURN_SSL_ERROR;
+                }
+        }
     }
     else
 #endif
@@ -1468,7 +1537,44 @@ drizzle_return_t drizzle_state_write(drizzle_st *con)
 #ifdef USE_OPENSSL
     if (con->ssl_state == DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE)
     {
+      ERR_clear_error();
       write_size= SSL_write(con->ssl, con->buffer_ptr, (con->buffer_size % INT_MAX));
+      if (write_size <= 0) {
+              int rc = SSL_get_error(con->ssl, write_size);
+              drizzle_return_t rsev;
+              switch (rc) {
+              case SSL_ERROR_WANT_X509_LOOKUP:
+              case SSL_ERROR_WANT_READ:
+                      con->revents = 0;
+                      rsev = drizzle_set_events(con, POLLIN);
+                      return DRIZZLE_RETURN_OK == rsev ?
+                              DRIZZLE_RETURN_IO_WAIT : rsev;
+              case SSL_ERROR_WANT_WRITE:
+                      con->revents &= POLLOUT;
+                      rsev = drizzle_set_events(con, POLLOUT);
+                      return DRIZZLE_RETURN_OK == rsev ?
+                              DRIZZLE_RETURN_IO_WAIT : rsev;
+              case SSL_ERROR_ZERO_RETURN:
+                      // peer closed connection
+                      // We can get this from a SSL_read but I don't think we
+                      // can get it from a SSL_write
+                      drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                        "Peer closed SSL connection");
+                      return DRIZZLE_RETURN_LOST_CONNECTION;
+              case SSL_ERROR_SYSCALL:
+                      drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                        "SSL error: %s", strerror(errno));
+                      return DRIZZLE_RETURN_SSL_ERROR;
+              case SSL_ERROR_SSL:
+                      drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                        "SSL error: %d", rc);
+                      return DRIZZLE_RETURN_SSL_ERROR;
+              default:
+                      drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                        "SSL error: %d", rc);
+                      return DRIZZLE_RETURN_SSL_ERROR;
+              }
+      }
     }
     else
 #endif
@@ -1734,25 +1840,21 @@ static drizzle_return_t _setsockopt(drizzle_st *con)
     ioctlsocket(con->fd, FIONBIO, &asyncmode);
   }
 #else
-  // @todo find out why this can't be non-blocking for SSL
-  if (!con->ssl)
-  {
 #if HAVE_FCNTL && defined(O_NONBLOCK) && !defined(SOCK_NONBLOCK)
-    ret= fcntl(con->fd, F_GETFL, 0);
-    if (ret == -1)
-    {
-      drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_GETFL:%s", strerror(errno));
-      return DRIZZLE_RETURN_ERRNO;
-    }
-
-    ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
-    if (ret == -1)
-    {
-      drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_SETFL:%s", strerror(errno));
-      return DRIZZLE_RETURN_ERRNO;
-    }
-#endif
+  ret= fcntl(con->fd, F_GETFL, 0);
+  if (ret == -1)
+  {
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_GETFL:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
   }
+
+  ret= fcntl(con->fd, F_SETFL, ret | O_NONBLOCK);
+  if (ret == -1)
+  {
+    drizzle_set_error(con, __FILE_LINE_FUNC__, "fcntl:F_SETFL:%s", strerror(errno));
+    return DRIZZLE_RETURN_ERRNO;
+  }
+#endif
 #endif
 
   return DRIZZLE_RETURN_OK;
