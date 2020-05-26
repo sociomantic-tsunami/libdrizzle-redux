@@ -243,7 +243,7 @@ struct drizzle_st
   unsigned char *buffer;
   size_t buffer_allocation; /* total allocated size of 'buffer' */
   char db[DRIZZLE_MAX_DB_SIZE];
-  char password[DRIZZLE_MAX_PASSWORD_SIZE];
+  char password[DRIZZLE_MAX_PASSWORD_SIZE + 1];
   unsigned char scramble_buffer[DRIZZLE_MAX_SCRAMBLE_SIZE];
   char server_version[DRIZZLE_MAX_SERVER_VERSION_SIZE];
   char server_extra[DRIZZLE_MAX_SERVER_EXTRA_SIZE];
