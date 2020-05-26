@@ -513,7 +513,7 @@ void drizzle_set_auth(drizzle_st *con, const char *user,
   else
   {
     strncpy(con->password, password, DRIZZLE_MAX_PASSWORD_SIZE);
-    con->password[DRIZZLE_MAX_PASSWORD_SIZE - 1]= 0;
+    con->password[DRIZZLE_MAX_PASSWORD_SIZE]= 0;
   }
 }
 
