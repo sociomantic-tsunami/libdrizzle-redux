@@ -46,7 +46,7 @@
 
 drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *cert, const char *ca, const char *capath, const char *cipher)
 {
-  con->ssl_context= SSL_CTX_new(SSLv23_client_method());
+  con->ssl_context= SSL_CTX_new(TLS_client_method());
 
   const long required_ssl_options = (SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
   long ssl_options =
@@ -95,8 +95,6 @@ drizzle_return_t drizzle_set_ssl(drizzle_st *con, const char *key, const char *c
       return DRIZZLE_RETURN_SSL_ERROR;
     }
   }
-
-  con->ssl= SSL_new((SSL_CTX*)con->ssl_context);
 
   return DRIZZLE_RETURN_OK;
 }

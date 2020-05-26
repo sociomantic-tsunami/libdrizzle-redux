@@ -43,6 +43,9 @@
 
 #include "config.h"
 #include "src/common.h"
+#ifdef USE_OPENSSL
+#include <openssl/err.h>
+#endif
 
 /*
  * Client Definitions
@@ -537,12 +540,47 @@ drizzle_return_t drizzle_state_handshake_client_write(drizzle_st *con)
 #ifdef USE_OPENSSL
   if (con->ssl)
   {
+    ERR_clear_error();
     ssl_ret= SSL_connect(con->ssl);
-    if (ssl_ret != 1)
-    {
-      drizzle_set_error(con, __FILE_LINE_FUNC__, "SSL error: %d",
-                        SSL_get_error(con->ssl, ssl_ret));
-      return DRIZZLE_RETURN_SSL_ERROR;
+    if (0 == ssl_ret) {
+            // it was shut down
+            ERR_clear_error();
+            SSL_shutdown(con->ssl);
+            return DRIZZLE_RETURN_LOST_CONNECTION;
+    }
+    if (ssl_ret < 0) {
+            int rc = SSL_get_error(con->ssl, ssl_ret);
+            drizzle_return_t rsev;
+            switch (rc) {
+            case SSL_ERROR_WANT_READ:
+                    con->revents = 0;
+                    rsev = drizzle_set_events(con, POLLIN);
+                    return DRIZZLE_RETURN_OK == rsev ?
+                            DRIZZLE_RETURN_IO_WAIT : rsev;
+            case SSL_ERROR_WANT_WRITE:
+                    con->revents = 0;
+                    rsev = drizzle_set_events(con, POLLOUT);
+                    return DRIZZLE_RETURN_OK == rsev ?
+                            DRIZZLE_RETURN_IO_WAIT : rsev;
+            case SSL_ERROR_ZERO_RETURN:
+                    // peer closed connection. Isn't this case handled by
+                    // ssl_ret == 0?
+                    ERR_clear_error();
+                    SSL_shutdown(con->ssl);
+                    return DRIZZLE_RETURN_LOST_CONNECTION;
+            case SSL_ERROR_SYSCALL:
+                    drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                      "SSL error: %s", strerror(errno));
+                    return DRIZZLE_RETURN_SSL_ERROR;
+            case SSL_ERROR_SSL:
+                    drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                      "SSL error: %d", rc);
+                    return DRIZZLE_RETURN_SSL_ERROR;
+            default:
+                    drizzle_set_error(con, __FILE_LINE_FUNC__,
+                                      "SSL error: %d", rc);
+                    return DRIZZLE_RETURN_SSL_ERROR;
+            }
     }
     con->ssl_state= DRIZZLE_SSL_STATE_HANDSHAKE_COMPLETE;
   }
