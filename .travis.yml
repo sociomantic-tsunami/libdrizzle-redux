@@ -123,7 +123,7 @@ jobs:
         DOCKER_CXX=clang++ DOCKER_CC=clang COMPILER_VERSION=4.0
     - <<: *linux-build
       env:
-        DIST_NAME=centos DIST_VERSION=7 MAKE_TARGET=$MAKE_TARGET:rpm
+        DIST_NAME=centos DIST_VERSION=8 MAKE_TARGET=$MAKE_TARGET:rpm
     - <<: *osx-build
       env:
         DIST_NAME=osx MAKE_TARGET=check DRIZZLE_MYSQL_CA_PATH=/usr/local/var/mysql/
