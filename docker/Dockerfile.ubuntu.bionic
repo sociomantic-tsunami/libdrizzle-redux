@@ -1,7 +1,6 @@
 # Dockerfile for building an image with ubuntu bionic
 ARG DIST=bionic
-FROM ubuntu:$DIST
-MAINTAINER Andreas Bok Andersen <bok.chan@gmail.com>
+FROM sociomantictsunami/develbase:$DIST-v8
 
 RUN export DEBIAN_FRONTEND=noninteractive
 
@@ -11,5 +10,5 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get update
 
 # install required packages
-RUN apt-get -y install --no-install-recommends git lsb-release \
+RUN apt-fast -y install --no-install-recommends \
     libssl-dev autoconf libtool make automake zlib1g-dev api-sanity-checker
