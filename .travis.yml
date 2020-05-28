@@ -14,7 +14,7 @@ os:
   - linux
 
 ## Ensures the virtualization environment runs as Ubuntu 14.04 Trusty
-dist: trusty
+dist: bionic
 
 ## Environment variables
 #
@@ -23,7 +23,7 @@ env:
   global:
     - COMPILER_VERSION=
     - DIST_NAME=ubuntu
-    - DIST_VERSION=xenial
+    - DIST_VERSION=bionic
     - DOCKER_CXX=g++
     - DOCKER_CC=gcc
     - DOCKER_COMPOSE_VERSION=1.16.1
