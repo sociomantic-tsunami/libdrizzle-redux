@@ -4,4 +4,4 @@ version: '3'
 services:
   libdrizzle:
     build:
-      dockerfile: ./docker/Dockerfile.centos.7
+      dockerfile: ./docker/Dockerfile.centos.8
