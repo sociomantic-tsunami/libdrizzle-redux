@@ -11,5 +11,5 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get update
 
 # install required packages
-RUN apt-get -y install --no-install-recommends lsb-release \
+RUN apt-get -y install --no-install-recommends git lsb-release \
     libssl-dev autoconf libtool make automake zlib1g-dev api-sanity-checker
