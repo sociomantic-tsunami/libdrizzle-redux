@@ -5,10 +5,6 @@ cache:
   directories:
     - $CACHE_DIR
 
-## Enable sudo (set explicitly although environment's with docker is sudo
-#  enabled by default
-sudo: required
-
 ## Operating Systems to use for builds
 os:
   - linux
