@@ -102,7 +102,7 @@ jobs:
     # Sets up the build environment, compiles the code and runs tests
     - <<: *linux-build
       env:
-        COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
+        MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
       before_cache:
         - if [[ -n "$TRAVIS_TAG" ]]; then cp build/pkg/deb/*.deb $CACHE_DIR/; fi
     - <<: *linux-build
@@ -131,7 +131,7 @@ jobs:
       # Note that the 'env' section must be identical to the build in stage 1
       # which caches the generated deb package
       env:
-        COMPILER_VERSION=4.9 MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
+        MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
     - <<: *deploy
       env:
         DIST_VERSION=bionic MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
