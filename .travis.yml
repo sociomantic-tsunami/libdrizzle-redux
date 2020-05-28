@@ -76,28 +76,30 @@ stages:
 #  OSX based builds are done by a third-party provider
 #
 #  ¹ The compiler reported is the Apple LLVM version
-jobs:
-  templates:
-    # Global config for builds on linux
-    - &linux-build
-      services:
-        - docker
-    # Global config for builds on osx
-    - &osx-build
-      os: osx
-      compiler: clang
-    # Enable the build condition if travis' osx service startup hangs
-    # if: tag =~ osx$ OR branch =~ osx$
-    # Global config for deployment stage
-    - &deploy
-      stage: deploy
-      os: linux
-      after_success: skip
-      before_script: skip
-      if: tag IS present AND tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+
-      script:
-        - beaver bintray upload -D $DIST_VERSION -N $CACHE_DIR/*.deb
 
+templates:
+  # Global config for builds on linux
+_linux-build: &linux-build
+    services:
+      - docker
+  # Global config for builds on osx
+_osx-build: &osx-build
+    os: osx
+    compiler: clang
+  # Enable the build condition if travis' osx service startup hangs
+  # if: tag =~ osx$ OR branch =~ osx$
+  # Global config for deployment stage
+_deploy: &deploy
+    stage: deploy
+    os: linux
+    after_success: skip
+    before_script: skip
+    if: tag IS present AND tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+
+    script:
+      - beaver bintray upload -D $DIST_VERSION -N $CACHE_DIR/*.deb
+
+jobs:
+  fast_finish: true
   include:
     # Sets up the build environment, compiles the code and runs tests
     - <<: *linux-build
