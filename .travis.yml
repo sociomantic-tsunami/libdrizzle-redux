@@ -109,11 +109,6 @@ jobs:
         - if [[ -n "$TRAVIS_TAG" ]]; then cp build/pkg/deb/*.deb $CACHE_DIR/; fi
     - <<: *linux-build
       env:
-        DIST_VERSION=bionic MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
-      before_cache:
-        - if [[ -n "$TRAVIS_TAG" ]]; then cp build/pkg/deb/*.deb $CACHE_DIR/; fi
-    - <<: *linux-build
-      env:
         MAKE_TARGET=$MAKE_TARGET:check-code-coverage
         CONFIGURE_ARGS="$CONFIGURE_ARGS --with-coverage-support=capture"
     - <<: *linux-build
@@ -134,6 +129,3 @@ jobs:
       # which caches the generated deb package
       env:
         MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
-    - <<: *deploy
-      env:
-        DIST_VERSION=bionic MAKE_TARGET=$MAKE_TARGET:deb:api-sanity-checker
