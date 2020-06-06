@@ -93,6 +93,9 @@ mkdir -p $RPM_BUILD_ROOT/
 %{_includedir}/%{name}/libdrizzle-redux/visibility.h
 
 %changelog
+* Sa Jun 06 2020 Andreas Bok Andersen <bok.chan@gmail.com> - 6.4.1
+- Remove duplicate travis build (2020-06-04)
+
 * Wed Jun 3 2020 Andreas Bok Andersen <bok.chan@gmail.com> - 6.4.0
 - Handle SSL correctly in I/O event loop
 - Fix: passwords of 32 characters were truncated to 31 characters
